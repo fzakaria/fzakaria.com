@@ -1,14 +1,12 @@
 ---
 layout: page
 title: Farid Zakaria's Old Blog
+permalink: /old_blog/
 ---
 
 <div class="media">
 	{% assign old_blog_posts = site.old_blog | reverse %}
 	{% for post in old_blog_posts %}
-	  {% if post.url == '/old_blog/index.html' %}
-	    {% continue %}
-	  {% endif %}
 		<div class="post-stub">
 		    <h2>
 		      <span class="date hidden-xs">
