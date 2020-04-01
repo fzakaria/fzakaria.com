@@ -1,51 +1,67 @@
 ---
 layout: base
 ---
-<div class="row">
-    <div class="col-md-7">
-        <h1>
-            <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
-            {% if page.title %}
-            {{ page.title }}
-            {% else %}
-            {{ site.title }}
-            {% endif %}
-        </h1>
-        {% if page.url != '/' %}
-        <p class="date">
-            {% if page.date %}Published {{ page.date | date: "%Y-%m-%d" }}{% endif %}
-            on <a href="/">{{ site.title }}</a>
-            <span class="hidden-xs">
-              &mdash;
-              <a href="{{ page.url }}">
-                Permalink
-              </a>
-            </span>
-        </p>
-        {% endif %}
-        <article>
-          {{ content }}
-        </article>
+
+<h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    {{ page.title }}
+</h1>
+
+<div class="content">
+    {% if page.url != '/' %}
+    <p class="date">
+        {% if page.date %}Published {{ page.date | date: "%Y-%m-%d" }}{% endif %}
+        on <a href="/">{{ site.title }}</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="{{ page.url }}">
+            Permalink
+          </a>
+        </span>
+    </p>
+    {% endif %}
+    <article>
+      {{ content }}
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/avatar.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>{{ site.description }}</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">7BC79407090047CA</a>
+      </p>
     </div>
-    <div class="col-md-3 col-md-offset-2 sidebar text-left">
-        <hr class="visible-xs" />
-        <p>{{ site.bio }}</p>
-        {% if page.url != '/' %}
-        <h3>Recent Posts</h3>
-        {% for post in site.posts limit: 3 %}
-        <div class="post-stub">
-          {{ post.date | date: "%Y-%m-%d" }}<br />
-          <a href="{{ post.url }}">{{ post.title }}</a>
-        </div>
-        {% endfor %}
-        {% endif %}
-        <h3>License</h3>
-        <p style="font-size: 10pt">
-        The content for this site is
-        <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
-        The <a href="https://github.com/SirCmpwn/ddjekyll">code</a> for this site is
-        <a href="https://github.com/SirCmpwn/ddjekyll/blob/master/LICENSE">MIT</a>.
-        </p>
-        <div class="spacer" style="margin-top: 50px;"></div>
+    {% if page.url != '/' %}
+    <h3>Recent Posts</h3>
+    {% for post in site.posts limit: 3 %}
+    <div class="post-stub">
+      {{ post.date | date: "%Y-%m-%d" }}<br />
+      <a href="{{ post.url }}">{{ post.title }}</a>
     </div>
+    {% endfor %}
+    {% endif %}
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    <a href="https://github.com/SirCmpwn/ddjekyll/blob/master/LICENSE">MIT</a>.
+    </p>
+    <div class="spacer" style="margin-top: 50px;"></div>
 </div>
