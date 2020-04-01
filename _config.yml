@@ -25,7 +25,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 markdown: kramdown
 sass:
   style: compressed
-paginate: 3
+paginate: 10
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
