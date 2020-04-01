@@ -1,0 +1,64 @@
+---
+layout: post
+status: publish
+published: true
+title: Back & Forth
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 531
+wordpress_url: http://www.blog.fzakaria.com/?p=531
+date: '2011-05-26 15:13:27 -0700'
+date_gmt: '2011-05-26 19:13:27 -0700'
+categories:
+- Music
+- Software
+tags:
+- chrome extension
+- github
+- hypem
+- hypemachine
+- javascript
+comments: []
+---
+<h3> Let's try another route </h3>
+<p>
+No sooner had I posted my <a href="http://www.blog.fzakaria.com/2011/05/chrome-hypemachine-extension-finally-got-around-to-it/">fix</a> for my Chrome <a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">HypeMachine Extension</a>, it had seemed to be broken again. <em>I guess an easy fix deserved was going to get an easy work-around.</em></p>
+<p>
+Since my "fix" was simply just renaming the CSS element, it was also just as easy for <a href="http://hypem.com/">them</a> to also just change the javascript to match my names. </p>
+<blockquote><p>The 'ext_load' function mentioned earlier was also moved to within a larger function. I'm guessing to stop me from simply overloading the function...</p></blockquote>
+<p>This time I thought I would try something else and see where it takes me.</p>
+<h3> Will this work? </h3>
+<p>
+I just pushed a change to the Chrome Extension that will hopefully avoid the back & forth of changing CSS element names by randomizing them instead. Here is a little snippet of how I randomized the CSS element names. The reference for the code I used can be found <a href="http://jonraasch.com/blog/javascript-style-node">here</a>.</p>
+<pre class="brush:jscript">
+
+ function randomStringGenerator()
+{
+    var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    var string_length = 8;
+    var randomstring = "";
+    for (var i = 0 ; i < string_length ; i++)
+    {
+        var rnum = Math.floor(Math.random()* chars.length);
+        randomstring += chars.charAt(rnum);
+    }
+    return randomstring;
+}
+
+var cssElementToRandom =  randomStringGenerator();
+var css = document.createElement('style');
+css.type = 'text/css';
+var styles = '.'+cssElementToRandom+'{ width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent;	border-top: 10px solid #494949; }';
+
+if (css.styleSheet) css.styleSheet.cssText = styles;
+else css.appendChild(document.createTextNode(styles) );
+
+document.getElementByTagName("head")[0].appendChild(css);
+
+</pre>
+<blockquote><p><strong>Your move.</strong></p></blockquote>

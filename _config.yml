@@ -38,3 +38,6 @@ exclude:
   - vendor/cache/
   - vendor/gems/
   - vendor/ruby/
+collections:
+  old_blog:
+    output: true

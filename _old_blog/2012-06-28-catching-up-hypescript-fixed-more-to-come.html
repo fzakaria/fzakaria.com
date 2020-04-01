@@ -1,0 +1,253 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Catching Up: Hypescript fixed. More to come.'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1150
+wordpress_url: http://www.blog.fzakaria.com/?p=1150
+date: '2012-06-28 23:47:45 -0700'
+date_gmt: '2012-06-29 03:47:45 -0700'
+categories:
+- Music
+- Software
+tags:
+- github
+- hypem
+- hypemachine
+comments:
+- id: 208
+  author: jonny
+  author_email: thebrightestlife@hotmail.com
+  author_url: ''
+  date: '2012-08-19 03:42:37 -0700'
+  date_gmt: '2012-08-19 07:42:37 -0700'
+  content: it looks like the extension isn't working anymore...well at least with
+    my mac at home ( 10.5.8 ) . My mac at work running lion and prob the latest version
+    of chrome works still.
+- id: 209
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-08-19 13:13:47 -0700'
+  date_gmt: '2012-08-19 17:13:47 -0700'
+  content: |-
+    It's a constant game of catchup. I'll take a look when I'm back from vacation (i'm currently in Istanbul, Turkey).
+
+    You've been using the latest on GitHub?
+- id: 210
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-08-21 06:42:23 -0700'
+  date_gmt: '2012-08-21 10:42:23 -0700'
+  content: |-
+    I use the script every day, hope you'll update it Farid :)
+
+    It stopped working for me 4 or 5 days ago.
+
+    Just says "Found 0  songs."
+- id: 211
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-08-22 22:09:49 -0700'
+  date_gmt: '2012-08-23 02:09:49 -0700'
+  content: "<a href=\"#comment-4556\" rel=\"nofollow\">@Martin:</a> \n\nIt's #1 on
+    my TODO list as soon as I get back from Turkey :)"
+- id: 212
+  author: tim
+  author_email: tltwebdev@gmail.com
+  author_url: ''
+  date: '2012-08-28 17:38:16 -0700'
+  date_gmt: '2012-08-28 21:38:16 -0700'
+  content: |-
+    Hello,
+    I don't know how to use git hub, but I wrote some new regex for you guys. Tested and working as of today.
+
+    Works based on assumptions of the JSON format. Searches based on "":"" pattern. Will accommodate any kind of spacing within the fields.
+    #Key:
+    '[,"]+[^"]*?key[":]+(w+)[,"]+'
+    #Id:
+    '[,"]+[^"p]*?id[":]+(w+)[,"]+'
+    #Song:
+    '[,"]+[^"]*?song[":]+(w+)[,"]+'
+    #Artist:
+    ('[,"]+[^"]*?artist[":]+(w+)[,"]+');
+- id: 213
+  author: tim
+  author_email: tltwebdev@gmail.com
+  author_url: ''
+  date: '2012-08-28 18:00:06 -0700'
+  date_gmt: '2012-08-28 22:00:06 -0700'
+  content: |-
+    [wW]
+
+    Sorry, that was premature, see below for revised regex
+
+    '(?<!=)[,"]+[^"p]*?id[":]+(w+)[,"]+&#039;
+    &#039;(?<!=)[,"]+[^"]*?key[":]+(w+)[,"]+&#039;
+    &#039;(?<!=)[,"]+[^"]*?song[":]+([wW]+?)[,"]+&#039;
+    &#039;(?<!=)[,"]+[^"]*?artist[":]+([wW]+?)[,"]+&#039;
+- id: 214
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-08-29 07:58:18 -0700'
+  date_gmt: '2012-08-29 11:58:18 -0700'
+  content: |-
+    tim, thanks for posting.
+
+    I can't get the formatting to work, could you post the complete lines of code from your hypeme.py script, please?
+
+    Thanks
+    /Martin
+- id: 215
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-08-29 08:15:11 -0700'
+  date_gmt: '2012-08-29 12:15:11 -0700'
+  content: |-
+    tim, it works now, it looks like the first pling --> ' in line 1 has the wrong formatting.
+
+    One thing I noticed is, that it wouldn't download this song:
+    (37ea67fe5689988150e108807fd3c8df, Obedear (Noah Hydes Magic Sword Remix), Purity Ring/Noah Hyde/ Magic Sword)
+
+    I think it's because of the forward slashes "/" in the name - any way to fix that?
+
+    Thanks again :-)
+    /Martin
+- id: 216
+  author: John
+  author_email: john.harold.mccall@gmail.com
+  author_url: ''
+  date: '2012-09-03 13:17:56 -0700'
+  date_gmt: '2012-09-03 17:17:56 -0700'
+  content: Hey! I REALLY love your script! I wanted to give you a heads up though
+    that on my version of Chrome (21.0.1180.83 m) the plugin no longer will install
+    due to the deprecation of using manifest 1. If you do any updates, please include
+    them with manifest 2 so that it works again :) Thanks!
+- id: 217
+  author: sean
+  author_email: smkermath@gmail.com
+  author_url: ''
+  date: '2012-09-05 18:23:07 -0700'
+  date_gmt: '2012-09-05 22:23:07 -0700'
+  content: '<a href="#comment-4612" rel="nofollow">@John: +1</a>'
+- id: 218
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-09-07 17:01:56 -0700'
+  date_gmt: '2012-09-07 21:01:56 -0700'
+  content: |-
+    Hey everyone! Please check latest blog post, I have updated the extension.
+    I am looking for help with fixing the CSS however!
+- id: 219
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-09-10 08:58:19 -0700'
+  date_gmt: '2012-09-10 12:58:19 -0700'
+  content: |-
+    Hope you'll fix the script too :)
+
+    Thanks!
+- id: 220
+  author: tim
+  author_email: tltwebdev@gmail.com
+  author_url: ''
+  date: '2012-09-11 12:31:18 -0700'
+  date_gmt: '2012-09-11 16:31:18 -0700'
+  content: "<a href=\"#comment-4587\" rel=\"nofollow\">@tim:</a> \n\nThanks for pointing
+    that one out. The regex pattern assumed that the song name and artist would contain
+    only letters and spaces. \n[wW]\n\nSlightly more complicated version:\n\n(?<!=)[,\"]+[^\"]*?song[\":]+(.+?)(?<!\\)[,\"]+\n(?<!=)[,\"]+[^\"]*?artist[\":]+(.+?)(?<!\\)[,\"]+\n\nCan
+    handle any character in the name. It will also ignore quotations marks in the
+    name, as long as they are escaped.\n\nAll working:\n\"song\":\"Aus\"tra\" =  Aus\"tra\n\"song\":\"Aus/ra\"
+    = Aus/ra\n\"song\":\"Aus()ra\" = Aus()ra"
+- id: 221
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-09-11 13:36:06 -0700'
+  date_gmt: '2012-09-11 17:36:06 -0700'
+  content: |-
+    <a href="#comment-4659" rel="nofollow">@tim:</a> Hey Tim!
+
+    Can you drop this as a bug on GitHub or something?
+    I'll try to remember to look at it (validate) and incorporate the fix however Im swamped with work this week.
+- id: 222
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-09-13 07:53:32 -0700'
+  date_gmt: '2012-09-13 11:53:32 -0700'
+  content: |-
+    @tim: Could you post the complete lines from the hypeme.py script please?
+
+    I tried copy/pasting your new regex in, but I get syntax errors.
+- id: 223
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-09-13 07:58:02 -0700'
+  date_gmt: '2012-09-13 11:58:02 -0700'
+  content: "@tim: Hey Tim\n \nHere you can see my 2 lines from hypeme.py, Python 2.7
+    gives me an \"unbalanced parenthesis\" error:\n\nsongMatches = re.findall('(?<!=)[,\"]+[^\"]*?song[\":]+(.+?)(?<!\\)[,\"]+&#039;,
+    html_contents)\nartistMatches = re.findall(&#039;(?<!=)[,\"]+[^\"]*?artist[\":]+(.+?)(?<!\\)[,\"]+&#039;,
+    html_contents)"
+---
+<h2>Finally have some time</h2>
+<p>
+I've received numerous (very nice hearing how many people have been using my software) e-mails and responses regarding how my <a href="https://github.com/fzakaria/HypeScrip">hypescript</a> and <a href="https://github.com/fzakaria/HypeMachine-Java">batch downloader</a> are no longer working.</p>
+<p>
+I've recently accepted a new position at Amazon in Seattle and the move was very time consuming. I was saddened at the state of the code and how I felt like I was letting people down by not fixing it in a timely fashion. Now that it's been a month or so since my move I've finally had time to work on fixing them for you guys! :)</p>
+<h2>The fix</h2>
+<p>
+The HypeMachine guys keep breaking the script due to my terrible regular expression I was using to scrape the site for the id & keys. I'm hoping the current regex I've updated it to is more robust and will thwart a few more attempts from them from breaking it!</p>
+<h3>What needs to be parsed</h3>
+<pre class="brush:javascript">
+    trackList[document.location.href]['item_1n361'] = { 
+
+        seq: trackList[document.location.href].length,
+        type:'normal',
+        
+            id:'1n361',
+        time:'266',
+    
+     
+
+        ts: '1340722642',
+		postid:'1852087',
+		posturl:'http://www.gorillavsbear.net/2012/06/26/mp3-premiere-erika-spring-hidden-jensen-sportag-remix/',
+		fav:'0',
+		key: 'c3f03b16ecce82ef18b6bf6e25c8e52b',
+        artist:'Erika Spring',
+        song:'Erika Spring -Hidden_ (Sportag Remix)_MS...',
+        thumb_url_large: 'http://static-ak.hypem.net/images/blog_images/15203.png'
+
+    };
+
+    trackList[document.location.href].push(trackList[document.location.href]['item_1n361']);
+</pre>
+<h3>My regular expression</h3>
+<pre class="brush:python">
+#old regex
+idMatches = re.findall("[ t]id:'(w*)(?=')", contents)
+keyMatches = re.findall("(?<=tkey: ')w*(?=')", contents)
+songMatches= re.findall("(?<=tsong:').*(?=')", contents)
+artistMatches= re.findall("(?<=tartist:').*(?=')", contents)
+#new regex
+idMatches = re.findall("s+id:s*'(.+)'", contents)
+keyMatches = re.findall("s+key:s*'(.+)'", contents)
+songMatches = re.findall("s+song:s*'(.+)'", contents)
+artistMatches = re.findall("s+artist:s*'(.+)'", contents)
+</pre>
+<blockquote><p>If you are more of a wiz at regex than me please recommend a better pattern :)</p></blockquote>

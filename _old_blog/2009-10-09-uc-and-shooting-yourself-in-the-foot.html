@@ -1,0 +1,69 @@
+---
+layout: post
+status: publish
+published: true
+title: uC++ and Shooting Yourself in the foot
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 243
+wordpress_url: http://www.blog.fzakaria.com/?p=243
+date: '2009-10-09 12:32:48 -0700'
+date_gmt: '2009-10-09 16:32:48 -0700'
+categories:
+- Uncategorized
+tags: []
+comments:
+- id: 19
+  author: anya
+  author_email: candykor3@gmail.com
+  author_url: ''
+  date: '2009-10-14 14:06:12 -0700'
+  date_gmt: '2009-10-14 18:06:12 -0700'
+  content: "I'd suggest for you to come down here and try to file 138492734 applications
+    and get no response whatsoever :D \n\nAhhh, the US.\n\n:P"
+- id: 20
+  author: calais
+  author_email: calais@burlington.com
+  author_url: ''
+  date: '2009-11-15 23:02:51 -0800'
+  date_gmt: '2009-11-16 04:02:51 -0800'
+  content: you had me at ++
+- id: 21
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2010-01-08 17:08:35 -0800'
+  date_gmt: '2010-01-08 22:08:35 -0800'
+  content: "@Anya: You're a model now though \n@Calais: lol :)"
+---
+<p><em>Almost at midterms....<em><br />
+One of the most enjoyable courses this term have been my concurrency course <a href="http://www.student.cs.uwaterloo.ca/~cs343/">CS343</a>. In the class we are using <a href="http://plg.uwaterloo.ca/~usystem/uC++.html">uC++</a> (mico C++); which is an extension by the University of Waterloo to add high-level concurrency in an object oriented language. So far what we have covered is the ability for "Coroutines" to maintain a separate stack through execution. Using this feature we have been able to solve some interesting problems in novel ways.</p>
+<p>Here is an example of some uC++ code. Every coroutine must have a main method which is executing upon calling the inherited Resume() function of every couroutine on the <em>this</em> object. Once inside main(), you can suspend() the coroutine and execution will then unwind back to the original caller. Further resumes() cause the coroutine to start from the same location where the suspend() had occurred ("partial coroutines").</p>
+<pre name = "code" class="brush: cpp;toolbar: false;">
+#ifndef _Q2_
+#define _Q2_ 1
+#include <uC++.h>
+_Coroutine StringLiteral
+{
+    public:
+        enum status { CONT, MATCH, ERROR}; //possible status
+    private:
+        status stat; //current status of match
+        char ch; //character passed by cocaller
+        void main();
+    public:
+        StringLiteral();
+        status next (char c);
+}; //StringLiteral
+//End of Q2.H
+#endif
+</pre>
+<p>I am curious to see where the course leads us to in use of uC++. Would be perhaps even neater to learn some GPGPU "ultimate concurrency" in my opinion.</p>
+<h3>Shooting myself in the foot </h3>
+<p>Interviews have begun and I made the mistake of applying to 54 jobs. The result is that I now have tons of interviews. Sounds like a good thing? In theory perhaps; although I am finding myself short on time to complete assignments and my extra curricular activities. I will try and get a photo up soon of all the interviews I've had once they are complete.</p>
+<blockquote><p>Crossing my fingers</p></blockquote>

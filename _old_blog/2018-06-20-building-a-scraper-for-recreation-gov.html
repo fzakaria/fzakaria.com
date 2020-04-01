@@ -1,0 +1,60 @@
+---
+layout: post
+status: publish
+published: true
+title: Building a scraper for recreation.gov
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1508
+wordpress_url: http://blog.fzakaria.com/?p=1508
+date: '2018-06-20 15:53:20 -0700'
+date_gmt: '2018-06-20 22:53:20 -0700'
+categories:
+- Software
+tags:
+- recreation.gov
+comments: []
+---
+<h3> The start of a new project </h3>
+<p>
+A friend has recently asked if I can look into building a tool / site to scrape <a href="https://recreation.gov">https://recreation.gov</a> -- with a end-goal of building a system to <em>automatically reserve</em> for a desired permit.</p>
+<p>This piqued my interest and lets take a look at what I can do! At a high level I imagined building:<br />
+<em>register desired site -> continously scrape -> reserve -> notify via text</em></p>
+<p>Looks like a good chance to put together some interesting technologies: web-framework (django?) & <a href="https://www.twilio.com/">twilio</a> to send notifications</p>
+<h4>Alternatives</h4>
+<p>
+Before beginning any project, I take a look at the current space and see if there are any current <em>open source alternatives</em> or even a paid platform to leverage.</p>
+<p>I found the following:</p>
+<ul>
+<li><a href="https://github.com/webrender/campsite-checker">https://github.com/webrender/campsite-checker</a></li>
+<li><a href="https://github.com/bri-bri/yosemite-camping">https://github.com/bri-bri/yosemite-camping</a></li>
+</ul>
+<p>I could <strong>not find</strong> a paid service and the OSS options seemed very difficult for non technical people to use.</p>
+<h4> Can I haz API? </h4>
+<p>
+Browsing online -- I was ecstatic when I came across <a href="https://ridb.recreation.gov/">ridb.recreation.gov</a> which is a REST API for the recreation.gov website -- unfortunately it doesn't let you perform reservations and I couldn't decipher yet how to link them to the reservation portion. Perhaps it might be leveraged in the future!</p>
+<p>Time to use our favorite reverse engineering tools: <a href="https://www.wireshark.org/">wireshark</a> & <a href="https://www.charlesproxy.com/">Charles</a> -- I ended up using Charles specifically because I find it easier to setup as a man-in-the-middle HTTPS proxy.</p>
+<blockquote><p>You can follow the simple guide on how to setup Charles as a HTTPS proxy <a href="https://www.charlesproxy.com/documentation/proxying/ssl-proxying/">here</a></p></blockquote>
+<p>Here is the raw request from Charles when searching locations matching <em>whitney</em> at <a href="https://www.recreation.gov/unifSearch.do">https://www.recreation.gov/unifSearch.do</a><br />
+(unimportant parts stripped out)</p>
+<p><code><br />
+POST /unifSearch.do HTTP/1.1<br />
+Host: www.recreation.gov<br />
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:60.0) Gecko/20100101 Firefox/60.0<br />
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8<br />
+Accept-Language: en-US,en;q=0.5<br />
+Accept-Encoding: gzip, deflate, br<br />
+Referer: https://www.recreation.gov/unifSearch.do<br />
+Content-Type: application/x-www-form-urlencoded<br />
+Content-Length: 275<br />
+Connection: keep-alive<br />
+Upgrade-Insecure-Requests: 1</p>
+<p>currentMaximumWindow=12&locationCriteria=whitney&interest=&locationPosition=&selectedLocationCriteria=&resetAllFilters=true&filtersFormSubmitted=false&glocIndex=0&googleLocations=Whitney+Place+Northwest%2C+Seattle%2C+WA%2C+USA%7C-122.39853319999997%7C47.6974492%7C%7CLOCALITY<br />
+</code></p>
+<p>The important part is that it is <em>x-www-form-urlencoded</em> with <em>locationCriteria=whitney</em>.</p>
+<p>The response is HTML however we can use various tools to strip out the desired list.</p>

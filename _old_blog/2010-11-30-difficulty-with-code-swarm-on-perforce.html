@@ -1,0 +1,35 @@
+---
+layout: post
+status: publish
+published: true
+title: Difficulty with Code Swarm on Perforce
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 322
+wordpress_url: http://www.blog.fzakaria.com/?p=322
+date: '2010-11-30 14:22:07 -0800'
+date_gmt: '2010-11-30 19:22:07 -0800'
+categories:
+- Software
+tags: []
+comments: []
+---
+<p>I've never really blogged about difficulties in running certain software/utilities however I am finding myself scratching my head and going in a circle on this particular one.<br />
+Maybe someone can shine a beacon of light into my dilemma. </p>
+<h2> Code Swarm </h2>
+<blockquote><p>code_swarm: Organic software visualization of project repositories. </p></blockquote>
+<p>I have been recently trying to get <a href="http://vis.cs.ucdavis.edu/~ogawa/codeswarm/">Code Swarm</a> working at my current co-op, because I though it would be a nice exercise and interesting to see the results of a very large Perforce depot. The Wiki at the source's repository has excellent information on getting it started for a few different repositories and digging through the comment, I found that someone had updated the parses to even parse the Perforce activity log (by running P4 command).</p>
+<p>All is well up until that point. However after parsing and running code_swarm is where things take an unexpected turn. I am first hit by a slew of UTF8 conversion errors of my activity log (XML). I then resave the file from ASCII to UTF8 to make the errors go away.</p>
+<p><em>The screen starts up, things are looking good!</em></p>
+<p>Nope. It just parses the first event and then no more. I am unsure if this is because my XML file is really really large. I am suspicious of this, because I have seen videos of hopefully larger projects such as the Perforce source itself. The only reason why I consider this a possibility is because when I delete the majority of the events and cut it down to something reasonable (like 1000 events), then the video plays flawlessly.</p>
+<p>
+Does anyone have any advice or have seen similar issues?</p>
+<p>The code is open source and available at <a href="http://code.google.com/p/codeswarm">http://code.google.com/p/codeswarm</a>.</p>
+<p>[caption id="attachment_323" align="aligncenter" width="389" caption="Depiction of me at work because of this."]<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/11/frustrated.jpg"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/11/frustrated.jpg" alt="" title="Frustrated" width="389" height="352" class="size-full wp-image-323" /></a>[/caption]</p>
+<p>Note: I can edit my post or comment additional info depending on whether I get any meaningful feedback (or rather any feedback at all).</p>
+<p>I love you all platonically.</p>

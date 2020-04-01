@@ -1,0 +1,76 @@
+---
+layout: post
+status: publish
+published: true
+title: IronPython, C# 4.0 & Me
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 173
+wordpress_url: http://www.blog.fzakaria.com/?p=173
+date: '2009-08-13 11:40:29 -0700'
+date_gmt: '2009-08-13 15:40:29 -0700'
+categories:
+- Uncategorized
+- Software
+tags:
+- C#
+- IronPython
+comments:
+- id: 10
+  author: Setheron
+  author_email: faridzakaria@yahoo.com
+  author_url: ''
+  date: '2009-08-17 14:12:44 -0700'
+  date_gmt: '2009-08-17 18:12:44 -0700'
+  content: Just testing comments.
+---
+<table width="128" border="0" align="right" cellpadding="5" cellspacing="0">
+<tr>
+<td align="center" valign="top">
+<a href="http://www.blog.fzakaria.com/?now_reading_author=michael-foord-christian-muirhead&now_reading_title=ironpython-in-action" target="_blank"><br />
+<img src="http://ecx.images-amazon.com/images/I/5100iL6V3uL._SL160_.jpg" width="128" height="160" alt="IronPython In Action"/><br />
+</a>
+</td>
+</tr>
+</table>
+<p>This week I had picked up a copy of IronPython in Action.<br />
+Lately I have been writing or mentioning at least how I am pretty impressed about the .NET framework/Visual Studio/C#. I found things to be extremely fluid, logical and pretty much straight forward using C# (with the nice room to get complicated if you&rsquo;d like).</p>
+<p>
+Python though has remained outside my scope of knowledge for quite a while. I have friends who swear by it and I&rsquo;ve been always been meaning to learn properly a scripting language. I had briefly touched Python in one my CS courses, however it was using Jython which is an implementation of Python written in Java. To be honest, at the time of learning Jython (pretty much Python) scared me a little.</p>
+<p><code>Dynamic programming languages scare me a little<br />
+The ability to cast on the fly scares me.<br />
+The ability to create member variables on the fly scares me.</code></p>
+<blockquote><p>
+Data attributes correspond to &ldquo;instance variables&rdquo; in Smalltalk, and to &ldquo;data members&rdquo; in C++. Data attributes need not be declared; like local variables, they spring into existence when they are first assigned to. For example, if x is the instance of MyClass created above, the following piece of code will print the value 16, without leaving a trace</p>
+<pre name = "code" class="brush: python;toolbar: false;">
+x.counter = 1
+While x.counter < 10:
+    x.counter = x.counter * 2
+print x.counter
+del x.counter
+</pre>
+</blockquote>
+<p>
+I can see the benfit of being able to do it and the marvels that it can accomplish; but it seems it might cause a nightmare for debugging someone else&rsquo;s code. Although I&rsquo;ve never tried so hopefully I&rsquo;m wrong.<br />
+I think buying this book is a good start. It seems as if Dynamic programming requires rethinking problems in a different way; similar to trying to solve a problem parellelly rather than sequentially.</p>
+<p>
+The real reasons what attracted me to try and learn IronPython is the development cycle to create a sample WinForms application looks to be much shorter and much of it can afterwards be easily ported to straight C#. Finally a good CS professor once told the class that:</p>
+<blockquote><p>
+All programmers should know at least one scripting language
+</p></blockquote>
+<h3>C# 4.0</h3>
+<p>
+Seems as if learning Dynamic programming design pattern and principiles could be useful especially with the upcomming release of C# 4.0  I was recently going over the <a href="http://code.msdn.microsoft.com/csharpfuture">WhitePaper for C#4.0 </a>and they are heavily entering the forray of dynamic programming it seems especially.</p>
+<p>C# 4.0 introduces a new static type called dynamic. When you have an object of type dynamic you can &ldquo;do things to it&rdquo; that are resolved only at runtime:</p>
+<pre name = "code" class="brush: csharp;toolbar: false;">
+dynamic d = GetDynamicObject(&hellip;);
+d.M(7);
+</pre>
+<p>The C# compiler allows you to call a method with any name and any arguments on d because it is of type dynamic. At runtime the actual object that d refers to will be examined to determine what it means to &ldquo;call M with an int&rdquo; on it.<br />
+Other things which will allow for code refactoring seem to be introduced in C# 4.0 as well such as optional and named arguments. I can finally stop from creating so may overloaded methods.</p>
+<p><em>Anyways in the mean time I will be playing with IronPython. There is something sexy about interacting with a GUI through an interactive interpreter.</em></p>

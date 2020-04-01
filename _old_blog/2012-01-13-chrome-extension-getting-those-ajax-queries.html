@@ -1,0 +1,89 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Chrome Extension: Getting Those Ajax Queries'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1032
+wordpress_url: http://www.blog.fzakaria.com/?p=1032
+date: '2012-01-13 13:36:25 -0800'
+date_gmt: '2012-01-13 18:36:25 -0800'
+categories:
+- Software
+tags:
+- chrome extension
+- javascript
+comments:
+- id: 197
+  author: Eray
+  author_email: relfishere@gmail.com
+  author_url: http://erayarslan.com
+  date: '2015-02-03 05:53:34 -0800'
+  date_gmt: '2015-02-03 10:53:34 -0800'
+  content: |-
+    How can i pass data with event dispatch?
+    i want pass xhr info's :/
+- id: 18754
+  author: ncla
+  author_email: blindmind6@gmail.com
+  author_url: http://ncla.me
+  date: '2015-10-11 14:00:05 -0700'
+  date_gmt: '2015-10-11 21:00:05 -0700'
+  content: "I found out how you can pass the data through events.\r\nhttp://stackoverflow.com/questions/10526995/can-a-site-invoke-a-browser-extension\r\n\r\nThough
+    keep in mind if you pass some weird objects, for example from jQuery.ajaxPrefilter
+    originalOptions, which has some __proto__ stuff in it, it will fail. Which is
+    really weird behavior. What I ended up doing instead if JSON.stringify and JSON.parse
+    the object like so:\r\n\r\ndocument.dispatchEvent(new CustomEvent('eventId', {'detail':
+    JSON.parse(JSON.stringify(data))}));"
+---
+<br />
+<blockquote><p><strong>Warning</strong>: I am relatively new to Javascript. If the solution presented below seems trivial, please forgive.</p></blockquote>
+<h2> Once again, I'm isolated </h2>
+<p>
+I remember the frustration of hacking things into a web page due to Chrome's Isolated World for their extensions. The problem I originally faced was that <a href="http://www.hypemachine.com">HypeMachine </a>was storing the info for their tracks in variables that are restricted to the content scripts loaded by the extension.</p>
+<blockquote><p>Isolated worlds completely separate the JavaScript on the page from the JavaScript in extensions.</p></blockquote>
+<p>
+The second time around, my problem was not with accessing local data but getting access to jQuery instance used to make Ajax requests on the web page. <a href="http://www.beatport.com/">The webpage</a> for which I am writing the extension, refreshes its page via Ajax requests; after which it reconstructs the DOM programmatically. I could load jQuery myself into my extension however it would be a <strong>different </strong>instance! Any attempt to hook into the global Ajax event handlers would do no such good...</p>
+<blockquote><p>Isolated worlds allow each content script to make changes to its JavaScript environment without worrying about conflicting with the page or with other content scripts. </p></blockquote>
+<h2> Breaking Free </h2>
+<p>
+It was pretty easy how I circumvented the issue the first time around,by<strong>injecting</strong> the whole content script right into the web page! This let me write the script and have access to all the <em>goodies </em>of the page. This time however the solution is not doable for the new extension since I also wanted to make <strong>cross domain browser requests</strong>. <em>My new solution would have to allow me to write the code in the extension's script but be notified of all Ajax requests...<br />
+</em></p>
+<blockquote><p>Javascript on the main page are bound to make requests only to the original domain from where they came (<a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>), however scripts in the extension are allowed to make cross domain requests.</p></blockquote>
+<pre class="brush:javascript">
+var main = function() {
+
+   		var myEvent= document.createEvent('Event');
+   		myEvent.initEvent('CustomEvent', true, true);
+
+   		function fireCustomEvent() {
+   			document.body.dispatchEvent(myEvent);
+   		};
+
+   		jQuery(document).ajaxComplete(function(event,request, settings){
+			console.log("Ajax complete.");
+			fireCustomEvent();
+   		});
+
+};
+
+// Lets create the script objects
+var injectedScript = document.createElement('script');
+injectedScript.type = 'text/javascript';
+injectedScript.text = '('+main+')("");';
+(document.body || document.head).appendChild(injectedScript);
+
+document.body.addEventListener('CustomEvent', function() {
+	console.log("Received event!");
+});
+</pre>
+<p>
+The solution above (somewhat described by Google <a href="http://code.google.com/chrome/extensions/content_scripts.html">here</a>) demonstrates that the common denominator between the content scripts and the web page is the DOM. Though modification of the DOM you can pass data & propagate events. In the example above, I've injected my personal .ajaxComplete() handler which fires my custom event. The extension then listens for my custom event which is now technically a wrapper for the ajaxComplete event!</p>
+<p>
+<em>I know you can pass data through InnerText and by user jQuery's data method. However is it possible to serialize the actual jQuery instance from the web page and pass it to the extension?</em></p>

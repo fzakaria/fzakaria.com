@@ -1,0 +1,60 @@
+---
+layout: post
+status: publish
+published: true
+title: Chrome Download Extension API
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 634
+wordpress_url: http://www.blog.fzakaria.com/?p=634
+date: '2011-06-28 13:10:05 -0700'
+date_gmt: '2011-06-28 17:10:05 -0700'
+categories:
+- Software
+tags:
+- API
+- chrome extension
+- chromium
+- hypemachine
+comments:
+- id: 128
+  author: Ruben
+  author_email: ruben.verborgh@gmail.com
+  author_url: ''
+  date: '2011-11-28 14:26:24 -0800'
+  date_gmt: '2011-11-28 19:26:24 -0800'
+  content: Thanks for this blog point, which pointed me to the (well hidden!) API.
+    I have tried experimenting with it, but support seems fairly incomplete for now.
+    For an example, see https://github.com/RubenVerborgh/ShowInBrowser
+- id: 129
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-11-28 16:08:28 -0800'
+  date_gmt: '2011-11-28 21:08:28 -0800'
+  content: |-
+    <a href="#comment-3218" rel="nofollow">@Ruben:</a> very cool.
+    I haven't been keeping watch on the API but nice example.
+
+    Looks like enough has been completed for me to use on my extension however I need to wait for it to move out of experimental.
+---
+<h2> Can't Wait </h2>
+<p>
+Ever since work began on my <a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">HypeMachine Chrome Extension</a> one of the biggest requests from people was to make the arrow button launch a 'Save As' download box rather than playing the mp3 in the browser. How the browser handles files is determined by it's <a href="http://en.wikipedia.org/wiki/Internet_media_type">Internet Media Type</a> (MIME) which is set by the server.</p>
+<blockquote><p> Mp3's for instance have the MIME 'audio/mpeg' in the header</p></blockquote>
+<p>Whenever Chromium notices a file with the audio/mpeg MIME it automatically loads the file in the webplayer present in the browser, leading to people having to right click the button and select 'Save As' manually. I was hoping that there was functionality in the Chrome Extension API to cause downloads given URL however it turned out it was not the case. <strong>Until now. <em>Sorta</em>.</strong></p>
+<h2>chrome.experimental.downloads</h2>
+<p>
+Looks like work has begun on a new API (experimental) to offer the functionality I was hoping for!  The issues and code can be tracked as follows:</p>
+<ul>
+<li><a href="http://code.google.com/p/chromium/issues/detail?id=68201">Issue 68201:	(Downloads grouping issue) Extension API</a></li>
+<li><a href="http://goo.gl/6hO1n">Downloads Extension API Proposal</a></li>
+<li><a href="http://codereview.chromium.org/7192016">Changelist 7192016: chrome.experimental.downloads</a></li>
+</ul>
+<p>Although the changelist is supposedly several weeks away from being committed and usable, discussions regarding the API and feedback are ongoing. Once the changelist is submitted, I can begin to tinker with adding it to my extension, however I will have to wait for it to be no longer under <em>experimental</em> before updating it in the Chrome Store. </p>
+<blockquote><p>I'm curious to see what other extensions will benefit from this API.</p></blockquote>

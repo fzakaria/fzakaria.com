@@ -1,0 +1,140 @@
+---
+layout: post
+status: publish
+published: true
+title: Return by Reference to a Pointer, Huh?
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1179
+wordpress_url: http://www.blog.fzakaria.com/?p=1179
+date: '2012-09-26 18:21:01 -0700'
+date_gmt: '2012-09-26 22:21:01 -0700'
+categories:
+- Software
+tags:
+- C#
+comments:
+- id: 233
+  author: Garret Kelly
+  author_email: garret.kelly@gmail.com
+  author_url: http://gkel.ly
+  date: '2012-09-27 11:44:34 -0700'
+  date_gmt: '2012-09-27 15:44:34 -0700'
+  content: 'I''m not sure that returning references to pointers (or pointers to non-const
+    pointers) is a very healthy thing to do. It breaks encapsulation pretty hard and
+    makes tracking ownership very difficult. Consider the case where MyIntClass returns
+    an int pointer ref (or pointer to non-const pointer to int) and stores that pointer.
+    MyIntClass'' consumers now have a direct pointer/reference to state that is internal
+    to MyIntClass, as does anyone that the consumers pass that pointer to. They can
+    change (at their absolute whim) the internal state of MyIntClass without obeying
+    any kind of explicit contract formed by MyIntClass'' interface, and worse yet
+    they can make other methods unknowing users of MyIntClass. If MyInClass instead
+    had a pair of methods of the form: int get_my_int() const, and void set_my_int(const
+    int my_int), MyIntClass now retains control over its implementation. If, in the
+    future, you need locking or logging or some other form of accountability for the
+    value of myInt you can add it to the accessor and mutator methods.'
+- id: 234
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-09-27 12:52:46 -0700'
+  date_gmt: '2012-09-27 16:52:46 -0700'
+  content: |-
+    <a href="#comment-4788" rel="nofollow">@Garret Kelly:</a>  I totally agree that it does seem to break encapsulation.
+    The only way they have managed to do it correctly is because (matching the example above) myIntP is actually a shared_ptr. They like to use the class object as an LValue and use the getter to then perform a re-assign to the pointer.
+    It's odd and I wouldn't do it....
+    I actually dislike references and prefer to return pointers of pointers instead. Passing a pointer is explicit whereas if it's by reference it's implicit and you might not know unless you go double check the function definition.
+- id: 235
+  author: Garret Kelly
+  author_email: garret.kelly@gmail.com
+  author_url: http://gkel.ly
+  date: '2012-09-27 20:11:22 -0700'
+  date_gmt: '2012-09-28 00:11:22 -0700'
+  content: "<a href=\"#comment-4789\" rel=\"nofollow\">@Farid Zakaria:</a>  Ah yes,
+    a smart pointer like shared_ptr does solve the ownership issue. \n\nRe: Your thoughts
+    on returning/passing references. Exactly. The style guide we use at work even
+    codifies this: http://google-styleguide.googlecode.com/svn/trunk/cppguide.xml#Reference_Arguments
+    which makes reading code with references much easier."
+- id: 236
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-09-27 20:19:35 -0700'
+  date_gmt: '2012-09-28 00:19:35 -0700'
+  content: |-
+    <a href="#comment-4792" rel="nofollow">@Garret Kelly:</a>  yea I only use reference personally if they are const.
+    To be honest, I'm trying to write a style guide for my team (who desperately need one) and remember looking at Google's for inpiration.
+---
+<h2>Recap</h2>
+<p>
+Quick recap, for those who may be hazy on what a <a href="http://www.learncpp.com/cpp-tutorial/74a-returning-values-by-value-reference-and-address/">reference</a> is in C++:</p>
+<blockquote><p>When a variable is returned by reference, a reference to the variable is passed back to the caller. The caller can then use this reference to continue modifying the variable, which can be useful at times. Return by reference is also fast, which can be useful when returning structs and classes.</p></blockquote>
+<p>In even plainer words, the compiler is not creating a copy of the variable onto the stack of the function but simply passing the reference (i.e. sort of similar to a pointer).</p>
+<p>
+Here is the kicker and what is important to remember; in C++ everything is passed by value (copied) onto the function stack unless it has the '&' symbol denoting a reference.</p>
+<h2>Reference to Pointer </h2>
+<p>
+When is a reference to a pointer useful?  Consider the example below.</p>
+<pre class="brush:cpp">
+  void reassign(int * myInt){
+      myInt = new int(7);
+  }
+  int main(){
+      int * myInt = new int(5);
+      reassign(myInt);
+      std::cout << *myInt << std::endl;
+      return 0;
+  }
+</pre>
+<p>What would you expect to be the output of the program? If you guessed <strong>5</strong> you'd be correct. The reason why it is 5 and not 7, is because even the pointer itself <strong>is copied</strong> onto the function stack and the reassignment only modifies that copy of the pointer's value and not the pointer from main's scope!</p>
+<h3> How to solve this dilemma? </h3>
+<p>
+Traditionally the way to solve this problem (most commonly seen for link list problems for instance), is to pass a <em>Pointer to a Pointer</em>. This way we are passing an extra level of indirection to the pointer and therefore any modification to the pointer would continue passed the function's scope. This works because now we are creating a copy of the address of the second level indirection. The example would change to become:</p>
+<pre class="brush:cpp">
+  void reassign(int ** myIntPP){
+      *myIntPP = new int(7);
+  }
+</pre></p>
+<p>
+Another way that solve this problem however is by simply passing a reference to a pointer like so:</p>
+<pre class="brush:cpp">
+  void reassign(int* & myIntP){
+      myIntP = new int(7);
+  }
+</pre></p>
+<h3>In the return!</h3>
+<p>
+Up until this point, a lot of this should be common place in most code bases. What I found interesting however in the code I'm currently working on at my current job, are functions that <strong>return a reference to a pointer</strong>. Consider the example below:</p>
+<pre class="brush:cpp">
+class MyIntClass { 
+public:
+    MyIntClass(int value){
+        myIntP = new int(value);
+    }
+    MyIntClass(){
+        myIntP = new int(0);
+    }
+    int * & getMyInt() { 
+        return myIntP;
+    }      
+private:
+    int * myIntP;
+
+};
+int main(){
+    MyIntClass myObject(5);
+    int *& theInt = myObject.getMyInt();
+    theInt = new int(10);
+    std::cout << "theInt:" << *theInt << std::endl;
+    std::cout << "myObject:" << *myObject.getMyInt() << std::endl;
+    return 0;
+}
+</pre>
+<p>The output of <em>theInt</em> and <em>myObject</em> would both be 10. The ability to do this seems odd as it is a good source of memory leaks and un-intuitive to me.</p>
+<p>
+Can someone point me to some good use cases of how this can be useful?</p>

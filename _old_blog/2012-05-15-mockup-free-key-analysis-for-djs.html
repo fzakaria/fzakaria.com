@@ -1,0 +1,65 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Mockup: Free Key Analysis for DJs'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1094
+wordpress_url: http://www.blog.fzakaria.com/?p=1094
+date: '2012-05-15 12:09:08 -0700'
+date_gmt: '2012-05-15 16:09:08 -0700'
+categories:
+- Music
+- Software
+tags:
+- Beatport
+- Echo Nest
+comments:
+- id: 205
+  author: how to deal with tinnitus
+  author_email: indiraharvill@yahoo.de
+  author_url: https://www.youtube.com/watch?v=7MXXRRRk1_o
+  date: '2014-06-21 07:59:17 -0700'
+  date_gmt: '2014-06-21 11:59:17 -0700'
+  content: "Hello! I know this is kind of off topic but I wass wondering if you knew
+    \nwhere I could find a captcha plugin for my comment form?\n\nI'm using the same
+    blog platform as yours aand I'm having trouble finding one?\nThanks a lot!\n\nHere
+    is my site :: <a href=\"https://www.youtube.com/watch?v=7MXXRRRk1_o\" rel=\"nofollow\">how
+    to deal with tinnitus</a>"
+---
+<h2> Key Analysis </h2>
+<p>
+I've been lately been learning to DJ&Mixing (very basic techniques), and an important component to smooth transitions is key harmony. Transitioning to songs within a certain key range is easier and sounds better. A quick example (cheat sheet) for knowing which keys are compatible is the Camelot System Wheel (which I can't display because it has a copyright) or<br />
+<img align="center" class="size-full wp-image-1095" src="http://www.beatunes.com/images/open_key_notation_250.png" alt="Open Key Notation" /></a></p>
+<p>
+Currently the only means for a DJ to get the key information for his songs are either costly or tedious. Here are the methods I'm most aware of:</p>
+<ul>
+<li>Using commercial software<br />
+<blockquote><p><a href="http://www.djtechtools.com/2009/11/02/key-analysis-software-smackdown/">DJTechTools</a> has a great article on all the different costly software available for attaching key information to  your songs</p></blockquote>
+</li>
+<li>Looking up the song on Beatport and embedding the information yourself</li>
+</ul>
+<p>I actually <em>caught </em>my roommate manually searching every MP3 he owned on Beatport and editing the ID3 tags to get the key information.</p>
+<p>
+First thing comes to mind as a Software Engineer whenever I see such a repetitive task is, <strong><em>"This should be automated immediately"</em></strong>.</p>
+<h2>DJ Helper</h2>
+<p>
+Originally the idea was to automate the process of browsing Beatport for the song and grabbing the BPM/Key. This proved to be too difficult however because the Beatport API doesn't support searching for a track. Browsing the interwebz for ideas, I then came across <a href="http://the.echonest.com/">Echo Nest</a>.</p>
+<blockquote><p>The Echo Nest is a music intelligence platform that powers smarter music applications. Theirplatform opens up this dynamic music data to any developer through our easy-to-use, real-time API</p></blockquote>
+<p>
+Within an hour, I was up and running and had a quick sample Python (using WxPython for the GUI) application that uploaded songs to Echo Nest and retrieved their analysis for key and temp information. Few things are missing to turn this into a 100% useable app which I hope to get around to, but for now I am happy with the mockup proving it is possible to get song analysis easily and free.</p>
+<blockquote><p>You can find the source code and app on my Github repository <a href="https://github.com/fzakaria/DJ-Helper">here</a>. </p></blockquote>
+<p>[caption id="attachment_1095" align="aligncenter" width="500" caption="My quick mockup for a program to provide key analysis"]<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2012/05/DJHelper.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2012/05/DJHelper.png" alt="" title="DJHelper" width="500" height="400" class="size-full wp-image-1095" /></a>[/caption]</p>
+<p>
+<strong>TO DO:</strong></p>
+<ul>
+<li>Add the analysis information into the ID3 comments tag of the Mp3 File</li>
+<li>Allow bulk processing of songs.</li>
+<li>Thread or perform uploading asynchronously of the songs (also provide progress bar).</li>
+</ul>

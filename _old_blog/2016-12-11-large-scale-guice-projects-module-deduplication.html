@@ -1,0 +1,78 @@
+---
+layout: post
+status: publish
+published: true
+title: Large Scale Guice Projects - Module Deduplication
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1479
+wordpress_url: http://blog.fzakaria.com/?p=1479
+date: '2016-12-11 12:13:04 -0800'
+date_gmt: '2016-12-11 20:13:04 -0800'
+categories:
+- Software
+tags:
+- guice
+comments: []
+---
+<p>
+If you come from a large Java shop, you've likely heard of or encountered <a href="https://github.com/google/guice">Guice</a> -- Google's lightweight dependency injection framework; analogous to Spring.</p>
+<p>
+First time users of Guice will usually be <em>starry eyed</em> amazed at the ability to get type safe dependency and the seemingly modular way in which to bundle up your dependencies into <strong>Modules</strong>.</p>
+<p>
+Much of the tutorials, guides and best practices found online though are targeted towards smaller codebases, and anyone in large Java shops will have likely hit the spaghetti of configuration and AbstractModule dependencies to get your code to boot up -- seemingly ruining the modularity of using a dependency injection framework.<br />
+This post is aimed at some best practice I've found for keeping <strong>AbstractModule</strong> composable and easy to understand.</p>
+<blockquote><p>If you don't want to read to the end just checkout my project on solving Guice deduplication -- <a href="https://github.com/fzakaria/guide-dedupe">guice-dedupe</a></p></blockquote>
+<h3>Composition</h3>
+<p>
+The biggest hurdle large projects will face in Guice is that you'll want to keep Modules resuable and more importantly self-contained.</p>
+<p>
+Consider the following example where I have a JSON class that is bound in a module, and two other modules want to make use of it.</p>
+<pre class="lang:java decode:true " title="Guide binding duplication example " >public class Example {
+
+  public static class JsonSerializer {
+    //Implementation not important
+  }
+
+  public static class JsonModule extends AbstractModule {
+
+    @Override
+    protected void configure() {
+      bind(JsonSerializer.class);
+    }
+
+  }
+
+
+  public static class ModuleA extends AbstractModule {
+
+    @Override
+    protected void configure() {
+      install(new JsonModule());
+    }
+
+  }
+
+  public static class ModuleB extends AbstractModule {
+
+    @Override
+    protected void configure() {
+      install(new JsonModule());
+    }
+
+  }
+
+
+}</pre>
+<p>
+We'd like to make use of the <em>install</em> option, so that a consumer can either use ModuleB <strong>or</strong> ModuleA and the necessary bindings are self-contained. The problem arises if ModuleA <strong>and</strong> ModuleB are used -- you'll be treated with a <em>Multiple Binding Exception</em>.</p>
+<p>
+Many codebases, simply remove the installation of Module dependencies and move the mess of figuring out the right set of final modules you need at moment you try to create the injector. <em>What a mess!</em></p>
+<p>
+The way to solve this is to use Guice's built-in de-duplication code. For the most part it works out of the box, unless you are using <em>@Provides</em> in your modules.<br />
+Simply change all your existing AbstractModule to <strong>SingletonModule</strong> from the library <a href="https://github.com/fzakaria/guide-dedupe">guice-dedupe</a> and you'll get modules that are fully self-contained now even with providers.</p>

@@ -1,0 +1,203 @@
+---
+layout: post
+status: publish
+published: true
+title: Fix for latest Extension Hypemachine bug
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1353
+wordpress_url: http://blog.fzakaria.com/?p=1353
+date: '2014-06-09 19:40:09 -0700'
+date_gmt: '2014-06-09 23:40:09 -0700'
+categories:
+- Music
+- Software
+tags:
+- chrome extension
+- github
+- hypem
+- hypemachine
+comments:
+- id: 387
+  author: Oliver
+  author_email: standardadresse@gmail.com
+  author_url: ''
+  date: '2014-06-11 10:26:38 -0700'
+  date_gmt: '2014-06-11 14:26:38 -0700'
+  content: What about windows?
+- id: 388
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2014-06-12 12:54:59 -0700'
+  date_gmt: '2014-06-12 16:54:59 -0700'
+  content: "download \nhttps://github.com/fzakaria/HypeMachine-Extension/archive/chrome-bug-373182.zip
+    and follow the directions in the README (i.e. extract the ZIP and install the
+    extension)"
+- id: 389
+  author: Anon
+  author_email: Anon@Anon.com
+  author_url: ''
+  date: '2014-06-15 10:13:49 -0700'
+  date_gmt: '2014-06-15 14:13:49 -0700'
+  content: Thanks Farid!
+- id: 390
+  author: Oliver
+  author_email: standardadresse@gmail.com
+  author_url: ''
+  date: '2014-06-19 13:01:29 -0700'
+  date_gmt: '2014-06-19 17:01:29 -0700'
+  content: Damn, THANK YOU Farid! Love it!
+- id: 391
+  author: Manuel
+  author_email: manolord00@gmail.com
+  author_url: ''
+  date: '2014-06-22 23:13:48 -0700'
+  date_gmt: '2014-06-23 03:13:48 -0700'
+  content: Thank you very much sir!
+- id: 392
+  author: Robert Wickersham
+  author_email: halseyolo@gmail.com
+  author_url: ''
+  date: '2014-06-23 21:32:47 -0700'
+  date_gmt: '2014-06-24 01:32:47 -0700'
+  content: |-
+    I tried your terminal code but it gives me this error:
+
+     "Cloning into 'HypeMachine-Extension'...
+    Permission denied (publickey).
+    fatal: Could not read from remote repository.
+    Please make sure you have the correct access rights
+    and the repository exists."
+
+    Then I tried going to your GitHub and downloading the updated branch with the fix and replacing my old extension with it, but the same problem persists.
+
+    Can you help me out with this? Am I doing something wrong? Seems like the fix is working for these other people.
+- id: 393
+  author: Simon
+  author_email: sg.ralph@live.com.au
+  author_url: ''
+  date: '2014-06-27 02:04:09 -0700'
+  date_gmt: '2014-06-27 06:04:09 -0700'
+  content: |-
+    Robert, You need to setup your GitHub account with an ssh key, see https://help.github.com/articles/generating-ssh-keys
+
+    I am still having the same issue (random file names) on OSX , chrome  Version 35.0.1916.153, after loading the updated extension (still says version 1.44?). Yet to test on my windows machine..
+- id: 394
+  author: Simon
+  author_email: sg.ralph@live.com.au
+  author_url: ''
+  date: '2014-06-29 01:28:26 -0700'
+  date_gmt: '2014-06-29 05:28:26 -0700'
+  content: Update on last comment.. issue seems to be intermittent(???)
+- id: 395
+  author: Mariam
+  author_email: bdbfdcgj8@mail.com
+  author_url: http://TqQX04vrU
+  date: '2014-07-04 12:19:08 -0700'
+  date_gmt: '2014-07-04 16:19:08 -0700'
+  content: Cheers for the comment Lox   and every day GitHub is sonwihg us why so
+    many people are finding it a great community as well as a code repository. The
+    input, feedback and contributions being made to Jigoshop are amazing, and really
+    help to max the benefits of going with an open source licence.August 26, 2011
+    at 3:19 am</a>
+- id: 396
+  author: Rupak
+  author_email: 9h627mnt@yahoo.com
+  author_url: http://fo64KBTr1
+  date: '2014-07-04 22:42:53 -0700'
+  date_gmt: '2014-07-05 02:42:53 -0700'
+  content: 'du bbInclPowheg_9091.dst262144  bbInclPowheg_9091.dststat bbInclPowheg_9091.dst  File:
+    `bbInclPowheg_9091.dst''  Size: 0               Blocks: 524288     IO Block: 4096   regular
+    empty fileDevice: 801h/2049d      Inode: 16868       Links: 1Access: (0644/-rw-r
+    r )  Uid: ( 1009/ UNKNOWN)   Gid: ( 1000/ UNKNOWN)Access: 2012-03-29 13:29:51.878887000
+    +0200Modify: 2011-09-26 11:00:46.299480000 +0200Change: 2012-09-12 14:50:14.665280518
+    +0200Seems that stat gives nr of blckos on device, 512 in my caseOne can get correct
+    size of the file (from du) multiplying nr of blckos from stat by 512 524288*0.512k/1.024
+    = 262144kxfs_db for this file give nr of 4096 blckos i.e. 65536In your script
+    I replaced nr of blckos from stat to nr of blckos from xfs_db so the dd comand
+    using 4096 block size gave correct file size on output.'
+- id: 397
+  author: Milan
+  author_email: 4grpo3b3ec@hotmail.com
+  author_url: http://zXV8cvo2GQ1J
+  date: '2014-07-05 20:13:06 -0700'
+  date_gmt: '2014-07-06 00:13:06 -0700'
+  content: 'Hi, I am trying to firuge out how to get this to work on the background
+    element.I would like the body{background-image: url(blablah.jpg);} to have a background
+    image that behaves the same way this does in a div.Can anyone help me with this?
+    I tried: $( body'').anystretch( img01.jpg ); but it does not work right. The image
+    has a padding applied and if there is not enough content to fill the screen the
+    image disappears.'
+- id: 398
+  author: Ellie
+  author_email: 9vta2kq1uo@gmail.com
+  author_url: http://ibp7QVub27j
+  date: '2014-07-05 23:45:40 -0700'
+  date_gmt: '2014-07-06 03:45:40 -0700'
+  content: Thanks for the info, I couldn't find the buottn configuration myself. I
+    don't need the Archive buottn and was quite annoyed when it suddendly became visible
+    after the update and made the Delete buottn smaller. Now it's gone and I am happy
+    again. It's nice that K-9 Mail is so flexible.
+- id: 399
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2014-07-09 03:58:49 -0700'
+  date_gmt: '2014-07-09 07:58:49 -0700'
+  content: |-
+    I tried it today at work.. some of the downloads worked and others didnt.
+    Its a bit frustrating because its a Chrome issue and I'm not super well versed.
+    I will try to investigate some more!
+- id: 400
+  author: Kelsey
+  author_email: i63b6vyhkz@hotmail.com
+  author_url: http://sx1E0tKs5N6O
+  date: '2014-07-21 08:45:11 -0700'
+  date_gmt: '2014-07-21 12:45:11 -0700'
+  content: 'im having <a href="http://mcebvnpnkts.com" rel="nofollow">prmbleos</a>
+    running avida, i have downloaded 2.12.1 for my mac. i have also set up github
+    to my computer. when i try to run avida i geterror: unable to open file  avida.cfg''.error:
+    configuration file  avida.cfg'' not foundlogout[Process completed]im not sure
+    were im going wrong, if someone could help or send me in the right direction it
+    would be greatly appreciated.Thanks in advance.'
+- id: 404
+  author: Wilson Ting
+  author_email: wting2@ualberta.ca
+  author_url: ''
+  date: '2014-07-24 19:21:05 -0700'
+  date_gmt: '2014-07-24 23:21:05 -0700'
+  content: Thank for your update! I appreciate your response to my concern! Much appreciated.
+    Cheers.
+- id: 405
+  author: Brando
+  author_email: brando.madden@gmail.com
+  author_url: ''
+  date: '2014-08-12 00:55:46 -0700'
+  date_gmt: '2014-08-12 04:55:46 -0700'
+  content: I think it's not working again? I just tried it using the link above and
+    it's still showing me a random string of characters instead of the song titles.
+    Thanks, love the extension
+- id: 406
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2014-08-13 01:19:54 -0700'
+  date_gmt: '2014-08-13 05:19:54 -0700'
+  content: I've fixed it! See my new post
+---
+<h2>Wah Happened?!</h2>
+<p>
+During the last week I got a lot of e-mails from people telling me how the extension was no longer working for them. The complaint was the name of the song downloaded seemed to have been 'garbled' or no longer working. I'm sorry it took me a while (~1 week) to dig into it, however I now have published the fix into a new branch on Github.</p>
+<pre class="bash">
+#Run this from 'Terminal' on your mac for instance
+git clone -b chrome-bug-373182 git@github.com:fzakaria/HypeMachine-Extension.git
+</pre></p>
+<p> For those curious, the regression (bug) looks to be caused by Chrome/Chromium and is currently being tracked <a href="https://code.google.com/p/chromium/issues/detail?id=373182">here</a>, where they don't seem to be respecting the download attribute for anchor tags.</p>
+<p>Enjoy the music,<br />
+Farid</p>

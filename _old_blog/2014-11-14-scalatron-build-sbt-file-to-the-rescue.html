@@ -1,0 +1,61 @@
+---
+layout: post
+status: publish
+published: true
+title: Scalatron Build.sbt file to the rescue
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1408
+wordpress_url: http://blog.fzakaria.com/?p=1408
+date: '2014-11-14 01:47:35 -0800'
+date_gmt: '2014-11-14 06:47:35 -0800'
+categories:
+- Software
+tags:
+- sbt
+- scala
+- scalatron
+comments: []
+---
+<h2> Scalatron </h2>
+<p>
+I've been recently playing around with writing a bot for <a href="http://scalatron.github.io/">Scalatron</a> however I didn't find any great explanation on how to setup a nice development process with SBT. The closest I could find was <a href="http://jmhofer.johoop.de/?p=292">this blog post</a> but it left a lot to the imagination. I hope you find my annotated Build.sbt below better and more clear!</p>
+<p>
+If you launch sbt and run <code>play</code> you should see the Scalatron server start up and pickup your Bot!</p>
+<pre class="lang:scala decode:true " > organization := "com.fzakaria"
+ 
+ libraryDependencies ++= {
+     Seq(
+         "ch.qos.logback" % "logback-classic" % "1.1.2",
+         "org.slf4j"       %   "slf4j-api"     % "1.7.7",
+         "org.scalatest" %% "scalatest" % "1.9.2" % "test"
+     )
+ }
+ 
+ val copyBot = TaskKey[Unit]("copyBot", "Copies your bot over!")
+ 
+ copyBot <<= (botDirectoryTask, name, (Keys.`package` in Compile)) map { (botDirectory, name, botJar)   =>
+     IO createDirectory (botDirectory / name)
+     //Scalatron explicitly requires "ScalatronBot.jar"
+     IO copyFile (botJar, botDirectory / name / "ScalatronBot.jar")
+ }
+ 
+ val play  = TaskKey[Unit]("play", "Runs your scalatron bot!")
+ 
+ val botDirectoryTask = SettingKey[File]("bot-directory")
+ 
+ botDirectoryTask := file("bots")
+ 
+ play <<= (botDirectoryTask,(dependencyClasspath in Compile),(unmanagedClasspath in Compile),(Keys.     `package` in Compile) ) map { (botDirectory,dependencyClasspath,unmanagedClasspath, botJar) =>
+     val cmd = "java" :: "-cp" :: Seq(Seq(botJar),dependencyClasspath.files,unmanagedClasspath.files).  flatten.absString :: "scalatron.main.Main" :: "-plugins" :: botDirectory.absolutePath :: Nil
+     println(cmd)
+     cmd !
+ }
+ 
+ play <<= play.dependsOn(copyBot)
+ </pre>

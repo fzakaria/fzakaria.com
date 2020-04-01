@@ -1,0 +1,31 @@
+---
+layout: post
+status: publish
+published: true
+title: Colour spaces and NV12 to RGB
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1066
+wordpress_url: http://www.blog.fzakaria.com/?p=1066
+date: '2012-04-23 14:54:07 -0700'
+date_gmt: '2012-04-23 18:54:07 -0700'
+categories:
+- Software
+tags: []
+comments: []
+---
+<h2> For those curious </h2>
+<p>
+It's funny that I never questioned why whenever a video playback was corrupted or malfunctioned it displayed a green screen.Even at my current job, having learned about color space conversion and the different ways to represent color it still never clicked. To be fair I think it's because we are taught in school how to think with the RGB color space and not YUV. The answer though is really simple, but just found it interesting <strong>I had never connected the dots</strong>. <em>The conversion of a YUV value of 0 to RGB is the dull green color!</em><br />
+[caption id="attachment_1073" align="aligncenter" width="256" caption="YUV value of 0 produces this green color."]<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2012/04/yuv-00-00-00.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2012/04/yuv-00-00-00.png" alt="YUV value of 0" title="yuv-00-00-00" width="256" height="32" class="size-full wp-image-1073" /></a>[/caption]</p>
+<p><!--more--></p>
+<h2> Converting NV12 </h2>
+<p>
+I work with a lot of YUV (NV12) files. Found a few neat tools online to convert them to RGB and decide to roll my own. It's pretty straightforward. There are a bunch of different ways to grab the y, u , v data and this one is a bit more intricate as it moves the cursor constantly to get the appropriate UV position for the current Y value. To get a better understanding of conversions from YUV to RGB and about colour spaces in general, I found that the MSDN was a great place. Check out this <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dd206750(v=vs.85).aspx">link</a>.</p>
+<p><script src="https://gist.github.com/2472889.js?file=yuv2rgb.py"></script></p>
+<blockquote><p>I would like to rewrite this so that it is more generic for all YUV formats depending on their sample period. </p></blockquote>

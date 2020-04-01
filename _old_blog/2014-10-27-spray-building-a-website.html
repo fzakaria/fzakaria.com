@@ -1,0 +1,59 @@
+---
+layout: post
+status: publish
+published: true
+title: Spray - Building a website
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1401
+wordpress_url: http://blog.fzakaria.com/?p=1401
+date: '2014-10-27 17:12:46 -0700'
+date_gmt: '2014-10-27 21:12:46 -0700'
+categories:
+- Uncategorized
+- Software
+tags:
+- scala
+- spray
+comments: []
+---
+<h2>Spray what?</h2>
+<p>
+So for my current ongoing project we've been using the excellent <a href="https://www.playframework.com/">Play! Framework</a>; which although primarily designed for websites we used it for an API WebService. So I figure I'd do the opposite with <a href="http://spray.io">Spray</a>. Spray is a http framework for building web services on top of Akka actors. The next few posts will probably be around some patterns I did in getting a MVP Login demo that accepts UserPassword or OAuth[2] providers.</p>
+<blockquote><p>The following is the specific <a href="https://github.com/fzakaria/addressme/commit/7eb054bfb96d4dac3c62fea51a82a8a0932c0051">commit</a> which I believe I've achieved enough of an MVP if you'd like to later browse how its done.</p></blockquote>
+<h2> Composing Routes </h2>
+<p>
+All the examples on the Spray website show the DSL for the Routes in a single class however I found this to be confusing and exploded to be too large. There are two options people have discussed when composing routes:</p>
+<ol>
+<li>Create multiple HttpService actors. Have the main actor forward the RequestContext to other actors based on some route prefix</li>
+<li>Use a trait to easily compose the routes that will be given to the runRoute method of the single HttpActor</li>
+</ol>
+<p>Although option (2) sounds less `everything on Akka` ideal, it was the option I chose as I found it very easy to bootstrap and the results were fantastic.</p>
+<pre class="lang:scala decode:true " >
+trait Routable {
+  def route: Route
+}
+
+object StaticRouter extends Routable {
+  override def route: Route = {
+    pathPrefix("static") {
+      path(RestPath) { path =>
+        getFromResource(s"public/$path")
+      }
+    }
+  }
+}
+
+class ApiActor extends HttpServiceActor with ActorLogging {
+
+  def receive = runRoute(
+    StaticRouter.route
+      ~
+    LoginRouter.route
+  )
+}</pre></p>

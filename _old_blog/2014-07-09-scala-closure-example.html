@@ -1,0 +1,42 @@
+---
+layout: post
+status: publish
+published: true
+title: Scala Closure Example
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1360
+wordpress_url: http://blog.fzakaria.com/?p=1360
+date: '2014-07-09 03:55:58 -0700'
+date_gmt: '2014-07-09 07:55:58 -0700'
+categories:
+- Software
+tags:
+- scala
+comments: []
+---
+<h2> Somewhat more real example </h2>
+<p> Closures aren't new to me. I've used them a bunch when I've done JavaScript however I felt like the concept of a closure was really well defined/understood in JavaScript. Although I was aware you could likely (wasn't sure until I google'd) do it Scala, every example online <strong>infuriated</strong> me!<br />
+Every example was pretty trivial (i.e. summing function) and used a global variable.<br />
+I wanted to give a better example!</p>
+<h2> Example </h2>
+<pre class="brush:scala">
+import org.joda.time.{DateTime,Period}
+
+//We are inside some class or object
+private def filterThoseCreatedBefore( time : DateTime) : (Model) => Boolean = {
+  (model : Model)  =>  {
+    model.createdAt.isBefore(time)
+  }
+}
+
+val FILTER_CREATED_TWO_WEEKS_AGO = 
+      filterThoseCreatedBefore(DateTime.now.minus(Period.weeks(2)))
+
+val filteredTwoWeekList = models.filter(FILTER_CREATED_TWO_WEEKS_AGO(_))
+</pre>

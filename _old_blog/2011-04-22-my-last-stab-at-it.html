@@ -1,0 +1,52 @@
+---
+layout: post
+status: publish
+published: true
+title: My last stab at it.
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 475
+wordpress_url: http://www.blog.fzakaria.com/?p=475
+date: '2011-04-22 13:35:52 -0700'
+date_gmt: '2011-04-22 17:35:52 -0700'
+categories:
+- Music
+- Software
+tags:
+- github
+- hypem
+- hypemachine
+- iOS
+- iPhone
+- Three20
+- User Interface
+- xcode
+comments: []
+---
+<h2> Three20 & HypeMachine </h2>
+<p>
+Although I was pleasantly surprised by the application I had initially created for listening to music from <a href="hypem.com">HypeMachine</a>, it was realistically my first iPhone application and was litered with incorrect memory management and perhaps improper design paradigms. I decided with some new knowledge (specifically the memory management and proper use of autorealase) I decided to give one more stab at it. I had also heard great things about <a href="http://three20.info/">Three20</a> and decided to incorporate it into the app.</p>
+<h3> Three20 </h3>
+<blockquote><p>Three20 is a open source Objective-C library used by dozens of well-known brands in the App Store, including Facebook, Posterous, Pulse, Meetup.com, and SCVNGR. Three20 provides powerful view controllers such as the Launcher, the popular Photo Browser, and internet-aware tables.</p></blockquote>
+<p>
+I could write many lengthy posts about my exposure and experience with using Three20 however I'll try to keep it concise and brief the points I wanted to reiterate. Three20 is a <strong>great</strong> library <strong>however</strong> documentation stinks. The only real way to learn functionality of the code is to go through the samples provided which is at least reasonable is undesirable. I am much more of a <em>tutorial learner</em>.</p>
+<p>
+The UI is extends however is beautiful and although easy to implement once understand I found difficult to extend to suit my needs specifically. Regardless the end result I believe is a much nicer looking and cleaner (with respect to the code) iPhone application.</p>
+<p><object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/BotTvcnSgyI?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/BotTvcnSgyI?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed></object></p>
+<h2> iHype </h2>
+<p>
+The biggest new addition to using Three20 is the pull-to-refresh UI. Things I'd like to do:</p>
+<ul>
+<li>Create a new MP3 table cell element that includes the slider and play/pause button within it</li>
+<li>Background playing of the music currently lasts only 10 mins. Deeper look into the AudioController should be done to investigate how to make it properly play music in the background</li>
+<li>Hook up the iPod controls when the screen is locked to the application.</li>
+<li>Caching of the stream</li>
+<li>Allow a user to sign in and to heart/unheart songs</li>
+<li>Searching for songs (should be easy to implement using Three20</li>
+</ul>
+<blockquote><p>Checkout the application on Github:<a href="https://github.com/fzakaria/iHype">https://github.com/fzakaria/iHype</a> and contribute if you'd like to make the iPhone experience better for browsing HypeMachine.</p></blockquote>

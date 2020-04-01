@@ -1,0 +1,115 @@
+---
+layout: post
+status: publish
+published: true
+title: HypeMachine Extension Fixed
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1172
+wordpress_url: http://www.blog.fzakaria.com/?p=1172
+date: '2012-09-07 17:00:23 -0700'
+date_gmt: '2012-09-07 21:00:23 -0700'
+categories:
+- Software
+tags:
+- chrome
+- chrome extension
+- github
+- hypem
+- hypemachine
+comments:
+- id: 225
+  author: Andrew
+  author_email: ATemull@gmail.com
+  author_url: ''
+  date: '2012-09-07 19:08:04 -0700'
+  date_gmt: '2012-09-07 23:08:04 -0700'
+  content: It's not working for me, I can't see the download arrow at all.
+- id: 226
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-09-07 19:12:09 -0700'
+  date_gmt: '2012-09-07 23:12:09 -0700'
+  content: |-
+    <a href="#comment-4632" rel="nofollow">@Andrew:</a> Can you email me a photo of what you are seeing?
+    Did you re-download the latest files from GitHub?
+
+    I just did a fresh install (downloaded fresh from GitHub and installed the extension) and it works.
+    Albeit, you won't see a full arrow (I need someone to help me fix that) but you will see a clickable half arrow thingy next to the play button!
+- id: 227
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-09-10 08:56:34 -0700'
+  date_gmt: '2012-09-10 12:56:34 -0700'
+  content: |-
+    Hi Farid
+
+    Thanks :)
+
+    Is the hypescript fixed too, that's the one I use all the time?
+- id: 228
+  author: mun
+  author_email: munnemun@gmail.com
+  author_url: ''
+  date: '2012-09-10 15:01:09 -0700'
+  date_gmt: '2012-09-10 19:01:09 -0700'
+  content: Thanks Farid! Works great
+- id: 229
+  author: Phil
+  author_email: p.deluna@live.com
+  author_url: ''
+  date: '2012-09-10 19:52:52 -0700'
+  date_gmt: '2012-09-10 23:52:52 -0700'
+  content: Thank you Farid. I haven't updated my ipod in forever. You're doing humanity
+    a service.
+- id: 230
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-09-10 19:53:53 -0700'
+  date_gmt: '2012-09-10 23:53:53 -0700'
+  content: "<a href=\"#comment-4654\" rel=\"nofollow\">@Phil:</a> \nThanks!\nAlso
+    Thanks @Mun.\n\nI'd like to finish the polish on it eventually and get that arrow
+    looking pretty!"
+- id: 231
+  author: Mitchell
+  author_email: ddfuji3@gmail.com
+  author_url: ''
+  date: '2012-10-01 13:48:52 -0700'
+  date_gmt: '2012-10-01 17:48:52 -0700'
+  content: i cant get anything to show. im not seeing the extension at all. i downloaded
+    the latest stuff but so far cant get it to pop up. im not seeing a button either
+    like then older version
+- id: 232
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-10-01 13:57:36 -0700'
+  date_gmt: '2012-10-01 17:57:36 -0700'
+  content: "<a href=\"#comment-4815\" rel=\"nofollow\">@Mitchell:</a> \nHey everyone!\nI
+    know they just changed how the URL is served . There is an extra layer of JSON.\n\nI
+    have a new website to allow easy downloading of the songs and an update to the
+    script! \nPlease check-in soon! :)"
+---
+<h2>Sorry it took so long...</h2>
+<p>
+While I was away on vacation in Turkey (will post photos later), HypeMachine and Chrome decided to both muck up my <a href="https://github.com/fzakaria/HypeMachine-Extension">extension</a>. This is a short blog post to inform everyone that the code found on GitHub is now fixed and working again. <em>Hurray!</em></p>
+<blockquote><p>Please go to  <a href="https://github.com/fzakaria/HypeMachine-Extension">https://github.com/fzakaria/HypeMachine-Extension</a> to get the latest Chrome Extension.</p></blockquote>
+<h2> Call to arms</h2>
+<p>
+What I was <strong>not able to fix</strong> however is the nifty/spiffy look of the downward arrow button. I'd love if someone can please contribute to the project and fix the arrow. I liked the original implementation of it being done in pure CSS as it blended in beautifully with the Hypem page. Please either contact me or submit a patch to the GitHub repository!</p>
+<p><!--more--></p>
+<h2>The fix</h2>
+<p>
+The fix for the problems were rather straightforward and entailed the following:</p>
+<ol>
+<li>Updating the manifest.json for Chrome Extension to version 2. </li>
+<li>Updating the tracks variable (that is read when injected) to the new variable name of <em>window.displayList['tracks']</em></li>
+</ol>

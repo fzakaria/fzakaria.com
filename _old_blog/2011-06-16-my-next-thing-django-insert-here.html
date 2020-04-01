@@ -1,0 +1,37 @@
+---
+layout: post
+status: publish
+published: true
+title: 'My next thing: Django + [Insert Here]'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 575
+wordpress_url: http://www.blog.fzakaria.com/2011/06/my-next-thing-django-insert-here/
+date: '2011-06-16 17:17:47 -0700'
+date_gmt: '2011-06-16 21:17:47 -0700'
+categories:
+- Uncategorized
+tags: []
+comments: []
+---
+<p>I&rsquo;ve decided to give a bit of rest to my relentless onslaught of projects towards <a href="http://hypem.com" target="_blank">Hype Machine</a> (somewhat at the request/annoyance of <a href="http://fascinated.fm/" target="_blank">Anthony Volodkin</a>). As always, I like to pick projects where I have <strike>completely</strike> almost zero experience with and use it as a good chance to learn something new and possibly have fun.</p>
+<p>As much as it pains me to start to admit it, I think web development is slightly growing on me. It&rsquo;s kind of funny however that although I&rsquo;ve been hacking together Javascript for the past little while, I still don&rsquo;t at all completely understand the syntax and how it works. <em>I should probably do something start, and go buy a book and read up on it&hellip; </em>I&rsquo;ve decided then to continue in my exploration of the interwebz through creation of a <a href="https://www.djangoproject.com/" target="_blank">Django</a> project.</p>
+<blockquote><h4><font style="font-weight: normal">Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design.</font></h4>
+</blockquote>
+<p>I have yet to figure out what I would like to do with the Django application I&rsquo;d like to develop. Thoughts that I were tossing around were perhaps working with an additional site/SDK such as Facebook&rsquo;s, Soundcloud&rsquo;s etc&hellip; to try and deliver some neat functionality. If you have any suggestions, throw them my way.</p>
+<p><em>My choice to use Django was pretty easy. I <strong>love </strong>python and <strong>hate</strong> ruby.</em></p>
+<p><!--more--><br />
+<h2>Deploying Django</h2>
+<p>For some <em>crazy</em><strong> </strong>reason, I decided to learn how to deploy Django on my shared hosted server <a href="http://www.bluehost.com/" target="_blank">Bluehost.com</a> first before <font color="#222222">actually learning Django (don&rsquo;t get me started on my annoyance with using a shared server now). </font></p>
+<p>I have my main domain address &lsquo;www.fzakaria.com&rsquo; pointed to my Wordpress blog. I wanted to achieve in having Django installed as a sub directory/url of the domain (rather than a subdomain). i.e. &lsquo;www.fzakaria.com/django/<myapp>&rsquo;</p>
+<p>There was plenty of resources available (shockingly even on the Bluehost FAQ) which helped me setup the server appropriately however I ran into a lot of <strong>GOTCHAS</strong> just because I didn&rsquo;t know what I was doing.</p>
+<ol>
+<li>Python doesn&rsquo;t recursively search through the PYTHONPATH if the directory is created as a module. (i.e. needs an __init__.py file in the directory). This caused a headache and me having to add a lot of additions to the PYTHONPATH before I realized it. </li>
+<li>Each directory under your public_html folder should have it&rsquo;s own .htaccess file. I mistakingly was trying to couple the .htaccess file for the main domain which handled my Wordpress blog and the one that would start the fcgi script to launch Django. </li>
+<li>Deploying to your server should really be the last step of creating a Django application, especially on a shared server. Since it&rsquo;s a shared server I haven&rsquo;t figured out a way to cause Django to <em>refresh</em> the server when I make modifications to any of the MVC python files for my application. </li>
+</ol>

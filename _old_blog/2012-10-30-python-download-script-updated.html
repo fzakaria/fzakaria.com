@@ -1,0 +1,237 @@
+---
+layout: post
+status: publish
+published: true
+title: Python Download Script Updated
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1251
+wordpress_url: http://blog.fzakaria.com/?p=1251
+date: '2012-10-30 15:22:46 -0700'
+date_gmt: '2012-10-30 19:22:46 -0700'
+categories:
+- Software
+tags:
+- github
+- hypem
+- hypemachine
+- python
+comments:
+- id: 275
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-10-31 05:52:42 -0700'
+  date_gmt: '2012-10-31 09:52:42 -0700'
+  content: "Thanks a lot Farid! :)\n\nI get this error when running the script, maybe
+    it has to do with \"/\" characters, I don't know.\n\nAny ideas?\n\n-------\n\tFETCHING
+    SONG....\nTraceback (most recent call last):\n  File \"hypeme.py\", line 153,
+    in \n    main()\n  File \"hypeme.py\", line 150, in main\n    scraper.start()\n
+    \ File \"hypeme.py\", line 74, in start\n    self.download_songs(tracks, cookie)\n
+    \ File \"hypeme.py\", line 118, in download_songs\n    print \"t{} by {}\".format(title,
+    artist)\nUnicodeEncodeError: 'ascii' codec can't encode character u'xe9' in position
+    21: ordinal not in range(128)\n-------"
+- id: 276
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-10-31 05:55:31 -0700'
+  date_gmt: '2012-10-31 09:55:31 -0700'
+  content: 'Edit: After googling, it seems like it''s this: (&eacute;) character that
+    your script doesn''t like?'
+- id: 277
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-10-31 06:07:55 -0700'
+  date_gmt: '2012-10-31 10:07:55 -0700'
+  content: |-
+    If I comment out line 118, the script runs.
+
+    Also, I get this error, so I don't think that "/" in the filename works either:
+    ------
+    generic exception: [Errno 2] No such file or directory: 'One Day / Reckoning Song (Wankelmut Remi....mp3'
+    ------
+- id: 278
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-10-31 06:28:27 -0700'
+  date_gmt: '2012-10-31 10:28:27 -0700'
+  content: |-
+    Sorry Farid, but I also found that the script doesn't respect the chosen download folder.
+
+    It always downloads to the folder where the hypeme.py script is run from.
+
+    Thanks again :)
+    /Martin
+- id: 279
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-10-31 13:30:40 -0700'
+  date_gmt: '2012-10-31 17:30:40 -0700'
+  content: |-
+    Hey Martin!
+
+    I'll look into all these problems now for you! :)
+
+    In the future I'd recommend opening up an 'Issue' on the gituhb page for the script here: https://github.com/fzakaria/HypeScript
+
+    I'll respond back when I make the changes! :)
+- id: 280
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-10-31 14:04:46 -0700'
+  date_gmt: '2012-10-31 18:04:46 -0700'
+  content: |-
+    I just pushed a change.
+
+    I checked that 1) songs with forward slashes are working 2) filenames with accents (unicode) are working!
+- id: 281
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-11-01 05:15:02 -0700'
+  date_gmt: '2012-11-01 09:15:02 -0700'
+  content: |-
+    Hey Farid
+
+    Thanks, it works fine now :)
+
+    One question, I have set the script to run automatically several times a day, and it scrapes my liked tracks.
+
+    I have set the script to download 1 page only, but everytime it runs it has to download all the songs from page 1 and I have a clean-up script to remove the duplicates.
+
+    There's no way to get around that, now that the sql database is gone (the script doesn't know which tracks it has already downloaded)?
+- id: 282
+  author: J&ouml;kull
+  author_email: jokull@solberg.is
+  author_url: http://www.wodboard.com
+  date: '2012-11-05 07:28:24 -0800'
+  date_gmt: '2012-11-05 12:28:24 -0800'
+  content: 'Good stuff. I&rsquo;m using your hypem download link site. I would love
+    to see this script be pep8-ized though : )'
+- id: 283
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-11-05 18:18:56 -0800'
+  date_gmt: '2012-11-05 23:18:56 -0800'
+  content: |-
+    Hey!
+    Um i've never pep8'd a python module before but ti's something I'd love to look into.
+    There are a few to dos for the script as well. Thanks for the feedback!
+    I actually have a huge re-design of the download site which I think everyone will love that I've done with a partner.
+- id: 284
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-11-05 18:19:25 -0800'
+  date_gmt: '2012-11-05 23:19:25 -0800'
+  content: |-
+    Hey Martin,
+
+    I initially removed the database checking to make the script simple for people to learn from.
+
+    I can look into making it a proper module for you.
+- id: 285
+  author: Gregory Allan
+  author_email: gregoryallan@me.com
+  author_url: ''
+  date: '2012-11-07 23:47:42 -0800'
+  date_gmt: '2012-11-08 04:47:42 -0800'
+  content: 'Hey I would really appreciate this too! : )'
+- id: 286
+  author: Martin
+  author_email: aylalogin@gmail.com
+  author_url: ''
+  date: '2012-11-08 05:33:22 -0800'
+  date_gmt: '2012-11-08 10:33:22 -0800'
+  content: |-
+    Hey Farid
+
+    That would be great, I hope you find the time to do it :-)
+
+    Thanks
+    Martin
+- id: 287
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-11-08 13:28:23 -0800'
+  date_gmt: '2012-11-08 18:28:23 -0800'
+  content: |-
+    I'm just a bit pre-occupied on my new site (http://metahypem.com).
+
+    I will try and fix it up.
+    If any of you are python wiz's I'd appreciate the help too! :)
+- id: 288
+  author: Jorge
+  author_email: 7tsioff5@mail.com
+  author_url: http://e9V8z4J1fT
+  date: '2014-07-04 12:33:42 -0700'
+  date_gmt: '2014-07-04 16:33:42 -0700'
+  content: می&zwnj;گه:ba salamdooste aziz bande yeki az mioardne site p30rank.ir hastamin
+    site be hich onvan az fakezilla estefade nemikonad va nakardelotfan az roo bi
+    etelaii in etelaate ghalat ra be mardom nadahidba tashakor
+- id: 289
+  author: Tom
+  author_email: oui02na85@yahoo.com
+  author_url: http://Nr2XWMrW
+  date: '2014-07-04 14:02:46 -0700'
+  date_gmt: '2014-07-04 18:02:46 -0700'
+  content: 是heavenly script 哼哼 然後其實語言學上Chinese是包括很多東西的 北京話 所謂的標準話  廣東話 上海話 閩南語...etc
+    就算是一個以北京話 啊還是你喜歡叫它台灣的中文 隨便 為母語的人 例如我  也沒辦法聽懂上海話 之前在上海機場被海關人員嚇到  也就是說 雖然是Chinese
+    但是有很多分支 有人說是方言 也有人認為只是口音 總之語言學家很多人就有很多種說法  所以聽不懂也可能是有可能的 嗯今天講話好多括號 題外話 你的哲學雞蛋糕信的確有助於我不小心瀏覽到有興趣的文章
+    然後不小心點進來這裡亂滾
+- id: 290
+  author: Egypt
+  author_email: 59hfyl0rtn5@gmail.com
+  author_url: http://1zm8nn2JT
+  date: '2014-07-04 22:01:59 -0700'
+  date_gmt: '2014-07-05 02:01:59 -0700'
+  content: I came, I read this article, I couenerqd.
+- id: 291
+  author: Toni
+  author_email: 28c2ap02g1@yahoo.com
+  author_url: http://Gs5xc9aDYCR
+  date: '2014-07-05 17:45:04 -0700'
+  date_gmt: '2014-07-05 21:45:04 -0700'
+  content: Now I feel stduip. That's cleared it up for me
+- id: 292
+  author: Open
+  author_email: 6zyv9k59@mail.com
+  author_url: http://p0ZRTuak
+  date: '2014-07-05 21:35:11 -0700'
+  date_gmt: '2014-07-06 01:35:11 -0700'
+  content: Way to use the internet to help people solve prlesbmo!
+- id: 293
+  author: Ester
+  author_email: v0oh7bib@mail.com
+  author_url: http://GhS6zRGrinVY
+  date: '2014-07-06 17:12:17 -0700'
+  date_gmt: '2014-07-06 21:12:17 -0700'
+  content: That's the thnniikg of a creative mind
+- id: 294
+  author: Tommi
+  author_email: 7zrzaewbyq@gmail.com
+  author_url: http://XXKnk5CDja
+  date: '2014-07-21 08:54:29 -0700'
+  date_gmt: '2014-07-21 12:54:29 -0700'
+  content: It's always a pleasure to hear from someone with <a href="http://ameyakqpm.com"
+    rel="nofollow">exetrpise.</a>
+---
+<h2> I'm so slow </h2>
+<p>
+I'm been so caught up in my new website project (downloading songs from HypeMachine as well), that I've really left the extension and python script fall behind.<br />
+In an attempt to try and rectify this, I've made the first step by fixing/updating the python script. I've already documented many of the changes that needed to occur in my <a href="http://blog.fzakaria.com/2012/10/hypem-api-changes/">previous</a> blog post but now here is the full source for those who are curious!</p>
+<blockquote><p>You can download the script here: <a href="https://github.com/fzakaria/HypeScript">https://github.com/fzakaria/HypeScript</a></p></blockquote>
+<p>
+I've substantially cleaned up the code and removed the sqlite (database) aspect to it. This has resulted in a nice clean barebone downloader which does the one job it needs to do; <em>download'em songs!</em>. I'm always looking for advice, comments and feedback.</p>

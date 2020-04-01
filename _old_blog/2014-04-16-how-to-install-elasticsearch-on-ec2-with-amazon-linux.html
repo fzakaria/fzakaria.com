@@ -1,0 +1,69 @@
+---
+layout: post
+status: publish
+published: true
+title: How to install Elasticsearch on EC2 with Amazon Linux
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1342
+wordpress_url: http://blog.fzakaria.com/?p=1342
+date: '2014-04-16 04:01:20 -0700'
+date_gmt: '2014-04-16 08:01:20 -0700'
+categories:
+- Software
+tags:
+- elasticsearch
+comments:
+- id: 385
+  author: Camille
+  author_email: r907yqnen0@hotmail.com
+  author_url: http://qddZwIRI
+  date: '2014-07-04 14:42:18 -0700'
+  date_gmt: '2014-07-04 18:42:18 -0700'
+  content: It's worth noting that, if you fololw their advice of rebooting your instances
+    manually, the scheduled event icon doesn't go away immediately. In fact, I've
+    been waiting a few hours now and it's still there on an instance I rebooted manually.
+    AWS EC2 forums are awash with people waiting >24 hours for it the disappear, believing
+    that it won't and AWS will reboot it again. Which of course is annoying a few
+    people who have to manually intervene with their instances when they don't come
+    back up on their own.
+- id: 386
+  author: Iolete
+  author_email: 0b5y3vknp28@gmail.com
+  author_url: http://X4bPCyhPA
+  date: '2014-07-21 08:49:48 -0700'
+  date_gmt: '2014-07-21 12:49:48 -0700'
+  content: No <a href="http://bpjtfs.com" rel="nofollow">quieston</a> this is the
+    place to get this info, thanks y'all.
+---
+<p>This is largely a brain dump since I spent some time trying to get elasticsearch working for EC2.</p>
+<h2>Steps</h2>
+<h3>Creating the Instance</h3>
+<ol>
+<li>Create an IAM role with the needed credentials for the <a href="https://github.com/elasticsearch/elasticsearch-cloud-aws">elasticsearch aws plugin</a>. For now, I didn't mess with setting up the fine grained policy and just opted for 'power-user'. A good follow up would be to share a default policy that we can send as a pull-request to the plugin Github.</li>
+<li>Create a security group which has at least port 22, 80, 2003 and 2004 open. I'm not sure the complete difference between 2003 and 2004.</li>
+<li>Launch the instance!</li>
+</ol>
+<h3>Installing Elasticsearch</h3>
+<ol>
+<li>I opt-ed to install Elasticsearch via the RPM because it includes a chkconfig script to start Elasticsearch as a service. You can download the rpm <a href="http://www.elasticsearch.org/download/">here</a>. Do not turn it on yet!</li>
+<li>In the installed directory (/usr/share/elasticsearch for RPM) run the following command: <em>bin/plugin -install elasticsearch/elasticsearch-cloud-aws/2.1.0</em></li>
+</ol>
+<h3>Configuring Elasticsaerch</h3>
+<p> Within the configuration file (/etc/elasticsearch/elasticsearch.yml) perform the following modifications: </p>
+<ol>
+<li>cluster.name: pick-a-cluster-name</li>
+<li>discovery.type: ec2</li>
+<li>discovery.ec2.host_type: public_ip</li>
+<li>discovery.ec2.groups: <your-security-group></li>
+<li>discovery.ec2.ping_timeout: 5m</li>
+<li>cloud.aws.region: <your-region></li>
+</ol>
+<p> The security group option is important otherwise the plugin will cause Elasticsearch to try and discover all hosts within that region and fail if they do not have elasticsearch. Limiting the search to only instances with the specified security group will fix that! </p>
+<h3> Run! </h3>
+<p> sudo service elasticsearch start </p>

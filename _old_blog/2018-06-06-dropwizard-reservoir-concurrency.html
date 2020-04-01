@@ -1,0 +1,55 @@
+---
+layout: post
+status: publish
+published: true
+title: Dropwizard Reservoir Concurrency
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1493
+wordpress_url: http://blog.fzakaria.com/?p=1493
+date: '2018-06-06 19:42:47 -0700'
+date_gmt: '2018-06-07 02:42:47 -0700'
+categories:
+- Uncategorized
+tags: []
+comments: []
+---
+<h3>Dropwizard Metrics</h3>
+<p>A senior colleague was recently writing some code that required some sliding window book-keeping. Worried about throughput and concurrency, the colleague opted for a home-grown solution following the <a href="https://mechanical-sympathy.blogspot.com/2011/09/single-writer-principle.html">single-writer principle</a>.</p>
+<p>From prior experience with <a href="https://metrics.dropwizard.io/4.0.0/">Dropwizard Metrics</a>, my quick quip was "meh, just use Dropwizard's SlidingTimeWindowReservoir", as I had come to expect the library to provide <em>robust &amp; highly concurrent</em> data structures for metrics.</p>
+<p>He ended up diving into the implementation and sure enough -- found it to be quite ingenious. It took me a little bit of understanding so I thought I would explain it here for my future self.</p>
+<h4>Underlying Datastructure</h4>
+<p>When drumming up ways to implement a SlidingTimeWindowReservoir, various data structures could be used however Dropwizard opt's for a <em>ConcurrentSkipListMap</em>, which is a <em>lock free</em> <em>NavigableMap</em>.</p>
+<p>The map is sorted on <strong>tick</strong> (time), and the interface <em>NavigableMap</em>, allows for easy trimming.</p>
+<pre class="lang:java decode:true " >private void trim() {
+    measurements.headMap(getTick() - window).clear();
+}</pre>
+<h4>Concurrency</h4>
+<p>The key to the <em>ConcurrentSkipListMap</em> is the <em>clock tick</em>. </p>
+<blockquote><p>How do we solve the scenario where multiple writers try to record a value at the same clock granularity?</p></blockquote>
+<p>This is where the implementation is quite neat, by introducing a <em>COLLISION_BUFFER</em>.</p>
+<p><a href="https://github.com/dropwizard/metrics/blob/1fe4585e296ec4c5b6706012b808b6dfbb908af6/metrics-core/src/main/java/com/codahale/metrics/SlidingTimeWindowReservoir.java">Original source</a></p>
+<pre class="lang:java decode:true" title="Relevant portion from SlidingTimeWindowReservoir">    // allow for this many duplicate ticks before overwriting measurements
+    private static final int COLLISION_BUFFER = 256;
+   
+    private long getTick() {
+        for (; ; ) {
+            final long oldTick = lastTick.get();
+            final long tick = clock.getTick() * COLLISION_BUFFER;
+            // ensure the tick is strictly incrementing even if there are duplicate ticks
+            final long newTick = tick - oldTick > 0 ? tick : oldTick + 1;
+            if (lastTick.compareAndSet(oldTick, newTick)) {
+                return newTick;
+            }
+        }
+    }</pre>
+<p>In the unlikely case where multiple writers are trying to add to the Map in the same clock granularity (i.e. <code>clock.getTick()</code> returns the same exact value)  the use of a <a href="https://en.wikipedia.org/wiki/Compare-and-swap">CAS</a> allows the code to keep looping incrementing the tick value by 1 within a <em>COLLISION_BUFFER</em>.</p>
+<p>Consider the simple case where <code>clock.getTick()</code> returns <strong>2</strong> & oldTick returns <strong>256</strong> (1 * 256).</p>
+<p>The first writer does: <code>tick - oldTick</code> and assigns <em>newTick</em> as <em>tick</em>. The <code>compareAndSet</code> is successful and <em>lastTick</em> is set as <strong>512</strong>.</p>
+<p>The second writer fails the CAS and loops again but now lastTick is <strong>512</strong>.<br />
+<code>newTick</code> will now be <strong>513</strong> and be set.</p>

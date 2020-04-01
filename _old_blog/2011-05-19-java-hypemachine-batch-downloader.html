@@ -1,0 +1,422 @@
+---
+layout: post
+status: publish
+published: true
+title: Java HypeMachine Batch Downloader
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 496
+wordpress_url: http://www.blog.fzakaria.com/?p=496
+date: '2011-05-19 22:26:05 -0700'
+date_gmt: '2011-05-20 02:26:05 -0700'
+categories:
+- Music
+- Software
+tags:
+- hypem
+- hypemachine
+- Java
+- Rant
+- User Interface
+comments:
+- id: 83
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-05-19 22:50:10 -0700'
+  date_gmt: '2011-05-20 02:50:10 -0700'
+  content: |-
+    I didn't really include a manual so here is a quick one:
+    1 - You can change the url in the top right. Just change 'popular' to things such as 'latest' or even any username!
+    2- The button to the top right lets you chose the save location. By default it's where the application has launched from.
+    3- More scrapes more songs!
+    4- Refresh, restarts the page number 1 and refreshes.
+    5- Download, downloads. Simple!
+- id: 84
+  author: Drew
+  author_email: asdads@asdads.com
+  author_url: ''
+  date: '2011-05-25 06:54:42 -0700'
+  date_gmt: '2011-05-25 10:54:42 -0700'
+  content: |-
+    Hi,
+
+    Fantastic work on the downloader - it all works just fine - apart from one thing...
+
+    Does the green song title mean the song(s) have downloaded? The ones that remain black in the list have not downloaded, and don't seem to download at all..
+
+    Should I just leave it on over night and see what happens? Or is this a bug.. I'm downloading 350 songs from my Hypem.
+
+    Cheers!
+- id: 85
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-05-25 10:35:57 -0700'
+  date_gmt: '2011-05-25 14:35:57 -0700'
+  content: |-
+    <a href="#comment-1762" rel="nofollow">@Drew:</a>  Hey Drew,
+
+    A green song title means the song(s) have been ownloaded and the ones that remain black mean they haven't.
+
+    I wrote this application not with the use case in mind that someone would be downloading in bulk 350 songs so that it might actually crash if you do because I think I made each download it's own thread asynchronously.
+
+    If that's the use case, I might put it on one thread now instead.... interesting...
+- id: 86
+  author: Michael Zick Doherty
+  author_email: mzdoherty@gmail.com
+  author_url: http://neufuture.com
+  date: '2011-06-14 07:26:41 -0700'
+  date_gmt: '2011-06-14 11:26:41 -0700'
+  content: "Hi Farid, \nI agree with Drew. I'm trying to download quite a few song
+    and though it's not crashing the program, it only was able to get through about
+    half and it gave up on the others. I am able to go back and select the ones that
+    weren't download it an do it again, but like you said it would be nice to have
+    it queued in some way. I definitely agree some sort of progress indicator would
+    be nice! I think the biggest use case would be to do a batch download of your
+    entire favorites library. Maybe there's a button that can just queue up all the
+    songs from favorite list instead of having to press \"more\" a bunch of times.\n\nMost
+    needed bug fixes:\n1. Fix apostrophes to display without \"\"\n2. The ID3 tag
+    should include artist. Right now it only has song name. Or even the file itself
+    could have artist name.\n\nIt'd love to check out the code if you put it on GitHub.
+    My user name is neufuture there. Awesome work, btw."
+- id: 87
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-06-14 09:36:26 -0700'
+  date_gmt: '2011-06-14 13:36:26 -0700'
+  content: "<a href=\"#comment-1946\" rel=\"nofollow\">@Michael Zick Doherty:</a>
+    \n\nYea it was an error in how I programmed it.. for some reason I put each song
+    it's own thread rather than have all the songs download together just on a seperate
+    thread. I'll work on it this week (haven't looked at it recently) and put the
+    new code as well on GitHub.\n\n\nI have a batch python script for doing more of
+    the 'download all' type of songs if you want.\nI envisioned this for more selectively
+    choosing songs."
+- id: 88
+  author: Kevin C
+  author_email: chosungwon@gmail.com
+  author_url: ''
+  date: '2011-06-20 17:12:29 -0700'
+  date_gmt: '2011-06-20 21:12:29 -0700'
+  content: "Hi Farid,\n\nfirst off, great work on this hypem.com program. i deeply
+    admire your work :) \n\nive downloaded the java downloader but i seem to be having
+    an issue of downloading only the links to the song, and not the actual mp3 file
+    itself. i saw there was a problem immediately b/c it took only 1 second to \"download\"
+    each song, and i realized that each file was only \"526 bytes.\" do you have a
+    solution to this problem? it was the same issue with the chrome extension with
+    only the links to the song being downloaded. \n\ni'd greatly appreciate any feedback.\n\nkevin"
+- id: 89
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-06-20 17:19:22 -0700'
+  date_gmt: '2011-06-20 21:19:22 -0700'
+  content: |-
+    <a href="#comment-1995" rel="nofollow">@Kevin C:</a> Hey Kevin,
+
+    I just noticed that Anthony (Hypemachine's developer) has recently a pushed a change to the site on the way they deliver their music content. As such my Chrome extension was broken. I filled myself a bug report on my GitHub (https://github.com/fzakaria/HypeMachine-Extension/issues/4).
+
+    I plan on fixing the application and the extension this week.
+- id: 90
+  author: Double request for Songs + New Layout &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/06/double-request-for-songs-new-layout/
+  date: '2011-06-21 11:36:18 -0700'
+  date_gmt: '2011-06-21 15:36:18 -0700'
+  content: "[...] This is annoying once again because it means not only my extension
+    is broken but all my scripts + Java Batch Loader as well. Let&#8217;s take a look
+    at what they&#8217;ve changed.  Prior the requests to the song [...]"
+- id: 91
+  author: red
+  author_email: red@red.org
+  author_url: ''
+  date: '2011-06-24 11:54:54 -0700'
+  date_gmt: '2011-06-24 15:54:54 -0700'
+  content: You are the man!  Thanks!
+- id: 92
+  author: ryan
+  author_email: anon@anon.com
+  author_url: ''
+  date: '2011-07-14 15:01:02 -0700'
+  date_gmt: '2011-07-14 19:01:02 -0700'
+  content: WOW! This is awesome! Thank you so much, my prayers have been answered.
+- id: 93
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-07-19 10:29:47 -0700'
+  date_gmt: '2011-07-19 14:29:47 -0700'
+  content: Thanks for the support!
+- id: 94
+  author: Scott
+  author_email: sbaldwin17@gmail.com
+  author_url: ''
+  date: '2011-08-15 11:31:48 -0700'
+  date_gmt: '2011-08-15 15:31:48 -0700'
+  content: Thank you. Hype machine has connected me to more music other than the crap
+    on the radio. Taking the new stuff with me a listening to it on long bike ride
+    has been awesome. Your work is appreciated.
+- id: 95
+  author: Eric
+  author_email: su.eric.09@gmail.com
+  author_url: ''
+  date: '2011-08-27 04:01:05 -0700'
+  date_gmt: '2011-08-27 08:01:05 -0700'
+  content: |-
+    Farid,
+
+    Awesome work! There are several songs that would immediately "cancel" itself after i click download. There is also another set of songs that will download and finish right after with 1kb.  I've tried exiting the program and restarting several times and it doesn't seem to fix it. It does the job for most of my other songs so I'm still really grateful :)  Looking forward to your future work :)
+- id: 96
+  author: Eric
+  author_email: su.eric.09@gmail.com
+  author_url: ''
+  date: '2011-08-27 04:51:14 -0700'
+  date_gmt: '2011-08-27 08:51:14 -0700'
+  content: 'Update: The ones that "cancel" itself right after contain special characters
+    such as ?, /, and ''. I hope this helps.'
+- id: 97
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-08-29 13:47:52 -0700'
+  date_gmt: '2011-08-29 17:47:52 -0700'
+  content: "<a href=\"#comment-2550\" rel=\"nofollow\">@Eric:</a> \nYea that would
+    make sense Eric.\nI kind of wrote the app very quickly (under an hour) so  i didn't
+    really validate it 100%.\nErrors such as the one you're describing make sense
+    since I wasn't really checking for special characters like that...\n\nIt's on
+    my list of things TODO to go back and revise the software, but in the meantime
+    you can use the chrome extension of my python script should also work well :)\n\nThanks
+    for the nice words."
+- id: 98
+  author: Eric
+  author_email: su.eric.09@gmail.com
+  author_url: ''
+  date: '2011-09-01 16:49:24 -0700'
+  date_gmt: '2011-09-01 20:49:24 -0700'
+  content: |-
+    @Farid:
+
+    This is really well written for something under an hour. Will look into the chrome extension and looking forward to your future work! :D
+- id: 99
+  author: ramsestom
+  author_email: ramsestom@yopmail.com
+  author_url: ''
+  date: '2012-04-06 09:31:11 -0700'
+  date_gmt: '2012-04-06 13:31:11 -0700'
+  content: Doesn't seems to work anymore. Did you plan to patch it?
+- id: 100
+  author: Phil
+  author_email: p.deluna@live.com
+  author_url: ''
+  date: '2012-04-07 12:54:29 -0700'
+  date_gmt: '2012-04-07 16:54:29 -0700'
+  content: "Hey Farid!\n\nI know its been a while since you've worked on this and
+    I'm sure you've moved on to bigger and brighter things. But this batch downloader
+    has been the single best tool I have for getting music than torrents, direct downloads,
+    or even buying cds! You've made an amazing piece of software here but it has recently
+    stopped working. I understand if you're too busy to look at this right now but
+    myself and many other music lovers like me rely on your batch downloader to cure
+    our blues! Hopefully you can fix it soon. \n\nThanks for being you!"
+- id: 101
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-04-09 09:41:49 -0700'
+  date_gmt: '2012-04-09 13:41:49 -0700'
+  content: Will look into it this week!
+- id: 102
+  author: Phil
+  author_email: p.deluna@live.com
+  author_url: ''
+  date: '2012-04-09 12:26:47 -0700'
+  date_gmt: '2012-04-09 16:26:47 -0700'
+  content: "You're the best Farid! \nCanadian pride :)"
+- id: 103
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-04-16 10:42:23 -0700'
+  date_gmt: '2012-04-16 14:42:23 -0700'
+  content: |-
+    Hey everyone,
+
+    I've updated the HypeScript and HypeExtension. I'll fix the Java one later since I need to relearn how to learn set it up! :)
+- id: 104
+  author: sophia
+  author_email: sophia@yahoo.fr
+  author_url: ''
+  date: '2012-04-19 04:53:15 -0700'
+  date_gmt: '2012-04-19 08:53:15 -0700'
+  content: Need the java downloader to be fixed!!!!!!!!!!!!
+- id: 105
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-04-19 14:31:10 -0700'
+  date_gmt: '2012-04-19 18:31:10 -0700'
+  content: "<a href=\"#comment-3934\" rel=\"nofollow\">@sophia:</a> \nI'm on it lol.\nThe
+    script works at least.\nI just have to reset up the environment...\n\nJust been
+    busy because I've accepted a new job in Seattle and currently planning my move.\nI
+    haven't forgotten you ;)"
+- id: 106
+  author: Rob
+  author_email: cash68@gmail.com
+  author_url: ''
+  date: '2012-06-02 14:14:09 -0700'
+  date_gmt: '2012-06-02 18:14:09 -0700'
+  content: Definitely still need this.  It's utterly amazing.  I'd be willing to paypal
+    donations for it!
+- id: 107
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-06-02 14:24:24 -0700'
+  date_gmt: '2012-06-02 18:24:24 -0700'
+  content: |-
+    Hey Rob,
+
+    I just moved to Seattle (starting a new job at Amazon) and still waiting for my furniture (including desktop to come!).
+
+    As soon as they arrive I promise to rework this.
+    In the mean time you can check out the script or extension :)
+
+    Thanks for the kind words! :)
+- id: 108
+  author: jonathan
+  author_email: jonathantzeng88@gmail.com
+  author_url: ''
+  date: '2012-06-04 16:23:31 -0700'
+  date_gmt: '2012-06-04 20:23:31 -0700'
+  content: hypescript no longer working again :(
+- id: 109
+  author: luc
+  author_email: luc@yopmail.com
+  author_url: ''
+  date: '2012-06-26 18:46:01 -0700'
+  date_gmt: '2012-06-26 22:46:01 -0700'
+  content: So is it working now? can't wait anymore!!!!! please fix it ;)
+- id: 110
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-06-28 23:37:24 -0700'
+  date_gmt: '2012-06-29 03:37:24 -0700'
+  content: |-
+    I just fixed the hypescript and now working on the java one.
+    Please use the python script for now! :)
+- id: 111
+  author: tom
+  author_email: tom@yopmail.com
+  author_url: ''
+  date: '2012-09-01 14:10:58 -0700'
+  date_gmt: '2012-09-01 18:10:58 -0700'
+  content: So. When is the new release of your java script planned?
+- id: 112
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-09-02 17:23:17 -0700'
+  date_gmt: '2012-09-02 21:23:17 -0700'
+  content: Just got back from Turkey (on vacation). Will update very shortly! Please
+    check in the next few days!
+- id: 113
+  author: Restap
+  author_email: restap@live.nl
+  author_url: ''
+  date: '2012-11-20 16:45:50 -0800'
+  date_gmt: '2012-11-20 21:45:50 -0800'
+  content: "Hey Farid,\n\nhaven't used any of your software yet.\nBut I'm using Uberhype
+    for on my Android phone constantly.\nNaturally hand in hand with the frustration
+    that comes with streaming music (loading times, high data costs, occasional bad
+    connection).\nI'm studying Information, Multimedia and Management at the VU University,
+    Amsterdam and chose Introduction to Programming Java as a course this year.\nI'd
+    like to see if I can make an application, similar to Uberhype, but with some local
+    caching magic.\nI think your Java code (once it's updated to the recent changes
+    on HypeM) would prove to be a really helpful example :)\nCould you please post
+    it?\nI'm really looking forward to seeing it. \nI already did some research on
+    the possibility of downloading and playing an mp3 file simultaneously using Java,
+    without downloading the data twice thus enabling streaming whilst saving time/data
+    costs.\nI found these answers at Stackoverflow.\nhttp://stackoverflow.com/questions/9289854/write-mp3-file-to-disk-while-playing-in-java\nhttp://stackoverflow.com/questions/9311142/how-to-pre-buffer-an-mp3-file-completely-in-java\n\nApparently
+    it works perfectly."
+- id: 114
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-11-20 17:24:29 -0800'
+  date_gmt: '2012-11-20 22:24:29 -0800'
+  content: |-
+    Hey!
+
+    All the HypeMachine projects can be found on my GitHub. You can find the java code specifically <a href="https://github.com/fzakaria/HypeMachine-Java" rel="nofollow">here</a>.
+    Have you checked out my recent pet project with my friend Alex? We've built a site that lets you easily download and stream the music from Hypemachine.
+    Check it out at <a href="http://metahypem.com" rel="nofollow">http://metahypem.com</a>.
+
+    The site is built responsive so it should look decent on a mobile browser and let you download and play the songs on your android phone!
+- id: 115
+  author: Restap
+  author_email: restap@live.nl
+  author_url: ''
+  date: '2012-11-21 03:00:21 -0800'
+  date_gmt: '2012-11-21 08:00:21 -0800'
+  content: |-
+    Thanks for the reply!
+
+    Is your Java code up to date?
+    In your article "Hypem API Changes" (Published:October 2, 2012) you fix the workaround.
+    Had this been implemented in your Java project?
+    According to Github the project was last authored 3 months ago, which leads me to believe it might need a little update.
+
+    I checked out http://metahypem.com. It's great for constant desktop (in fact I'm using it right now) use and possibly sporadic mobile use, but I don't see it replacing a dedicated music player (that listens to (bluetooth) media key events, has a shuffle function, auto start next song, downloads and plays simultaneously etc.)
+
+    I'd like to start on that dedicated music player :)
+- id: 116
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-11-21 12:31:49 -0800'
+  date_gmt: '2012-11-21 17:31:49 -0800'
+  content: Yea it needs to be updated but should't be difficult. You can use the code
+    from the python script to learn how! :)
+---
+<blockquote>UPDATE - May 24 2011: I had fixed a few issues with the batch downloader such as having it download to the proper directory and made it a bit more easier to use.</p></blockquote>
+<h2> It's Been A While </h2>
+<p>
+For starters, I've officially graduated from the University of Waterloo's <a href="http://www.softeng.uwaterloo.ca/">Software Engineering program</a>. <em>Yay!</em> However what has seem an eternity ago (~2 months) I haven't touched my computer in any way resembling programming. Just recently, the <del datetime="2011-05-20T01:55:01+00:00">evil geniuses</del> wonderful guys at <a href="http://hypem.com/">HypeMachine</a> decided to <strong>break</strong> my sweet <a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">Chrome Extension</a>. Before tackling the task of trying to now fix it, I thought I'd start off small and re-acquaint myself with some easy programming. For some reason, I chose Java....</p>
+<h2> I'm not sure why I chose Java </h2>
+<p>
+In all honesty, I haven't programmed in Java since first/second year at UW. However, I figured what the hell and tried to write a GUI for my Python Batch Downloader Script which I get e-mails regarding constantly. I always seem to get <strong>stuck</strong> on the design aspect of any programming which is frustrating. Whereas the means to download and scrape the information is quick and easy, I am finding the ability to make a flawless User Interface and perhaps have it run super smooth with ThreadPools a bit more aggravating.<br />
+Anyways, I think I've toyed enough with it to release a 0.1<em>Alpha</em>. Here it is if people want to play around with it and let me know how I've mucked up.</p>
+<p align="MIDDLE">
+<strong>CLICK BELOW!</strong><br />
+<a href="http://fzakaria.com/Downloadable/Development/hypem-java/launch.jnlp"><img src="http://fzakaria.com/Downloadable/Development/hypem-java/icon-retina.png"  width="50" height="50"/> </a></p>
+<p align="MIDDLE">
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=farid%2em%2ezakaria%40gmail%2ecom&lc=CA&currency_code=CAD&bn=PP%2dDonationsBF%3abtn_donate_LG%2egif%3aNonHosted"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" /></a></p>
+<h3> Things I already Know I'd Like To Fix </h3>
+<ol>
+<li><del datetime="2011-05-24T15:29:47+00:00">When a song is downloaded, the item in the list doesn't cause an invalidate (so that it shows as green</del>)</li>
+<li>Persistance, so that when you relaunch the application it will show songs previously downloaded</li>
+<li>A nicer way to navigate to Popular, latest, users etc.. (perhaps even with a login?)</li>
+<li>When multiple downloads are started, have a new window appear with a bunch of progress bars</li>
+<li>The ability to play/stream the music directly through the application so you can test which songs you'd like to download</li>
+<li> The ability to <3 songs </li>
+</ol>
+<p>Let me know if anyone would like it on GitHub as well.</p>
+<blockquote><p>Anyone up for the challenge?</p></blockquote>
+<h3> Forgotten README </h3>
+<p>I didn&rsquo;t really include a manual so here is a quick one.<br />
+<code><br />
+~Welcome to my slapped together HypeMachine Batch Downloader Application~</p>
+<p>1. Choosing the location to download from:<br />
+You can change the URL in the top right text field. Simply change &lsquo;popular&rsquo; to things such as &lsquo;latest&rsquo; or even any username!</p>
+<p>2. Choosing where to save the MP3 files.<br />
+The button to the top right lets you chose the save location. By default it&rsquo;s where the application has launched from.</p>
+<p>3. The 'More' button scrapes additional songs! (Thinking of just having it notice when you scroll to the end instead)</p>
+<p>4. The 'Refresh' button restarts the page number 1 and refreshes the song listing.</p>
+<p>5. The 'Download' button downloads. Simple!<br />
+</code></p>

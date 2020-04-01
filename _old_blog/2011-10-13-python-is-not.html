@@ -1,0 +1,51 @@
+---
+layout: post
+status: publish
+published: true
+title: Python is not ==
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 909
+wordpress_url: http://www.blog.fzakaria.com/?p=909
+date: '2011-10-13 10:32:58 -0700'
+date_gmt: '2011-10-13 14:32:58 -0700'
+categories:
+- Software
+tags:
+- python
+comments: []
+---
+<h2> Tricky semantics </h2>
+<p>
+Getting back into Python for work, I've been writing a <a href="https://www.djangoproject.com/">Django</a> application. When you write Python, I tend to always want to try and write it in the most '<em>Pythonic</em>' way. To me, the word represents at it's basic form writing Python code in a way that reads itself easily; nearly as English. <em>I'm sure I'm completely wrong and that it only represents awesome crazy list comprehensions...</em></p>
+<blockquote><p>A common neologism in the Python community is pythonic, which can have a wide range of meanings related to program style. To say that code is pythonic is to say that it uses Python idioms well, that it is natural or shows fluency in the language.</p></blockquote>
+<p>
+With the prerequisite of a perhaps faulty state of mind, I tend to use the keywords <strong>not </strong> and <strong>is</strong> abundantly in my boolean expressions. The <strong>is</strong> keyword however stumped me when used on Strings. The following two if statements are not identical. In fact, using the <strong>is</strong> keyword will likely fail the boolean expression.</p>
+<pre class="brush:python">
+#Test1
+if a is "test":
+    print "Is Found"
+#Test2
+if a == "test":
+    print "Equality Found"
+</pre>
+<p>Why was this tricky however? Once I noticed the condition failing, I did my favourite thing to do when debugging Python, I launched the console!<br />
+<code><br />
+C:Developmentdrone>python<br />
+Python 2.7.2 (default, Jun 12 2011, 15:08:59) [MSC v.1500 32 bit (Intel)] on win32<br />
+Type "help", "copyright", "credits" or "license" for more information.<br />
+>>> a = "test"<br />
+>>> if a is "test":<br />
+...     print "Is matched"<br />
+...<br />
+Is matched<br />
+>>><br />
+</code><br />
+Didn't take too long Googling to get to the bottom of this however, and as always Stackoverflow provided a nice <a href="http://stackoverflow.com/questions/2987958/how-is-the-is-keyword-implemented-in-python">answer</a>.</p>
+<blockquote><p>The Python is keyword tests object identity. You should NOT use it to test for string equality. It may seem to work frequently because Python implementations, like those of many very high level languages, performs "interning" of strings. That is to say that string literals and values are internally kept in a hashed list and those which are identical are rendered as references to the same object. (This is possible because Python strings are immutable).</p></blockquote>
+<p>I put the header as <em>tricky</em>, however I guess at the end of the day it's my fault for not knowing the language better.</p>

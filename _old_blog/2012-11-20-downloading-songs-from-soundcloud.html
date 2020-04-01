@@ -1,0 +1,79 @@
+---
+layout: post
+status: publish
+published: true
+title: Downloading Songs from Soundcloud
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1287
+wordpress_url: http://blog.fzakaria.com/?p=1287
+date: '2012-11-20 16:01:14 -0800'
+date_gmt: '2012-11-20 21:01:14 -0800'
+categories:
+- Software
+tags:
+- Node.JS
+- Soundcloud
+comments:
+- id: 306
+  author: jon
+  author_email: jonathantzeng88@gmail.com
+  author_url: ''
+  date: '2012-11-29 21:07:37 -0800'
+  date_gmt: '2012-11-30 02:07:37 -0800'
+  content: the firefox extension downloadhelper allows downloading of ANY streaming
+    content. It's probably far off for the answer you're looking for but it may be
+    a more flexible batch download approach if you can figure out how that works.
+- id: 307
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-12-04 19:35:16 -0800'
+  date_gmt: '2012-12-05 00:35:16 -0800'
+  content: "Yes I'm looking for something browser agnostic. \n\nI'm excited for the
+    download API to become available to chrome!"
+- id: 308
+  author: soundcloud plays
+  author_email: alanagaither@gmx.net
+  author_url: http://www.slideshare.net/howtogetmoreplaysonsoundcloud/how-to-get-more-plays-on-soundcloud-how-to-get-plays-on-soundcloud
+  date: '2014-05-06 03:56:49 -0700'
+  date_gmt: '2014-05-06 07:56:49 -0700'
+  content: |-
+    I'm not sure where you're getting your info,
+    but good topic. I needs to spend some time learning much more or understanding more.
+    Thanks for great info I was looking for this information for my mission.
+- id: 309
+  author: John
+  author_email: vpjz734yioi@yahoo.com
+  author_url: http://GsjW7ktXE
+  date: '2014-07-05 17:47:08 -0700'
+  date_gmt: '2014-07-05 21:47:08 -0700'
+  content: June 18, 2012  6:45 am                                by                                                                                                                          excellent
+    isesus altogether, you simply won a emblem new reader. What could you suggest
+    in regards to your put up that you just made some days in the past?Any certain?
+---
+<h2> The next task </h2>
+<p>
+I've been fiddling around with <a href="http://hypem.com">HypeMachine</a> for quite a while now even though my personal music taste has taken me elsewhere in search of music. Lately, I've been enjoying subscribing to individual artists on <a href="http://soundcloud.com">Soundcloud</a> as a way of finding more niche electronica.</p>
+<p>
+My experience so far with Soundcloud has been great. They even let you download <em>some</em> songs based on settings set by the artist! I however want the music while I'm on the go; especially on my jogs. I've now moved onto the task of seeing how I can liberate much of my beloved music from Soundcloud similarly to what I've accomplished with HypeMachine.</p>
+<h2> Investigation </h2>
+<p>
+Once again most of the information gleamed was from saving the raw HTML of a request to SoundCloud outside the browser (i.e. via python or perl). They look to be doing something similar to HypeMachine in removing certain HTML elements because I cannot find them when I view source through my browser.</p>
+<pre class="brush:javascript">
+<script type="text/javascript">
+window.SC.bufferTracks.push({"id":64568412,"uid":"WtquUHiysWgk","user":{"username":"diplo","permalink":"diplo"},"uri":"/diplo/got-stoned-and-mixed-really","duration":2162227,"token":"H7TPl","name":"got-stoned-and-mixed-really","title":"got stoned and mixed really old records for half an hour","commentable":true,"revealComments":true,"commentUri":"/diplo/got-stoned-and-mixed-really/comments/","streamUrl":"http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl","waveformUrl":"http://w1.sndcdn.com/WtquUHiysWgk_m.png","propertiesUri":"/diplo/got-stoned-and-mixed-really/properties/","statusUri":"/transcodings/WtquUHiysWgk","replacingUid":null,"preprocessingReady":true,"renderingFailed":false,"isPublic":true,"geo":[],"commentableByUser":true,"favorite":false,"followingTrackOwner":false});
+</script>
+</pre>
+<p>We can see one of the track elements is the streamURL:<br />
+<code><br />
+"streamUrl":"http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl"<br />
+</code></p>
+<h2> Node.JS Style </h2>
+<p>
+Grabbing the bufferTracks variable can easily be accomplished in Node.JS with the help of the <a href="https://github.com/tmpvar/jsdom">jsdom</a>. I'd simply need to build the DOM according to the HTML file and access the JavaScript variable! I'm curious if there is even an easier way.... Drop a comment if you know of one!</p>

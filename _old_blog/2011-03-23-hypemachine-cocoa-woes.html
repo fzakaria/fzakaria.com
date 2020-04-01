@@ -1,0 +1,139 @@
+---
+layout: post
+status: publish
+published: true
+title: HypeMachine Cocoa Woes
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 426
+wordpress_url: http://www.blog.fzakaria.com/?p=426
+date: '2011-03-23 14:07:27 -0700'
+date_gmt: '2011-03-23 18:07:27 -0700'
+categories:
+- Music
+- Software
+tags:
+- cocoa
+- hypemachine
+- objective-c
+- User Interface
+comments:
+- id: 57
+  author: Thanks and Up Next &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/03/thanks-and-up-next/
+  date: '2011-03-23 14:30:39 -0700'
+  date_gmt: '2011-03-23 18:30:39 -0700'
+  content: "[...] Small Thoughts A blog by Farid Zakaria; somewhat software oriented
+    \  Skip to content AboutProjectsCompendiumCalendarSitemap   &#8220;Successful
+    interactions with objects that you use should get simpler, not more complex--you
+    don&rsquo;t need to be watching the car&rsquo;s engine running in order to drive
+    it, the experience should be intuitive&#8221;by&nbsp;Steve Jobs     &laquo; HypeMachine
+    Cocoa Woes [...]"
+- id: 58
+  author: Anthony Volodkin
+  author_email: anthony@hypem.com
+  author_url: http://hypem.com
+  date: '2011-03-29 14:18:35 -0700'
+  date_gmt: '2011-03-29 18:18:35 -0700'
+  content: Oh, I know. :)
+- id: 59
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-03-29 14:48:56 -0700'
+  date_gmt: '2011-03-29 18:48:56 -0700'
+  content: "<a href=\"#comment-1203\" rel=\"nofollow\">@Anthony Volodkin:</a> \n\nAt
+    least I'm not going crazy and you guys are doing something lol.\n\nWhat's odd
+    is that the Python script still works... so worst case scenario is I can run the
+    script in the application but I'm confused why urllib2 works but not NSURLRequest....\n\nAny
+    tips ? ;)"
+- id: 60
+  author: Michael Soares
+  author_email: mike.soares@gmail.com
+  author_url: http://www.mikesoares.com
+  date: '2011-03-29 15:13:42 -0700'
+  date_gmt: '2011-03-29 19:13:42 -0700'
+  content: Anthony be trollin'.
+- id: 61
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-03-30 12:31:17 -0700'
+  date_gmt: '2011-03-30 16:31:17 -0700'
+  content: "<a href=\"#comment-1203\" rel=\"nofollow\">@Anthony Volodkin:</a> \nSolved
+    ;)"
+- id: 62
+  author: HypeMachine Cocoa Win &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/03/hypemachine-cocoa-win/
+  date: '2011-03-30 13:09:37 -0700'
+  date_gmt: '2011-03-30 17:09:37 -0700'
+  content: "[...] had made an earlier post regarding how specifically I have been
+    having trouble porting over my python hypemachine script [...]"
+---
+<h2> Cocoa </h2>
+<p>
+So I've been working at trying to refit the <a href="http://www.blog.fzakaria.com/2011/02/hypemachine-batch-downloader-2-0/">Python batch downloader</a> as a GUI application; specifically a mac application written in Cocoa. However, porting the existing code has been much more troublesome/difficult than I expected.</p>
+<h3> Background </h3>
+<p>
+Each song link in HypeMachine is built using 2 tags: the song's id and a key. With these two tags, the final url to stream the song is: </p>
+<blockquote><p>'http://hypem.com/serve/play/' + id + '/' + key + '.mp3'</p></blockquote>
+<p>As far as I can tell from what I've determined (my javascript is pretty limited), is that the key's are generated on the server side based on a timestamp. So if you look at my python code, I perform the following steps:</p>
+<pre class="brush:python">
+url='http://hypem.com/popular/1?ax=1&ts='+str(time.time())
+request = urllib2.Request(url)
+response = urllib2.urlopen(request)
+html = response.read()
+</pre>
+<p>Running the above script multiple times <strong>appropriately</strong> generates different <em>keys</em> every time.</p>
+<p>The key and ID are parsed from the HTML, where they occur in the following format:</p>
+<pre class="brush:xml">
+	trackList[document.location.href].push({	
+		type:'normal',
+		id:'1a08r',
+		postid:'1433616',
+		posturl:'http://jackinforlinks.com/wiz-khalifa-rooftops-ft-curreny/',
+		time:'261',
+		ts: '1300754012',
+		fav:'0',
+		key: '30b2310a6f3fb28564d443ffb3804ffc',
+		imeem_id:'',
+		artist:'Wiz Khalifa',
+		song:'Rooftops Ft. Currensy (Produced By E. ...',
+		amazon:'',
+		itunes:'',
+		emusic:'',
+		exact_track_avail:'0'
+    });
+</pre></p>
+<h3> The problem </h3>
+<p>
+I've been running into multiple problems porting this over to Objective-C cocoa. However the most damaging is the fact that I cannot seem to generate the appropriate HTML file. The HTML file I keep generating has <strong>invalid</strong> keys.</p>
+<blockquote><p> I am retrieving the HTML and parsing it similarly as I did in Python however the server is returning me invalid keys.</p></blockquote>
+<p>Not only are the keys invalid, however re-running my application, retrieves the same keys over and over. This helps confirm that they are feeding me garbage keys as they are not being properly dynamically generated. I've attempted to retrieve the keys in the following manner (both of which do not work):</p>
+<pre class="brush:cpp">
+NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
+NSString * completeUrl = [url stringByAppendingFormat:@"/%d?ax=1&ts=%1.2f", pageNumber, time];
+NSURL * hypeURL = [NSURL URLWithString:completeUrl];
+
+//ATTEMPT 1
+NSString * hypeHTML = [NSString stringWithContentsOfURL:hypeURL encoding:NSASCIIStringEncoding error:nil];
+
+//ATEMPT 2
+NSString* userAgent = @"Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8) Gecko/20051111 Firefox/1.5 BAVM/1.0.0";
+NSMutableURLRequest* request = [[[NSMutableURLRequest alloc] initWithURL:hypeURL] autorelease];
+[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
+NSURLResponse* response = nil;
+NSError* error = nil;
+NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
+NSString *hypeHTML = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+</pre></p>
+<h3> Request </h3>
+<p>
+If anyone has some ideas on how they can help me fix my problem please let me know via a comment, e-mail or my question at <a href="http://stackoverflow.com/questions/5371709/making-http-requests-in-cocoa-mimic-browser">Stackoverflow</a>. I'm also looking for help on setting up the GUI / Core data model for the application once I get this issue sorted out if you'd like to help in that respect as well.</p>

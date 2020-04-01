@@ -1,0 +1,288 @@
+---
+layout: post
+status: publish
+published: true
+title: Hypem API Changes
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1215
+wordpress_url: http://www.blog.fzakaria.com/?p=1215
+date: '2012-10-02 18:26:21 -0700'
+date_gmt: '2012-10-02 22:26:21 -0700'
+categories:
+- Music
+- Software
+tags:
+- chrome extension
+- hypem
+- hypemachine
+- javascript
+- python
+comments:
+- id: 241
+  author: Ben Lart
+  author_email: blart@gmail.com
+  author_url: ''
+  date: '2012-10-05 17:20:08 -0700'
+  date_gmt: '2012-10-05 21:20:08 -0700'
+  content: Really cool! I hope you update the JS.
+- id: 242
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-10-05 17:21:02 -0700'
+  date_gmt: '2012-10-05 21:21:02 -0700'
+  content: thanks for the kind words! :)
+- id: 243
+  author: Jon
+  author_email: jonathantzeng88@gmail.com
+  author_url: ''
+  date: '2012-10-05 19:50:17 -0700'
+  date_gmt: '2012-10-05 23:50:17 -0700'
+  content: Thanks for the investigation! hopefully this lets others or myself fix
+    this up
+- id: 244
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-10-05 19:52:09 -0700'
+  date_gmt: '2012-10-05 23:52:09 -0700'
+  content: |-
+    Hey Jon!
+    Thanks, I'll be updating my scripts as well and lookout for the new site soon! :)
+- id: 245
+  author: Andrew
+  author_email: ATemull@gmail.com
+  author_url: ''
+  date: '2012-10-08 18:36:03 -0700'
+  date_gmt: '2012-10-08 22:36:03 -0700'
+  content: you're the best for creating this extension, thanks for not giving up on
+    it!
+- id: 246
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-10-09 02:30:28 -0700'
+  date_gmt: '2012-10-09 06:30:28 -0700'
+  content: "thanks Andrew. \nI haven't forgotten about the extension or the script
+    and the people who use it either! \nI've just been focused on this new site to
+    let you download. \n\nAll the goodies coming soon"
+- id: 247
+  author: Python Download Script Updated &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://blog.fzakaria.com/2012/10/python-download-script-updated/
+  date: '2012-10-30 15:22:49 -0700'
+  date_gmt: '2012-10-30 19:22:49 -0700'
+  content: "[...] the python script. I&#8217;ve already documented many of the changes
+    that needed to occur in my previous blog post but now here is the full source
+    for those who are curious!  You can download the script [...]"
+- id: 248
+  author: Restap
+  author_email: restap@live.nl
+  author_url: ''
+  date: '2012-11-24 06:22:51 -0800'
+  date_gmt: '2012-11-24 11:22:51 -0800'
+  content: |-
+    "There is now an intermediate request which returns some JSON data and then finally the URL to the Mp3 is retrieved and served!"
+
+    This is not the case in my experience.
+    I see no JSON response, just Status: 302[Moved Temporarily] redirects.
+
+    12:16:25.468[666ms][total 666ms] Status: 302[Moved Temporarily]
+    GET http://hypem.com/serve/play/1rbkb/9097b60b6f3d3ad9a4212a66321d2314.mp3 Load Flags[LOAD_DOCUMENT_URI  LOAD_INITIAL_DOCUMENT_URI  ] Content Size[-1] Mime Type[text/html]
+       Request Headers:
+          Host[hypem.com]
+          User-Agent[Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0]
+          Accept[text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+          Accept-Language[nl,en-us;q=0.7,en;q=0.3]
+          Accept-Encoding[gzip, deflate]
+          Proxy-Connection[keep-alive]
+          Cookie[__utma=1717032.1548772717.1353445981.1353445981.1353755681.2; __utmz=1717032.1353445981.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none); __qca=P0-1026700643-1353445981753; hblid=HTLhI2PQKnTXcuaVZqqhWBG786428581; olfsk=olfsk8030978083672631; AUTH=03%3A74e587adb3047850a3f48ba2986d2c82%3A1353445973%3A1448472171%3A09-NL; __utmb=1717032.1.10.1353755681; __utmc=1717032]
+       Response Headers:
+          Content-Type[text/html; charset=UTF-8]
+          Content-Encoding[gzip]
+          Transfer-Encoding[chunked]
+          Location[http://api.soundcloud.com/tracks/68232982/stream?consumer_key=nH8p0jYOkoVEZgJukRlG6w]
+          Server[nginx/1.2.3]
+          Vary[Accept-Encoding]
+          Date[Sat, 24 Nov 2012 11:15:59 GMT]
+          Keep-Alive[timeout=5]
+          Connection[Keep-Alive]
+          Proxy-Connection[Keep-Alive]
+
+
+
+    12:16:26.135[97ms][total 97ms] Status: 302[Moved Temporarily]
+    GET http://api.soundcloud.com/tracks/68232982/stream?consumer_key=nH8p0jYOkoVEZgJukRlG6w Load Flags[LOAD_DOCUMENT_URI  LOAD_REPLACE  LOAD_INITIAL_DOCUMENT_URI  ] Content Size[28] Mime Type[application/xml]
+       Request Headers:
+          Host[api.soundcloud.com]
+          User-Agent[Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0]
+          Accept[text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+          Accept-Language[nl,en-us;q=0.7,en;q=0.3]
+          Accept-Encoding[gzip, deflate]
+          Proxy-Connection[keep-alive]
+       Response Headers:
+          Content-Type[application/xml; charset=utf-8]
+          Content-Length[28]
+          Via[1.1 varnish]
+          Access-Control-Allow-Origin[*]
+          X-Cacheable[NO:Cache-Control=no-cache]
+          Location[http://ec-media.soundcloud.com/4wBtAmevZJkU.128.mp3?ff61182e3c2ecefa438cd02102d0e385713f0c1faf3b0339595666f90800ed15a826ef5293b6ad9fcb33ffb24facb26dcae86e95f821856747d1c31426457d321cb2e487e1&amp;AWSAccessKeyId=AKIAJ4IAZE5EOI7PA7VQ&amp;Expires=1353756170&amp;Signature=Q8ZhVh2S7ZvRNrnPeKMCY%2FhCl2E%3D]
+          X-Varnish[420384860]
+          X-Cache[MISS]
+          Date[Sat, 24 Nov 2012 11:16:00 GMT]
+          Cache-Control[no-cache]
+          Age[0]
+          Access-Control-Allow-Methods[GET, PUT, POST, DELETE]
+          X-Runtime[14]
+          Access-Control-Expose-Headers[Date]
+          Access-Control-Allow-Headers[Accept, Authorization, Content-Type, Origin]
+          Server[nginx]
+          Keep-Alive[timeout=5]
+          Connection[Keep-Alive]
+          Proxy-Connection[Keep-Alive]
+
+
+
+    12:16:26.233[430ms][total 4681ms] Status: 200[OK]
+    GET http://ec-media.soundcloud.com/4wBtAmevZJkU.128.mp3?ff61182e3c2ecefa438cd02102d0e385713f0c1faf3b0339595666f90800ed15a826ef5293b6ad9fcb33ffb24facb26dcae86e95f821856747d1c31426457d321cb2e487e1&amp;AWSAccessKeyId=AKIAJ4IAZE5EOI7PA7VQ&amp;Expires=1353756170&amp;Signature=Q8ZhVh2S7ZvRNrnPeKMCY%2FhCl2E%3D Load Flags[LOAD_DOCUMENT_URI  LOAD_REPLACE  LOAD_INITIAL_DOCUMENT_URI  ] Content Size[4642271] Mime Type[audio/mpeg]
+       Request Headers:
+          Host[ec-media.soundcloud.com]
+          User-Agent[Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:16.0) Gecko/20100101 Firefox/16.0]
+          Accept[text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8]
+          Accept-Language[nl,en-us;q=0.7,en;q=0.3]
+          Accept-Encoding[gzip, deflate]
+          Proxy-Connection[keep-alive]
+       Response Headers:
+          Content-Type[audio/mpeg]
+          Content-Length[4642271]
+          X-Amz-Meta-Duration[290169]
+          X-Amz-Meta-Job[4wBtAmevZJkU]
+          X-Amz-Id-2[71CW4Y3nVq6TJrqKNXsdgPMvWUS1QmTch1z9x9u3V4voVm1OQJ1edA7jngs/Q4yr]
+          Date[Sat, 24 Nov 2012 11:16:00 GMT]
+          Cache-Control[max-age=252460800]
+          X-Cache[HIT]
+          X-Amz-Request-Id[3FCFC7577DAA11EF]
+          X-Amz-Version-Id[Pf7cBj1iUxYbXm7T4Ra7GDRazH3.GV4o]
+          Etag["3738a8f86fe8628bb9b3467d6a59a2c0"]
+          X-Amz-Meta-Bitrate[128]
+          Last-Modified[Wed, 21 Nov 2012 01:59:12 GMT]
+          Accept-Ranges[bytes]
+          Server[ECAcc (ams/D18A)]
+          Keep-Alive[timeout=5]
+          Connection[Keep-Alive]
+          Proxy-Connection[Keep-Alive]
+- id: 249
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2012-11-26 14:21:03 -0800'
+  date_gmt: '2012-11-26 19:21:03 -0800'
+  content: |-
+    They moved the URL from where they serve media to ""http://hypem.com/serve/source/" rather than "http://hypem.com/serve/play/".
+    If you use the new URL you'll see the new JSON data! :)
+- id: 250
+  author: Update &#8211; Google Chrome HypeMachine Extension Alive and Well! &#8211;
+    Small Thoughts
+  author_email: ''
+  author_url: http://blog.fzakaria.com/2013/03/update-google-chrome-hypemachine-extension-alive-and-well/
+  date: '2013-03-19 20:04:44 -0700'
+  date_gmt: '2013-03-20 00:04:44 -0700'
+  content: "[...] changing to HypeMachine&#8217;s new private API (which I&#8217;ve
+    detailed earlier) [...]"
+- id: 251
+  author: mozilla firefox
+  author_email: eugenio.donovan@vegemail.com
+  author_url: http://www.china-buildingmaterials.com/gallery/
+  date: '2013-06-27 02:27:01 -0700'
+  date_gmt: '2013-06-27 06:27:01 -0700'
+  content: "I feel your angst. I never had any luck whatsoever with this kind \nof
+    thing, either. So happy to know I'm not all by my lonesome!"
+- id: 252
+  author: Meronako
+  author_email: zyphe3ln5u@yahoo.com
+  author_url: http://TtkHp8Dtsq2w
+  date: '2014-07-05 16:52:43 -0700'
+  date_gmt: '2014-07-05 20:52:43 -0700'
+  content: Danke, das hat gerade 10&euro; von mir gertetet. Bis vor kurzem konnte
+    man die Musik auch noch direkt mit Banshee kaufen. Geht nun nicht mehr. Ich denke
+    ich war das letzte mal bei Amazon Musik kaufen.
+- id: 253
+  author: Azlizam
+  author_email: ki7ebz8qwk@mail.com
+  author_url: http://4vSkr8DDEKZ
+  date: '2014-07-05 19:12:19 -0700'
+  date_gmt: '2014-07-05 23:12:19 -0700'
+  content: Freut mich, dass es dir helfen kotnne :)So lange es eine Mf6glichkeit gibt,
+    ist ja alles gut. Aber so entgeht Amazon eine inzwischen immer grf6dfer werdende
+    Kundenzahl
+- id: 255
+  author: mplewis
+  author_email: matt@mplewis.com
+  author_url: http://mplewis.com
+  date: '2014-09-29 13:59:40 -0700'
+  date_gmt: '2014-09-29 17:59:40 -0700'
+  content: Thanks for taking a look at the Hypem API! I'm trying to build an iOS app
+    for Hype Machine, and this is coming in super handy.
+- id: 256
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2014-10-07 11:11:16 -0700'
+  date_gmt: '2014-10-07 15:11:16 -0700'
+  content: glad I could help!
+---
+<h2>A constant rat race</h2>
+<p>
+Honestly, I don't even use <a href="http://www.hypem.com">hypem.com</a> anymore since my music taste has changed, however I am constantly trying to keep my <a href="https://github.com/fzakaria/HypeMachine-Extension">hypem chrome extension</a> and <a href="https://github.com/fzakaria/HypeScript">python download script</a> up to date with the changes to the site. People have been overall extremely generous in their compliments which is why I keep updating the script.</p>
+<p>
+Although I may not use the site anymore, I am finding their constant attempts to thwart similar extensions interesting and have enjoyed the <strong>constant rate race</strong>. I've documented on my blog already several of their numerous attempts to thwart similar projects and looks like they released their latest incarnation. I hope this post will serve those who are attempting to enjoy their music beyond the confines of the site helpful.</p>
+<h2> So, What's Changed?</h2>
+<p>
+Previously, the link to the mp3 file was very easy to generate and scrape from their HTML page. Every song use to contain it's unique identifiers right in the <em>'div'</em> element of that song. One simply had to parse out the 'key' and 'id' and construct a URL to <em>http://hypem.com/serve/play/id/key.mp3</em> and your content was served on a platter. <em>They've now added a few more tricks to their sleeve but it's still trivial getting access to the mp3.</em></p>
+<ol>
+<li>Firstly, they've moved where the 'key' is stored for each song. They've embedded the 'keys' of the current page in a 'script' object on the site. The interior of the script object is simply JSON. </li>
+<p><strong>Example</strong><br />
+<code><br />
+<script type="application/json" id="displayList-data"><br/>    {"page_cur":"/track/1q7nf?ax=1&amp;ts=1349217708.87","page_num":1,"tracks":[{"type":"normal","id":"1q7nf","time":372,"ts":{"sec":1349210330,"usec":0},"postid":1950767,"posturl":"http://stereogum.com/1167152/wooden-wand-southern-colorado-song/mp3s/","fav":0,"key":"55b57f34d3774ecc94ff7360e02dc279","artist":"Wooden Wand","song":"So. Colorado Song","thumb_url_large":""}],"page_name":"item","title":"Wooden Wand - So. Colorado Song, posted on music blogs / The Hype Machine","page_next":"/track/1q7nf/2.87","page_mode":"1q7nf"}    </script><br />
+</code></p>
+<pre class="brush:python">
+ import urllib2
+ import urllib
+ from time import time
+ data = {'ax':1, 'ts':time()}
+ data_encoded = urllib.urlencode(data)
+ complete_url = "http://hypem.com/track/1q7nf?{}".format(data_encoded)
+ request = urllib2.Request(complete_url)
+ response = urllib2.urlopen(request)
+ html = response.read()
+ html_file = open("hype.html", "w")
+ html_file.write(html)
+ html_file.close()
+</pre>
+<p>After the page loads, they read the JSON data into a javascript variable and <strong>remove</strong> the script tag from the HTML body. So you won't be able to inspect a current page and find the code</p>
+<li>
+Secondly, they've changed the whole request mechanism for serving songs. Before as I mentioned, the /serve/play url immediately served up the Mp3. <strong>This is no longer the case</strong>. There is now an intermediate request which returns some JSON data and then finally the URL to the Mp3 is retrieved and served!
+</li>
+<p><strong>Relevant Code from hype_functions_min.js</strong></p>
+<pre class="brush:js">
+var req_url = '/serve/source/' + window.playList['tracks'][track].id + '/' + window.playList['tracks'][track].key;
+var source_data;
+var r = $.ajax({url: req_url,data: req_data,type: 'get',async: false,cache: false,dataType: 'json',error: function() {
+    log('playTrack /source/ request FAILED');
+    return false;
+    }});
+try {
+    response = jQuery.parseJSON(r.responseText);
+} catch (err) {
+    log("FAILED to parse JSON data");
+    return false;
+}
+</pre>
+<li>Thirdly, this hasn't changed but don't forget about setting the cookie! Hypemachine checks for a AUTH cookie and without it will not authorize your get request for the song data! Simply store the cookie when you retrieve the HTML and use the same one when you make further requests. <em>Voila!</em></li>
+</ol>

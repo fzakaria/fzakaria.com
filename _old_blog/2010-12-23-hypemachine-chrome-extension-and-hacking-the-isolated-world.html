@@ -1,0 +1,144 @@
+---
+layout: post
+status: publish
+published: true
+title: HypeMachine Chrome Extension and Hacking the Isolated world
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 376
+wordpress_url: http://www.blog.fzakaria.com/?p=376
+date: '2010-12-23 18:32:04 -0800'
+date_gmt: '2010-12-23 23:32:04 -0800'
+categories:
+- Music
+- Software
+tags: []
+comments:
+- id: 24
+  author: alex
+  author_email: alex.sherrick@gmail.com
+  author_url: ''
+  date: '2010-12-23 21:19:34 -0800'
+  date_gmt: '2010-12-24 02:19:34 -0800'
+  content: works pretty well... only thing i have run into is that i have to specifically
+    type in each page if i want the download links to appear... e.g. my songs 1, i
+    have to load that directly.  once that page is done, close that tab, open new
+    tab with my songs 2
+- id: 25
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2010-12-23 22:05:56 -0800'
+  date_gmt: '2010-12-24 03:05:56 -0800'
+  content: "<a href=\"#comment-412\" rel=\"nofollow\">@alex:</a> \nI'm a bit confused
+    about what you are referring to.\nI'm aware of the issue of needing a hard refresh
+    on each new page since when you go to other pages it doesn't auto force a brand
+    new page load."
+- id: 26
+  author: Eric Roberts
+  author_email: ericroberts@gmail.com
+  author_url: http://www.ericroberts.ca
+  date: '2010-12-24 10:21:23 -0800'
+  date_gmt: '2010-12-24 15:21:23 -0800'
+  content: "This is looking really good man. A couple suggestions I have would be
+    to line up the download button, and maybe make it a flat glyph like the other
+    icons with a hover effect (that's just my designer OCD talking). \n\nAfter giving
+    it a try I tried to see if you could force a save dialog to popup on click with
+    javascript, but it appears at a brief glance that you can't. Would be really great
+    if it were possible though.\n\nAs for the timeout set for 2 seconds, while it
+    works, it's not the best solution, as I'm sure you know. If HypeM creates its
+    elements with javascript then you could check to see if the elements exist, then
+    run your function. You would have to keep rechecking until it is there, something
+    like:\n\nfunction elementExists() {\n  if(element exists) {\n    run your script;\n
+    \ }\n  else {\n     elementExists();\n  }\n}\n\nAs mentioned, it kinda sucks that
+    they load all their pages with Ajax. You said that you don't have access to global
+    variables. Maybe you can check for the existence of that ajax spinner when it
+    loads pages, and that will trigger the script for the download links to be set
+    off again.\n\nAgain, if you want any help or have any questions about CSS/JS just
+    let me know I'd be happy to help. One last note, this is Prototype, not jQuery.
+    I prefer jQuery personally but am familiar with both."
+- id: 27
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2010-12-24 12:49:40 -0800'
+  date_gmt: '2010-12-24 17:49:40 -0800'
+  content: "<a href=\"#comment-415\" rel=\"nofollow\">@Eric Roberts:</a> \n\nOh awesome
+    Eric. Those are some sweet tips and explain a lot.\nYea I couldn't figure out
+    how to do it through Javascript the popup. I could change the extension to .exe
+    and i wonder if i can rename it using JS in the popup or something.\n\nI'm going
+    to take your suggestion and check if the element exists as well instead of the
+    timeout.\nI'm also going to override their ajax call so mine gets called first
+    as well on page load.\nI might need some help on the CSS cause I have no clue
+    what is a glyph. :)\n\nI'll throw up the source in a bit."
+- id: 28
+  author: Beatport Chrome Extension Edition &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/09/beatport-chrome-extension-edition/
+  date: '2011-09-07 17:42:08 -0700'
+  date_gmt: '2011-09-07 21:42:08 -0700'
+  content: "[...] since I&#8217;ve been only working on my HypeMachine extension and
+    although it was simple (although learning how to get around the isolated world
+    was interesting). The passion to make the HypeMachine [...]"
+- id: 29
+  author: remisko
+  author_email: sweeneyremisko@gmail.com
+  author_url: ''
+  date: '2011-12-13 05:30:10 -0800'
+  date_gmt: '2011-12-13 10:30:10 -0800'
+  content: could you pleazzz re upload this extension, the chrome store said it was
+    removed.
+- id: 30
+  author: Beatprice Chrome Extension Edition &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/09/beatprice-chrome-extension-edition/
+  date: '2012-01-12 18:10:32 -0800'
+  date_gmt: '2012-01-12 23:10:32 -0800'
+  content: "[...] since I&#8217;ve been only working on my HypeMachine extension and
+    although it was simple (although learning how to get around the isolated world
+    was interesting). The passion to make the HypeMachine [...]"
+---
+<h2> Chrome HypeMachine Extension </h2>
+<blockquote><p>UPDATE: I posted a cleaned up version of the extension on the chrome gallery. <strong>Check it out <a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">here</a></strong>.</p></blockquote>
+<p>
+After finishing the hypemachine batch downloader <a href="/Downloadable/Scripts/hype.py">script</a>, I decided to see if I can leverage my investigation into their website into making an extension for a popular browser. I decided to make a Google Chrome Extenson simply because it is the browser of my choice. From what I was told, aparantly a lot of the headaches I encountered writing the script could've been avoided writing a Firefox script instead and using <a href="https://addons.mozilla.org/en-US/firefox/addon/748/">greasemonkey</a> instead.</p>
+<p>
+So writing this script, introduced me to the crazy notion of <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">Javascript Injection</a>. I was so blown away by the whole vulnerability that I am a bit worried about how vulnerable the internet and browsing is. Anyways, what I aimed to do was inject a download button next to each song so that someone can easily download the track of their choice.</p>
+<blockquote><p>I know there was a version of this for greasemonkey before and possibly chrome. I couldn't find it however (saw it mentioned on some sites) and they noted that they were no longer working.</p></blockquote>
+<p>Anyways, here is a picture of the final result (notice the tiny green download icon):<br />
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/12/hypeext.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/12/hypeext.png" alt="" title="hypeext" width="600" height="400" class="aligncenter size-full wp-image-377" /></a></p>
+<p>So please download the extension and <em>alpha</em> test it for me. I already know of some improvements to make and will update it and throw it up on the extension gallery once its solid.</p>
+<h2> Hacking the Isolated World </h2>
+<p>
+So how does the Chrome extensions work? Well they create what they like to call a "isolated world" and allow you to define javascript files that will execute on different times during the loading of the page. The problem is that their isolated world does not allow you access to the variables or functions defined by the page.</p>
+<blockquote><p>You can however perform crossite Http Requests which coupled with my workaround is pretty crazy.</p></blockquote>
+<p>The workaround to the isolated wold is really hacky but works. You can easily append to the HTML contents of the page, so simply append a string that contains the script tag as well as the script!</p>
+<pre class="brush: js"> 
+var script = $("<script type='text/javascript' charset='utf-8'>
+		$$('ul.tools').each(function(index) {
+  //set songUrl to the songUrl and chromeUrl to the picture of the donwload image
+			index.insertAdjacentHTML("AfterBegin", "<li class=\"cext\"><a href="+songUrl+"> <img class=\"cext\" src="+chromeUrl+"></a></li>");
+			});
+	</script>");
+function waitForLoad()
+{
+	$("body").append($(style));
+	$("div#footer").append($(script));
+}
+setTimeout(function() {waitForLoad();}, 2000);
+</pre>
+<p>I largely did this knowing very little jQuery as well as web programming. <del datetime="2010-12-23T23:01:04+00:00">Most</del> Some of it is still lost on me. For instance, I am confused about the return values from the .each() function performed on the $$('ul.tools'). </p>
+<ol>
+<li>index returns a HTMLElement</li>
+<li>$(this) returns the DOM object</li>
+</ol>
+<p>I am confused about why I get back the DOM object...</p>
+<p>The hypemachine website uses javascript to automatically generate a lot of their HTML including the list of songs themselves. In order to make sure to run the script after their scripts have finished executing I had to insert the 'hack' of setTimeout to call my script hopefully after theirs have completed.</p>
+<p>It was super annoying writing the whole script embedded within a string because it was confusing remembering whether I needed to single, double or triple escape quotes that are nested since I had strings in strings...<br />
+<strong>Inception.</strong></p>
+<p>You can download the HypeExtension <a href="/Downloadable/Scripts/HypeExtension.crx">here</a>.</p>

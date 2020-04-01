@@ -1,0 +1,42 @@
+---
+layout: post
+status: publish
+published: true
+title: Why wouldn't you use brackets?
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 813
+wordpress_url: http://www.blog.fzakaria.com/?p=813
+date: '2011-08-23 10:46:46 -0700'
+date_gmt: '2011-08-23 14:46:46 -0700'
+categories:
+- Software
+tags:
+- Rant
+comments: []
+---
+<h2> Brackets and Braces </h2>
+<p>
+I wonder why some programmers are so averse to using curly braces and brackets in all situations to explicitly state intended behavior. Without explicit curly braces, you can run into the following scenarios. Here are two examples which didn't pop up right away during a quick code review but were found later and could have caused some havoc.</p>
+<pre class="brush:cpp">
+//Scenario #1
+int value = isVersion2()?1:0 & canHardwareSupportFeature();
+
+//Scenario #2
+if ( condition ) {
+//code
+} else
+
+if (condition 2) {
+}  
+</pre>
+<p>
+For <strong>Scenario #1</strong>, aside from the fact that the conditional operator is not needed, the problem was the priority of the conditional operator compared to that of the bit-AND operator. It might not stand out immediately depending on the spacing because you might read the operators priority differently.<strong>Scenario #2</strong> has the problem of <em>secretly</em> hiding the second if condition under the else. Whether or not it is the intended functionality, it's just plain confusing.</p>
+<p><em>I like the idea of -Wparentheses being turned on...</em></p>
+<h3>Quick Aside</h3>
+<p> Has anyone had any experience using <a href="http://www.gimpel.com/html/pcl.htm">Lint </a>or adding it to a large existing project? I remember having used it at a previous co-op and although a lot of the code had to include pre-processor directives in order to tell Lint that these are not actual errors, I thought the overall quality of the software improved due to it's use.</p>

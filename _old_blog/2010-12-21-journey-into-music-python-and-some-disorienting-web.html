@@ -1,0 +1,78 @@
+---
+layout: post
+status: publish
+published: true
+title: Journey Into Music, Python and Some Disorienting Web
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 334
+wordpress_url: http://www.blog.fzakaria.com/?p=334
+date: '2010-12-21 21:53:25 -0800'
+date_gmt: '2010-12-22 02:53:25 -0800'
+categories:
+- Music
+- Software
+tags:
+- hypemachine
+- music
+- python
+comments: []
+---
+<h2> Hype Machine and Python</h2>
+<p>
+As mentioned earlier, I was introduced to <a href="http://hypem.com/">HypeMachine</a> and it quickly took over the facet of my life connected to music. I began to quickly turn to the website to listen to music in most cases when needed such as : at work, at home, at a party or in the washroom. The only problem I found was listening to some tracks on my iPhone or when the site was down (or somewhere where I had no internet god forbid).</p>
+<p>I ranted about this problem and the fact that the greasemonkey to make an easy download button appear seemed broken to my schoolmate and he told me this would be an excellent opportunity to learn Python.</p>
+<p>My journey through Python has been an amazing experience. Anytime I wished I could do something, turns out I could. Coding was essentially just writing in english what you'd expect to work essentially. There are a few gripes as always but...I'll talk about that later.</p>
+<p>Here is a snipper of some of the python code for downloading mp3s from their site:</p>
+<pre class="brush: python"> 
+#let's make our request
+#1: we set to popular but easily set to your user name or 
+# any of the URLS you want to grab
+#2: that ax=1 and ts=time is just some hypem crap
+req1 = urllib2.Request('http://hypem.com/popular?ax=1&ts='+ str(time.time()) )
+response = urllib2.urlopen(req1)
+#save our cookie
+cookie = response.headers.get('Set-Cookie')
+#grab the HTML
+data = response.read()
+
+idMatches = re.findall("(?<=tid:')w*(?=')", data )
+keyMatches = re.findall("(?<=tkey: ')w*(?=')", data )
+songMatches= re.findall("(?<=tsong:').*(?=')", data )
+artistMatches= re.findall("(?<=tartist:').*(?=')", data )
+
+
+print "Found: "+ str(len(idMatches)) + " matches."
+
+for i in range(len(idMatches)):
+        id = idMatches[i]
+        key = keyMatches[i]
+        song = songMatches[i]
+        artist = artistMatches[i]
+        #little investigation in the javascript gives us this
+        url = 'http://hypem.com/serve/play/' + id + '/' + key + ".mp3"
+        print url
+        #######
+        #setup our cookie in our request
+        req2 = urllib2.Request(url)
+        req2.add_header('cookie', cookie)
+        response = urllib2.urlopen(req2)
+        #grab the data
+        data2 = response.read()
+        mp3Name = song + ".mp3"
+        song = open("songs/"+mp3Name, "wb")
+        song.write(data2)
+        song.close()
+</pre>
+<p>This code has been adapted to work with the recent update to HypeMachine that occurred this week. (BTW awesome redesign). I was surprised how easy it was to scrape data from a website. All it took was a bit of investigation with Chrome's equivalent of firebug and some breakpoints. I was thinking of turning the script into javascript and writing it as a Chrome/Firefox extension but I got into some SOP problems...</p>
+<p>Turns out I hate web development and it's too annoying to do. While writing the scripts, I was getting weird redirect HTTP Errors that I tried to fix and I couldn't find any awesome documentation on what headers and cookies I wanted to send. I did it mostly by trial and errors...</p>
+<p>Add some MySQL functionality and cron job it and enjoy your new library of awesome music.</p>
+<p>
+Here is the first song I downloaded with the script. It also happens to be a pretty good remix.</p>
+<blockquote><p><a href='http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/12/Only-Girl-Paul-David-Barletta-Remix.mp3'>Only Girl (Paul David + Barletta Remix)</a></p></blockquote>
+<p>You can download the full script in my <a href="http://www.blog.fzakaria.com/projects/">projects</a> page.</p>

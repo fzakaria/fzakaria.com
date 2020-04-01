@@ -1,0 +1,101 @@
+---
+layout: post
+status: publish
+published: true
+title: HypeMachine Extension on Chrome Web Store
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 399
+wordpress_url: http://www.blog.fzakaria.com/?p=399
+date: '2010-12-29 02:22:44 -0800'
+date_gmt: '2010-12-29 07:22:44 -0800'
+categories:
+- Music
+- Software
+tags:
+- chrome
+- chrome extension
+- extension
+- hypem
+- hypemachine
+comments:
+- id: 31
+  author: James
+  author_email: subnoizey@gmail.com
+  author_url: ''
+  date: '2011-01-03 07:34:43 -0800'
+  date_gmt: '2011-01-03 12:34:43 -0800'
+  content: "Hey, any chance your chrome extension for hypem could save the file as
+    the track name? similar to the firefox extension? \nhttps://addons.mozilla.org/en-US/firefox/addon/13886/\n\ncheers"
+- id: 32
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-01-03 09:52:06 -0800'
+  date_gmt: '2011-01-03 14:52:06 -0800'
+  content: |-
+    I didn't think it was possible to do that on server-side javascript but I'll take a look at that extension and maybe see how they do it.
+    Cool.
+- id: 33
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-01-03 10:31:01 -0800'
+  date_gmt: '2011-01-03 15:31:01 -0800'
+  content: <a href="#comment-457" rel="nofollow">@James:</a> Looking at that extension
+    looks like they are using specific firefox download API's which have no equivalent
+    ones in Chrome which sucks and is disappointing :(
+- id: 34
+  author: aks
+  author_email: uuu.jjj.aaa@gmail.com
+  author_url: ''
+  date: '2011-01-05 17:32:37 -0800'
+  date_gmt: '2011-01-05 22:32:37 -0800'
+  content: |-
+    nice extension, thanks.  It doesn't really need the page action button though, you can just remove that from your manifest and then the icon wont take up space. I made an icon which blends in with the hype machine ui a little more, you are welcome to use it for this if you want
+    http://www.eecs.tufts.edu/~asamps01/download.png
+- id: 35
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-01-06 00:53:09 -0800'
+  date_gmt: '2011-01-06 05:53:09 -0800'
+  content: |-
+    <a href="#comment-471" rel="nofollow">@aks:</a> Thanks aks.
+    I'll test out the icon and see how it looks.  If it looks nice, I'll try and make a rollover image for it as well.
+
+    Once I have a second of free time I'll push an update out that removes the icon.
+- id: 36
+  author: Alex
+  author_email: 73hjovn3i@yahoo.com
+  author_url: http://WcyLtrZvq
+  date: '2014-07-06 00:43:30 -0700'
+  date_gmt: '2014-07-06 04:43:30 -0700'
+  content: "Clear video. I now understand the\uFEFF fetaher. What I don't understand
+    is why using these functions is better than inserting images in the articles.
+    I usually have several images simply as illustration within each article. This
+    offers the option of only one image at the start of the article. Why is it better?"
+---
+<p>
+Cool.<br />
+I just uploaded the HypeMachine extension I had been working on into the Chrome Web Store.</p>
+<p><a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">Check it out here!</a></p>
+<p>I fixed somewhat the issue of the script not being injected on different pages because the new pages are loaded with an AJAX call rather than reloading the whole page (which would cause the content script to be called).<br />
+I solved it by overloading the on_click event function...</p>
+<blockquote><p><em>Fingers crossed.</em></p></blockquote>
+<h2> Things I still want to do.... can you help? </h2>
+<p>
+The script is obviously in by no means perfect and I'm looking for some help making it better overall.<br />
+The list of issues I'd like to tackle, polish and fix are:</p>
+<ul>
+<li>Cleanup the code in general. My javascript to be honest, is horrendous and my understanding of jquery is subpar. </li>
+<li> Create a CSS sprite for the download button so that it looks nicer.</li>
+<li>Line up the download item nicer with the each song which just needs some CSS tuning.</li>
+<li>Improve the means at which I inject the script as well as the download buttons or have someone look at it and tell me ways in which I can improve it.</li>
+</ul>
+<p><strong>Let me know!</strong></p>

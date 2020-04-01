@@ -1,0 +1,108 @@
+---
+layout: post
+status: publish
+published: true
+title: Pagination in Clojure
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1428
+wordpress_url: http://blog.fzakaria.com/?p=1428
+date: '2015-07-26 10:33:02 -0700'
+date_gmt: '2015-07-26 17:33:02 -0700'
+categories:
+- Software
+tags:
+- clojure
+- luminus
+comments: []
+---
+<h2> Luminus - Pagination </h2>
+<p>I've recently been working on a fun side project using the <a href="http://www.luminusweb.net/">Luminus web framework</a> as my first foray into <a href="http://clojure.org/">Clojure</a> (which I'm absolutely falling in love with)</p>
+<p>One thing however I find missing from the documentation and in general online is an <strong><em>idiomatic</em></strong> way to paginate in Clojure. I'm sure there is some <em>sexy</em> pagination strategy that uses lazy-seqs, macros, protocols and records however I was not able to come up with anything (myself or via google).</p>
+<p>I'm dumping my small helper functions that I ended up writing in hopes that perhaps someone finds use for it:</p>
+<pre class="lang:clojure decode:true " title="Pagination in Clojure" >
+(ns sample.paginate)
+
+(defn parse-number
+  "Reads a number from a string. Returns nil if not a number."
+  [s]
+  (println (type s))
+  (cond
+   (isa? (type s) java.lang.Number) s
+   (isa? (type s) java.lang.String)
+     (if (re-find #"^-?\d+\.?\d*$" s)
+       (read-string s))
+   :else (parse-number (str s))))
+
+(defn map-kv [m f]
+  "Aply a map to a key value map"
+  (reduce-kv #(assoc %1 %2 (f %3)) {} m))
+
+(def default-page 1)
+
+(def default-size 20)
+
+(def min-size 1)
+
+(def min-page 1)
+
+(def page-key :page)
+
+(def size-key :size)
+
+(def next-page-key :next-page)
+
+(def prev-page-key :prev-page)
+
+(def offset-key :offset)
+
+(def default-paginate-params
+  {page-key default-page size-key default-size})
+
+(defn extract [request]
+  "Given a request extracts the page and size from the request object.
+   If none is found it returns sensible defaults. It makes sure the returned
+   paginate values are integers"
+  (let [params (:params request)
+        params (merge default-paginate-params params)
+        paginate (select-keys params [page-key size-key])]
+    (map-kv paginate parse-number)))
+
+(defn current-page [request]
+  (let [paginate-params (extract request)]
+    (max (page-key paginate-params) min-page)))
+
+(defn next-page [request]
+  (let [page (current-page request)]
+    (inc page)))
+
+(defn prev-page [request]
+  (let [page (current-page request)]
+    (max min-page (dec page))))
+
+(defn size [request]
+  (let [paginate-params (extract request)]
+    (max (size-key paginate-params) min-size)))
+
+(defn offset [request]
+  "Determines the offset for the page. The offset is calculated based on
+   (page - 1) * size"
+  (* (dec (current-page request)) (size request)))
+        
+       
+(defn create [request]
+  "Creates a paginate map which contains additional keys such as next-page, prev-page
+   ontop of the page and size keys"
+  (let [page (current-page request)
+        size (size request)
+        offset (offset request)
+        next-page (next-page request)
+        prev-page (prev-page request)]
+    {page-key page size-key size next-page-key next-page prev-page-key prev-page offset-key offset}))</pre>
+<p>Ultimately one would use the <strong>create</strong> function to include in their context/response a structured Pagination map. </p>
+<p>If you have anything better please share! </p>

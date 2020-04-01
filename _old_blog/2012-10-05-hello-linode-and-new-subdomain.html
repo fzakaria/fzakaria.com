@@ -1,0 +1,76 @@
+---
+layout: post
+status: publish
+published: true
+title: Hello Linode and New Subdomain
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1231
+wordpress_url: http://blog.fzakaria.com/?p=1231
+date: '2012-10-05 22:55:32 -0700'
+date_gmt: '2012-10-06 02:55:32 -0700'
+categories:
+- Life
+tags: []
+comments: []
+---
+<h2>All Aboard Linode</h2>
+<p>
+I've just finished transferring my blog and <em>files in general</em> from my previous shared hosting solution at <a href="http://bluehost.com">bluehost.com</a> to <a href="http://linode.com">linode.com</a>. The amount of freedom and boostrapping needed to move my website from bluehost to linode has been amazing and <em>annoying</em>...</p>
+<p>
+Linode offers amazing beginner guides which were invaluable to the migration however this blog post <a href="http://www.raywenderlich.com/812/how-to-move-your-wordpress-blog-to-linode">this blog post</a> outlines a lot of information on moving a WordPress blog.</p>
+<h2>New subdomain!</h2>
+<p>
+You might also notice that my blog is now hosted on a new '<em>blog</em>' subdomain. I hope I've fixed a lot of the links however if you notice some broken ones, please send me an e-mail!</p>
+<p><!--more--></p>
+<h2> Notes on Migrating Wordpress to Linode </h2>
+<h3> Tips </h3>
+<ul>
+<li>Change group of wordpress files to <em>www-data</em> (the group apache2 runes under)</li>
+<li>Change ownership of wp-content to be 755 so that you can upload photos and it can access them.</li>
+<li>Update your .htacccess file (see below).</li>
+<li>Update your database with records pointing to your new domain!</li>
+</ul>
+<h3>.htaccess file </h3>
+<p>
+<code><br />
+<files .htaccess><br />
+order allow,deny<br />
+deny from all<br />
+</files></p>
+<p># disable the server signature<br />
+ServerSignature Off</p>
+<p><files wp-config.php><br />
+order allow,deny<br />
+deny from all<br />
+</files></p>
+<p># who has access, who doesn't<br />
+order allow,deny<br />
+allow from all</p>
+<p># disable directory browsing<br />
+Options All -Indexes</p>
+<p># set the canonical url<br />
+RewriteEngine On<br />
+RewriteCond %{HTTP_HOST} ^ryourdomain.com$ [NC]<br />
+RewriteRule ^(.*)$ http://www.yourdomain.com/$1 [R=301,L]</p>
+<p><IfModule mod_rewrite.c><br />
+RewriteEngine On<br />
+RewriteBase /<br />
+RewriteRule ^index.php$ - [L]<br />
+RewriteCond %{REQUEST_FILENAME} !-f<br />
+RewriteCond %{REQUEST_FILENAME} !-d<br />
+RewriteRule . /index.php [L]<br />
+</IfModule><br />
+</code></p>
+<h3>Update database</h3>
+<p>
+<code><br />
+UPDATE wp_options SET option_value = replace(option_value, 'http://www.old-domain.com', 'http://www.new-domain.com') WHERE option_name = 'home' OR option_name = 'siteurl';</p>
+<p>UPDATE wp_posts SET guid = replace(guid, 'http://www.old-domain.com','http://www.new-domain.com');</p>
+<p>UPDATE wp_posts SET post_content = replace(post_content, 'http://www.old-domain.com', 'http://www.new-domain.com');<br />
+</code></p>

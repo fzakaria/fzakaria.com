@@ -1,0 +1,73 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Unity 3: Trying to get 2D for Free'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 897
+wordpress_url: http://www.blog.fzakaria.com/?p=897
+date: '2011-09-29 15:41:15 -0700'
+date_gmt: '2011-09-29 19:41:15 -0700'
+categories:
+- Game Progamming
+- Software
+tags:
+- 2D
+- game engine
+- game programming
+- Monkey Spin
+- Unity
+- Unity 3
+comments:
+- id: 190
+  author: Graham J
+  author_email: graham.jans@gmail.com
+  author_url: http://grahamjans.com
+  date: '2011-12-13 22:52:09 -0800'
+  date_gmt: '2011-12-14 03:52:09 -0800'
+  content: |-
+    I realize this is pretty old now, but figured I'd comment anyways.
+
+    Traditionally, when a character animation contains an offset like this, you hold the character's world position in-place, and after the animation is finished, warp the character to the end position. (Or warp to the end position, and have the animation "catch up" to that spot, depending on what's better for gameplay). Doing it this way gives the most control to the animator.
+
+    The downside of this approach is that it tends to waste texture space. A good middle ground is if your sprite renderer allows per-frame offsets (I don't recall that Orthello does, but most tools which use Atlases instead of Sprite Sheets allow for this) In which case you animate with the "full animation", then trim the frames of whitespace and fix the offsets so they replicate the full animation. (A tool like SpritePacker will do it automatically).
+
+    Hope that helps!
+- id: 191
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-12-15 14:02:27 -0800'
+  date_gmt: '2011-12-15 19:02:27 -0800'
+  content: "<a href=\"#comment-3291\" rel=\"nofollow\">@Graham J:</a> \nAh cool interesting.\nI
+    didn't think Orthello had this functionality. I've only been exposed to 2D animations
+    where they occur in place, so it was a bit confusing having to change it around.\n\nI'm
+    not sure if Orthello has the concept of an anchor as well which I know could've
+    been used."
+---
+<h2> Wishing there was a Unity 2D </h2>
+<p>
+You hear from a lot of people online (especially at helpful sites such as <a href="http://gamedev.stackexchange.com">gamedev</a> to use the <del datetime="2011-09-29T18:53:32+00:00">best</del> <em>right </em>tool for the job. Unity 3 is an excellent 3D game engine, however because of the abstractions needed for 3D it sometimes over complicates making simpler games, such as a 2D game.</p>
+<p>
+Regardless of what Unity was designed to do, I wrote previously how I've been enamored with the engine and decided to see what it would be like to develop a 3D game on it.</p>
+<blockquote><p>Luckily I still have all the art assets from the MonkeySpin game I had used to dip my feet into XNA.</p></blockquote>
+<p>Initially I found development to be a real challenge, however using Unity's awesome asset store I quickly realized how much you can truly leverage and how powerful the engine can be. The double edge of the sword however turned out to be the <strong>price</strong>.</p>
+<p>
+Unity's asset store was stuff full with packages designed to alleviate 2D development in the engine. Offering tools to help with Sprite management, 2D animation and camera. However they ranged from 50$ - 150$ in price. Luckily a free alternative existed, named <a href="http://www.wyrmtale.com/orthello">Orthello</a>. As you might expect, the free price is bundled with lacking functionality and documentation/examples. I was however pleased to at least give it an attempt!</p>
+<h2> Orthello and my Woes </h2>
+<p>
+Orthello offers you the power to create and control sprite sheets, scroll-able sprites (parallax scrolling), and animated sprites. I was able to put together the basic working of Monkey Spin however I <del datetime="2011-09-29T18:53:32+00:00">hit </del> smashed at 100mph into a roadblock on using animations in which I'd like to move the character. <em>Let me explain...</em></p>
+<p>
+Normally to animate sprites, you provide a sprite sheet that has all the graphics of the sprite animating <strong>on the spot</strong>. This is great for movement controlled by the player such as walking, jumping, running, crouching etc... Where things started to fall apart for me is when I wanted the animation to include movement. Including the movement in the animation left me with some new questions (these may be due to my inexperience with game development).</p>
+<ul>
+<li>Should animations with movement still be animated in the center (i.e. on the spot)?</li>
+<li>How do you take care of moving the sprite during the animation? Lerp the position?</li>
+<li>How do you tie in the movement distance/time it takes to get there with the number of frames in the animation?</li>
+</ul>
+<p><em>If you have any advice, tips, trips of hints please let me know! :)</em></p>

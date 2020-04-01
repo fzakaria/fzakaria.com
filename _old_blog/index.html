@@ -1,0 +1,24 @@
+---
+layout: page
+title: Farid Zakaria's Old Blog
+---
+
+<div class="media">
+	{% assign old_blog_posts = site.old_blog | reverse %}
+	{% for post in old_blog_posts %}
+	  {% if post.url == '/old_blog/index.html' %}
+	    {% continue %}
+	  {% endif %}
+		<div class="post-stub">
+		    <h2>
+		      <span class="date hidden-xs">
+		        {{ post.date | date: "%Y-%m-%d" }}
+		      </span>
+		      <span class="title">
+		        <a href="{{ post.url }}">{{ post.title }}</a>
+		      </span>
+		    </h2>
+		</div>
+	{% endfor %}
+</div>
+<div class="clearfix"></div>

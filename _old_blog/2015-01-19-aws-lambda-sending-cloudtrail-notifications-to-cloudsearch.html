@@ -1,0 +1,34 @@
+---
+layout: post
+status: publish
+published: true
+title: AWS Lambda - Sending CloudTrail notifications to CloudSearch
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1419
+wordpress_url: http://blog.fzakaria.com/?p=1419
+date: '2015-01-19 19:47:11 -0800'
+date_gmt: '2015-01-20 00:47:11 -0800'
+categories:
+- AWS
+- Software
+tags: []
+comments: []
+---
+<h2> Lambda </h2>
+<p>
+Amazon has just recently announced <a href="http://aws.amazon.com/lambda/">AWS Lambda</a>, which is a pretty cool new service that runs your code in response to events. The service manages all the compute resources for you and is a nice hands-off approach to running things in the cloud (How much easier can it get!). At the moment there are only a few event sources that are supported by AWS Lambda however one of them are S3 Put notifications (creation/update of new keys/objects).</p>
+<h2> CloudTrail & Inspiration </h2>
+<p> Recently at work I wanted more insight into some of the API calls that were made on our AWS accounts (occasionally mysterious actions have occured and finding the CloudTrail could prove fruitful). I've recently written on setting up an EMR cluster connected to your CloudTrail S3 bucket to perform easy queries against your dataset however I find that <em>too much power</em> in most cases and thought there should be a simpler way.</p>
+<p>
+I had come across <a href="https://medium.com/aws-activate-startup-blog/searching-cloudtrail-logs-easily-with-amazon-cloudsearch-2d716e23efee">this blog post</a> which outlines sending CloudTrail events to CloudSearch with the help of SQS, & SNS. Now that AWS Lambda exists can it be simpler!<br />
+<strong>You bet! </strong></p>
+<p>
+I've created the following <a href="https://gist.github.com/fzakaria/4f93a8dbf483695fb7d5">gist</a> which you can upload to AWS Lambda to start sending your S3 CloudTrail notifications to CloudSearch</p>
+<p><script src="https://gist.github.com/fzakaria/4f93a8dbf483695fb7d5.js"></script></p>
+<p>In order to utilize the script, make sure you've created a CloudSearch domain and added the index fields in the MAPPINGS variable (you can use the helpful script in the linked blog post here). </p>

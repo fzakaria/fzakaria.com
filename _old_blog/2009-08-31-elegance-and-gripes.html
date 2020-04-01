@@ -1,0 +1,74 @@
+---
+layout: post
+status: publish
+published: true
+title: Elegance and Gripes
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 223
+wordpress_url: http://www.blog.fzakaria.com/?p=223
+date: '2009-08-31 16:19:36 -0700'
+date_gmt: '2009-08-31 20:19:36 -0700'
+categories:
+- Software
+tags:
+- ".NET"
+- C#
+- Rant
+comments: []
+---
+<p>Much of the programming I have done at the University of Waterloo has laregely been solo endevours. Even in the few cases where the projects supposed to be group efforts; I would end performing the majority of the leg work and keep a meticulous eye on the others. It is not an issue where I believe myself to be a dictator in group scenarios rather that:</p>
+<blockquote><p>
+Many people are terrible at collaboration and lack elegance to their programming.
+</p></blockquote>
+<h4><em>What do I mean by elegance?</em></h4>
+<p>
+Most programmers given a task can complete it. The distinction lies to me is in the programmer who can solve the task elegantly. Writing &ldquo;elegant&rdquo; (I will continue to use the word for lack of a better one) can be most of the time somewhat straightforward if you are the only person working on the task. It becomes difficult once it is in a group setting. It is bad enough to avoid toe tripping on a large project without having to spend obscene amounts of time to understand a simple function.</p>
+<p>An example of certain hair-pulling <em>wtf</em> moments is something similar to what I saw today; </p>
+<pre name = "code" class="brush: csharp;toolbar: false;">
+bool Enable_Panic_Mode(bool value)
+{
+    EnablePanicMode(value); //layered call
+    return IsInPanicMode();
+}
+</pre>
+<blockquote><p>
+Instead of returning true/false if the function succeeded, enabling panic mode in fact returns the state it is in&hellip;</p></blockquote>
+<p><em>Pulls hair...</em></p>
+<h3><strong>My list of things that have given me grief:</strong></h3>
+<ol>
+<li><a href="http://en.wikipedia.org/wiki/Hungarian_notation">Hungarian Notation</a></li>
+<p>
+What is Hungarian Notation?<br />
+Hungarian Notation essentially boils down to the use of prefix for the purpose of giving a hint to the purpose of a variable.<br />
+There are plenty of issues I found I have disliked with regards to Hungarian Notation, most of them stem from the fact that it is no longer needed, especially in C#.</p>
+<p><strong>Examples</strong>:<br />
+bBusy: boolean<br />
+m_wheels : member of a structure/class</p>
+<p>
+My gripe with Hungarian Notation is that everyone follows a slightly different version of it, resulting in code that is less readable. For instance I prefer to begin all my member variables simply with a _ (underscore) whereas others prefer m_.</p>
+<p>
+Half the reason of using a constant notation is so that the auto completion (intellisense) can quickly provide the full list of member variables. Using two different notations defeats this purpose.<br />
+Assigning prefixes to denote what the variable represents is becoming less important as well now with the ability for qiuck introspection provided by the IDE.</p>
+<li>Needlessly throwing exceptions</li>
+<p>
+There is a time and place when throwing exceptions is the better course of action.  My frustration is when developers (specifically one who is working on the same project as I am) simply decides to embed every function call with a try and catch (not the main issue) and then write code prone to many exceptions (the main issue). One simple improvement I had made in the application we are developping was simply that the application was throwing constant DivideByZero exceptions. A simple debugging of the program shows that it is a result of mis-ordered initialization, which was a <strong>1-2 line fix</strong>.Instead of investigating the fix initially, what was instead implemetned was a series of try&catches everywhere the divides took place.</p>
+<li>Compiler Candy</li>
+<p>
+This one may not be a big deal however I find it a nice bonus. One of the nicest features of using a language still in constant development is to take advantage of the new features that arise. C# is great with providing tons of candy with each new release (looking forward to 4.0). A quick list of features I wish were used more frequently which I really won&rsquo;t go into detail but will just like to write down:</p>
+<ol>
+<li>Automatic Properties:</li>
+<p>It helps readability and refactoring. I </3 the mix&match of assigning variables within the class through the Property and directly through the member variable itself.</p>
+<li>Lambda Expressions:</li>
+<p>If all the function does is compute A+B and isn&rsquo;t resused save me from navigating to a different project and file just to see the method and use Lambda Expressions.</p>
+</ol>
+</ol>
+<p><br><br />
+<br><br />
+Next post I'll probably talk to myself about how I an learning to use the Visual Studio Profiling Tool.<br />
+It is a pretty impressive tool, one which I had a book on rather than the simple tutorials online.</p>

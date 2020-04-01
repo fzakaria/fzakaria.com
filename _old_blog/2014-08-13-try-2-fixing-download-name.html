@@ -1,0 +1,62 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Try #2: Fixing download name'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1374
+wordpress_url: http://blog.fzakaria.com/?p=1374
+date: '2014-08-13 01:27:04 -0700'
+date_gmt: '2014-08-13 05:27:04 -0700'
+categories:
+- Music
+- Software
+tags:
+- chrome extension
+- github
+- hypem
+- hypemachine
+comments:
+- id: 411
+  author: Simon
+  author_email: sg.ralph@live.com.au
+  author_url: ''
+  date: '2014-09-22 19:28:52 -0700'
+  date_gmt: '2014-09-22 23:28:52 -0700'
+  content: Thank you so much for the continued development, much appreciated dude!
+- id: 412
+  author: Zee
+  author_email: kliqzero@gmail.com
+  author_url: http://www.thesevenhundred.com
+  date: '2014-09-27 10:08:33 -0700'
+  date_gmt: '2014-09-27 14:08:33 -0700'
+  content: Hey bud, thanks a lot for the update, the name tagging works perfectly
+    now.
+- id: 413
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2014-10-07 11:12:13 -0700'
+  date_gmt: '2014-10-07 15:12:13 -0700'
+  content: Glad to hear.
+- id: 414
+  author: Thibaut
+  author_email: ddsurf@hotmail.fr
+  author_url: ''
+  date: '2014-10-18 15:47:17 -0700'
+  date_gmt: '2014-10-18 19:47:17 -0700'
+  content: |-
+    Thank you very much from france !
+    Really appreciate your work dude !
+---
+<h2> tl;dr; </h2>
+<p> Let's get straight to the point; I believe I have finally fixed the download name issue. You can download the latest fix in the chrome-bug-373182 branch; simply download the zip <a href="https://github.com/fzakaria/HypeMachine-Extension/archive/chrome-bug-373182.zip">chrome-bug-373182.zip</a></p>
+<h2> Explanation </h2>
+<p> For those curious who have been tracking the <a href="https://code.google.com/p/chromium/issues/detail?id=373182">Chrome bug</a>; I thought the issue was unsolvable as the latest fix has caused any cross-origin requests to not respect the download attribute (except for data URIs). I had nevertheless believed I had fixed it earlier because when testing some downloads (from the <a href="http://hypem.com/popular">popular</a> page) I only attempted the first page of songs loaded. The <strong>glaring problem</strong> however was that the songs loaded upon scrolling down were not receiving the jQuery <strong>on</strong> event (even with the delegation syntax!). My solution at the moment, is simply to unbind all event handlers for the array key and re-bind them upon any ajax completion. This isn't the greatest solution but it works!<br />
+<em>Perhaps someone can help me fix it so that it uses jQuery's delegation event handling properly...</em></p>

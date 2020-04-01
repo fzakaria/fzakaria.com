@@ -1,0 +1,94 @@
+---
+layout: post
+status: publish
+published: true
+title: Double request for Songs + New Layout
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 577
+wordpress_url: http://www.blog.fzakaria.com/?p=577
+date: '2011-06-21 11:36:13 -0700'
+date_gmt: '2011-06-21 15:36:13 -0700'
+categories:
+- Music
+- Software
+tags:
+- Ajax
+- chrome
+- chrome extension
+- hypem
+- hypemachine
+- javascript
+- Rant
+- UI
+- User Interface
+comments:
+- id: 120
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-06-21 13:19:54 -0700'
+  date_gmt: '2011-06-21 17:19:54 -0700'
+  content: Looks to be working again without having fixed anything. Does that mean
+    the original /serve/play are just being redirected/work still?
+---
+<h2> Two For One Ajax Request</h2>
+<p>
+I believe in an attempt to stop browser extensions that inject download buttons onto <a href="http://hypem.com">HypeMachine's </a>website, they've recently changed how the songs are delivered. This is annoying once again because it means not only my extension is broken but all my scripts + <a href="http://www.blog.fzakaria.com/2011/05/java-hypemachine-batch-downloader/">Java Batch Loader</a> as well.<br />
+Let's take a look at what they've changed.</p>
+<blockquote><p>Prior the requests to the song were simply one Ajax Request</p></blockquote>
+<h3> Before </h3>
+<p><pre class="brush:jscript">
+ var song_url = "/serve/play/" + activeItem.id + "/" + activeItem.key;
+ try {
+  currentPlayerObj[0] = soundManager.createSound({
+  id: 'currentPlayer' + currentTrack,
+  url: song_url 
+  }
+</pre></p>
+<h3> Now </h3>
+<p><pre class="brush:jscript">
+function playTrack(skip_prompts) {
+//removed bunch of code not related to grabbing the song content
+r = new Ajax.Request("/serve/source/" + activeItem.id + "/" + activeItem.key, {
+ method: 'get',
+ onSuccess: function (transport) {
+ var source_data;
+ source_data = transport.responseText.evalJSON();
+ try {
+  currentPlayerObj[0] = soundManager.createSound({
+  id: 'currentPlayer' + currentTrack,
+  url: source_data.url,
+  }
+  //removed a bunch of settings set for creating the sound object for sake of brevity
+ });
+}
+</pre></p>
+<blockquote><p>The request to <em>"/serve/source/" + activeItem.id + "/" + activeItem.key</em> now results in a JSON object that contains the appropriate URL and some additional data. Making retrieving song requiring <strong>two</strong> Ajax requests.</p></blockquote>
+<p>
+For those that are curious to look at the HypeMachine's javascript, you will notice that it has been minified in order to save space. I've been suing <a href="http://jsbeautifier.org">JSBeautifier </a>, in order to 'un-minify' it. A very clean and wonderfully helpful website, <strong>kudos</strong>.</p>
+<h2> What does this mean for my extension and scripts ? </h2>
+<p>
+Previously the buttons I injected were linked to straight MP3 but now instead when I inject the buttons I'll have to perform an Ajax request for each one to get the proper URL to the MP3 file. I haven't implemented this yet but hopefully it doesn't cause the injection to be exceedingly slow and unusable. I'll work on it sometime this week and hopefully can fix it !</p>
+<p>
+The change is less severe for the scripts & java program as I just need to make another request to get the URL before downloading the file. </p>
+<p>
+<em>Just another hoop to jump through...</em></p>
+<p><!--more--></p>
+<h2> I'm Against The Layout Change </h2>
+<p>
+Hype Machine just pushed a layout change to their website. I just wanted to openly voice my opinion that I am against the change for the following reasons:</p>
+<ol>
+<li>It is overall visually unappealing.</li>
+<li>I miss the standard green colour backdrop, I've known to come and love.</li>
+<li>There is a huge <strong>grotesque </strong>nestea add on the site now.</li>
+<li>I find the fact that only the song content scroll and not the whole site in general hurtful on my eyes.</li>
+</ol>
+<p>Here's a pic of the new layout (in case they decide to revert it):<br />
+[caption id="attachment_586" align="aligncenter" width="300" caption="Visually unaesthetic"]<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/hypem.png"><img src="http://www.blog.fzakaria.com/wp-content/uploads/2011/06/hypem-300x170.png" alt="" title="New HypeMachine Layout" width="300" height="170" class="size-medium wp-image-586" /></a>[/caption]</p>
+<p><strong>Not a fan.</strong></p>

@@ -1,0 +1,81 @@
+---
+layout: post
+status: publish
+published: true
+title: Play! Framework with Akka actors on Heroku
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1346
+wordpress_url: http://blog.fzakaria.com/?p=1346
+date: '2014-05-05 18:03:08 -0700'
+date_gmt: '2014-05-05 22:03:08 -0700'
+categories:
+- Software
+tags:
+- akka
+- heroku
+- play
+- scala
+comments: []
+---
+<h2> Play! Framework </h2>
+<p> Recently for a project I've gotten to know the Play! framework and really the Scala language. The introduction into Scala was a very interesting curve, as I feel like I'm constantly flipping back and forth between having a solid understanding and a complete <del datetime="2014-05-05T21:24:54+00:00">wtf</del> confusion as I learn deeper pragmatic/idiomatic scala code. I have grown to love functional programming and can't wait to flex some of the map / Option / fold / reduce in the new Java 8 language. Working with the Play! framework was a great first choice as there seems to be a good community and documentation however with any project the more complex it becomes the farther you go from being able to find good examples and into 'icky' situations' </p>
+<h2> Akka </h2>
+<p> I think you can't get far into learning Scala with at least hearing about Akka and how <em>cool</em> it is. You read the introduction about Akka in plenty of Play!/Scala books and start to imagine how you'r architecture will look when everything is this beautiful encapsulated Actor. I've found however some nifty roadblocks setting it up and this blog post will pretty much be a brain dump on some of the issues I've resolved; namely cause of non-interoptiability with Heroku </p>
+<h2> So you want to use Akka with Play! ? </h2>
+<p> You want to use Akka with Play! ? Great! Play! actually bundles an Actor system already defined which is managed by the lifetime of the web server (<em>whatever that really means</em>) and come preconfigured to do some X thing which isn't very clear. The first issue I ran into however is that I wanted to have Akka Actors to perform general book-keeping which meant they would have to be somewhat managed so that only a single instance is running every interval (i.e. Singleton). This sounds like it should be doable with Akka thanks to their <a href="http://doc.akka.io/docs/akka/snapshot/contrib/cluster-singleton.html" title="SingletonClusterManager">SingletonClusterManager</a> however you quickly learn that remote actors are not possible on <a href="http://heroku.com">Heroku</a>. <strong>Bummer!</strong></p>
+<p> There is a <a href="https://devcenter.heroku.com/articles/scaling-out-with-scala-and-akka">blog post</a> from Heroku on how to setup an Akka cluster using RabbitMQ as their event bus but it just seemed like way to much overhead for my simple use case. Here is some general steps to get Singleton Actors working in Heroku. The overall plan will be to nest a sub-project within your Play! application which contains it's own Main class that will launch all singleton actors. This sub-application should then be launched only on a <strong>single</strong> dyno.</p>
+<h3>Setup a sub-module </h3>
+<p> Understanding the need for a sub-module is important or at least why I chose to do it this way. The way in which Heroku launches a Play! application is via a <em>start script</em> which is created from the <a href="https://github.com/sbt/sbt-native-packager">SBT Native package installer</a> when the <strong>stage</strong> command is executed. You can view the file for your application by opening up <strong>target/universal/stage/bin/<application_name></strong> and you can see that is launches a NettyServer.scala class.</p>
+<p> We could have easily included additional Main methods within our Play! project and included a worker in the Procfile which executes a java target (like what is happening within the run script) however I wanted to leverage the script which meant a new module/project has to be created (limitation of the SBT packager is that it only supports one main method per project). Much of the steps are followed idential from <a href="http://www.playframework.com/documentation/2.2.x/SBTSubProjects">http://www.playframework.com/documentation/2.2.x/SBTSubProjects</a> </p>
+<p> Here are some interesting notes:</p>
+<ul>
+<li> Don't forget to set that the sub-project is an aggregate so that commands waterfall down to the inner project </li>
+<li> If you want to re-use the configuration file from the higher project, make sure you reference the path now accordingly </li>
+<li> Procfile entry: <code>actors/target/universal/stage/bin/actors -Dconfig.file=../conf/application.conf -Dprocess.type=actors </li
+</ul>
+<pre class="brush:scala">
+package actors.singleton
+
+import play.api._
+import java.io.File
+import play.api.libs.concurrent.Akka
+import play.api.Play.current
+import akka.actor._
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+/**
+ * The purpose of this class is to start singleton Akka workers.
+ * Anything that can be written in a distributed manner can be placed directly in the Global.scala
+ * class to be distributed alongside the normal Play application
+ **/
+object SingletonMain {
+  
+   def main(args: Array[String]) {
+     args.headOption
+     .orElse(Option(System.getProperty("user.dir")))
+     .map {
+       applicationPath =>
+         println(s"Reading application path:$applicationPath")
+         val applicationFile = new File(applicationPath)
+         if (!(applicationFile.exists && applicationFile.isDirectory)) {
+           println("Bad application path: " + applicationPath)
+         }else {
+           val application = new DefaultApplication(applicationFile, this.getClass.getClassLoader, None, Mode.Dev	);
+           Play.start(application)
+           val impactPointsActor = Akka.system.actorOf(Props[ImpactPointsActor], name = "impactPointsActor")
+           Akka.system.scheduler.schedule(0 seconds, 5 seconds, impactPointsActor, "test" )
+        }
+     } getOrElse {
+       println("No application path supplied!")
+     }
+     
+   }
+}
+</pre>

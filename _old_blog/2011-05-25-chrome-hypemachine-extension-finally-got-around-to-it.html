@@ -1,0 +1,77 @@
+---
+layout: post
+status: publish
+published: true
+title: Chrome HypeMachine Extension; Finally got around to it.
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 520
+wordpress_url: http://www.blog.fzakaria.com/?p=520
+date: '2011-05-25 14:16:52 -0700'
+date_gmt: '2011-05-25 18:16:52 -0700'
+categories:
+- Music
+- Software
+tags:
+- chrome extension
+- CSS
+- github
+- hypem
+- hypemachine
+- javascript
+- music
+comments:
+- id: 117
+  author: Back &amp; Forth &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/05/back-forth/
+  date: '2011-05-26 15:13:31 -0700'
+  date_gmt: '2011-05-26 19:13:31 -0700'
+  content: "[...] Small Thoughts A blog by Farid Zakaria; somewhat software oriented
+    \  Skip to content AboutProjectsCompendiumCalendarSitemap   &#8220;Successful
+    interactions with objects that you use should get simpler, not more complex--you
+    don&rsquo;t need to be watching the car&rsquo;s engine running in order to drive
+    it, the experience should be intuitive&#8221;by&nbsp;Steve Jobs     &laquo; Chrome
+    HypeMachine Extension; Finally got around to it. [...]"
+---
+<h2> Fixed. </h2>
+<p>
+Seems like it's a continous battle between me having to fix my extension and <a href="http://fascinated.fm/">Anthony Volodkin</a> breaking it. </p>
+<blockquote><p><em>Rightfully so as I guess they really don't want users to easily download the music from their site.</em></p></blockquote>
+<p>The Chrome Extension for <a href="http://hypem.com">Hype Machine</a> was broken around 2 weeks ago, and I finally had gotten around to fixing it!</p>
+<p align="middle"<br />
+Click the image below to get the extension.</p>
+<p align="middle"><a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh#" target="_blank"><img src="http://code.google.com/chrome/webstore/images/branding/ChromeWebStore_Badge_v2_206x58.png" alt="Chrome Web Store Picture" /></a></p>
+<p><!--more--></p>
+<h3> My Inexperience </h3>
+<p>
+Took me longer to find the reason for it being broken than I'd like to care to admit. As I've mentioned earlier, I don't have much experience with Javascript,HTTP ,CSS and Web-development in general. Finding the culprit was more from my determination at prodding and learning as I go. Turns out the fix was really simple, and I missed it easily because I have no experience specifically with CSS. Here was the culprit for those that are interested:</p>
+<pre class="brush:jscript">
+function ext_load(ext, vis) {
+    if (ext && (/Firefox/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent))) {
+        setTimeout(function () {
+            if ($$('.gmlink').length || $$('.cext').length || $$('.tri').length) {
+                var head;
+                var script;
+                head = $$('head')[0];
+                if (head) {
+                    script = new Element('script', {
+                        id: "ext_adview",
+                        type: 'text/javascript',
+                        src: '/js/ext_adview.js'
+                    });
+                    head.appendChild(script);
+                }
+                pageTracker._setVar('ext_check');
+            }
+        }, 5000);
+    }
+}
+</pre>
+<p>
+Although a number of fixes were possible, I took the laziest. I just renamed my CSS attribute names.</p>

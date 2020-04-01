@@ -1,0 +1,155 @@
+---
+layout: post
+status: publish
+published: true
+title: What did you do with my resources?
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 137
+wordpress_url: http://www.blog.fzakaria.com/?p=137
+date: '2009-08-06 16:05:42 -0700'
+date_gmt: '2009-08-06 20:05:42 -0700'
+categories:
+- Uncategorized
+- Software
+tags:
+- ".NET"
+- C#
+- Garbage Collection
+comments: []
+---
+<p><?php<br />
+function mypage_head() {<br />
+echo '
+<link rel="stylesheet" type="text/css" href="styles/shThemeDjango.css">'."n";<br />
+}<br />
+add_action('wp_head', 'mypage_head');<br />
+?><br />
+<?php get_header(); ?></p>
+<p>I spent a good chunk of my day today really trying to learn about .NET Garbage Collection because as I had found I was under a lot of misconceptions/misunderstandings of how it works.</p>
+<h3> Dispose()</h3>
+<p>I was mistaking this for something similar to a destructor which in C# is the finalize method. This method is defined for any class that inherits from the  <a href="http://msdn.microsoft.com/en-us/library/system.idisposable.aspx">IDisposable Interface</a>. Implementing the interface allows you to also declare the object with the &ldquo;using&rdquo; keyword.<br />
+The purpose of this method is to provide the programmer a chance to &ldquo;clean up&rdquo; the object properly before they are released especially if they have references to unmanaged code (Window handles etc..)</p>
+<p>The part where I was thrown off and took a long time reading to understand and learn is that in most cases (pretty much all if done correctly) you still don&rsquo;t need to call Dispose on the object.</p>
+<p>For instance, say you have a managed object with an unmanaged member variable. If the Dispose design method is implemented properly there should be a Finalize method that is declared which calls Dispose () anyways.</p>
+<blockquote><p>But remember, C# doesn't support destructors. Don't let the identical syntax fool you.
+</p></blockquote>
+<p>The problems begin to creep up in doing this in a efficient way. Thankfully .NET provides all the functionality needed to properly do this. When a class implements a finalize method, the way in which it gets garbage collected is differently than other items (<a href="http://msdn.microsoft.com/en-us/magazine/bb985010.aspx">Garbage Collection: Automatic Memory Management in the Microsoft .NET Framework</a>).In short, it gets put on a different queue which can result in a large performance cost.</p>
+<p>The following example from <a href="http://msdn.microsoft.com/en-us/library/system.idisposable.dispose(VS.71).aspx">MSDN </a>shows how to properly implement the Dispose pattern:</p>
+<pre name = "code" class="brush: csharp;toolbar: false; highlight: [39]">
+using System;
+using System.ComponentModel;
+
+// The following example demonstrates how to create
+// a resource class that implements the IDisposable interface
+// and the IDisposable.Dispose method.
+
+public class DisposeExample
+{
+    // A base class that implements IDisposable.
+    // By implementing IDisposable, you are announcing that 
+    // instances of this type allocate scarce resources.
+    public class MyResource: IDisposable
+    {
+        // Pointer to an external unmanaged resource.
+        private IntPtr handle;
+        // Other managed resource this class uses.
+        private Component component = new Component();
+        // Track whether Dispose has been called.
+        private bool disposed = false;
+
+        // The class constructor.
+        public MyResource(IntPtr handle)
+        {
+            this.handle = handle;
+        }
+
+        // Implement IDisposable.
+        // Do not make this method virtual.
+        // A derived class should not be able to override this method.
+        public void Dispose()
+        {
+            Dispose(true);
+            // This object will be cleaned up by the Dispose method.
+            // Therefore, you should call GC.SupressFinalize to
+            // take this object off the finalization queue 
+            // and prevent finalization code for this object
+            // from executing a second time.
+            GC.SuppressFinalize(this);
+        }
+
+        // Dispose(bool disposing) executes in two distinct scenarios.
+        // If disposing equals true, the method has been called directly
+        // or indirectly by a user's code. Managed and unmanaged resources
+        // can be disposed.
+        // If disposing equals false, the method has been called by the 
+        // runtime from inside the finalizer and you should not reference 
+        // other objects. Only unmanaged resources can be disposed.
+        private void Dispose(bool disposing)
+        {
+            // Check to see if Dispose has already been called.
+            if(!this.disposed)
+            {
+                // If disposing equals true, dispose all managed 
+                // and unmanaged resources.
+                if(disposing)
+                {
+                // Dispose managed resources.
+                component.Dispose();
+                }
+             
+                // Call the appropriate methods to clean up 
+                // unmanaged resources here.
+                // If disposing is false, 
+                // only the following code is executed.
+                CloseHandle(handle);
+                handle = IntPtr.Zero;            
+            }
+            disposed = true;         
+        }
+
+        // Use interop to call the method necessary  
+        // to clean up the unmanaged resource.
+        [System.Runtime.InteropServices.DllImport("Kernel32")]
+        private extern static Boolean CloseHandle(IntPtr handle);
+
+        // Use C# destructor syntax for finalization code.
+        // This destructor will run only if the Dispose method 
+        // does not get called.
+        // It gives your base class the opportunity to finalize.
+        // Do not provide destructors in types derived from this class.
+        ~MyResource()      
+        {
+            // Do not re-create Dispose clean-up code here.
+            // Calling Dispose(false) is optimal in terms of
+            // readability and maintainability.
+            Dispose(false);
+        }
+    }
+    public static void Main()
+    {
+        // Insert code here to create
+        // and use the MyResource object.   
+    }
+}
+</pre>
+<p>
+You can see how using this proper dispose pattern, if Dispose() was called by the programmer the finalize method is suppressed removing the need to call it again which would essential attempt to clean up the resource twice and we reattain the lost performance.</p>
+<p>So I am in the woods on when someone would have to or would actually want to call Dispose on an object considering the GC will eventually call it for me anyways and the following:</p>
+<blockquote><p>
+What doesn&rsquo;t happen when you call Dispose():</p>
+<ol>
+<li>Calling Dispose does not prioritize the object for garbage collection. It simply unloads the object&rsquo;s (unmanaged) resources from memory.</li>
+<li>Calling Dispose does not deallocate the object from memory.  Only the GC does that when it performs a collection of the generation in which the object resides.</li>
+<li>The CLR does not insert or run any code not in Dispose.  The behaviour of Dispose is defined by the developer.</li>
+<li>Dispose must be called explicitly by the application.  It is never called by the runtime.  The only exceptions are when using C#&rsquo;s using statement (see ShawnFa&rsquo;s article for a good explanation of what exactly goes on), and the foreach keyword in C# will result in Dispose being called on the Enumerator</li>
+<li>Dispose is NOT threadsafe.  This means two threads can call Dispose on the same object at the same time.  Like for any other synchronization-sensitive method, take steps to make sure this doesn&rsquo;t happen.  I&rsquo;ll give an example of when this might happen in the next section.</li>
+</ol>
+</blockquote>
+<p>The oddest aspect as well is that the object is still alive after a call to Dispose (can very well be alive for a long while if the GC is in fact not needed to be called) and can be continued to be used unless the class checks in every method <em>isDisposed</em> which they never do.</p>
+<p><em>Who knew being a garbage could be so fascinating...</em></p>

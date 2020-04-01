@@ -1,0 +1,55 @@
+---
+layout: post
+status: publish
+published: true
+title: Splash Screens
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 24
+wordpress_url: http://www.blog.fzakaria.com/?p=24
+date: '2009-07-15 13:43:10 -0700'
+date_gmt: '2009-07-15 17:43:10 -0700'
+categories:
+- Software
+tags:
+- C#
+- Delegate
+- Splash Screen
+comments: []
+---
+<p>
+The computer at my current job is pretty slow and compiling the WinForms application we are developping not only takes forever to compile but to load as well since there are so many asm files to be loaded.<br />
+I decided to write up a nice splash screen for the application which will show the current asm being loaded. There is a lot of resources on the net however I found this to be the best <a href="http://www.codeproject.com/KB/dialog/DGDevSplashScreen.aspx"> article </a>. Other people were placing the splash screen on the same thread or using it to report on initializatoin of the actual application whereas I was looking to have a splash just for the asm loading.<br />
+I had initially started with a really stripped version of my current implementation seeing a lot of what the original poster had done as being too complicated. However I either rushed my implementation or it wasn&rsquo;t explained properly the reasons behind certain code choices.</p>
+<pre name = "code" class="brush: csharp;toolbar: false;">
+  public String SetStatus
+        {
+            get { return Status; }
+            set
+            {
+                Status = value;
+                if (label1.InvokeRequired)
+                {
+                    var StatusUpdate =
+                        new UpdateLabel(UpdateStatus);
+                    Invoke(StatusUpdate);
+                }
+                else
+                {
+                    UpdateStatus();
+                }
+            }
+        }
+        private void UpdateStatus()
+        {
+            this.label1.Text = Status;
+        }
+</pre>
+<p>One issue of the code I was confused about was the Invoke() and delegate creation for something as simple as setting the Controls.Text proprety. It was interesting learning how a Control&rsquo;s propery are thread locked which after reading a bit seems to be a feature added in 2.0. The Invoke() command executes the method on the thread that created the Control.  The result of using the delegate in this manner is thread-safe UI modifications.  Pretty neat feature, otherwise might have needed to add Locks to the property for thread safety.</p>
+<p>Things I would like to add to my splash screen:<br />
+I was looking into not only adding a label of the asms&rsquo; being loaded but displaying a progress bar.  I was wondering if it&rsquo;s possible to build the asm reference list of asms to be loaded so that upon each load I can make an accurate step in the progress bar.</p>

@@ -1,0 +1,53 @@
+---
+layout: post
+status: publish
+published: true
+title: SQS , Apache Camel & Akka
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1380
+wordpress_url: http://blog.fzakaria.com/?p=1380
+date: '2014-09-11 03:39:13 -0700'
+date_gmt: '2014-09-11 07:39:13 -0700'
+categories:
+- Software
+tags:
+- akka
+- aws
+- heroku
+- playframework
+- scala
+- sqs
+comments: []
+---
+<h2> Akka Apache-Camel Via SQS </h2>
+<p>
+This is an example project of how to setup a sample project using <a href="http://akka.io">Akka</a>, <a href="http://camel.apache.org/">Apache-Camel</a> and <a href="http://aws.amazon.com/sqs/">SQS</a> together. Never heard of them or curious how they interact with each other?</p>
+<h4>Apache-Camel</h4>
+<blockquote><p>
+Apache Camel is a rule-based routing and mediation engine.
+</p></blockquote>
+<p>
+What that basically means is that Apache Camel provides a common API for exchanging messages across a variety of platforms/protocols such as: HTTP, SQS, AMQP</p>
+<h4>Akka</h4>
+<blockquote><p>
+Akka is a toolkit and runtime for building highly concurrent, distributed, and fault tolerant event-driven applications on the JVM.</p></blockquote>
+<p>
+What that basically means is that Akka is a framework for writing code (known as actors) that lend to code to be easily distributed.</p>
+<h4>SQS</h4>
+<blockquote><p>
+Amazon Simple Queue Service (SQS) is a fast, reliable, scalable & affordable message queuing service.
+</p></blockquote>
+<h4>Why should you care!?</h4>
+<p>
+I've recently had the pleasure of releasing some code on heroku using the <a href="https://www.playframework.com/">PlayFramework</a>. Although deployment and initial setup was a breeze, I was bummed out to find that using Akka's protocol was not doable as only standard ports on heroku are allowed (80,443). This leads to being unable to use Akka actors in a proper distributed model (i.e. they can't talk to each other!)</p>
+<p>
+Heroku has made a <a href="https://devcenter.heroku.com/articles/scaling-out-with-scala-and-akka">post</a> where they outline using RabbitMq instead of the default Akka protocol however I did not find simple / ideal.</p>
+<p>
+This brings us to this sample project! Leveraging Apache-Camel & SQS it was very straightforward to send messages to distributed actors.</p>
+<blockquote><p>Please check out the project on my Github page: <a href="https://github.com/fzakaria/Akka-Camel-SQS">https://github.com/fzakaria/Akka-Camel-SQS</a></p></blockquote>

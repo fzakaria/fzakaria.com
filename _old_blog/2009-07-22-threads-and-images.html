@@ -1,0 +1,49 @@
+---
+layout: post
+status: publish
+published: true
+title: Threads and Images
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 68
+wordpress_url: http://www.blog.fzakaria.com/?p=68
+date: '2009-07-22 11:26:31 -0700'
+date_gmt: '2009-07-22 15:26:31 -0700'
+categories:
+- Uncategorized
+tags:
+- C#
+- greyscale
+- image
+comments: []
+---
+<p>So trying to learn a bit about concurrent programming prior to my class next semester and thought a good way to learn would be to write a simple application. Kinda odd how simple apps seem to grow so quickly into something that is beyond my scope of knowledge.</p>
+<p>I wanted to originally write a simple image manipulation tool, as I thought it would be neat to look into really basic manipulatoin and try and perform them on separate threads. I had initially thought of doing it somewhat similar to what I head learned in <a href="http://www.cs.uwaterloo.ca/~glabahn/cs370/index.html">CS370 </a> of breaking the image into smaller images and offloading the processing onto small threads. There seemed a pretty good class offered in the .NET framework for this sort of thing; <a href="http://msdn.microsoft.com/en-us/library/system.threading.threadpool.aspx">the threadpool class</a>.</p>
+<p>However nothing turned out as I had expected and trying to use the threadPool class was nightmarish.  I think partially the reason may be is that I am not setting up the image object properly so that multiple threads can access it. I guess the two approaches were either:</p>
+<ol>
+<li>Manipulate the actual image file and refresh the component with the new image every time a thread is done executing</li>
+<li>Manipulate the pixels that are actually being displayed.</li>
+</ol>
+<p>Either or it didn&rsquo;t seem to work.</p>
+<h3> Scaling Back </h3>
+<p>Decided to scale back my attempts and just decided to go for a 1 thread (backgroundworker) approach. I had succesffuly done grey scaling (which was neat to learn on how something so simple can actually be pretty intense if you want to make the greyscale perfect). I had chosen to use the <a href="http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale">values </a>:</p>
+<pre name = "code" class="brush: csharp;toolbar: false;">
+private const RED_FACTOR = 0.299;
+private const GREEN_FACTOR = 0.587
+private const BLUE_FACTOR = 0.114
+</pre>
+<pre name = "code" class="c#:nocontrols">            
+Color currPixelColor =originalImage.GetPixel(i, j);
+double red = RED_FACTOR* currPixelColor.R;
+double blue = BLUE_FACTOR * currPixelColor.B;
+double green=GREEN_FACTOR*currPixelColor.G;
+double grey = red + blue + green;
+changedImage.setPixel(i , j , grey , grey , grey);
+</pre>
+<p>I then tried to put RGB sliders, however I seemed to have hit a wall in making the sliders feel really responsive. I guess I would appreciate help from anyone if they have any ideas on how to do it.<br />
+[caption id="attachment_71" align="alignleft" width="395" caption="Here is the application with an image greyscaled."]<img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2009/07/myApp.jpg" alt="Here is the application with an image greyscaled." title="Simple Test Application" width="395" height="356" class="size-full wp-image-71" />[/caption]</p>

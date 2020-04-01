@@ -1,0 +1,72 @@
+---
+layout: post
+status: publish
+published: true
+title: I have failed.
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 152
+wordpress_url: http://www.blog.fzakaria.com/?p=152
+date: '2009-08-10 13:50:14 -0700'
+date_gmt: '2009-08-10 17:50:14 -0700'
+categories:
+- Software
+tags:
+- C#
+comments:
+- id: 8
+  author: Andrew Munn
+  author_email: munnand@gmail.com
+  author_url: http://www.andrewmunn.com
+  date: '2009-08-12 14:41:40 -0700'
+  date_gmt: '2009-08-12 18:41:40 -0700'
+  content: The VERY COMMON mistake of not passing pointers to pointers when writing
+    linked lists functions in C++ is discussed in the book Programmer Interviews Exposed.  I
+    wouldn't feel too bad that you made that mistake, you're not the first nor the
+    last to do it! I just wish you didn't make that mistake in an interview :(
+- id: 9
+  author: Farid Zakaria
+  author_email: farid.m.zakaria@gmail.com
+  author_url: http://www.fzakaria.com
+  date: '2009-08-12 14:57:18 -0700'
+  date_gmt: '2009-08-12 18:57:18 -0700'
+  content: |-
+    What a coincidence. I had just finished going through Programming Interviews Exposed Second Edition; which was recommended to me by the google recruiter prior to my interviews.
+
+    Luckily I had not made the mistake in the interviews although the interviews didn't focus at all on pointers etc... and were purely on run time analysis and general algorithms.
+
+    That book is a very good book.
+
+    Anyways I guess it's something I hadn't encountered for a while because rarely did I even reassign pointers in a method, usually just return a pointer and then reassign.
+---
+<p>Although I love C# and how it does a good job in hiding a lot of the intricasies of pointers that C++ enjoys exposing. I prefer to have things hidden from me only when I know I understand what is going on. <em>Today was a rude wakeup.</em><br />
+I hadn&rsquo;t thought it had been that long in which I had written any C++; I guess I was mistaken.</p>
+<blockquote><p>Today I had the pleasure of completely implementing a simple linked list in C++ <strong>completely wrong.</strong></p></blockquote>
+<p>In my defense, I really only faulted on aspect; however this aspect I guess now seems very silly to have gotten wrong and I am actually not even sure how I become misinformed when the right answer is so obvious.</p>
+<h3>Passing pointers by reference</h3>
+<p>For some delusional reason, I was under the impression that the only difference of passing a pointer and passing a value by reference is that the compiler would hide all the *&rsquo;s and -> for code readibility.<br />
+Turns out (like always) apparently there is more at work than I understood.</p>
+<p>Passing a pointer is pretty much passing a value and a local copy is made onto the method&rsquo;s call stack. Where I err&rsquo;d is in attempting to re-assign pointer values within the method. </p>
+<p>What I should have done was clearly too either pass in a pointer to the pointer or in my case I chose to do:</p>
+<pre name = "code" class="brush: csharp;toolbar: false; highlight: [39]">
+Node*  Node::FindNode(Node*& head, int index)
+{
+	Node* tempP= head;
+	for (int i = 0 ; (i <= index) && (head->nextP != NULL); i++)
+	{
+		if (i == index) 
+		{
+			return tempP;
+		}
+		tempP = tempP->nextP;
+	}
+	return 0;
+}
+</pre>
+<p>Now to be fair. I decided to implement LinkedLists in such a way so that the head never needs to be reassigned once declared. This is obviously a stupid way of doing it; with the logical solution to always just return the pointer to the new head.</p>
+<p><em>Anyways, at least I can say that I ended up learning the right semantics</em>.</p>

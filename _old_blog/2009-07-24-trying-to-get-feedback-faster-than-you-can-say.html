@@ -1,0 +1,79 @@
+---
+layout: post
+status: publish
+published: true
+title: Trying to get feedback faster than you can say...
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 110
+wordpress_url: http://www.blog.fzakaria.com/?p=110
+date: '2009-07-24 16:16:53 -0700'
+date_gmt: '2009-07-24 20:16:53 -0700'
+categories:
+- Software
+tags:
+- C#
+- greyscale
+- image
+- JPEG
+comments: []
+---
+<p align="left">
+I must be tired trying to work on the RGB sliders because I don&rsquo;t seem to be thinking straight. I&rsquo;m beginning to think that with only one background thread it may be very difficult to get quick response even with the upgrade to the code using unsafe even with my little test images (forget it for sure working with large ones).</p>
+<p align="left">
+I&rsquo;m spawning a background thread (don&rsquo;t mention the overhead :( ) everytime the slider changes which begings the method to alter the red value of each pixel  rather than &ldquo;reset&rdquo; the single thread which didn&rsquo;t seem any better.</p>
+<p align="left">
+I have to get some actual times down to see if this is even better than just using one single background thread and cancelling the operation everytime the slider changes.</p>
+<p>Anyway here&rsquo;s some of the code so far of my sort of weak attempt to get fast feedback:</p>
+<pre name = "code" class="brush: csharp;toolbar: false">
+private void trackBar_RED_ValueChanged(object sender, EventArgs e)
+{
+  BackgroundWorker colorChangerWorker = new BackgroundWorker();
+  colorChangerWorker.DoWork += new 
+DoWorkEventHandler(colorChangerBackGroundWorker_DoWorkRed);
+  colorChangerWorker.RunWorkerAsync
+(new ColorChangingObject(trackBar_RED.Value, trackBar_RED.Maximum, colorChangerWorker,
+ originalImage.Width, originalImage.Height, originalImage));
+}
+private void colorChangerBackGroundWorker_DoWorkRed(object sender, DoWorkEventArgs e)
+{
+  ColorChangingObject paramObject = (ColorChangingObject)e.Argument;
+  double sliderValue = (double)paramObject.SliderValue;
+  double maxValue = (double)paramObject.MaxSliderValue;
+  double addRedPercent = sliderValue / maxValue;
+  FastBitMapProcessor processImage = new FastBitMapProcessor(paramObject.Image);
+  processImage.LockImage();
+  for (int i = 0; i < paramObject.Width; i++)
+  {
+   for (int j = 0; j < paramObject.Height; j++)
+    {
+     Color currPixelColor = processImage.GetPixel(i, j);
+     double red = (addRedPercent * (255 - currPixelColor.R)) + currPixelColor.R;
+     processImage.SetPixel(i, j, Color.FromArgb((int)red, currPixelColor.G, currPixelColor.B));
+    }
+  }
+  processImage.UnlockImage();
+  changedImage = (Bitmap)processImage.Image.Clone();
+  if (pictureBox2.InvokeRequired)
+  {
+   var UpdateImage = new   UpdatePictureBoxImage(SetPictureBox2Image);
+   Invoke(UpdateImage, changedImage);
+  }
+  processImage.Dispose();
+  paramObject.backgroundThread.Dispose();
+}    
+</pre>
+<p><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2009/07/JPEG_SLIDER_RED.jpg" alt="Let there be red" title="Let there be red" width="293" height="247" class="size-full wp-image-119" /><br />
+Post any help if you have some.</p>
+<h4> Side Stuff </h4>
+<p align = "left">
+I guess I&rsquo;ve made a lot of posts which are really really software oriented versus rather than some other stuff I&rsquo;ve been doing lately (squash, ice hockey) I just found this project to be really interesting and on my mind.</p>
+<p align = "left">
+Part of what is so interesting is noticing how a project envisoined initially so small can just explode if not checked. I seem to be working just as hard to fight thoughts to add the application than I do actually working on it. I guess that is what the benefit of programming something for an assigment versus than for you is. You tend to not go beyond the scope of the assignment, whereas for yourself you let your thoughts run free.</p>
+<p align = "left">
+I feel this is something it is good to get a grip on. It seems to be a big problem some people lack in the software industry especially evidently from my current and previous jobs.  People never want to freeze the software and label it feature complete; but rather seem to happy tacking on feature after feature.</p>

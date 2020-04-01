@@ -1,0 +1,85 @@
+---
+layout: post
+status: publish
+published: true
+title: Stupid SOP and GWT Proxy Service
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 303
+wordpress_url: http://www.blog.fzakaria.com/?p=303
+date: '2010-06-22 18:33:25 -0700'
+date_gmt: '2010-06-22 22:33:25 -0700'
+categories:
+- Software
+tags:
+- GWT
+- Java
+- Proxy Service
+comments:
+- id: 23
+  author: Ali
+  author_email: ulm43eapte@outlook.com
+  author_url: http://BaZTLfXH
+  date: '2014-07-06 10:48:14 -0700'
+  date_gmt: '2014-07-06 14:48:14 -0700'
+  content: We have also been doing this for a while, and have developed a sddaeraniztd
+    method (  ) for transferring data to our GWT modules via our JSPs.It would be
+    great if GWT supported serializing objects into JSPs or Servlets at runtime to
+    cut down on the amount of JSON manipulation that can be required to transfer complex
+    data sets this way.Official support for something along the lines of what  or  would
+    provide a great method for speeding up module startup when using JSPs or Servlets.
+---
+<p>So for our fourth year design project, our team is building a tournament management system using Ruby on Rails. However part of the rails application is the design of a RESTFul API that can accommdate the addition of plugins so developers can customize perhaps the look & feel of their own tournament type.</p>
+<p>In order to support plugins that are not published/offered on our web-server, we've had to circumvent the SOP (same origin policy). This is my real first foray into web development and I've been pulling my hair almost the whole way, including having to work around SOP. Since we allow plugins to perform POST as well GET, using JSONP was not a suitable solution to the problem. In development of one of the plugins built using GWT, we've decided to build a proxy server using the Remote Procedure Calls provided by GWT.</p>
+<p>Essentially GWT has functionality for creating RemoteServices that perform RPC from the client to the server, however it is the server with respect to the plugin and not the server they'd like to perform the HTTP requests.</p>
+<p>Essentially, we'd created a ProxyService RPC which when in the server performs the necessary HTTP request (since no longer in client, they are not subject to SOP).</p>
+<pre name = "code" class="brush: java;toolbar: false;">
+private HttpURLConnection connect(String path, EnumSet<Connect> opts,
+			String method) {
+		URL url = null;
+		HttpURLConnection connection = null;
+
+		try {
+			url = new URL(DOMAIN + path);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		if (opts.contains(Connect.DO_INPUT)) {
+			connection.setDoInput(true);
+		}
+		if (opts.contains(Connect.DO_OUTPUT)) {
+			connection.setDoOutput(true);
+		}
+
+		try {
+			connection.setRequestMethod(method);
+		} catch (ProtocolException e) {
+			throw new RuntimeException(e);
+		}
+
+		return connection;
+	}
+
+public String post(String path, String data) {
+		HttpURLConnection connection = connect(path, EnumSet.of(
+				Connect.DO_OUTPUT, Connect.DO_INPUT), "POST");
+		connection.setRequestProperty("Content-Type", "application/json");
+		List<String> response = writeTo(connection,
+				HttpURLConnection.HTTP_CREATED, data);
+		return concat(response);
+	}
+</pre>
+<p>Essentially, although the RemoteServices by GWT are Async, we've included a synchronous call using Java's HttpURLConnection class. The reading/writing returned by the server happen to be JSON which we've wrapped in Strings, which are automatically Serializable to the RPC in GWT, making the overall design of the proxy server pretty straightforward. We found a lot of missing (hard to find) documentation on what to set the request properties for each HTTP request. We ultimately found the proper one's, through trial and error.</p>
+<h2>In other news...</h2>
+<p>I'm going to Burnaby, BC to work on an upcoming video game title for <a href="http://www.bluecastlegames.com/">Blue Castle Games</a>, which is a independent video game studio. I've also seen great GDC videos I hope to comment on through some upcoming posts as well as through my previous term at Digital Extremes.</p>

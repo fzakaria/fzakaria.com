@@ -1,0 +1,109 @@
+---
+layout: post
+status: publish
+published: true
+title: Chrome's Missing De-Obfuscate Option
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 606
+wordpress_url: http://www.blog.fzakaria.com/?p=606
+date: '2011-06-24 10:50:20 -0700'
+date_gmt: '2011-06-24 14:50:20 -0700'
+categories:
+- Software
+tags:
+- chrome
+- debugging
+- github
+- Google
+- javascript
+- User Interface
+comments:
+- id: 121
+  author: Huy
+  author_email: h-blog@huyz.us
+  author_url: http://huyz.us/
+  date: '2011-07-12 00:47:44 -0700'
+  date_gmt: '2011-07-12 04:47:44 -0700'
+  content: |-
+    Maybe you're using a different version of the browser, but here should already be button at the bottom of the page that that looks like "{ }" which does what your button does.
+
+    Still, it was nice of you to show that anyone can hack the Developer Tools.
+- id: 122
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-07-12 09:47:57 -0700'
+  date_gmt: '2011-07-12 13:47:57 -0700'
+  content: "<a href=\"#comment-2173\" rel=\"nofollow\">@Huy:</a> \nYea,\nI put an
+    edit on how I found the new button. It was interesting and cool to learn how to
+    modify it though nonetheless."
+- id: 123
+  author: Krishna
+  author_email: qmj5p507ho@yahoo.com
+  author_url: http://At18gGQpB
+  date: '2014-07-05 20:17:03 -0700'
+  date_gmt: '2014-07-06 00:17:03 -0700'
+  content: BudimcicThank you for your quick reply!I've already imtelmenped your change
+    with one slight change from your reply there was no file layout.xml file here:app/design/frontend/default/default/layout/inchoo/snowflakes/layout.xmlBUT
+    instead I found/modified the following file:app/design/frontend/default/default/layout/inchoo/snowflakes/snowflakes.xml
+    per your suggestion.It is working great on my Magento CE 1.7.0.2 site!Thanks once
+    again.Sincerely,Don V.
+- id: 124
+  author: Kayah
+  author_email: gcqe0bv9v@mail.com
+  author_url: http://0EMaots7R
+  date: '2014-07-05 22:40:04 -0700'
+  date_gmt: '2014-07-06 02:40:04 -0700'
+  content: V.Changing handler ... to ...  inapp/design/frontend/default/default/layout/inchoo/snowflakes/layout.xml
+    soluhd display snowflakes only on homepage.
+- id: 125
+  author: Hiromi
+  author_email: 06qkjkm0@yahoo.com
+  author_url: http://ZDcTPWkoFS
+  date: '2014-07-06 01:21:53 -0700'
+  date_gmt: '2014-07-06 05:21:53 -0700'
+  content: I am looking to join some aiiatlffe programs, and I am part of barnes and
+    noble, but looking for some more to make extra money. What programs have you joined
+    that make money, and do you have any tips on making even more money with aiiatlffe
+    programs?
+---
+<br />
+<blockquote><p>EDIT: <strong>This post is now irrelevant.</strong>.I've since found the new placement of the 'Pretty Print' button</p></blockquote>
+<h2> Making debugging easier </h2>
+<p>
+One of my biggest paints when developing/debugging my <a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">HypeMachine extension</a> was that they minify <del datetime="2011-06-24T04:25:39+00:00">all</del> most of their scripts they use. That's why it was a pleasant surprise to hear in Chrome 12.X they had inserted the option to de-obfuscate the scripts in the developer tools window since debugging minified JavaScript is almost impossible because it makes stepping and tracing through the code nearly impossible. </p>
+<blockquote><p><a href="http://code.google.com/chrome/devtools/docs/overview.html">Chrome Developer tools</a> is almost identical to Firefox's firebug.</p></blockquote>
+<h3>With Minification</h3>
+<p>
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/deobfuscate.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/deobfuscate.png" alt="" title="deobfuscate" width="652" height="140" class="aligncenter size-full wp-image-613" /></a></p>
+<h3>Post De-Obfuscation/Minification</h3>
+<p>
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/postobfuscate.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/postobfuscate.png" alt="After de-obfuscation" title="postobfuscate" width="806" height="299" class="aligncenter size-full wp-image-617" /></a></p>
+<blockquote><p><a href="http://en.wikipedia.org/wiki/Minification_(programming)">Minificiation</a> is the process of removing all unnecessary characters from source code, without changing its functionality. These unnecessary characters usually include white space characters, new line characters, comments, and sometimes block delimiters, which are used to add readability to the code but are not required for it to execute.</p></blockquote>
+<p><!--more--></p>
+<h2> Why was it removed? No worries.</h2>
+<p>
+I've recently started to use the dev/canary build of Chrome to play around with and have noticed that the context menu offering the option was <strong>removed</strong>. I'm not sure the option was removed in the latest builds (I tried Googling a reason) however I decided this would be a perfect time to muck around with their developer tools and learn <del datetime="2011-06-24T14:08:49+00:00">some </del> a lot of new things!</p>
+<h3> Chrome Developer Tools </h3>
+<p>
+So I've been recently slowly trekking my way up the JavaScript slope (a very awkward and winding slope) and it was neat to see that the frontend for the Chrome Developer Tools are built using JavaScript allowing modifications to their frontend to be straightforward, easy and you can debug it with another instance of Chrome! </p>
+<ol>
+<li>Download front end source files.</li>
+<li>Make modifications.</li>
+<li>Run Chrome with the following command line flag: --debug-devtools-frontend="full path to the extracted folder"</li>
+<li>Run another instance of chrome with the following command line flag: --remote-debugging-port=9222 --user-data-dir=remote-profile</li>
+<li>Navigate to <a href="http://localhost:9222">http://localhost:9222</a> on the second instance.</li>
+<li>Debug your new modifications to the window!</li>
+</ol>
+<p>
+I had decided to add a button to the Scripts panel which performed the same de-obfuscation/minification as previously done in the context menu. Prior to the addition of the option in the context menu in version 12, I was using very often the site <a href="http://jsbeautifier.org/">http://jsbeautifier.org/</a> which performed the same functionality. The sourcode that the site uses was graciously placed on <a href="https://github.com/einars/js-beautify">github </a>. Using their scripts, I included them into the frontend package and was happy to have back my missing functionality!</p>
+<p><a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/newbutton.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/newbutton.png" alt="" title="Reinserted De-Obfuscation" width="501" height="259" class="aligncenter size-full wp-image-626" /></a></p>
+<blockquote><p>You can find the <em>little </em>modification I made to the frontend package <a href="https://github.com/fzakaria/chromium-devtools-frontend-beautify">here</a>. I'm sure the old code for the missing de-obfuscation context menu was still lying around in the package but <em>meh</em>.</p></blockquote>
+<p>
+<strong>N.B.</strong> JavaScript is crazy and Google writes some even crazier JavaScript.</p>

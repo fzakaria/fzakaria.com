@@ -1,0 +1,92 @@
+---
+layout: post
+status: publish
+published: true
+title: A little more IronPython
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 191
+wordpress_url: http://www.blog.fzakaria.com/?p=191
+date: '2009-08-18 15:28:52 -0700'
+date_gmt: '2009-08-18 19:28:52 -0700'
+categories:
+- Software
+tags:
+- IronPython
+comments:
+- id: 11
+  author: Davy Mitchell
+  author_email: daftspaniel@gmail.com
+  author_url: http://daftpython.blogspot.com
+  date: '2009-08-19 02:00:44 -0700'
+  date_gmt: '2009-08-19 06:00:44 -0700'
+  content: Thanks for mentioning DIE in your round up. There will be a new version
+    with IronPython 2.6RC1 which is due soon (all in SVN right now). I changed some
+    of the 'Save' code so it is going to get a big test before a release :-)
+- id: 12
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2009-08-19 10:41:26 -0700'
+  date_gmt: '2009-08-19 14:41:26 -0700'
+  content: |-
+    No problem. It was a very impressive lightweight editor.
+    Are you working on it alone?
+- id: 13
+  author: Davy Mitchell
+  author_email: daftspaniel@gmail.com
+  author_url: http://daftpython.blogspot.com
+  date: '2009-08-20 07:14:19 -0700'
+  date_gmt: '2009-08-20 11:14:19 -0700'
+  content: |-
+    Thanks though a lot of the credit goes to the Asling code editor component.
+
+    It's almost all my code so far - had one fix emailed in but I have had some great feedback that have shaped DIE. Please feel free to contribute code :-) Maybe have plugins soon...
+---
+<p>
+Working my way very slowly through IronPython in Action, and so far it is pretty neat. Probably the craziest thing is building a GUI application using the interactive console.  However in order to get the most of out that joy, the interactive console must be placed on a separate thread. Normally it is on the same thread as the GUI thread causing it to lock up since the Form is in a continous loop.</p>
+<p>
+The IronPython distribution provides a sample script winforms.py. Winforms specifically places the console on a separate thread to play around with the GUI interactively. With winforms imported, you can display the form by calling form.Show () rather than Application.Run (form).</p>
+<blockquote><p><em>Making changes to the GUI during runtime makes me smile</em></p></blockquote>
+<p><br></p>
+<h3>IDE</h3>
+<p><br></p>
+<p>
+I find an important IDE crucial in learning/using a language. Most people I speak to try to persuade me otherwise telling me it is more of a crutch and that I should perhaps stick to basic text editors (ex. VIM). For example; it was a joy to use VS2008 in learning C# (especially the visual editor). I cannot imagine doing most of the work I did without the visual editor and Intellisense. Therefore I set on a search for an IDE to learn IronPython as it is currently not supported in VS (hopefully 2010).</p>
+<p>
+A somewhat <del datetime="2009-08-18T19:13:21+00:00">quick </del>long browse through the web resulted in me experiementing/investigating the following options:</p>
+<ol>
+<li>
+<h4>IronPython studio</h4>
+<p>
+Initially I was excited to see a build of Visual Studio (using the VS SDK) that includes IronPython support. However I quickly discovered that it doesn&rsquo;t work with IronPython 2.6.</p>
+</li>
+<li>
+<h4>Eclipse</h4>
+<p>
+<strong>Rule #1</strong> I learned is to always check Eclipse for a plugin for a lanaguage I&rsquo;m learning and most of the time there is great support for it. This was true with respect to IronPython and Eclipse does have a plugin for IronPython support. Best of all they included auto completion for most of the .NET libraries which I&rsquo;ve been reading is somewhat difficult to do given that most of the type checking is done during runtime. The two drawbacks I noticed is that :</p>
+<ul>
+<li>No Debug support</li>
+<li>Takes a while to launch script</li>
+</ul>
+</li>
+<p>I looked into some more lightweight options which mainly focused on a simple good text editor.  </p>
+<li>
+<h4>Notepad++</h4>
+<p>
+I&rsquo;m a fan of Notepad++. I install it on every machine I use, since I find it to be a very great lightweight but highly extensible editor. Although it has no native support for IronPython, the Python language support was enough to make it useable.</p>
+</li>
+<li>
+<h4>Davy&rsquo;s IronPython Editor</h4>
+<p>
+This one caught my attention because it is an editor written in IronPython and it is very lightweight. It is still in development so some features seem to be incomplete although it gets the job done nicely.</p>
+</li>
+</ol>
+<p>
+In the end I decided to go with a more lightweight approach since I am sticking to smaller scripts. The IronPython tutorial (included with the distribution) includes help for setting up on using VS to debug IronPython or using the CLR debugger.</p>
+<p><em>Time to pick up the pace...</em></p>

@@ -1,0 +1,41 @@
+---
+layout: post
+status: publish
+published: true
+title: Image Manipulation Tool Me Some More
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+excerpt: Tackled more on Images, Threads and C#
+wordpress_id: 83
+wordpress_url: http://www.blog.fzakaria.com/?p=83
+date: '2009-07-23 15:03:37 -0700'
+date_gmt: '2009-07-23 19:03:37 -0700'
+categories:
+- Software
+tags:
+- C#
+- greyscale
+- image
+- JPEG
+comments: []
+---
+<p align="left">
+So I had pretty much took on this interesting task of seeing what functionality can I implement (and somewhat well) for the sole purpose of really learning to master C# & .NET Framework & Concurrency. However I seemed to have made some good progress.</p>
+<p align="left">
+My search online to see how I can speed up my background worker thread lead me to <a href="http://www.switchonthecode.com/tutorials/csharp-tutorial-convert-a-color-image-to-grayscale">this website</a> which really demonstrates (most likely to the joy of C++ fan boys) how much managed code can really slow down performance. Pretty much by having direct access to the memory we can alter it faster than through .NET runtime. The author explains it nicely:</p>
+<blockquote><p>
+Locking the bits keeps the .NET runtime from moving them around in memory. This is important because we're going to use a pointer, and if the data is moving around the pointer won't point to the correct thing anymore. You'll need to know the pixel format of the image you're trying to convert. I'm using jpeg's, which are 24 bits per pixel.
+</p></blockquote>
+<p align="left">
+Not everything however was nicely explained or perhaps they are thought to be trivial. I was for some reason under the assumption that ARGB would be stored in that order. Such that every byte follows that pattern as I increase in memory address.<br />
+With a little debugging I discovered how the order is in fact in reverse (BGRA) and perhaps some head scratching makes me think it&rsquo;s probably that way since the file was written in Little Endian</p>
+<h3> How everything comes to together </h3>
+<p align="left">
+I guess it&rsquo;s funny how things relate and pop up so qiuckly. It has been perhaps only a week since I had read and written the splash code that makes use of the Invoke() method so that methods can be run on the same thread as the Window and yet during this side project I forgot totally about it (for a little bit at least). I was trying to update the Image in a PictureBoxControl in the background worker thread and wasn&rsquo;t sure why the image wasn&rsquo;t updating. It only took a few mins to remember that I needed to marshall into the proper thread.</p>
+<p align="left">
+The speed has already greatly improved and this is performing the calculatoins on a single thread which leaves the possibility to come back to the threadPool class which I might need to do if I want to get the RGB sliders as responsive as I&rsquo;d like.</p>

@@ -1,0 +1,90 @@
+---
+layout: post
+status: publish
+published: true
+title: My C++ Class Idiom Gotcha
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 917
+wordpress_url: http://www.blog.fzakaria.com/?p=917
+date: '2011-11-16 12:03:50 -0800'
+date_gmt: '2011-11-16 17:03:50 -0800'
+categories:
+- Software
+tags:
+- C#
+comments: []
+---
+<h2> Idiom: Classes </h2>
+<p>
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/11/Preview.jpg"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/11/Preview.jpg" alt="" title="All The things" width="200" height="150" class="alignleft size-full wp-image-919" /></a> Definitely I get trapped into a C++ style of thinking; or rather an object-oriented style of thinking. I'm still a fan of object oriented programming (although I have read post after post about how <em>wonderful</em> functional programming is), however I've ran into a <strong>gotcha </strong>at work because of it.</p>
+<p></br></p>
+<blockquote><p>"<em>gotcha</em>" has become a term for a feature of a programming language that is likely to play tricks on you to display behavior that is different than what you expect.</p></blockquote>
+<p><!--more--></p>
+<h3>What I wanted to do </h3>
+<p>
+We had a very small structure representing a 4D float Vector. I began to use it however decided that I wanted to add a few more methods, a constructor etc... Therefore I decided to turn my nice lean small structure into a <strong>Class</strong>!</p>
+<pre class="brush:cpp">
+struct Vector
+{
+float x;
+float y;
+float z;
+float w;
+};
+</pre>
+<p><em>became...</em></p>
+<pre class="brush:cpp; highlight: [24]">
+class Vector4f
+{
+public:
+    union
+    {
+        struct  
+        {
+            float x;
+            float y;
+            float z;
+            float w;
+        };
+        struct 
+        {
+            float X;
+            float Y;
+            float Z;
+            float W;
+        };
+        FLOAT data[4];
+    };
+    Vector4f();
+    Vector4f(float x, float y, float z, float w);
+    virtual ~Vector4f() {}
+
+    static Vector4f Zero() { return m_zeroVector; }
+
+    Vector4f Add(const Vector4f & vector2) const;
+    Vector4f operator+(const Vector4f & vector2) const;
+    float & operator[](unsigned int component);
+    float const & operator[](unsigned int component) const;
+private:
+    const static Vector4f m_zeroVector;
+};
+</pre></p>
+<p>
+C++ is an object-oriented language, thus I have the tendency to wrap everything in a Class rather than a Struct so that I can extend them and it is more inline with the OO-idiom. This has generally been fine for most code I've written however my work has a lot of mixing between C and C++ coding (multimedia driver development for those curious).</p>
+<p>
+My OO-idiom failed me with the use of <a href="http://www.cplusplus.com/reference/clibrary/cstring/memcpy/">memcpy</a>. Many assignment operations in the codebase are done via memcpy instead of the assignment operator.</p>
+<pre class="brush:cpp; ">
+float data[4];
+Vector4f vector4;
+memcpy(&data, &vector4, sizeof(Vector4f)); //OUT OF BOUNDS
+</pre>
+<p>
+The culprit is <strong>line 24</strong> in the definition of the Vector4f class. Adding <em>virtual</em> to a method, causes the class definition to contain an additional vbptr (virtual base pointer). It caused the size of the class to go from 16 to 20 (assuming 4byte pointer). It was from force of habit of always including virtual in the destructor, which is itself another <strong>gotcha</strong>!</p>
+<p>
+Whether what I encountered is a valid <em>gotcha</em> or me just being <del datetime="2011-11-16T16:30:20+00:00">an idiot</del> inexperienced, I haven't decided. For now, I've added a static assert (compile time assert) to verify the sizeof the class is as expected in case someone in the future decides to redo my blunder.</p>

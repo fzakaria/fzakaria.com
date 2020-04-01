@@ -1,0 +1,252 @@
+---
+layout: post
+status: publish
+published: true
+title: Small Stab at C++ Templates
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 733
+wordpress_url: http://www.blog.fzakaria.com/?p=733
+date: '2011-08-04 14:04:41 -0700'
+date_gmt: '2011-08-04 18:04:41 -0700'
+categories:
+- Software
+tags:
+- C#
+- STL
+- templates
+comments: []
+---
+<h2>Templates</h2>
+<p>
+Never really had a chance to play around with <a href="http://www.cplusplus.com/doc/tutorial/templates/">C++ Templates</a>, since most work during my undergrad didn't require it and I had found that most companies avoided writing any templates themselves (at most only using the STL ones).</p>
+<p>
+I noticed at my current job that they had implemented a few times their own LinkList classes since they are not including/using the STL. Looking over some of the implementations (some a bit more generic than others using void pointers) wanted me to try and write my own LinkList template class.</p>
+<p>
+Although most would quickly deem it worthless of an attempt and clearly trivial, writing the class helped solidify a few deeper understandings for me in C++.</p>
+<ul>
+<li>The use of the keyword <em>typename</em>. Since C++ templates are generated at compile time, they are done in a multipass fashion. During the first pass, certain types are not yet defined however can be referenced, i.e. LinkList<T>::Iterator. In order to tell the compiler that Iterator is a type and not a variable, the keyword typename is used.</li>
+<li>Proper <em>const</em> and <em>reference</em> correctness. There were some additional nuances that I was unaware of when working with const types. For instance, when returning a reference via an inspection method (const method), the return type must be const as well.</li>
+<li>You can actually some pretty <em>crazy shit</em> with templates, namely <a href="http://en.wikipedia.org/wiki/Template_metaprogramming">metaprogramming</a>.</li>
+<li>The STL is pretty crazy and I take it for granted in most software projects I do. I was scratching my head for a bit on just how I wanted to implement my Iterator...</li>
+</ul>
+<blockquote><p>The STL is pretty crazy and I take it for granted in most software projects I do.</p></blockquote>
+<p><!--more--><br />
+<em>Here's my stab...</em></p>
+<pre class="brush:cpp">
+#ifndef _LINKLIST_H_
+#define _LINKLIST_H_
+
+template<class T>
+class LinkList
+{
+private:
+    typedef T value_type;
+	typedef T&amp; reference_type;
+	typedef const T &amp; const_reference_type;
+	typedef T * pointer_type;
+	typedef const T * const_pointer_type;
+
+	class Node
+	{
+     public:
+        Node(value_type data): m_data(data), 
+                               m_next(NULL), 
+                               m_previous(NULL){}
+        ~Node(){}
+        
+        void setNext(Node * next) { 
+            this->m_next = next; 
+        }
+        Node * getNext() const { 
+            return this->m_next; 
+        }
+        
+        void setPrevious(Node * prev) { 
+            this->m_previous = prev; 
+        }
+        Node * getPrevious() const { 
+            return this->m_previous; 
+        }
+        
+        void setData(const_reference_type data) { 
+            m_data = data; 
+        }
+        reference_type getData() { 
+            return m_data; 
+        }
+        
+    private:
+        Node * m_next;
+        Node * m_previous;
+        value_type m_data;
+	};
+    
+    unsigned int m_size;
+    Node * m_head;
+    Node * m_tail;
+	
+public:
+    class Iterator
+    {
+    public:
+        Iterator &amp; operator++() { //prefix
+            this->m_current = m_current->getNext(); 
+            return *this; 
+        } 
+        Iterator operator++(int) //postfix
+        {
+            Iterator result = *this;
+            ++(*this);
+            return result;
+        }
+        reference_type operator*() { 
+            return m_current->getData(); 
+        } 
+        pointer_type operator->() const { 
+            return &amp;this->m_current->getData(); 
+        }
+        bool operator== (const Iterator &amp; rhs) const { 
+            return this->m_current == rhs.m_current; 
+        }
+        bool operator!=(const Iterator &amp; rhs) const { 
+            return !(*this == rhs); 
+        }
+        
+    private:
+        friend class LinkList<T>;
+        Iterator(Node * node) : m_current(node){}
+        Node * m_current;
+        
+    };
+
+    LinkList(): m_size(0), 
+                   m_head(NULL), 
+                   m_tail(NULL) {}
+    virtual ~LinkList();
+    
+    void push_back(const_reference_type item);
+    void push_front(const_reference_type item);
+    void pop_front();
+    void pop_back();
+    
+    Iterator begin() const { 
+        return Iterator(m_head); 
+    }
+    Iterator end() const { 
+        return Iterator(NULL); 
+    }
+    
+    Iterator find(const_reference_type value)const;
+    void clear();
+    unsigned int size() const { return m_size; }
+    bool empty() const { return m_size == 0; }
+    
+    
+};
+
+template<class T>
+LinkList<T>::~LinkList()
+{
+    this->clear();
+}
+
+template<class T>
+void LinkList<T>::clear()
+{    
+    for (unsigned int i = 0 ; i < m_size; ++i)
+    {
+        this->pop_back();
+    }
+}
+
+template<class T>
+typename LinkList<T>::Iterator LinkList<T>::find(const_reference_type value) const
+{
+    Node * curr = m_head;
+    while (curr != NULL)
+    {
+        if (curr->getData() == value)
+        {
+            return Iterator(curr);
+        }
+        
+        curr = curr->getNext();
+    }
+    
+    return Iterator( this->end() );
+}
+
+template<class T>
+void LinkList<T>::push_back(const_reference_type item)
+{
+    Node * newNode = new Node(item);
+    m_size+=1;
+    if (this->m_head == NULL)
+    {
+        this->m_head = newNode;
+        this->m_tail = m_head;
+        return;
+    }
+    newNode->setPrevious(this->m_tail);
+    this->m_tail->setNext( newNode );
+    this->m_tail = newNode;
+    return;
+}
+
+template<class T>
+void LinkList<T>::push_front(const_reference_type item)
+{
+    Node * newNode = new Node(item);
+    m_size+=1;
+    if (this->m_head == NULL)
+    {
+        this->m_head = newNode;
+        this->m_tail = m_head;
+        return;
+    }
+    this->m_head->setPrevious(newNode);
+    newNode->setNext(this->m_head);
+    this->m_head = newNode;
+    return;
+}
+
+template<class T>
+void LinkList<T>::pop_back()
+{
+    if (this->m_tail != NULL)
+    {
+        m_size-=1;
+        Node * popNode = this->m_tail;
+        this->m_tail = popNode->getPrevious();
+        delete popNode;
+        if(this->m_tail == NULL)
+        {
+            this->m_head = NULL;
+        }
+    }
+    
+}
+
+template<class T>
+void LinkList<T>::pop_front()
+{
+    if (this->m_head != NULL)
+    {
+        m_size-=1;
+        Node * popNode = this->m_head;
+        this->m_head = popNode->getNext();
+        delete popNode;
+        if(this->m_head == NULL)
+        {
+            this->m_tail = NULL;
+        }
+    } 
+}
+#endif
+</pre>

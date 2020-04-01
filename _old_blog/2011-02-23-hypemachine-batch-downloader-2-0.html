@@ -1,0 +1,212 @@
+---
+layout: post
+status: publish
+published: true
+title: HypeMachine Batch Downloader 2.0
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 417
+wordpress_url: http://www.blog.fzakaria.com/?p=417
+date: '2011-02-23 15:31:50 -0800'
+date_gmt: '2011-02-23 20:31:50 -0800'
+categories:
+- Music
+- Software
+tags:
+- hypem
+- hypemachine
+- music
+- python
+- script
+comments:
+- id: 41
+  author: davers
+  author_email: dave.proxy@gmail.com
+  author_url: http://about.me/davers
+  date: '2011-03-04 23:27:03 -0800'
+  date_gmt: '2011-03-05 04:27:03 -0800'
+  content: |-
+    !
+    i have been looking for something like this for quite some time. thank you thank you thank you so much for taking the time to write it! i've been using your chrome extension for awhile now, but it takes awhile to drudge through all 65 pages and download them manually...
+
+    one problem: it seems to be hanging on the third track. like, the first two downloaded fine, but it can't download the third...any idea why this would be happening? lemme know if you need me to send some logs or whatever; i'd love to help test this script for you if it means getting all these mp3s at last
+- id: 42
+  author: davers
+  author_email: dave.proxy@gmail.com
+  author_url: http://about.me/davers
+  date: '2011-03-04 23:29:52 -0800'
+  date_gmt: '2011-03-05 04:29:52 -0800'
+  content: "<a href=\"#comment-889\" rel=\"nofollow\">@davers:</a> \nerr, disregard
+    that; it just seems to be crawling along oh-so-slowly. must be the net connection
+    out here in the boonies..."
+- id: 43
+  author: davers
+  author_email: dave.proxy@gmail.com
+  author_url: http://about.me/davers
+  date: '2011-03-04 23:50:18 -0800'
+  date_gmt: '2011-03-05 04:50:18 -0800'
+  content: |-
+    oh, but now i have a real bug: the python script exits if it hits a 404 on the mp3 file.
+    this is the file it occurred on for me, if it helps: http://hypem.com/#!/item/199d8/
+- id: 44
+  author: davers
+  author_email: dave.proxy@gmail.com
+  author_url: http://about.me/davers
+  date: '2011-03-05 00:20:35 -0800'
+  date_gmt: '2011-03-05 05:20:35 -0800'
+  content: "<a href=\"#comment-891\" rel=\"nofollow\">@davers:</a> \ni don't really
+    know python but i thiiink i fixed it by wrapping the urllib2.urlopen in the download_song
+    def with a try/except where the exception returns a false and prints a msg notifying
+    of the 404"
+- id: 45
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-03-06 17:43:12 -0800'
+  date_gmt: '2011-03-06 22:43:12 -0800'
+  content: "<a href=\"#comment-892\" rel=\"nofollow\">@davers:</a> \n\nHey Davers,\n\nI'll
+    look into the script why it is causing that error. I think I had actually fixed
+    that on my local machine but forgot to update the script on my website. I'll make
+    sure to do that.\n\n\nI'm also working on a Mac application that performs the
+    same functionality.\nIf you'd like and leave me you're e-mail I can send it to
+    you when I'm done."
+- id: 46
+  author: Nick
+  author_email: nickkarrasch@gmail.com
+  author_url: ''
+  date: '2011-03-10 23:40:25 -0800'
+  date_gmt: '2011-03-11 04:40:25 -0800'
+  content: |-
+    v1.2 is still in the chrome store, where can i find 2.0?
+
+    1.2 just stopped working also.
+
+    Thanks!
+- id: 47
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-03-11 10:55:38 -0800'
+  date_gmt: '2011-03-11 15:55:38 -0800'
+  content: "<a href=\"#comment-944\" rel=\"nofollow\">@Nick:</a> \n\nIf you send me
+    an e-mail I can email you the script.\n\nAs for the chrome extension you can find
+    it here: https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh\n\nThere's
+    a patch coming soon!"
+- id: 48
+  author: HypeMachine Cocoa Woes &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/03/hypemachine-cocoa-woes/
+  date: '2011-03-23 14:07:34 -0700'
+  date_gmt: '2011-03-23 18:07:34 -0700'
+  content: "[...] Small Thoughts A blog by Farid Zakaria; somewhat software oriented
+    \  Skip to content AboutProjectsCompendiumCalendarSitemap   &#8220;Successful
+    interactions with objects that you use should get simpler, not more complex--you
+    don&rsquo;t need to be watching the car&rsquo;s engine running in order to drive
+    it, the experience should be intuitive&#8221;by&nbsp;Steve Jobs     &laquo; HypeMachine
+    Batch Downloader 2.0 [...]"
+- id: 49
+  author: Thanks and Up Next &#8211; Small Thoughts
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/03/thanks-and-up-next/
+  date: '2011-03-23 14:27:26 -0700'
+  date_gmt: '2011-03-23 18:27:26 -0700'
+  content: "[...] to the demand and upon people&#8217;s comments on the extension,
+    I then worked up a Python script which made batch downloading of the songs easier
+    for those from the site. Although I took down the [...]"
+- id: 50
+  author: JT
+  author_email: jonathan.jensen@gmail.com
+  author_url: ''
+  date: '2011-04-14 00:45:27 -0700'
+  date_gmt: '2011-04-14 04:45:27 -0700'
+  content: |-
+    hype machine now can somehow detect the use of the extension and makes the links playback "Rick Rolled" music instead.  See comments:
+
+    http://www.facebook.com/hypem
+
+    Nice extension though.
+- id: 51
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-04-14 00:59:23 -0700'
+  date_gmt: '2011-04-14 04:59:23 -0700'
+  content: "<a href=\"#comment-1397\" rel=\"nofollow\">@JT:</a> \nHey JT,\n\nI'm aware
+    of the issue and will be investigating the extension to see what they've changed.
+    I'm just writing exams. Hopefully I can figure it out soon afterwards!"
+- id: 52
+  author: Matt
+  author_email: mamf123@gmail.com
+  author_url: ''
+  date: '2011-08-07 14:22:32 -0700'
+  date_gmt: '2011-08-07 18:22:32 -0700'
+  content: Hey man I really love what you have created here and would really appreciate
+    if you could send me a copy, thanks!
+- id: 53
+  author: Farid Zakaria
+  author_email: farid@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2011-08-08 10:28:47 -0700'
+  date_gmt: '2011-08-08 14:28:47 -0700'
+  content: "<a href=\"#comment-2404\" rel=\"nofollow\">@Matt:</a> \nYou can grab it
+    here: https://github.com/fzakaria"
+- id: 54
+  author: Matilde
+  author_email: bdlh51p9e0@mail.com
+  author_url: http://KsirQJjwoq3
+  date: '2014-07-06 07:50:25 -0700'
+  date_gmt: '2014-07-06 11:50:25 -0700'
+  content: I completely undnrstaed this objection and I too suspect that greater knowledge
+    of the Higgs will likely never bring us great technological advance (or at least,
+    not in the near future). But I also suspect this is the wrong question to ask   that
+    the benefits of pure science will in the future descend less directly from the
+    science itself, but will still be inextricably linked to the research which bore
+    it. Just as CERN brought us the web, and the space programme brought numerous
+    technological spin-offs, I'm sure pure inspirational science of the future will
+    reward us in ways we cannot now predict, but which stem directly from its pursuit
+    (indeed, just as times of war always bring us medical advances). Apart from anything
+    else, you can't bracket off different areas of physics, or even science as a whole,
+    and treat them as isolated avenues of study   the different disciplines will always
+    talk to each other and augment each other's development. Matt is right to note
+    that this is a horse race in which you can't pick the winner before it starts,
+    but the truth is bolder than that   whatever winners there are will emerge stronger
+    from the participation of all the others.
+- id: 55
+  author: Kouk
+  author_email: icmjmnmrjz3@gmail.com
+  author_url: http://EBnag0vTa
+  date: '2014-07-06 11:36:40 -0700'
+  date_gmt: '2014-07-06 15:36:40 -0700'
+  content: I am not sure what kind of practical teanlohogiccl advances can come out
+    of studying the Higgs physics and the like, in the same way that the transistor
+    came out of the discovery of the electron and quantum mechanics. The only reason
+    I can see of for doing high-energy physics research is for the sake of plain curiosity
+    and the fact that the state of understanding and technology allows for it.
+- id: 56
+  author: Laura
+  author_email: lqjaw562pby@gmail.com
+  author_url: http://KyRWtmjahbn
+  date: '2014-07-06 12:04:28 -0700'
+  date_gmt: '2014-07-06 16:04:28 -0700'
+  content: Just to play devil's advocate, isn't it safe to say that weahtver is discovered
+    at the LHC and beyond will not have any practical effect until our everyday technology
+    involves TeV scale energies?  Anything involving lower energies should be described
+    just fine by the Standard Model.  In other words, doesn't the paradigm of effective
+    field theory actually make high energy physics irrelevant to low energy everyday
+    life?
+---
+<h2> They're going to hate me.. </h2>
+<p>Going to keep this one short and <strong>sweet</strong>.</p>
+<p>
+So yesterday I decided to rewrite and fix the batch downloader script I had written in Python to download songs from <a href="http://hypem.com/">HypeMachine</a>. Anyways, you can find the find the new script and accompanying README file <a href=""><del datetime="2011-03-08T17:59:03+00:00">here</del></a> (or the Projects page). The script should be straight forward to setup and run. If you have any issues please let me know.
+ </p>
+<blockquote><p>EDIT: If you would like the script feel free to send me an e-mail. I removed the link from my blog upon request of the site creators of the website.</p></blockquote>
+<h2> More to come </h2>
+<p>
+If there seems to be a demand, I might port it to some GUI form, to make it even simpler to get the songs. In the mean time I plan on fixing the HypeMachine chrome extension to allow browsing and playback at the same time. I also plan on porting the extension to Safari and Firefox.</p>
+<blockquote><p>Enjoy the songs. =) </p></blockquote>

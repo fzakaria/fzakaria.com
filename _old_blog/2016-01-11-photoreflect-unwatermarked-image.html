@@ -1,0 +1,168 @@
+---
+layout: post
+status: publish
+published: true
+title: PhotoReflect Unwatermarked image
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1446
+wordpress_url: http://blog.fzakaria.com/?p=1446
+date: '2016-01-11 13:47:16 -0800'
+date_gmt: '2016-01-11 21:47:16 -0800'
+categories:
+- Software
+tags:
+- Photoreflect
+- Reverse Engineering
+comments:
+- id: 18765
+  author: Humberto
+  author_email: d00mbrella@gmail.com
+  author_url: ''
+  date: '2016-03-16 11:51:30 -0700'
+  date_gmt: '2016-03-16 18:51:30 -0700'
+  content: "Want to try it, but Im not sure whats the name of the http tool.\r\nWhit
+    \"brew install http\" I got an error: No available formula with the name \"http\""
+- id: 18766
+  author: fzakaria
+  author_email: farid.m.zakaria@gmail.com
+  author_url: ''
+  date: '2016-03-16 13:23:39 -0700'
+  date_gmt: '2016-03-16 20:23:39 -0700'
+  content: |-
+    sorry for the mistake:
+
+    brew install httpie
+- id: 18767
+  author: ITRIED
+  author_email: sexirousie2@yahoo.com
+  author_url: ''
+  date: '2016-04-14 05:37:03 -0700'
+  date_gmt: '2016-04-14 12:37:03 -0700'
+  content: "Hi Fzakaria,\r\n\r\nI am having trouble to get the image without the watermark.
+    The picture is no longer available on the order page as shown here:\r\nhttp://holidayvalley.photoreflect.com/store/Orderpage.aspx?pi=1XCZ02PK040011&amp;po=11&amp;pc=20\r\n\r\nbut
+    i was able to hit the email button and get the image to appear larger here:\r\nhttp://holidayvalley.photoreflect.com/store/EmailPhotocard.aspx?pi=1XCZ02PK040011\r\n\r\nThen
+    in the source code I was able to search dll and find the image here:\r\nhttp://www.photoreflect.com/web/bin/prpv.dll?cmd=photo&amp;z=6B790E56EB606419569CD1952112A71156AE5785F4ADAB202384BEAC57EF5AAF862F3A290811DE4009880598DC66F33F\r\n\r\nThis
+    allows me to save the image but I am still having trouble removing the watermark.
+    Is there anything you can do to help? I would really appreciate it."
+- id: 18768
+  author: fzakaria
+  author_email: farid.m.zakaria@gmail.com
+  author_url: ''
+  date: '2016-04-14 08:18:48 -0700'
+  date_gmt: '2016-04-14 15:18:48 -0700'
+  content: "Looks like they might have solved the bug the exploit.\r\n:("
+- id: 18769
+  author: ITRIED
+  author_email: sexirousie2@yahoo.com
+  author_url: ''
+  date: '2016-04-14 09:18:05 -0700'
+  date_gmt: '2016-04-14 16:18:05 -0700'
+  content: I've been trying to understand the script they use for the watermark but
+    I am not very good. Anyway, thank you for trying. I will keep searching.
+- id: 18770
+  author: ITRIED
+  author_email: sexirousie2@yahoo.com
+  author_url: ''
+  date: '2016-04-14 09:18:28 -0700'
+  date_gmt: '2016-04-14 16:18:28 -0700'
+  content: I've been trying to understand the script they use for the watermark but
+    I am not very good. Anyway, thank you for trying. I will keep searching.
+- id: 18772
+  author: ITRIED
+  author_email: sexirousie2@yahoo.com
+  author_url: ''
+  date: '2016-04-16 09:18:14 -0700'
+  date_gmt: '2016-04-16 16:18:14 -0700'
+  content: "Hi fazakaria,\r\n\r\nI was able to find the picture by messing around
+    with the web address and got a picture to come up with the s=1. It was very small.
+    Then I have been messing with it and got it bigger by changing it to s=300 and
+    s=400. When I do this is also shifts around the watermark which makes me think
+    that is is possible to get the image without the watermark. Can you take a look
+    and let me know what you think? Here is the address:\r\nhttp://holidayvalley.photoreflect.com//web/bin/prpv.dll?cmd=photo&amp;s=400&amp;pi=1XCZ02PK040011&amp;po=11&amp;pc=20\r\n\r\nThank
+    you!"
+- id: 18773
+  author: Humberto
+  author_email: d00mbrella@gmail.com
+  author_url: ''
+  date: '2016-04-16 12:25:41 -0700'
+  date_gmt: '2016-04-16 19:25:41 -0700'
+  content: "Hi again, thank you for the help, the script still works. But you have
+    to change the \"e=9729609\" of the Referer page for the id of the album you want
+    to download\r\n\r\n\"Referer:http://myfakestore.photoreflect.com/store/thumbpage.aspx?e=9729609\"\r\n\"Referer:http://myfakestore.photoreflect.com/store/thumbpage.aspx?e=##albumID##\""
+- id: 18774
+  author: R
+  author_email: v-s-m@yandex.ru
+  author_url: ''
+  date: '2016-04-16 15:06:03 -0700'
+  date_gmt: '2016-04-16 22:06:03 -0700'
+  content: Tried several times with those scripts, tried to modify it with different
+    ways, the result is - i CANT get photos without watermark :(
+- id: 18775
+  author: ITRIED
+  author_email: sexirousie2@yahoo.com
+  author_url: ''
+  date: '2016-04-16 17:02:11 -0700'
+  date_gmt: '2016-04-17 00:02:11 -0700'
+  content: "Hi Humberto,\r\n\r\nI can't seem to get it to work. I have all the information
+    but the script is not working. Can you see if it works for you? \r\nHere is the
+    album:\r\nhttp://holidayvalley.photoreflect.com/store/ThumbPage.aspx?e=9662469&amp;g=1XCZ02PK04&amp;gf=true\r\nThis
+    is the individual picture:\r\nhttp://holidayvalley.photoreflect.com/store/Orderpage.aspx?pi=1XCZ02PK040011&amp;po=11&amp;pc=20\r\n\r\nIf
+    you can get it I couldn't thank you enough. I want to give it to my girlfriend
+    for our anniversary. I tried contacting the photographer over and over for the
+    last 4 months and he wont get back to me.\r\nThank you and hope to hear from you
+    soon."
+- id: 18794
+  author: MILLER
+  author_email: tranducmille@gmail.com
+  author_url: ''
+  date: '2016-10-09 23:31:11 -0700'
+  date_gmt: '2016-10-10 06:31:11 -0700'
+  content: Give me your email ITRIED, I will give you the real photo since photoreflect.
+- id: 18798
+  author: Chuck
+  author_email: crc@va.net
+  author_url: ''
+  date: '2017-01-10 19:21:52 -0800'
+  date_gmt: '2017-01-11 03:21:52 -0800'
+  content: You all don't get caught. The statutory penalties for copyright infringement
+    are severe.
+- id: 18805
+  author: Skye212
+  author_email: sky07042@gmail.com
+  author_url: ''
+  date: '2017-05-03 07:30:07 -0700'
+  date_gmt: '2017-05-03 14:30:07 -0700'
+  content: Hello Can someone help me and explain this better
+- id: 18808
+  author: Happy photographer
+  author_email: beckyleathr1@yahoo.com
+  author_url: ''
+  date: '2017-05-27 05:22:19 -0700'
+  date_gmt: '2017-05-27 12:22:19 -0700'
+  content: I am happy to know it is difficult to remove the watermark, having 9 separate
+    photoreflect accounts that we do our online sales through. We work hard and go
+    to a great expense to provide online sales only to have them stolen.
+---
+<h2>Reverse Engineering</h2>
+<p>I lately had a special event where a photographer took some photos of the occasion and used <a href="http://www.photoreflect.com/mktx/index.html">PhotoReflect</a> to host/sell me them.</p>
+<p>The price <strong>per photo</strong> is 29$ or the whole set (90) 699$. I consider that an egregious amount to charge, considering that her services were supposedly already included with the event.</p>
+<p>
+The following are some instructions you can follow for downloading the non-water marked <strong>medium quality</strong> images. This assumes that you are running on a Mac however the commands can easily be modified for any setup.</p>
+<pre class="wrap:true lang:bash decode:true " title="Reverse Engineering PhotoReflect" >
+#Install a helpful tool to make HTTP requests - similar to cURL but nicer
+brew install http
+#Grab a single image id from the URL (click on any photo) and find the part with "pi=03PD17RD000000".
+#That ID represents the ID for that photo.
+#Suppose the store they send you to is http://myfakestore.photoreflect.com/store/
+#Execute the following:
+http "http://myfakestore.photoreflect.com/web/bin/prpv.dll?cmd=photo&s=-3&i=03PD17RD000000&p=1" "Referer:http://myfakestore.photoreflect.com/store/thumbpage.aspx?e=9729609" > 03PD17RD000000.jpeg
+</pre>
+<p>The real magic here is in the <code>s=-3</code> portion of the request, which I've found returns the image without the water-mark.</p>
+<blockquote><p>I still haven't figured out how to download the HighQuality images, but if you find out please share!</p></blockquote>
+<p>EDIT: I have also found a helpful <a href="https://gist.github.com/dcpesses/9652778">Gist</a> that can help inject a download button onto the store.</p>

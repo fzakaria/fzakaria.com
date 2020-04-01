@@ -1,0 +1,40 @@
+---
+layout: post
+status: publish
+published: true
+title: Trying to become Master++
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 293
+wordpress_url: http://www.blog.fzakaria.com/?p=293
+date: '2010-02-11 17:21:15 -0800'
+date_gmt: '2010-02-11 22:21:15 -0800'
+categories:
+- Software
+tags:
+- C#
+comments: []
+---
+<p>
+I've been reading (slowly) the <a href="http://www.blog.fzakaria.com/?now_reading_author=mark-deloura&now_reading_title=best-of-game-programming-gems">Best of Game Programming Gems</a> book I had recently purchased and I find it amusing that every recommendation/lesson within the articles of the book that I've read is being put to use within the company I'm currently working at. It makes the information within the book seem more real in my opinion and adds some more weight and validity to the issues they bring up (along with solutions).</p>
+<p>
+Just one of the first few chapters within the book discusses the power of macros and the use of them v.s. inline functions. For a programmer who has done most of his programming work at school, I've rarely had to touch Macros and inline functions (although I knew of both). Although perhaps the general power and weakness of each are taught in theory perhaps corner cases of each aren't brought up within the classroom and exposure is limited.</p>
+<p>
+The code-base I am working with currently uses Macros heavily and I think I have just started to begin training my brain to remember that they are not what they seem. For instance, a silly simple example the book lists about the common pitfalls of using Macros:</p>
+<pre name = "code" class="brush: cpp;toolbar: false;">
+#define max(a,b) ((a) > (b) ? (a) : (b))
+int x =5;
+int y=3;
+int maxValue = max(++x, y);
+//What would maxValue return?
+</pre>
+<p>
+Another great chapter in the book involves asserts and getting more information across from your assert. In about 10-30 lines of code, they breakdown how to initially setup a great Assert macro that will convey additional information and lead to overall better productivity through injections of smart Asserts. What really drives me to Software Engineering is the principle of learning and conveying proper messages and relevant useful information.</p>
+<p>
+Even the most simplest tip of replacing assert(expression) with assert(expression && "My error message") helps to convey more information across in case you do not want to break into the program for instance.</p>
+<blockquote><p>What I am enjoying the most is that I am diligently trying to write good code, although it is tough when you are modifying less than stellar code. </p></blockquote>

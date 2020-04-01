@@ -1,0 +1,128 @@
+---
+layout: post
+status: publish
+published: true
+title: Unit test in Play! Framework with Slick
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1365
+wordpress_url: http://blog.fzakaria.com/?p=1365
+date: '2014-07-11 18:15:46 -0700'
+date_gmt: '2014-07-11 22:15:46 -0700'
+categories:
+- Software
+tags:
+- play
+- play framework
+- scala
+comments:
+- id: 407
+  author: applicius
+  author_email: website@applicius.fr
+  author_url: http://www.applicius.fr
+  date: '2014-07-14 11:58:02 -0700'
+  date_gmt: '2014-07-14 15:58:02 -0700'
+  content: Acolyte framework can be used to mock up JDBC connection so that Slick
+    (or any other persistence code based on JDBC) can be provided test fixtures, with
+    isolation and simplicity that fit unig testing. http://acolyte.eu.org/
+- id: 408
+  author: alex
+  author_email: heresanemail@loljknope.com
+  author_url: ''
+  date: '2014-07-25 07:20:23 -0700'
+  date_gmt: '2014-07-25 11:20:23 -0700'
+  content: |-
+    Hey,
+
+
+    Great work with the plugins, been using your bits for a few years now! Any news on the  hypem scraper site coming back online?
+
+    Also, your plugin for hypem seems to have lost the ability to add the names of the songs, we just get a gibberish song title now. Can you look into this for us?
+
+
+    Thanks,
+
+
+    A
+- id: 409
+  author: alex
+  author_email: heresanemail@loljknope.com
+  author_url: ''
+  date: '2014-07-25 07:24:11 -0700'
+  date_gmt: '2014-07-25 11:24:11 -0700'
+  content: |-
+    Also,
+
+    Could you potentially create a 'Download top 50' button that essentially clicks all the download buttons for the first 50 tracks?
+
+    I'm sure  a lot of people like myself use your plugin on the time machine section of the website, and so it would be a great addition to be able to download everything in one go!
+- id: 410
+  author: Farid Zakaria
+  author_email: fzakaria@fzakaria.com
+  author_url: http://www.fzakaria.com
+  date: '2014-08-05 03:17:29 -0700'
+  date_gmt: '2014-08-05 07:17:29 -0700'
+  content: |-
+    Hey, there has been a change to Chrome where they dis-allow setting the filename for downloading files in the manner at which I am doing them.
+    I am looking for alternatives but in the mean time I dont think I have a great answer :(
+---
+<h2> Testing </h2>
+<p> The play framework includes some pretty good integration/documentation on how to perform testing however most of it relies on requiring a Play! application to be created (i.e. FakeApplication) and the fact that they share the same database. The second point was the more troublesome one, since in ScalaTest the tests are run in parallel. The following is what I have done to get around these problems.</p>
+<pre class="wrap:true lang:scala decode:true " >trait DatabaseInitializationPerTest extends PlaySpec with BeforeAndAfter {
+//create a unique database name, which is the class that implements this trat
+val dbName = this.toString.toLowerCase()
+
+//the postgres database is always available. Connect to it and drop the current 
+//test database (i.e. classname)
+// Drop and create the database
+val postgres = Database.forURL(s"jdbc:postgresql://localhost/postgres", driver = "org.postgresql.Driver")
+  postgres withSession {
+    implicit dbServerSession =>
+      {
+        logger.debug(s"Creating database: $dbName")
+        Q.updateNA(s"DROP DATABASE IF EXISTS $dbName; CREATE DATABASE $dbName;").execute
+      }
+  }
+
+// Connect to the database
+implicit lazy val database = Database.forURL(s"jdbc:postgresql://localhost/$dbName", driver = "org.postgresql.Driver");
+
+  before {
+    database withSession { implicit session =>
+      logger.debug(s"Creating the database: $dbName")
+      val evolution_seq = play.api.db.evolutions.Evolutions.applicationEvolutions(new java.io.File("."), this.getClass().getClassLoader(), "default")
+      evolution_seq.flatMap(e => EvolutionSqlScript(e.sql_up).statements).foreach{ sql =>
+        Q.updateNA(sql).execute
+      }
+    }
+  }
+
+  after {
+    database withSession { implicit session =>
+      logger.debug(s"Destroying the database: $dbName")
+      val evolution_seq = play.api.db.evolutions.Evolutions.applicationEvolutions(new java.io.File("."), this.getClass().getClassLoader(), "default")
+      //I believe you have to apply sql_down in the reverse order
+      evolution_seq.reverse.flatMap(e => EvolutionSqlScript(e.sql_down).statements).foreach{ sql =>
+        Q.updateNA(sql).execute
+      }
+    }
+  }
+
+  /*
+   * The following class was taken from the Play framework however they listed theirs as private.
+   * @href https://github.com/playframework/playframework/blob/master/framework/src/play-jdbc/src/main/scala/play/api/db/evolutions/Evolutions.scala
+   */
+  case class EvolutionSqlScript(sql: String) {
+    def statements: Seq[String] = {
+      // Regex matches on semicolons that neither precede nor follow other semicolons
+      sql.split("(?&amp;lt;!;);(?!;)").map(_.trim.replace(";;", ";")).filter(_ != "")
+    }
+  }
+
+}</pre>
+<p> The above code makes re-use of the Evolution plugin provided by Play! The code creates Evolution objects (which contain UpSQL and DownSQL statements) and we can apply them on a before / after method before each test. </p>

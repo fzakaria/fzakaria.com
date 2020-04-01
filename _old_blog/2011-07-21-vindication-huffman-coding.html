@@ -1,0 +1,68 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Vindication : Huffman Coding'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 716
+wordpress_url: http://www.blog.fzakaria.com/?p=716
+date: '2011-07-21 13:45:07 -0700'
+date_gmt: '2011-07-21 17:45:07 -0700'
+categories:
+- Life
+- Software
+tags:
+- C#
+- github
+- gotcha
+- huffman coding
+- Rant
+- software engineering
+comments: []
+---
+<p>
+In 2nd year university, I had taken a Computer Science course which covered data structures and algorithms (<a href="http://www.ucalendar.uwaterloo.ca/0910/COURSE/course-CS.html#CS240">CS240</a>). The course covered compression and namely <a href="http://en.wikipedia.org/wiki/Huffman_coding">Huffman Coding</a>. </p>
+<blockquote><p>Huffman coding is an entropy encoding algorithm used for lossless data compression, and is used in mainstream compression techniques such as JPEG and MP3.</p></blockquote>
+<p>The final project for the course was to implement a basic Huffman Coding application in Java. At the time my programming skills were clearly not what they were today and in fact probably lower than my peers. I had started my degree in Software Engineering with pretty much zero experience in programming. Although many computer science students entered their program under similar experience, the Software Engineering program just assumed you had some prior knowledge. </p>
+<blockquote><p>As an aside, my handicap in experience only forced me to try harder in programming and I feel that I finished better than some in my class even in knowledge.</p></blockquote>
+<p>I was having a particular difficult time in Java performing the bitstream operations needed for the project and had found a library online which helped alleviate the task. Although I had found this helpful library, I was still unable to finish the project but decided to submit it regardless for part marks. Using source found online is not discouraged at the university (unless it trivializes the project) however it is required to source where the code was taken from. Me and a good friend of mine (<a href="https://plus.google.com/101699071179042932912">Hayden Theriault</a>) both used the bitstream library and I had not included the reference to the source. As a result both of our codes came back with a high match of similarities.</p>
+<blockquote><p>Typically Computer Science courses at the university run all the students submissions through a program which helps detect any plagiarism.</p></blockquote>
+<p>I ended up getting a 0% in the project, -5% in my overall grade and a note in <em>"my folder"</em>. I still finished with an 80+% in the course however I was still upset that I didn't get a chance to finish the project.</p>
+<p><!--more--></p>
+<h2> Fast Forward </h2>
+<p>
+The unfinished project has somewhat always been at the back of my mind and I had recently decided to go back and finish it (perhaps even extend it with more advanced Huffman Coding techniques). I have finally finished at least a decent working version of the Huffman Coding algorithm and have uploaded it to <a href="https://github.com/fzakaria/Huffman-Compression">Github</a>. It's not my best code but it's not my worst. There are plenty of modifications I'd like to still make and a bunch of GOTCHAs I ran into while writing it in C++.</p>
+<h3> GOTCHAs and Improvements</h3>
+<ol>
+<li>GOTCHA: Having to check for EOF after each get() call to an iostream
+<pre class="brush:cpp">
+ std::istream & buffer = this->GetInputStream();
+ while (buffer.good())
+ {
+   char curr_char;
+   buffer.get(curr_char);
+   if (buffer.eof())
+       break;
+ }
+</pre>
+<p>This was exceedingly annoying because I had forgotten to place the second check for EOF each time I read from a stream. The extra check is needed because it is the act of reading the EOF byte that causes the eofbit to be set. However because the EOF byte has to be read, the buffer is still technically <em>good</em>. What occurs if you forget to do the check within the loop is that the stream will simply place the last known good read byte into the variable which resulted in some bytes which were twice.</p>
+<p>The bitstream class needed a little bit of tuning for this GOTCHA as well due to the fact that there are occasionally some padded bits at the end of the file due to the encoding. The eofbit would have to be manually set if we were reading the last known good byte (the one right before the EOF byte) and that we have reached the known padded bits!~
+</li>
+<li>Improvement: Custom Stream class<br />
+I wrote a bitstream class to handle reading/writing bits from a file, however it doesn't conform with the template of stream classes already defined by the STL for C++. I'd like to go back and rewrite it so that it properly inherits from the stream class and functions accordingly.</li>
+<li>Improvement: Adaptive Huffman Coding<br />
+There are numerous improvements that can be made to the Huffman algorithm, and I think it would be pretty interesting to go and implement some of them.</li>
+<li>Improvement: Software Engineering Design Principles<br />
+I'd like to incorporate some more well known design principles to make the code something I'd be very proud of. I.e. Strategy design pattern, command pattern, sexy interfaces etc..</li>
+<li>Improvement: GUI<br />
+Would be pretty cool.</li>
+</ol>
+<pre>
+As always, you can find this project on my <a href="https://github.com/fzakaria/Huffman-Compression">Github</a>.
+</pre>

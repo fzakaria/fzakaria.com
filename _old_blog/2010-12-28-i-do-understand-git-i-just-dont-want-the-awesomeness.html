@@ -1,0 +1,41 @@
+---
+layout: post
+status: publish
+published: true
+title: I do understand Git I just don't want the awesomeness
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 396
+wordpress_url: http://www.blog.fzakaria.com/?p=396
+date: '2010-12-28 01:14:57 -0800'
+date_gmt: '2010-12-28 06:14:57 -0800'
+categories:
+- Software
+tags:
+- git
+comments: []
+---
+<h2> <del datetime="2010-12-28T06:00:49+00:00">Distributed</del> VCS </h2>
+<p>
+I'll be the first to admit, that when we first started using <a href="http://git-scm.com/">Git</a> for our FYDP (Fourth Year Design Project) I really didn't understand the whole distributed paradigm of distributed VCS (versioning control system), largely because I've been using in the Perforce in the workplace which is the typical depot and client model.</p>
+<p>
+Even though I still <em>barely</em> understand the whole distributed workflow of using branching and merging branches together it was not the reason why I wanted to setup a VCS on my server. I really just wanted a backup and the ability to checkout my code on any computer that has git installed.... especially now that I've actually started to work on code that may <del datetime="2010-12-28T06:00:49+00:00">not</del> interest people.</p>
+<p>Here are the following steps I found on the internet that helped me setup my environment (with Bluehost):</p>
+<ol>
+<li><a href="http://linux.koolsolutions.com/2009/07/20/howto-installing-git-on-bluehost-domain-hosted-websites/">Installing Git</a></li>
+<p>
+The instructions here are pretty easy to follow and I didn't run into any problems (just make sure to grab the most recent release). The blog post goes on to mention some troubles he had with the 'true' command but I didn't experience the same.</p>
+<li><a href="http://www.bitflop.com/document/111">Understanding a bare repository</a></li>
+<p>
+This one <em>sadly</em> took me a while. I had kept performing the regular <strong>init</strong> on my repository on the server and then cloning it on my laptop. When trying to push changes I would get a ton of errors because the repo wasn't bare. Creating a bare repository essentially just removes the working files and only keeps the .git VCS files.</p>
+<li><a href="http://www.bluehostforum.com/showthread.php?20304-Bluehost-Solution-to-the-Git-PATH-issue-when-using-a-non-interactive-shell">Setting up environment variables</a></li>
+<p>
+Installing git placed the executables in a local bin folder. For some reason all the git commands executing from my laptop wouldn't execute .bashrc where I had exported the new path to include my profile's bin. Being too lazy to just include the path when executing every push/pull statement I had found that you can set them in the git config file! Joy!</p>
+</ol>
+<p>Here is just a great <a href="http://nvie.com/posts/a-successful-git-branching-model/">article</a> on the branching workflow as well!</p>
+<blockquote><p>Time to code!</p></blockquote>

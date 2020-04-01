@@ -1,0 +1,43 @@
+---
+layout: post
+status: publish
+published: true
+title: WaterFlow - SWF Framework
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1466
+wordpress_url: http://blog.fzakaria.com/?p=1466
+date: '2016-02-24 15:23:14 -0800'
+date_gmt: '2016-02-24 23:23:14 -0800'
+categories:
+- AWS
+- Software
+tags: []
+comments:
+- id: 18792
+  author: yuriy
+  author_email: yuriy253@gmail.com
+  author_url: ''
+  date: '2016-08-11 01:27:00 -0700'
+  date_gmt: '2016-08-11 08:27:00 -0700'
+  content: "hey man,\r\n\r\nany luck with any new boat test plug-in's?\r\n\r\nI read
+    on the blog post about someone doing a code to have it click next when the time
+    is up? Possible? or am i out of luck.\r\n\r\nthanks!"
+---
+<h2> SWF Framework </h2>
+<p>
+I've had pretty good exposure to SWF through my last stint at Amazon/AWS and I grew to <em>love</em> the service. Once you get past some of the confusing aspects of programming in a very stateless / distributed manner, you begin to appreciate the<br />
+true power that is available to you.</p>
+<p><p>
+At my previous team, even though it was within AWS, the team had created their own SWF Framework - mostly because they pre-dated the <a href="https://aws.amazon.com/swf/details/flow/">AWS Flow Framework</a>. I was exposed to some interesting concepts that were necessary in the custom framework and that were lacking in Flow.</p>
+<p><p>
+Personally, although Flow is a great framework, I never <em>loved</em> the use of Annotation processing through <a href="https://eclipse.org/aspectj/">AspectJ</a>. It makes it hard to debug code in your IDE, reason about the code mentally and difficult to set up on anything other than Eclipse.</p>
+<p>
+Recently I came across <a href="http://swift">https://bitbucket.org/clarioanalytics/services-swift/</a>, which is a very minimal SWF framework that targets Java 1.6. It gave me a good idea on how you achieve something pretty robust with SWF with minimal code. I found it however to be too much on the other extreme. Whereas Flow was overly complicated and too magical, I found swift to be lacking when writing the workflow/decider. </p>
+<h3>WaterFlow</h3>
+<p> I decided to take the best parts of Flow and the best parts of Swift and make <a href="http://fzakaria.github.io/WaterFlow">WaterFlow</a>. Its a relatively small SWF framework in the same vein of Swift but brought into the world of JDK8 and with strong asynchronous programming story (for when orchestrating the decider). I'd love to help get someone bootstrapped on it and help them with onboarding! Please contact me.</p>

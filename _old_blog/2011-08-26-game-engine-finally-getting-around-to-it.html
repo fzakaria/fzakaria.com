@@ -1,0 +1,65 @@
+---
+layout: post
+status: publish
+published: true
+title: 'Game Engine: Finally Getting Around To it'
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 821
+wordpress_url: http://www.blog.fzakaria.com/?p=821
+date: '2011-08-26 13:40:29 -0700'
+date_gmt: '2011-08-26 17:40:29 -0700'
+categories:
+- Software
+tags:
+- C#
+- game engine
+- game programming
+- graphics
+- software architecture
+comments:
+- id: 186
+  author: 'Unity 3: Loving it. &#8211; Small Thoughts'
+  author_email: ''
+  author_url: http://www.fzakaria.com/2011/09/unity-3-loving-it/
+  date: '2011-09-15 14:24:09 -0700'
+  date_gmt: '2011-09-15 18:24:09 -0700'
+  content: "[...] amazing game engine seemed to have been the logical choice. At first
+    I started with building my own simple 2D Game engine, moving forward to the XNA
+    framework (one extra level of abstraction), to finally using a complete [...]"
+---
+<h2>XEngine</h2>
+<p>
+I've always found game development very interesting, however what interests me most is not the designing and building of an <em>actual</em> game but rather the development of the game engine or underlying framework.</p>
+<blockquote><p>I have fond memories of myself and <a href="https://plus.google.com/101699071179042932912/posts">Hayden Theriault</a> back in first year University talking about how one day we'd like to build a physics engine even!</p></blockquote>
+<p>I always put it off because the learning overhead and sheer scale of building a game engine is enourmous if you start from scratch (not using a base engine or framework such as <a href="http://en.wikipedia.org/wiki/Microsoft_XNA">XNA</a>).</p>
+<p>No longer is this the case~! I've finally picked up some books on game engine architecture and going through the textbooks in order to build my own 2D/3D simple game engine; <strong>XEngine</strong>.</p>
+<h2> Game Engine Design And Implementation </h2>
+<p>
+I went ahead and bought three textbooks on Game Engine Architecture as well as the 'Best of Game Programming Gems'. Out of all the books, by far the best one is written by Alan Thorn aptly named "Game Engine Design and Implementation".</p>
+<p><img src="http://bks4.books.google.com/books?id=Di0ID5apPI8C&printsec=frontcover&img=1&zoom=1&edge=curl" alt="Great textbook on design ALIGN="center"><br />
+This is book is <strong>amazing</strong>, it's well written, assumes novice knowledge regarding game engine architecture and assumes you have a firm grasp on C++. Not only is the book well written, it even helps take you through the motions of building an introductory 2D/3D game engine. <em>So far the 2D engine is written using <a href="http://www.libsdl.org/">SDL</a>.</em></p>
+<p>Following the book and building the engine will help me understand the framework/groundwork needed for a game engine which I can then refine with additional design architecture improvements that I've read else where, such as:</p>
+<ul>
+<li>Entity Component System</li>
+<li>Resource Handles rather than Resource Pointers (allows dynamic loading/unloading of resources</li>
+<li>Data driven design</li>
+</ul>
+<h2> How Far I am so Far </h2>
+<p>
+I'm currently on Chapter 6 (3rd of the book), and have implemented the following basic managers:</p>
+<ul>
+<li>Error System Manager</li>
+<li>Resource System Manager</li>
+<li>Render System Manager (using SDL)</li>
+<li>Render Object Class</li>
+<li>Sprite Object Class</li>
+</ul>
+<p>The engine is being compiled as a DLL (which was a learning experience itself) and I can currently create a window application and draw sprites.</p>
+<blockquote><p>For those looking for a good Linear Algebra library, I found a great one written by Markus Trenkwalder <a href="http://www.trenki.net/content/view/16/36/">here</a>. </p>
+</blockquote>

@@ -1,0 +1,45 @@
+---
+layout: post
+status: publish
+published: true
+title: Learning Netty - HTTP Echo
+author:
+  display_name: fzakaria
+  login: fzakaria
+  email: farid.m.zakaria@gmail.com
+  url: ''
+author_login: fzakaria
+author_email: farid.m.zakaria@gmail.com
+wordpress_id: 1454
+wordpress_url: http://blog.fzakaria.com/?p=1454
+date: '2016-01-18 16:06:22 -0800'
+date_gmt: '2016-01-19 00:06:22 -0800'
+categories:
+- Software
+tags:
+- Netty
+comments:
+- id: 18813
+  author: Jenny
+  author_email: jenny.lighthart@polycom.com
+  author_url: ''
+  date: '2017-09-22 13:46:10 -0700'
+  date_gmt: '2017-09-22 20:46:10 -0700'
+  content: I had no idea you are a techie too!  I've read your reporting in Newsweek
+    and more recently followed you on Podcasts (like with Sam Harris for example).  Thanks
+    for this Netty example, it was useful to improving my understanding of this NIO
+    library.
+- id: 18814
+  author: fzakaria
+  author_email: farid.m.zakaria@gmail.com
+  author_url: ''
+  date: '2018-05-18 10:22:55 -0700'
+  date_gmt: '2018-05-18 17:22:55 -0700'
+  content: We are not the same person :)
+---
+<h2>Learning Netty - Part 1</h2>
+<p>I recently picked up a copy of <a href="http://www.amazon.com/Netty-Action-Norman-Maurer/dp/1617291471">Netty in Action</a> - which has been a great to learn more about Netty. I've become more fascinated with Netty as I've delved farther into Reactive &amp; Asynchronous programming. Netty is a very powerful framework that simplifies a lot of the challenges with NIO programming however it is still difficult to find resources / examples of every day use cases.</p>
+<h2>Echo HTTP</h2>
+<p>Many examples online start with building an Echo Server & Client. However they use a simple TCP echo server - which although probably more reasonable for the server doesn't show a barebones HTTP setup.</p>
+<p>The following is a <a href="https://gist.github.com/">Gist</a> of a barebones setup of setting up an HTTP server and client. The example shows a few simple defaults such as the use of <em>HttpObjectAggregator</em>, <em>HttpServerCodec</em> and <em>SimpleChannelInboundHandler</em>.</p>
+<p><script src="https://gist.github.com/fzakaria/dce748fb8e1903221a63.js"></script></p>
