@@ -258,6 +258,7 @@ DEPENDENCIES
   github-pages
   jekyll
   jekyll-compose
+  jekyll-feed
   jekyll-paginate
   jekyll-redirect-from
   jekyll-seo-tag
