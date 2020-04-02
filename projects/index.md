@@ -21,7 +21,7 @@ I managed to reach around 10,000~ downloads from the Chrome extension store befo
 A python script that batch downloads songs from the [HypeMachine](http://hypem.com). Primarily written as a point of
 reference to how it is possible to circumvent DRM for web-based players.
 
-#### [Ray Tracer]()
+#### [Ray Tracer]({{ site.baseurl }}{% link projects/raytracer/index.html %})
 The remnants & output of the ray tracer I had created for [CS488](http://www.student.cs.uwaterloo.ca/~cs488/). The raytracer is built upon the previous assignments in the course (however from scratch!) and the website goes onto to slightly explain how some of the features were implemented.
 
 > I whole heartedly recommend the book [Fundamentals of Computer Graphics](https://www.amazon.com/gp/product/1482229390/ref=as_li_tl?ie=UTF8&camp=1789&creative=9325&creativeASIN=1482229390&linkCode=as2&tag=fzakaria-20&linkId=ef0da724225a5614935c7892581cce7f)
