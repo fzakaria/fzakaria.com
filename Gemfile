@@ -14,3 +14,7 @@ group :jekyll_plugins do
   gem "jekyll-paginate"
   gem "jekyll-feed"
 end
+
+group :development do
+	gem "rake"
+end
