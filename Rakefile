@@ -1,5 +1,6 @@
 # Rquire jekyll to compile the site.
 require "jekyll"
+require 'tmpdir'
 
 namespace :docker do
 
@@ -58,19 +59,20 @@ namespace :blog do
       cp_r "_site/.", tmp
 
       # Switch in to the tmp dir.
-      Dir.chdir tmp
+      Dir.chdir tmp do
+        # Prepare all the content in the repo for deployment.
+        # Init the repo.
+        system "git init"
+        # Add and commit all the files.
+        system "git add . && git commit -m 'Site updated at #{Time.now.utc}'"
 
-      # Prepare all the content in the repo for deployment.
-      # Init the repo.
-      system "git init"
-      # Add and commit all the files.
-      system "git add . && git commit -m 'Site updated at #{Time.now.utc}'"
+        # Add the origin remote for the parent repo to the tmp folder.
+        system "git remote add origin git@github.com:fzakaria/fzakaria.com.git"
 
-      # Add the origin remote for the parent repo to the tmp folder.
-      system "git remote add origin git@github.com:fzakaria/fzakaria.com.git"
+        # Push the files to the gh-pages branch, forcing an overwrite.
+        system "git push origin master:refs/heads/gh-pages --force"
+      end
 
-      # Push the files to the gh-pages branch, forcing an overwrite.
-      system "git push origin master:refs/heads/gh-pages --force"
     end
   end
 
