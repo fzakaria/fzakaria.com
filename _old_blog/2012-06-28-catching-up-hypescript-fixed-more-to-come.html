@@ -213,30 +213,32 @@ I've recently accepted a new position at Amazon in Seattle and the move was very
 <p>
 The HypeMachine guys keep breaking the script due to my terrible regular expression I was using to scrape the site for the id & keys. I'm hoping the current regex I've updated it to is more robust and will thwart a few more attempts from them from breaking it!</p>
 <h3>What needs to be parsed</h3>
-<pre class="brush:javascript">
-    trackList[document.location.href]['item_1n361'] = { 
+<code>
+  <pre>
+trackList[document.location.href]['item_1n361'] = { 
 
-        seq: trackList[document.location.href].length,
-        type:'normal',
-        
-            id:'1n361',
-        time:'266',
+    seq: trackList[document.location.href].length,
+    type:'normal',
     
-     
+        id:'1n361',
+    time:'266',
 
-        ts: '1340722642',
-		postid:'1852087',
-		posturl:'http://www.gorillavsbear.net/2012/06/26/mp3-premiere-erika-spring-hidden-jensen-sportag-remix/',
-		fav:'0',
-		key: 'c3f03b16ecce82ef18b6bf6e25c8e52b',
-        artist:'Erika Spring',
-        song:'Erika Spring -Hidden_ (Sportag Remix)_MS...',
-        thumb_url_large: 'http://static-ak.hypem.net/images/blog_images/15203.png'
+ 
 
-    };
+    ts: '1340722642',
+postid:'1852087',
+posturl:'http://www.gorillavsbear.net/2012/06/26/mp3-premiere-erika-spring-hidden-jensen-sportag-remix/',
+fav:'0',
+key: 'c3f03b16ecce82ef18b6bf6e25c8e52b',
+    artist:'Erika Spring',
+    song:'Erika Spring -Hidden_ (Sportag Remix)_MS...',
+    thumb_url_large: 'http://static-ak.hypem.net/images/blog_images/15203.png'
 
-    trackList[document.location.href].push(trackList[document.location.href]['item_1n361']);
-</pre>
+};
+
+trackList[document.location.href].push(trackList[document.location.href]['item_1n361']);
+  </pre>
+</code>
 <h3>My regular expression</h3>
 <pre class="brush:python">
 #old regex

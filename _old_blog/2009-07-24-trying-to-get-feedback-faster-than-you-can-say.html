@@ -30,7 +30,8 @@ I&rsquo;m spawning a background thread (don&rsquo;t mention the overhead :( ) ev
 <p align="left">
 I have to get some actual times down to see if this is even better than just using one single background thread and cancelling the operation everytime the slider changes.</p>
 <p>Anyway here&rsquo;s some of the code so far of my sort of weak attempt to get fast feedback:</p>
-<pre name = "code" class="brush: csharp;toolbar: false">
+<code>
+<pre>
 private void trackBar_RED_ValueChanged(object sender, EventArgs e)
 {
   BackgroundWorker colorChangerWorker = new BackgroundWorker();
@@ -66,8 +67,9 @@ private void colorChangerBackGroundWorker_DoWorkRed(object sender, DoWorkEventAr
   }
   processImage.Dispose();
   paramObject.backgroundThread.Dispose();
-}    
+}
 </pre>
+</code>
 <p><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2009/07/JPEG_SLIDER_RED.jpg" alt="Let there be red" title="Let there be red" width="293" height="247" class="size-full wp-image-119" /><br />
 Post any help if you have some.</p>
 <h4> Side Stuff </h4>
