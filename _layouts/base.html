@@ -7,8 +7,25 @@
         {% feed_meta %}
         <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
         <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+
+        <link ref="{{ date }}">
+        
+        {::comment}
+        All the posts imported from the old wordpress blog used just simple HTML code blocks.
+        We rely then on highlightjs to automatically try and detect the language and syntax highlight.
+        We check whether to link it according to the presence of the wordpress_id frontmatter
+        {:/comment}
+        {% if page.wordpress_id %}
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        {% endif %}
+
     </head>
     <body>
+        {% if page.wordpress_id %}
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        {% endif %}
+
         <div class="container">
             {{ content }}
         </div>
