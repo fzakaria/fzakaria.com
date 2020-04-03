@@ -240,7 +240,8 @@ trackList[document.location.href].push(trackList[document.location.href]['item_1
 </code>
 </pre>
 <h3>My regular expression</h3>
-<pre class="brush:python">
+<pre>
+<code>
 #old regex
 idMatches = re.findall("[ t]id:'(w*)(?=')", contents)
 keyMatches = re.findall("(?<=tkey: ')w*(?=')", contents)
@@ -251,5 +252,6 @@ idMatches = re.findall("s+id:s*'(.+)'", contents)
 keyMatches = re.findall("s+key:s*'(.+)'", contents)
 songMatches = re.findall("s+song:s*'(.+)'", contents)
 artistMatches = re.findall("s+artist:s*'(.+)'", contents)
+</code>
 </pre>
 <blockquote><p>If you are more of a wiz at regex than me please recommend a better pattern :)</p></blockquote>
