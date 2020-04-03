@@ -37,9 +37,10 @@ comments: []
 <ul>
 <li> Don't forget to set that the sub-project is an aggregate so that commands waterfall down to the inner project </li>
 <li> If you want to re-use the configuration file from the higher project, make sure you reference the path now accordingly </li>
-<li> Procfile entry: <code>actors/target/universal/stage/bin/actors -Dconfig.file=../conf/application.conf -Dprocess.type=actors </li
+<li> Procfile entry: <code>actors/target/universal/stage/bin/actors -Dconfig.file=../conf/application.conf -Dprocess.type=actors </li>
 </ul>
-<pre class="brush:scala">
+<pre>
+<code>
 package actors.singleton
 
 import play.api._
@@ -78,4 +79,5 @@ object SingletonMain {
      
    }
 }
+</code>
 </pre>

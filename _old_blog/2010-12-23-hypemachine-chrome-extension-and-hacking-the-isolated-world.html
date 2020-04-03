@@ -118,19 +118,21 @@ So writing this script, introduced me to the crazy notion of <a href="http://en.
 So how does the Chrome extensions work? Well they create what they like to call a "isolated world" and allow you to define javascript files that will execute on different times during the loading of the page. The problem is that their isolated world does not allow you access to the variables or functions defined by the page.</p>
 <blockquote><p>You can however perform crossite Http Requests which coupled with my workaround is pretty crazy.</p></blockquote>
 <p>The workaround to the isolated wold is really hacky but works. You can easily append to the HTML contents of the page, so simply append a string that contains the script tag as well as the script!</p>
-<pre class="brush: js"> 
-var script = $("<script type='text/javascript' charset='utf-8'>
-		$$('ul.tools').each(function(index) {
+<pre>
+<code> 
+var script = $(&quot;&lt;script type='text/javascript' charset='utf-8'&gt;
+    $$('ul.tools').each(function(index) {
   //set songUrl to the songUrl and chromeUrl to the picture of the donwload image
-			index.insertAdjacentHTML("AfterBegin", "<li class=\"cext\"><a href="+songUrl+"> <img class=\"cext\" src="+chromeUrl+"></a></li>");
-			});
-	</script>");
+      index.insertAdjacentHTML(&quot;AfterBegin&quot;, &quot;&lt;li class=\&quot;cext\&quot;&gt;&lt;a href=&quot;+songUrl+&quot;&gt; &lt;img class=\&quot;cext\&quot; src=&quot;+chromeUrl+&quot;&gt;&lt;/a&gt;&lt;/li&gt;&quot;);
+      });
+  &lt;/script&gt;&quot;);
 function waitForLoad()
 {
-	$("body").append($(style));
-	$("div#footer").append($(script));
+  $(&quot;body&quot;).append($(style));
+  $(&quot;div#footer&quot;).append($(script));
 }
 setTimeout(function() {waitForLoad();}, 2000);
+</code>
 </pre>
 <p>I largely did this knowing very little jQuery as well as web programming. <del datetime="2010-12-23T23:01:04+00:00">Most</del> Some of it is still lost on me. For instance, I am confused about the return values from the .each() function performed on the $$('ul.tools'). </p>
 <ol>

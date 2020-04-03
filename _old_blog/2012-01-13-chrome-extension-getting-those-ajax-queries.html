@@ -56,7 +56,8 @@ The second time around, my problem was not with accessing local data but getting
 It was pretty easy how I circumvented the issue the first time around,by<strong>injecting</strong> the whole content script right into the web page! This let me write the script and have access to all the <em>goodies </em>of the page. This time however the solution is not doable for the new extension since I also wanted to make <strong>cross domain browser requests</strong>. <em>My new solution would have to allow me to write the code in the extension's script but be notified of all Ajax requests...<br />
 </em></p>
 <blockquote><p>Javascript on the main page are bound to make requests only to the original domain from where they came (<a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>), however scripts in the extension are allowed to make cross domain requests.</p></blockquote>
-<pre class="brush:javascript">
+<pre>
+<code>
 var main = function() {
 
    		var myEvent= document.createEvent('Event');
@@ -82,6 +83,7 @@ injectedScript.text = '('+main+')("");';
 document.body.addEventListener('CustomEvent', function() {
 	console.log("Received event!");
 });
+</code>
 </pre>
 <p>
 The solution above (somewhat described by Google <a href="http://code.google.com/chrome/extensions/content_scripts.html">here</a>) demonstrates that the common denominator between the content scripts and the web page is the DOM. Though modification of the DOM you can pass data & propagate events. In the example above, I've injected my personal .ajaxComplete() handler which fires my custom event. The extension then listens for my custom event which is now technically a wrapper for the ajaxComplete event!</p>

@@ -35,9 +35,9 @@ Since my "fix" was simply just renaming the CSS element, it was also just as eas
 <h3> Will this work? </h3>
 <p>
 I just pushed a change to the Chrome Extension that will hopefully avoid the back & forth of changing CSS element names by randomizing them instead. Here is a little snippet of how I randomized the CSS element names. The reference for the code I used can be found <a href="http://jonraasch.com/blog/javascript-style-node">here</a>.</p>
-<pre class="brush:jscript">
-
- function randomStringGenerator()
+<pre>
+<code>
+function randomStringGenerator()
 {
     var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     var string_length = 8;
@@ -56,9 +56,9 @@ css.type = 'text/css';
 var styles = '.'+cssElementToRandom+'{ width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent;	border-top: 10px solid #494949; }';
 
 if (css.styleSheet) css.styleSheet.cssText = styles;
-else css.appendChild(document.createTextNode(styles) );
+else css.appendChild(document.createTextNode(styles));
 
 document.getElementByTagName("head")[0].appendChild(css);
-
+</code>
 </pre>
 <blockquote><p><strong>Your move.</strong></p></blockquote>

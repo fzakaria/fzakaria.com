@@ -41,7 +41,8 @@ The unfinished project has somewhat always been at the back of my mind and I had
 <h3> GOTCHAs and Improvements</h3>
 <ol>
 <li>GOTCHA: Having to check for EOF after each get() call to an iostream
-<pre class="brush:cpp">
+<pre>
+<code>
  std::istream & buffer = this->GetInputStream();
  while (buffer.good())
  {
@@ -50,6 +51,7 @@ The unfinished project has somewhat always been at the back of my mind and I had
    if (buffer.eof())
        break;
  }
+</code>
 </pre>
 <p>This was exceedingly annoying because I had forgotten to place the second check for EOF each time I read from a stream. The extra check is needed because it is the act of reading the EOF byte that causes the eofbit to be set. However because the EOF byte has to be read, the buffer is still technically <em>good</em>. What occurs if you forget to do the check within the loop is that the stream will simply place the last known good read byte into the variable which resulted in some bytes which were twice.</p>
 <p>The bitstream class needed a little bit of tuning for this GOTCHA as well due to the fact that there are occasionally some padded bits at the end of the file due to the encoding. The eofbit would have to be manually set if we were reading the last known good byte (the one right before the EOF byte) and that we have reached the known padded bits!~

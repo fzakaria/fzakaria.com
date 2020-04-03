@@ -30,12 +30,14 @@ Many people are terrible at collaboration and lack elegance to their programming
 <p>
 Most programmers given a task can complete it. The distinction lies to me is in the programmer who can solve the task elegantly. Writing &ldquo;elegant&rdquo; (I will continue to use the word for lack of a better one) can be most of the time somewhat straightforward if you are the only person working on the task. It becomes difficult once it is in a group setting. It is bad enough to avoid toe tripping on a large project without having to spend obscene amounts of time to understand a simple function.</p>
 <p>An example of certain hair-pulling <em>wtf</em> moments is something similar to what I saw today; </p>
-<pre name = "code" class="brush: csharp;toolbar: false;">
+<pre>
+<code>
 bool Enable_Panic_Mode(bool value)
 {
     EnablePanicMode(value); //layered call
     return IsInPanicMode();
 }
+</code>
 </pre>
 <blockquote><p>
 Instead of returning true/false if the function succeeded, enabling panic mode in fact returns the state it is in&hellip;</p></blockquote>

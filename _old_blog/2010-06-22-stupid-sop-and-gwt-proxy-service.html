@@ -38,8 +38,9 @@ comments:
 <p>In order to support plugins that are not published/offered on our web-server, we've had to circumvent the SOP (same origin policy). This is my real first foray into web development and I've been pulling my hair almost the whole way, including having to work around SOP. Since we allow plugins to perform POST as well GET, using JSONP was not a suitable solution to the problem. In development of one of the plugins built using GWT, we've decided to build a proxy server using the Remote Procedure Calls provided by GWT.</p>
 <p>Essentially GWT has functionality for creating RemoteServices that perform RPC from the client to the server, however it is the server with respect to the plugin and not the server they'd like to perform the HTTP requests.</p>
 <p>Essentially, we'd created a ProxyService RPC which when in the server performs the necessary HTTP request (since no longer in client, they are not subject to SOP).</p>
-<pre name = "code" class="brush: java;toolbar: false;">
-private HttpURLConnection connect(String path, EnumSet<Connect> opts,
+<pre>
+<code>
+private HttpURLConnection connect(String path, EnumSet&lt;Connect&gt; opts,
 			String method) {
 		URL url = null;
 		HttpURLConnection connection = null;
@@ -75,10 +76,11 @@ public String post(String path, String data) {
 		HttpURLConnection connection = connect(path, EnumSet.of(
 				Connect.DO_OUTPUT, Connect.DO_INPUT), "POST");
 		connection.setRequestProperty("Content-Type", "application/json");
-		List<String> response = writeTo(connection,
+		List&lt;String&gt; response = writeTo(connection,
 				HttpURLConnection.HTTP_CREATED, data);
 		return concat(response);
 	}
+</code>
 </pre>
 <p>Essentially, although the RemoteServices by GWT are Async, we've included a synchronous call using Java's HttpURLConnection class. The reading/writing returned by the server happen to be JSON which we've wrapped in Strings, which are automatically Serializable to the RPC in GWT, making the overall design of the proxy server pretty straightforward. We found a lot of missing (hard to find) documentation on what to set the request properties for each HTTP request. We ultimately found the proper one's, through trial and error.</p>
 <h2>In other news...</h2>

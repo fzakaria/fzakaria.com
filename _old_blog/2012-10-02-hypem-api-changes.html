@@ -251,7 +251,8 @@ Previously, the link to the mp3 file was very easy to generate and scrape from t
 <code><br />
 <script type="application/json" id="displayList-data"><br/>    {"page_cur":"/track/1q7nf?ax=1&amp;ts=1349217708.87","page_num":1,"tracks":[{"type":"normal","id":"1q7nf","time":372,"ts":{"sec":1349210330,"usec":0},"postid":1950767,"posturl":"http://stereogum.com/1167152/wooden-wand-southern-colorado-song/mp3s/","fav":0,"key":"55b57f34d3774ecc94ff7360e02dc279","artist":"Wooden Wand","song":"So. Colorado Song","thumb_url_large":""}],"page_name":"item","title":"Wooden Wand - So. Colorado Song, posted on music blogs / The Hype Machine","page_next":"/track/1q7nf/2.87","page_mode":"1q7nf"}    </script><br />
 </code></p>
-<pre class="brush:python">
+<pre>
+<code>
  import urllib2
  import urllib
  from time import time
@@ -264,6 +265,7 @@ Previously, the link to the mp3 file was very easy to generate and scrape from t
  html_file = open("hype.html", "w")
  html_file.write(html)
  html_file.close()
+</code>
 </pre>
 <p>After the page loads, they read the JSON data into a javascript variable and <strong>remove</strong> the script tag from the HTML body. So you won't be able to inspect a current page and find the code</p>
 <li>

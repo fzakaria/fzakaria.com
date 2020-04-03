@@ -23,7 +23,8 @@ comments: []
 <h2> Brackets and Braces </h2>
 <p>
 I wonder why some programmers are so averse to using curly braces and brackets in all situations to explicitly state intended behavior. Without explicit curly braces, you can run into the following scenarios. Here are two examples which didn't pop up right away during a quick code review but were found later and could have caused some havoc.</p>
-<pre class="brush:cpp">
+<pre>
+<code>
 //Scenario #1
 int value = isVersion2()?1:0 & canHardwareSupportFeature();
 
@@ -33,7 +34,8 @@ if ( condition ) {
 } else
 
 if (condition 2) {
-}  
+}
+</code>
 </pre>
 <p>
 For <strong>Scenario #1</strong>, aside from the fact that the conditional operator is not needed, the problem was the priority of the conditional operator compared to that of the bit-AND operator. It might not stand out immediately depending on the spacing because you might read the operators priority differently.<strong>Scenario #2</strong> has the problem of <em>secretly</em> hiding the second if condition under the else. Whether or not it is the intended functionality, it's just plain confusing.</p>

@@ -29,7 +29,8 @@ As mentioned earlier, I was introduced to <a href="http://hypem.com/">HypeMachin
 <p>I ranted about this problem and the fact that the greasemonkey to make an easy download button appear seemed broken to my schoolmate and he told me this would be an excellent opportunity to learn Python.</p>
 <p>My journey through Python has been an amazing experience. Anytime I wished I could do something, turns out I could. Coding was essentially just writing in english what you'd expect to work essentially. There are a few gripes as always but...I'll talk about that later.</p>
 <p>Here is a snipper of some of the python code for downloading mp3s from their site:</p>
-<pre class="brush: python"> 
+<pre>
+<code> 
 #let's make our request
 #1: we set to popular but easily set to your user name or 
 # any of the URLS you want to grab
@@ -68,6 +69,7 @@ for i in range(len(idMatches)):
         song = open("songs/"+mp3Name, "wb")
         song.write(data2)
         song.close()
+</code>
 </pre>
 <p>This code has been adapted to work with the recent update to HypeMachine that occurred this week. (BTW awesome redesign). I was surprised how easy it was to scrape data from a website. All it took was a bit of investigation with Chrome's equivalent of firebug and some breakpoints. I was thinking of turning the script into javascript and writing it as a Chrome/Firefox extension but I got into some SOP problems...</p>
 <p>Turns out I hate web development and it's too annoying to do. While writing the scripts, I was getting weird redirect HTTP Errors that I tried to fix and I couldn't find any awesome documentation on what headers and cookies I wanted to send. I did it mostly by trial and errors...</p>

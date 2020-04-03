@@ -26,13 +26,15 @@ Getting back into Python for work, I've been writing a <a href="https://www.djan
 <blockquote><p>A common neologism in the Python community is pythonic, which can have a wide range of meanings related to program style. To say that code is pythonic is to say that it uses Python idioms well, that it is natural or shows fluency in the language.</p></blockquote>
 <p>
 With the prerequisite of a perhaps faulty state of mind, I tend to use the keywords <strong>not </strong> and <strong>is</strong> abundantly in my boolean expressions. The <strong>is</strong> keyword however stumped me when used on Strings. The following two if statements are not identical. In fact, using the <strong>is</strong> keyword will likely fail the boolean expression.</p>
-<pre class="brush:python">
+<pre>
+<code>
 #Test1
 if a is "test":
     print "Is Found"
 #Test2
 if a == "test":
     print "Equality Found"
+</code>
 </pre>
 <p>Why was this tricky however? Once I noticed the condition failing, I did my favourite thing to do when debugging Python, I launched the console!<br />
 <code><br />

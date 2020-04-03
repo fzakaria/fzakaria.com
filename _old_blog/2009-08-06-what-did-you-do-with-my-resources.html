@@ -41,7 +41,8 @@ The purpose of this method is to provide the programmer a chance to &ldquo;clean
 </p></blockquote>
 <p>The problems begin to creep up in doing this in a efficient way. Thankfully .NET provides all the functionality needed to properly do this. When a class implements a finalize method, the way in which it gets garbage collected is differently than other items (<a href="http://msdn.microsoft.com/en-us/magazine/bb985010.aspx">Garbage Collection: Automatic Memory Management in the Microsoft .NET Framework</a>).In short, it gets put on a different queue which can result in a large performance cost.</p>
 <p>The following example from <a href="http://msdn.microsoft.com/en-us/library/system.idisposable.dispose(VS.71).aspx">MSDN </a>shows how to properly implement the Dispose pattern:</p>
-<pre name = "code" class="brush: csharp;toolbar: false; highlight: [39]">
+<pre>
+<code>
 using System;
 using System.ComponentModel;
 
@@ -137,6 +138,7 @@ public class DisposeExample
         // and use the MyResource object.   
     }
 }
+</code>
 </pre>
 <p>
 You can see how using this proper dispose pattern, if Dispose() was called by the programmer the finalize method is suppressed removing the need to call it again which would essential attempt to clean up the resource twice and we reattain the lost performance.</p>

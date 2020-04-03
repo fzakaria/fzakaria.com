@@ -65,10 +65,30 @@ My experience so far with Soundcloud has been great. They even let you download 
 <h2> Investigation </h2>
 <p>
 Once again most of the information gleamed was from saving the raw HTML of a request to SoundCloud outside the browser (i.e. via python or perl). They look to be doing something similar to HypeMachine in removing certain HTML elements because I cannot find them when I view source through my browser.</p>
-<pre class="brush:javascript">
-<script type="text/javascript">
-window.SC.bufferTracks.push({"id":64568412,"uid":"WtquUHiysWgk","user":{"username":"diplo","permalink":"diplo"},"uri":"/diplo/got-stoned-and-mixed-really","duration":2162227,"token":"H7TPl","name":"got-stoned-and-mixed-really","title":"got stoned and mixed really old records for half an hour","commentable":true,"revealComments":true,"commentUri":"/diplo/got-stoned-and-mixed-really/comments/","streamUrl":"http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl","waveformUrl":"http://w1.sndcdn.com/WtquUHiysWgk_m.png","propertiesUri":"/diplo/got-stoned-and-mixed-really/properties/","statusUri":"/transcodings/WtquUHiysWgk","replacingUid":null,"preprocessingReady":true,"renderingFailed":false,"isPublic":true,"geo":[],"commentableByUser":true,"favorite":false,"followingTrackOwner":false});
-</script>
+<pre>
+<code>
+&lt;script type="text/javascript"&gt;
+window.SC.bufferTracks.push({"id":64568412,"uid":"WtquUHiysWgk",
+                              "user":{"username":"diplo","permalink":"diplo"},
+                              "uri":"/diplo/got-stoned-and-mixed-really",
+                              "duration":2162227,
+                              "token":"H7TPl",
+                              "name":"got-stoned-and-mixed-really",
+                              "title":"got stoned and mixed really old records for half an hour",
+                              "commentable":true,
+                              "revealComments":true,
+                              "commentUri":"/diplo/got-stoned-and-mixed-really/comments/",
+                              "streamUrl":"http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl",
+                              "waveformUrl":"http://w1.sndcdn.com/WtquUHiysWgk_m.png",
+                              "propertiesUri":"/diplo/got-stoned-and-mixed-really/properties/","statusUri":"/transcodings/WtquUHiysWgk",
+                              "replacingUid":null,"preprocessingReady":true,
+                              "renderingFailed":false,"isPublic":true,
+                              "geo":[],
+                              "commentableByUser":true,
+                              "favorite":false,
+                              "followingTrackOwner":false});
+&lt;/script&gt;
+</code>
 </pre>
 <p>We can see one of the track elements is the streamURL:<br />
 <code><br />

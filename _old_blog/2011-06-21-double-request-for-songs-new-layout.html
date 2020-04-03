@@ -43,13 +43,15 @@ I believe in an attempt to stop browser extensions that inject download buttons 
 Let's take a look at what they've changed.</p>
 <blockquote><p>Prior the requests to the song were simply one Ajax Request</p></blockquote>
 <h3> Before </h3>
-<p><pre class="brush:jscript">
+<p><pre>
+<code>
  var song_url = "/serve/play/" + activeItem.id + "/" + activeItem.key;
  try {
   currentPlayerObj[0] = soundManager.createSound({
   id: 'currentPlayer' + currentTrack,
   url: song_url 
-  }
+ }
+</code>
 </pre></p>
 <h3> Now </h3>
 <p><pre>
