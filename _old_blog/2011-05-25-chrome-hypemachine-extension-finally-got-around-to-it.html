@@ -51,7 +51,8 @@ Click the image below to get the extension.</p>
 <h3> My Inexperience </h3>
 <p>
 Took me longer to find the reason for it being broken than I'd like to care to admit. As I've mentioned earlier, I don't have much experience with Javascript,HTTP ,CSS and Web-development in general. Finding the culprit was more from my determination at prodding and learning as I go. Turns out the fix was really simple, and I missed it easily because I have no experience specifically with CSS. Here was the culprit for those that are interested:</p>
-<pre class="brush:jscript">
+<pre>
+<code>
 function ext_load(ext, vis) {
     if (ext && (/Firefox/.test(navigator.userAgent) || /Chrome/.test(navigator.userAgent))) {
         setTimeout(function () {
@@ -72,6 +73,7 @@ function ext_load(ext, vis) {
         }, 5000);
     }
 }
+</code>
 </pre>
 <p>
 Although a number of fixes were possible, I took the laziest. I just renamed my CSS attribute names.</p>

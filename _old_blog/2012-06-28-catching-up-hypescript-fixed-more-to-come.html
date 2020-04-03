@@ -213,8 +213,8 @@ I've recently accepted a new position at Amazon in Seattle and the move was very
 <p>
 The HypeMachine guys keep breaking the script due to my terrible regular expression I was using to scrape the site for the id & keys. I'm hoping the current regex I've updated it to is more robust and will thwart a few more attempts from them from breaking it!</p>
 <h3>What needs to be parsed</h3>
+<pre>
 <code>
-  <pre>
 trackList[document.location.href]['item_1n361'] = { 
 
     seq: trackList[document.location.href].length,
@@ -237,8 +237,8 @@ key: 'c3f03b16ecce82ef18b6bf6e25c8e52b',
 };
 
 trackList[document.location.href].push(trackList[document.location.href]['item_1n361']);
-  </pre>
 </code>
+</pre>
 <h3>My regular expression</h3>
 <pre class="brush:python">
 #old regex

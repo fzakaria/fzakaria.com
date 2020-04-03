@@ -80,37 +80,44 @@ Here is the kicker and what is important to remember; in C++ everything is passe
 <h2>Reference to Pointer </h2>
 <p>
 When is a reference to a pointer useful?  Consider the example below.</p>
-<pre class="brush:cpp">
-  void reassign(int * myInt){
-      myInt = new int(7);
-  }
-  int main(){
-      int * myInt = new int(5);
-      reassign(myInt);
-      std::cout << *myInt << std::endl;
-      return 0;
-  }
+<pre>
+<code>
+void reassign(int * myInt){
+    myInt = new int(7);
+}
+int main(){
+    int * myInt = new int(5);
+    reassign(myInt);
+    std::cout << *myInt << std::endl;
+    return 0;
+}
+</code>
 </pre>
 <p>What would you expect to be the output of the program? If you guessed <strong>5</strong> you'd be correct. The reason why it is 5 and not 7, is because even the pointer itself <strong>is copied</strong> onto the function stack and the reassignment only modifies that copy of the pointer's value and not the pointer from main's scope!</p>
 <h3> How to solve this dilemma? </h3>
 <p>
 Traditionally the way to solve this problem (most commonly seen for link list problems for instance), is to pass a <em>Pointer to a Pointer</em>. This way we are passing an extra level of indirection to the pointer and therefore any modification to the pointer would continue passed the function's scope. This works because now we are creating a copy of the address of the second level indirection. The example would change to become:</p>
-<pre class="brush:cpp">
-  void reassign(int ** myIntPP){
-      *myIntPP = new int(7);
-  }
+<pre>
+<code>
+void reassign(int ** myIntPP){
+    *myIntPP = new int(7);
+}
+</code>
 </pre></p>
 <p>
 Another way that solve this problem however is by simply passing a reference to a pointer like so:</p>
-<pre class="brush:cpp">
-  void reassign(int* & myIntP){
-      myIntP = new int(7);
-  }
+<pre>
+<code>
+void reassign(int* & myIntP){
+    myIntP = new int(7);
+}
+</code>
 </pre></p>
 <h3>In the return!</h3>
 <p>
 Up until this point, a lot of this should be common place in most code bases. What I found interesting however in the code I'm currently working on at my current job, are functions that <strong>return a reference to a pointer</strong>. Consider the example below:</p>
-<pre class="brush:cpp">
+<pre>
+<code>
 class MyIntClass { 
 public:
     MyIntClass(int value){
@@ -134,6 +141,7 @@ int main(){
     std::cout << "myObject:" << *myObject.getMyInt() << std::endl;
     return 0;
 }
+</code>
 </pre>
 <p>The output of <em>theInt</em> and <em>myObject</em> would both be 10. The ability to do this seems odd as it is a good source of memory leaks and un-intuitive to me.</p>
 <p>

@@ -25,7 +25,8 @@ comments: []
 Every example was pretty trivial (i.e. summing function) and used a global variable.<br />
 I wanted to give a better example!</p>
 <h2> Example </h2>
-<pre class="brush:scala">
+<pre>
+<code>
 import org.joda.time.{DateTime,Period}
 
 //We are inside some class or object
@@ -39,4 +40,5 @@ val FILTER_CREATED_TWO_WEEKS_AGO =
       filterThoseCreatedBefore(DateTime.now.minus(Period.weeks(2)))
 
 val filteredTwoWeekList = models.filter(FILTER_CREATED_TWO_WEEKS_AGO(_))
+</code>
 </pre>

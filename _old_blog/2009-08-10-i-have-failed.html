@@ -53,7 +53,8 @@ I hadn&rsquo;t thought it had been that long in which I had written any C++; I g
 Turns out (like always) apparently there is more at work than I understood.</p>
 <p>Passing a pointer is pretty much passing a value and a local copy is made onto the method&rsquo;s call stack. Where I err&rsquo;d is in attempting to re-assign pointer values within the method. </p>
 <p>What I should have done was clearly too either pass in a pointer to the pointer or in my case I chose to do:</p>
-<pre name = "code" class="brush: csharp;toolbar: false; highlight: [39]">
+<pre>
+<code>
 Node*  Node::FindNode(Node*& head, int index)
 {
 	Node* tempP= head;
@@ -67,6 +68,7 @@ Node*  Node::FindNode(Node*& head, int index)
 	}
 	return 0;
 }
+</code>
 </pre>
 <p>Now to be fair. I decided to implement LinkedLists in such a way so that the head never needs to be reassigned once declared. This is obviously a stupid way of doing it; with the logical solution to always just return the pointer to the new head.</p>
 <p><em>Anyways, at least I can say that I ended up learning the right semantics</em>.</p>

@@ -32,18 +32,22 @@ comments: []
 <p>Either or it didn&rsquo;t seem to work.</p>
 <h3> Scaling Back </h3>
 <p>Decided to scale back my attempts and just decided to go for a 1 thread (backgroundworker) approach. I had succesffuly done grey scaling (which was neat to learn on how something so simple can actually be pretty intense if you want to make the greyscale perfect). I had chosen to use the <a href="http://en.wikipedia.org/wiki/Grayscale#Converting_color_to_grayscale">values </a>:</p>
-<pre name = "code" class="brush: csharp;toolbar: false;">
+<pre>
+<code>
 private const RED_FACTOR = 0.299;
 private const GREEN_FACTOR = 0.587
 private const BLUE_FACTOR = 0.114
+</code>
 </pre>
-<pre name = "code" class="c#:nocontrols">            
+<pre>
+<code>            
 Color currPixelColor =originalImage.GetPixel(i, j);
 double red = RED_FACTOR* currPixelColor.R;
 double blue = BLUE_FACTOR * currPixelColor.B;
 double green=GREEN_FACTOR*currPixelColor.G;
 double grey = red + blue + green;
 changedImage.setPixel(i , j , grey , grey , grey);
+</code>
 </pre>
 <p>I then tried to put RGB sliders, however I seemed to have hit a wall in making the sliders feel really responsive. I guess I would appreciate help from anyone if they have any ideas on how to do it.<br />
 [caption id="attachment_71" align="alignleft" width="395" caption="Here is the application with an image greyscaled."]<img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2009/07/myApp.jpg" alt="Here is the application with an image greyscaled." title="Simple Test Application" width="395" height="356" class="size-full wp-image-71" />[/caption]</p>

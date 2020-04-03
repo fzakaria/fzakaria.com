@@ -85,39 +85,44 @@ So I've been working at trying to refit the <a href="http://www.blog.fzakaria.co
 Each song link in HypeMachine is built using 2 tags: the song's id and a key. With these two tags, the final url to stream the song is: </p>
 <blockquote><p>'http://hypem.com/serve/play/' + id + '/' + key + '.mp3'</p></blockquote>
 <p>As far as I can tell from what I've determined (my javascript is pretty limited), is that the key's are generated on the server side based on a timestamp. So if you look at my python code, I perform the following steps:</p>
-<pre class="brush:python">
+<pre>
+<code>
 url='http://hypem.com/popular/1?ax=1&ts='+str(time.time())
 request = urllib2.Request(url)
 response = urllib2.urlopen(request)
 html = response.read()
+</code>
 </pre>
 <p>Running the above script multiple times <strong>appropriately</strong> generates different <em>keys</em> every time.</p>
 <p>The key and ID are parsed from the HTML, where they occur in the following format:</p>
-<pre class="brush:xml">
-	trackList[document.location.href].push({	
-		type:'normal',
-		id:'1a08r',
-		postid:'1433616',
-		posturl:'http://jackinforlinks.com/wiz-khalifa-rooftops-ft-curreny/',
-		time:'261',
-		ts: '1300754012',
-		fav:'0',
-		key: '30b2310a6f3fb28564d443ffb3804ffc',
-		imeem_id:'',
-		artist:'Wiz Khalifa',
-		song:'Rooftops Ft. Currensy (Produced By E. ...',
-		amazon:'',
-		itunes:'',
-		emusic:'',
-		exact_track_avail:'0'
-    });
+<pre>
+<code>
+trackList[document.location.href].push({	
+	type:'normal',
+	id:'1a08r',
+	postid:'1433616',
+	posturl:'http://jackinforlinks.com/wiz-khalifa-rooftops-ft-curreny/',
+	time:'261',
+	ts: '1300754012',
+	fav:'0',
+	key: '30b2310a6f3fb28564d443ffb3804ffc',
+	imeem_id:'',
+	artist:'Wiz Khalifa',
+	song:'Rooftops Ft. Currensy (Produced By E. ...',
+	amazon:'',
+	itunes:'',
+	emusic:'',
+	exact_track_avail:'0'
+  });
+</code>
 </pre></p>
 <h3> The problem </h3>
 <p>
 I've been running into multiple problems porting this over to Objective-C cocoa. However the most damaging is the fact that I cannot seem to generate the appropriate HTML file. The HTML file I keep generating has <strong>invalid</strong> keys.</p>
 <blockquote><p> I am retrieving the HTML and parsing it similarly as I did in Python however the server is returning me invalid keys.</p></blockquote>
 <p>Not only are the keys invalid, however re-running my application, retrieves the same keys over and over. This helps confirm that they are feeding me garbage keys as they are not being properly dynamically generated. I've attempted to retrieve the keys in the following manner (both of which do not work):</p>
-<pre class="brush:cpp">
+<pre>
+<code>
 NSTimeInterval time = [[NSDate date] timeIntervalSince1970];
 NSString * completeUrl = [url stringByAppendingFormat:@"/%d?ax=1&ts=%1.2f", pageNumber, time];
 NSURL * hypeURL = [NSURL URLWithString:completeUrl];
@@ -133,6 +138,7 @@ NSURLResponse* response = nil;
 NSError* error = nil;
 NSData* data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
 NSString *hypeHTML = [[NSString alloc] initWithData:data encoding:NSASCIIStringEncoding];
+</code>
 </pre></p>
 <h3> Request </h3>
 <p>

@@ -47,12 +47,14 @@ The ability to cast on the fly scares me.<br />
 The ability to create member variables on the fly scares me.</code></p>
 <blockquote><p>
 Data attributes correspond to &ldquo;instance variables&rdquo; in Smalltalk, and to &ldquo;data members&rdquo; in C++. Data attributes need not be declared; like local variables, they spring into existence when they are first assigned to. For example, if x is the instance of MyClass created above, the following piece of code will print the value 16, without leaving a trace</p>
-<pre name = "code" class="brush: python;toolbar: false;">
+<pre>
+<code>
 x.counter = 1
 While x.counter < 10:
     x.counter = x.counter * 2
 print x.counter
 del x.counter
+</code>
 </pre>
 </blockquote>
 <p>
@@ -67,9 +69,11 @@ All programmers should know at least one scripting language
 <p>
 Seems as if learning Dynamic programming design pattern and principiles could be useful especially with the upcomming release of C# 4.0  I was recently going over the <a href="http://code.msdn.microsoft.com/csharpfuture">WhitePaper for C#4.0 </a>and they are heavily entering the forray of dynamic programming it seems especially.</p>
 <p>C# 4.0 introduces a new static type called dynamic. When you have an object of type dynamic you can &ldquo;do things to it&rdquo; that are resolved only at runtime:</p>
-<pre name = "code" class="brush: csharp;toolbar: false;">
+<pre>
+<code>
 dynamic d = GetDynamicObject(&hellip;);
 d.M(7);
+</code>
 </pre>
 <p>The C# compiler allows you to call a method with any name and any arguments on d because it is of type dynamic. At runtime the actual object that d refers to will be examined to determine what it means to &ldquo;call M with an int&rdquo; on it.<br />
 Other things which will allow for code refactoring seem to be introduced in C# 4.0 as well such as optional and named arguments. I can finally stop from creating so may overloaded methods.</p>

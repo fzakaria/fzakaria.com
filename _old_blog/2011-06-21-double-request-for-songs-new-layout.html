@@ -52,7 +52,8 @@ Let's take a look at what they've changed.</p>
   }
 </pre></p>
 <h3> Now </h3>
-<p><pre class="brush:jscript">
+<p><pre>
+<code>
 function playTrack(skip_prompts) {
 //removed bunch of code not related to grabbing the song content
 r = new Ajax.Request("/serve/source/" + activeItem.id + "/" + activeItem.key, {
@@ -68,6 +69,7 @@ r = new Ajax.Request("/serve/source/" + activeItem.id + "/" + activeItem.key, {
   //removed a bunch of settings set for creating the sound object for sake of brevity
  });
 }
+</code>
 </pre></p>
 <blockquote><p>The request to <em>"/serve/source/" + activeItem.id + "/" + activeItem.key</em> now results in a JSON object that contains the appropriate URL and some additional data. Making retrieving song requiring <strong>two</strong> Ajax requests.</p></blockquote>
 <p>

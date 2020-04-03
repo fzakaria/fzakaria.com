@@ -34,7 +34,7 @@ As mentioned many times already, I <em>rarely</em> do web development or anythin
 <blockquote><p>Wireshark is a network protocol analyzer. It lets you capture and interactively browse the traffic running on a computer network.</p></blockquote>
 <p>
 With Wireshark all setup, I began to inspect the HTTP packets. Knowing that obviously requests through the browser work and those from my python script work I stored the HTTPHeaders of all 3 to scan for differences.</p>
-<p><code><br />
+<p><pre><code><br />
 ~Python~<br />
 Severity level : chat<br />
 Group: Sequence<br />
@@ -62,7 +62,7 @@ User-Agent: <my laptop><br />
 Accept: */*<br />
 Accept-Encoding: identify<br />
 Cookie: <some long stuff><br />
-</code></p>
+</code></pre></p>
 <p>
 At first I thought it must've been the <strong>User-Agent </strong>however changing that to be that of a web-browser accomplished nothing. The only real difference happened to be the <strong>Cookie</strong> field. Sure enough, removing the cookie from the Cocoa request caused the site to start returning me <em>valid</em> keys!</p>
 <h2> Grabbing that Sweet Sweet Music </h2>
@@ -73,32 +73,36 @@ Now that I can successfully grab the proper keys, I began to attempt to use <a h
 Turns out that the site is performing many redirects to <a href="http://soundcloud.com/">soundcloud</a> and although NSURLDownload follows the redirects appropriately, when the time comes to attempt to write the data to disk it fails with an error "NSURLError Domain 3001".</p>
 <blockquote><p>It's a shame I couldn't figure out how to solve the problem for NSURLDownload because it affords me asynchronous downloading and writing to file together. If someone knows what I may be doing incorrectly please let me know.</p></blockquote>
 <p>All that was needed was a switch to NSURLConnection instead (performing it synchronously currently) and I was able to grab the data!</p>
-<pre class="brush:cpp">
-       //lets choose where we'd like to store our song
-        NSURL * directory = [self getDownloadDirectory];
-       //lets choose the savingURL to be the songname at the chosen directory
-	NSURL * savingURL = [NSURL URLWithString:[song mp3Name] relativeToURL:directory];
-       //create the request using: 'http://hypem.com/serve/play/&rsquo; + id + &lsquo;/&rsquo; + key + &lsquo;.mp3&prime;
-        NSMutableURLRequest * songRequest = [NSMutableURLRequest requestWithURL:[song songUrl] ];
-       //grab the data (synchronously currently...) 
-        NSData * songData = [NSURLConnection sendSynchronousRequest:songRequest returningResponse:nil error:nil];
-       //write to file
-        if (songData)
-        {
-            [songData writeToURL:savingURL atomically:YES];
-        }
+<pre>
+<code>
+//lets choose where we'd like to store our song
+NSURL * directory = [self getDownloadDirectory];
+//lets choose the savingURL to be the songname at the chosen directory
+NSURL * savingURL = [NSURL URLWithString:[song mp3Name] relativeToURL:directory];
+//create the request using: 'http://hypem.com/serve/play/&rsquo; + id + &lsquo;/&rsquo; + key + &lsquo;.mp3&prime;
+NSMutableURLRequest * songRequest = [NSMutableURLRequest requestWithURL:[song songUrl] ];
+//grab the data (synchronously currently...) 
+NSData * songData = [NSURLConnection sendSynchronousRequest:songRequest returningResponse:nil error:nil];
+//write to file
+if (songData)
+{
+    [songData writeToURL:savingURL atomically:YES];
+}
+</code>
 </pre>
 <p><strong>Successs!</strong> I was properly creating a file to disk, not getting any errors...<em>however</em> the file size was 0!</p>
 <h3> Redo Attempt 1 </h3>
 <p>
 I got to the point where  I can make the GET request for the song however there was <strong>one</strong> final piece of the puzzle missing. Ultimately, I had solved the similar problem in my python script. I had to set the <em>Cookie</em> in the download GET request to the cookie received from the response of the initial request of grabbing the HTML file.</p>
-<p><code><br />
+<p><pre><code><br />
 Set-Cookie: "AUTH=03%3A430aaa119c1852924ef832bbaf5fa989%3A1301502627%3A2170648814%3AON-CA; expires=Fri, 26-Mar-2027 16:30:27 GMT; path=/; domain=hypem.com"<br />
-</code></p>
+</code></pre></p>
 <p>Setting the <em>Cookie</em> value to the one initially retrieved solved the problem and the music started to flow!<br />
 The missing line to the code above is the following right after the request is created:</p>
-<pre class="brush:cpp">
- [songRequest setValue:[hypeController cookie] forHTTPHeaderField:@"Cookie"];
+<pre>
+<code>
+[songRequest setValue:[hypeController cookie] forHTTPHeaderField:@"Cookie"];
+</code>
 </pre>
 <h2> Cute Easter Egg </h2>
 <p>

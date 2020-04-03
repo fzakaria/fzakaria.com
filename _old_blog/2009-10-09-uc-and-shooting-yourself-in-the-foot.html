@@ -44,7 +44,8 @@ comments:
 <p><em>Almost at midterms....<em><br />
 One of the most enjoyable courses this term have been my concurrency course <a href="http://www.student.cs.uwaterloo.ca/~cs343/">CS343</a>. In the class we are using <a href="http://plg.uwaterloo.ca/~usystem/uC++.html">uC++</a> (mico C++); which is an extension by the University of Waterloo to add high-level concurrency in an object oriented language. So far what we have covered is the ability for "Coroutines" to maintain a separate stack through execution. Using this feature we have been able to solve some interesting problems in novel ways.</p>
 <p>Here is an example of some uC++ code. Every coroutine must have a main method which is executing upon calling the inherited Resume() function of every couroutine on the <em>this</em> object. Once inside main(), you can suspend() the coroutine and execution will then unwind back to the original caller. Further resumes() cause the coroutine to start from the same location where the suspend() had occurred ("partial coroutines").</p>
-<pre name = "code" class="brush: cpp;toolbar: false;">
+<pre>
+<code>
 #ifndef _Q2_
 #define _Q2_ 1
 #include <uC++.h>
@@ -62,6 +63,7 @@ _Coroutine StringLiteral
 }; //StringLiteral
 //End of Q2.H
 #endif
+</code>
 </pre>
 <p>I am curious to see where the course leads us to in use of uC++. Would be perhaps even neater to learn some GPGPU "ultimate concurrency" in my opinion.</p>
 <h3>Shooting myself in the foot </h3>
