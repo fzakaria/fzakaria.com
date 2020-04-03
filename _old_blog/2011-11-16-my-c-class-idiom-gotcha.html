@@ -29,7 +29,8 @@ comments: []
 <h3>What I wanted to do </h3>
 <p>
 We had a very small structure representing a 4D float Vector. I began to use it however decided that I wanted to add a few more methods, a constructor etc... Therefore I decided to turn my nice lean small structure into a <strong>Class</strong>!</p>
-<pre class="brush:cpp">
+<pre>
+<code>
 struct Vector
 {
 float x;
@@ -37,9 +38,11 @@ float y;
 float z;
 float w;
 };
+</code>
 </pre>
 <p><em>became...</em></p>
-<pre class="brush:cpp; highlight: [24]">
+<pre>
+<code>
 class Vector4f
 {
 public:
@@ -74,15 +77,18 @@ public:
 private:
     const static Vector4f m_zeroVector;
 };
+</code>
 </pre></p>
 <p>
 C++ is an object-oriented language, thus I have the tendency to wrap everything in a Class rather than a Struct so that I can extend them and it is more inline with the OO-idiom. This has generally been fine for most code I've written however my work has a lot of mixing between C and C++ coding (multimedia driver development for those curious).</p>
 <p>
 My OO-idiom failed me with the use of <a href="http://www.cplusplus.com/reference/clibrary/cstring/memcpy/">memcpy</a>. Many assignment operations in the codebase are done via memcpy instead of the assignment operator.</p>
-<pre class="brush:cpp; ">
+<pre>
+<code>
 float data[4];
 Vector4f vector4;
 memcpy(&data, &vector4, sizeof(Vector4f)); //OUT OF BOUNDS
+</code>
 </pre>
 <p>
 The culprit is <strong>line 24</strong> in the definition of the Vector4f class. Adding <em>virtual</em> to a method, causes the class definition to contain an additional vbptr (virtual base pointer). It caused the size of the class to go from 16 to 20 (assuming 4byte pointer). It was from force of habit of always including virtual in the destructor, which is itself another <strong>gotcha</strong>!</p>

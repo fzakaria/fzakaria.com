@@ -272,7 +272,8 @@ Previously, the link to the mp3 file was very easy to generate and scrape from t
 Secondly, they've changed the whole request mechanism for serving songs. Before as I mentioned, the /serve/play url immediately served up the Mp3. <strong>This is no longer the case</strong>. There is now an intermediate request which returns some JSON data and then finally the URL to the Mp3 is retrieved and served!
 </li>
 <p><strong>Relevant Code from hype_functions_min.js</strong></p>
-<pre class="brush:js">
+<pre>
+<code>
 var req_url = '/serve/source/' + window.playList['tracks'][track].id + '/' + window.playList['tracks'][track].key;
 var source_data;
 var r = $.ajax({url: req_url,data: req_data,type: 'get',async: false,cache: false,dataType: 'json',error: function() {
@@ -285,6 +286,7 @@ try {
     log("FAILED to parse JSON data");
     return false;
 }
+</code>
 </pre>
 <li>Thirdly, this hasn't changed but don't forget about setting the cookie! Hypemachine checks for a AUTH cookie and without it will not authorize your get request for the song data! Simply store the cookie when you retrieve the HTML and use the same one when you make further requests. <em>Voila!</em></li>
 </ol>
