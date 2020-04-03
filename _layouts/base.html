@@ -10,11 +10,11 @@
 
         <link ref="{{ date }}">
         
-        {::comment}
+        {% comment %}
         All the posts imported from the old wordpress blog used just simple HTML code blocks.
         We rely then on highlightjs to automatically try and detect the language and syntax highlight.
         We check whether to link it according to the presence of the wordpress_id frontmatter
-        {:/comment}
+        {% endcomment %}
         {% if page.wordpress_id %}
         <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
         {% endif %}
