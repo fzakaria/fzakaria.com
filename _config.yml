@@ -30,6 +30,9 @@ paginate: 10
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
 exclude:
+  - LICENSE
+  - README.md
+  - Rakefile
   - Dockerfile
   - Gemfile
   - Gemfile.lock
