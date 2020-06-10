@@ -2,6 +2,7 @@
 layout: post
 title: my love letter to redo
 date: 2020-06-08 16:09 -0700
+excerpt_separator: <!--more-->
 ---
 
 > This is a _public love letter_ to **redo** & the joy it brings building
@@ -14,6 +15,8 @@ There is something magical when you learn Lisp that is really tough to convey ov
 I have not professionally used Lisp much since however it's been immensely impactful in the way I think about & construct software. 
 
 **Redo is this for build systems**.
+
+<!--more-->
 
 I must have come across several articles about _Redo_ or even [djb's](https://en.wikipedia.org/wiki/Daniel_J._Bernstein) own [cryptic posts](https://cr.yp.to/redo.html) on it however I filed it mentally in the same mental folder I put a lot of stuff I come across on Hacker News; "Cool".
 
