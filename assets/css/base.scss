@@ -13,6 +13,13 @@ pre {
     padding: 0 1rem;
 }
 
+// add more spacing surrounding
+// code blocks
+.highlight pre {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
 .highlighter-rouge:not(code) {
     margin: 0 -1rem;
 }
