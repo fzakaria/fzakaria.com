@@ -31,12 +31,12 @@ In order to test our new cache; we'll create a derivation that is **definitely**
 
 Let's create a _slightly_ modified version of the [GNU hello](https://www.gnu.org/software/hello/) program.
 
-Let's save the below derivation in a file _hello-nix.nix_.
+Let's save the below derivation in a file _lolhello.nix_.
 
 ```nix
 { pkgs ? import <nixpkgs> { }, stdenv ? pkgs.stdenv, fetchurl ? pkgs.fetchurl }:
 stdenv.mkDerivation {
-  name = "hello-nix";
+  name = "lolhello";
 
   src = fetchurl {
     url = "mirror://gnu/hello/hello-2.3.tar.bz2";
@@ -72,19 +72,19 @@ We will be utilizing Nix's ability to validate that the contents of cached paths
 
 ```bash
 # build it locally so it's present in /nix/store
-nix-build --no-out-link hello-nix.nix
+nix-build --no-out-link lolhello.nix
 # sign the /nix/store path
 nix sign-paths --key-file cache-priv-key.pem \
-    $(nix-build --no-out-link hello-nix.nix)
+    $(nix-build --no-out-link lolhello.nix)
 ```
 
-`$(nix-build --no-out-link hello-nix.nix)` is just a quick way to return the _nix/store/_ output path _/nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello_.
+`$(nix-build --no-out-link lolhello.nix)` is just a quick way to return the _nix/store/_ output path _/nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello_.
 
 ## Upload
 
 ```bash
 # upload the contents to your S3
-nix copy --to s3://fmzakari-nixcache $(nix-build --no-out-link hello-nix.nix)
+nix copy --to s3://fmzakari-nixcache $(nix-build --no-out-link lolhello.nix)
 ```
 
 ## Purge the local store
