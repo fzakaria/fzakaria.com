@@ -9,5 +9,5 @@ let
   };
 in mkShell {
   name = "blog-shell";
-  buildInputs = [jekyll_env];
+  buildInputs = [jekyll_env bundix ruby];
 }

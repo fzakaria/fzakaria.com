@@ -51,6 +51,17 @@
     };
     version = "1.2.7";
   };
+  faraday = {
+    dependencies = ["multipart-post"];
+    groups = ["default" "jekyll_plugins"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0wwks9652xwgjm7yszcq5xr960pjypc07ivwzbjzpvy9zh2fw6iq";
+      type = "gem";
+    };
+    version = "1.0.1";
+  };
   ffi = {
     groups = ["default" "jekyll_plugins"];
     platforms = [];
@@ -124,6 +135,17 @@
       type = "gem";
     };
     version = "0.13.0";
+  };
+  jekyll-github-metadata = {
+    dependencies = ["jekyll" "octokit"];
+    groups = ["jekyll_plugins"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0r4m7r4qyd3pqkp5xlyp3zzy47i18kjgwq995nrspysgkmc4qmw1";
+      type = "gem";
+    };
+    version = "2.13.0";
   };
   jekyll-paginate = {
     groups = ["jekyll_plugins"];
@@ -231,6 +253,27 @@
     };
     version = "0.3.6";
   };
+  multipart-post = {
+    groups = ["default" "jekyll_plugins"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "1zgw9zlwh2a6i1yvhhc4a84ry1hv824d6g2iw2chs3k5aylpmpfj";
+      type = "gem";
+    };
+    version = "2.1.1";
+  };
+  octokit = {
+    dependencies = ["faraday" "sawyer"];
+    groups = ["default" "jekyll_plugins"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0zvfr9njmj5svi39fcsi2b0g7pcxb0vamw9dlyas8bg814jlzhi6";
+      type = "gem";
+    };
+    version = "4.18.0";
+  };
   pathutil = {
     dependencies = ["forwardable-extended"];
     groups = ["default" "jekyll_plugins"];
@@ -313,6 +356,17 @@
       type = "gem";
     };
     version = "2.2.1";
+  };
+  sawyer = {
+    dependencies = ["addressable" "faraday"];
+    groups = ["default" "jekyll_plugins"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0yrdchs3psh583rjapkv33mljdivggqn99wkydkjdckcjn43j3cz";
+      type = "gem";
+    };
+    version = "0.8.2";
   };
   terminal-table = {
     dependencies = ["unicode-display_width"];

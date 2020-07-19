@@ -76,5 +76,10 @@ layout: base
     The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
     © Drew Devault.
     </p>
-    <div class="spacer" style="margin-top: 50px;"></div>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    {% capture contribute_msg %}
+      Improve this page @ {{site.github.build_revision | slice: 0, 7}}
+    {% endcapture %}
+    <p><a href="{% github_edit_link %}">{{contribute_msg}}</a></p>
+
 </div>

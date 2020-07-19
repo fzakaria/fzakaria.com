@@ -44,3 +44,6 @@ exclude:
 collections:
   old_blog:
     output: true
+github:
+  source:
+    branch: master

@@ -8,12 +8,13 @@ gem "jekyll"
 
 # Jekyll will automatically activate any plugins
 # listed in the :jekyll_plugins group.
-group :jekyll_plugins do  
+group :jekyll_plugins do
   gem "jekyll-compose"
   gem "jekyll-seo-tag"
   gem "jekyll-paginate"
   gem "jekyll-feed"
   gem "jekyll-sitemap"
+  gem "jekyll-github-metadata"
 end
 
 group :development do
