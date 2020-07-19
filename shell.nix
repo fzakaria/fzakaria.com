@@ -2,12 +2,12 @@
 with pkgs;
 with stdenv;
 let
-  gems = bundlerEnv {
+  jekyll_env = bundlerEnv {
     name = "fzakaria.com";
     inherit ruby;
     gemdir = ./.;
   };
 in mkShell {
   name = "blog-shell";
-  buildInputs = [gems ruby bundix];
+  buildInputs = [jekyll_env];
 }
