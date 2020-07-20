@@ -93,7 +93,7 @@ We now have an entry in our _/nix/store_ that is a Maven repository of all the n
 
 With a derivation setup to contain our full Maven repository, we are ready to build the Maven application.
 
-```
+```nix
 { stdenv, jdk11_headless, maven, makeWrapper }:
 with stdenv;
 let dependencies = { # see above
