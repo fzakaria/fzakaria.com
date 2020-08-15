@@ -19,6 +19,10 @@
         <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
         {% endif %}
 
+        {% if site.google_analytics and jekyll.environment == 'production' %}
+            {% include google_analytics.html %}
+        {% endif %}
+
     </head>
     <body>
         {% if page.wordpress_id %}

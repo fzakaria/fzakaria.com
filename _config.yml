@@ -47,3 +47,5 @@ collections:
 github:
   source:
     branch: master
+# Google Analytics
+google_analytics: UA-35360900-1
