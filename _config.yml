@@ -47,5 +47,6 @@ collections:
 github:
   source:
     branch: master
+repository: "fzakaria/fzakaria.com"
 # Google Analytics
 google_analytics: UA-35360900-1

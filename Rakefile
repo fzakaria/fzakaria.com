@@ -39,7 +39,7 @@ namespace :blog do
     Jekyll::Commands::Build.process(options)
     Jekyll::Commands::Serve.process(options)
   end
-  
+
   desc "Generate the jekyll blog at _site"
   task :generate do
     Jekyll::PluginManager.require_from_bundler
@@ -52,6 +52,9 @@ namespace :blog do
 
   desc "Publish blog to gh-pages on Github"
   task :publish => [:generate] do
+    # set the environment variable
+    # to production when we publish.
+    ENV['JEKYLL_ENV'] = 'production'
     # Make a temporary directory for the build before production release.
     # This will be torn down once the task is complete.
     Dir.mktmpdir do |tmp|
