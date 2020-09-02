@@ -8,11 +8,11 @@ date: 2020-09-02 14:36 -0700
 
 The Nix expression language is *somewhat* documented.
 I came across the following links:
-1. https://nixos.wiki/wiki/Nix_Expression_Language
-2. https://nixery.dev/nix-1p.html
-3. https://nixos.org/guides/nix-pills/basics-of-language.html
-4. https://nixos.org/manual/nix/stable/#sec-constructs
-5. https://medium.com/@MrJamesFisher/nix-by-example-a0063a1a4c55
+1. <https://nixos.wiki/wiki/Nix_Expression_Language>
+2. <https://nixery.dev/nix-1p.html>
+3. <https://nixos.org/guides/nix-pills/basics-of-language.html>
+4. <https://nixos.org/manual/nix/stable/#sec-constructs>
+5. <https://medium.com/@MrJamesFisher/nix-by-example-a0063a1a4c55>
 
 Nix is a strongly typed language although it is lazily typed.
 The fact that it is strongly typed means that certain type coercion are
