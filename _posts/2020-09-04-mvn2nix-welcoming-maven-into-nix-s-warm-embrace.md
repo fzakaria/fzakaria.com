@@ -17,6 +17,8 @@ You find find the similar announcement on <https://discourse.nixos.org/t/mvn2nix
 
 <!--more-->
 
+⚠️ **mvn2nix** is seeing active development. Please pin the commit to avoid any breaking changes.
+
 ### Philosophical Goals
 
 1. is written in Java itself;
