@@ -6,6 +6,7 @@ title: Farid Zakaria's Blog
 <div class="media">
 	{% for post in paginator.posts %}
 		{% include post-stub.html post=post %}
+		<hr>
 	{% endfor %}
 
 	{% if paginator.previous_page %}
