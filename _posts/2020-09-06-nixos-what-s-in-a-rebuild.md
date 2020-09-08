@@ -77,7 +77,10 @@ let nixos = import <nixpkgs/nixos> { configuration = {
 in nixos.system
 ```
 
-The output will be the _/nix/store_ system closure; this is a full typical Linux filesystem including _/bin_ & _/etc_
+The output will be the _/nix/store_ system closure; this is a _somewhat_ typical Linux filesystem including _/etc_.
+
+
+> comment from [infinisil](https://github.com/Infinisil): _/bin_ & _/lib_ are purposefully left out to avoid programs depending on them; forcing purer Nix builds. They can be found nested within the _/sw_ directory.
 
 ```
 $ tree /nix/store/x0nbdy16myi7y72vy02nw8hywr3fnv7d-nixos-system-nixos-20.09pre237891.f9eba87bf03
