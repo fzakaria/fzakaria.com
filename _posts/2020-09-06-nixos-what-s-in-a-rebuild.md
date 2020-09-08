@@ -12,7 +12,7 @@ There's a lot of information on how to configure & setup an already created NixO
 Here I'll document what I found useful and pulling back the veil on some of the NixOS tooling.
 
 > Feel free to check my Nix repository for home-manager & NixOS
-> https://github.com/fzakaria/nix-home
+> <https://github.com/fzakaria/nix-home>
 
 <!--more-->
 
