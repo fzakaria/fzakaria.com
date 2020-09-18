@@ -94,3 +94,15 @@ If you are on a cloud provider (i.e. AWS), simply remove the SSH ingress rule.
 Now the strength of our SSH is directly related to our identity provider. For instance, I've setup MFA for my Google account.
 
 _tailscale_ & _NixOS_ are a great match.
+
+### Extra credit
+
+> The following is only really useful for those running home-networks; please don't use it in any production setting.
+
+Now that access via _ssh_ is only allowed through the VPN; which requires it's own authentication -- we can make further simplifications.
+
+If we wanted to, we could now make *sshd* accept _password based logins_ & have our user have an _empty password_ for a real simple login experience.
+
+At first this would have the drawback that any user with access to the VPN could access any host & as any user. We can however make use of tailscale's [ACL feature](https://tailscale.com/kb/1018/acls) to restrict access only to the correct users.
+
+_I leave the implementation as an exercise._
