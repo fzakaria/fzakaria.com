@@ -10,6 +10,10 @@ excerpt_separator: <!--more-->
 
 Networking can seem like _voodoo_; many of us take for granted how data transmits from one computer to the next. Recently, [wireguard](https://www.wireguard.com/), has attracted a lot of publicity for it's inclusion into the Linux kernel & for it's stated goal of making setting up VPNs simpler.
 
+Behind all the magic, is a very simple premise. Let's shed some of the complexity and break it down to _first principles_.
+
+<!--more-->
+
 > A virtual private network extends a private network across a public network and enables users to send and receive data across shared or public networks as if their computing devices were directly connected to the private network. [^1] [^2]
 
 ![VPN graphic](/assets/images/VPN_overview-en.svg)
@@ -24,9 +28,9 @@ We will accomplish this task with a _tunnel_.
 
 Let's consider a very simple example with two distinct private networks: _home_ & _office_.
 
-**Home Network**: Is the 192.168.1.0/24 subnet and has a laptop with the _private IP address_ of 192.168.1.192.
+**Home Network**: A 192.168.1.0/24 subnet and has a laptop with the _private IP address_ of 192.168.1.192.
 
-**Office Network**: Is the 172.31.0.1/20 subnet and has a server with _private IP address_ of 172.31.9.116 & a _public IP address_ of 54.219.126.112.
+**Office Network**: A 172.31.0.1/20 subnet and has a server with _private IP address_ of 172.31.9.116 & a _public IP address_ of 54.219.126.112.
 
 ![VPN graphic](/assets/images/vpn_simple_drawing.png)
 
@@ -56,7 +60,9 @@ We will then assign two IP addresses within that subnet to the two hosts.
 
 The first step in setting up our tunnel will be to create a _tun_ network interface device[^3]. A _tun_ device is a kernel virtual network device, they are not backed by a physical device.
 
-Packets sent by an operating system via a _tun_ device are delivered to a user space program which attaches itself to the device. A userspace program may also pass packets into a _tun_ device. In this case the device delivers these packets to the operating-system network stack thus emulating as if it has arrived from an external source.[^4]
+Packets sent by the operating system via the _tun_ device are delivered to a user space program which attaches itself to the device. A userspace program may also pass packets into a _tun_ device. In this case the device delivers these packets to the operating-system network stack thus emulating as if it has arrived from an external source.[^4]
+
+> _tun_ devices operate at the L3 layer (IP). There is an analogous _tap_ device that operates at the L2 layer (Ethernet).
 
 ```bash
 # on server & laptop run the following
@@ -120,6 +126,8 @@ The TUN device however emits raw L3 packets (IP packets), and the IP address of 
 
 We will _encapsulate_ the packet with a routable IP & UDP header destined for the VPN peer.
 
+> UDP is chosen since there is a lot of literature how TCP over TCP is a bad idea; TCP Meltdown.[^6]
+
 ### Encapsulation
 
 Encapsulation as a concept is straightforward. It is the act of embedding a protocol within the data/payload of another. Here we see an example of embedding TCP-IP within the payload of a UDP packet.[^5]
@@ -134,7 +142,7 @@ Typically, in order to guarantee delivery across the Internet, network devices r
 
 > Although IP protocol supports fragmentation, there is no guarantee that every link along the way does. It's best to stay within the 1500 byte limit.
 
-Given that we are embedding our transmission protocol within an IP-UDP datagram, we must account for this reserved headroom accordingly or risk breaking the 1500 byte boundary.
+Given that we are embedding our transmission protocol within a IP-UDP datagram, we must account for this reserved headroom accordingly or risk breaking the 1500 byte boundary.
 
 Given that the IP header is 20 bytes (minimum) and the UDP header is 8 bytes, our new MTU is _1472_ bytes.
 
@@ -179,7 +187,7 @@ Sweet! Enough theory, show me the code!
 
 I've kept the code to a single-file for demonstration purposes but you can also find it on GitHub <https://github.com/fzakaria/lametun>. It is heavily commented for learning purposes.
 
-> I tried to make the code somewhat Go-idiomatic without being too pedantic as a learning exercise. If you feel the code can be improved, please reach out or open a pull-request.
+> I tried to make the code somewhat Go-idiomatic without being too pedantic as a learning exercise. If you feel the code can be improved, please [reach out](mailto:farid.m.zakaria@gmail.com) or open a pull-request.
 
 ```go
 package main
@@ -333,14 +341,37 @@ func main() {
 }
 ```
 
-### NAT
+Running the code is quite simple.
+```bash
+# the server runs it in listen mode
+> ./lametun -listen
+
+# the client needs to provide the server's IP
+> ./lametun -server 54.219.126.112
+
+# We can now ping the server from our laptop through the private IP!
+> ping 172.31.255.13
+PING 172.31.255.13 (172.31.255.13) 56(84) bytes of data.
+64 bytes from 172.31.255.13: icmp_seq=1 ttl=64 time=6.42 ms
+64 bytes from 172.31.255.13: icmp_seq=2 ttl=64 time=6.33 ms
+
+```
+
+### Encryption & NAT
 
 In order to simplify the tunneling code & avoid having to solve cases where both machines are behind a NAT, **lametun** requires that one peer acts as the "server"; it must have a publicly accessible IP.
 
+When a UDP packet arrives to the "server", it will store the remote address which it will use when sending back encapsulated responses. This is how the server can _learn_ about the NAT address of the _laptop_.
+
 There are solutions to where both machines are behind a NAT such as using [STUN](https://en.wikipedia.org/wiki/STUN); however it adds quite a bit of complexity.
+
+The inner protocol is unencrypted, which can be a problem if it's also in cleartext like _HTTP_. More robust solutions like _wireguard_, encrypt the encapsulated packet. The equivalent would be to extend **lametun** such that the UDP payloads are encrypted. That part is straightforward, key management is difficult :)
+
+Consider these remaining gaps _homework assignment_ or now you can use the mature product offerings with a better conceptual understanding and appreciation.
 
 [^1]: <https://en.wikipedia.org/wiki/Virtual_private_network>
 [^2]: By Michel Bakni - Derived from files [1], [2] and [3].Dulaney, Emmett (2009) CompTIA Security+ Deluxe Study Guide, Wiley Publishing, Inc., p. 124 ISBN: 9780470372968., CC BY-SA 4.0
 [^3]: <https://www.kernel.org/doc/Documentation/networking/tuntap.txt>
 [^4]: <https://en.wikipedia.org/wiki/TUN/TAP>
 [^5]: Foo over UDP <https://lwn.net/Articles/614348/>
+[^6]: Why TCP Over TCP Is A Bad Idea <http://sites.inka.de/bigred/devel/tcp-tcp.html>
