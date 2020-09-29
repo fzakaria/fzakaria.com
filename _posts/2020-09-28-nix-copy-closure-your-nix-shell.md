@@ -12,6 +12,8 @@ Someone reached out to me over e-mail to discuss my previous post on [caching yo
 _"What I wish to do is to copy a particular development environment (nix-shell)
 from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and **does not** have Internet access."_
 
+<!--more-->
+
 Seems straightforward, so let's investigate. Let's use a very basic _shell.nix_ file.
 
 > Very important we make sure to pin _nixpkgs_. In the example below I do it inline in the Nix expression but you can also use [niv](https://github.com/nmattia/niv) or pin the channel to a particular commit.
