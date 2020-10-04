@@ -18,16 +18,16 @@
 
 /* //-- yui-grids style overrides -- */
 body { font-family: Georgia; color: #444; }
-#inner { padding: 10px 80px; margin: 80px auto; background: #f5f5f5; border: solid #666; border-width: 8px 0 2px 0; }
-.yui-gf { margin-bottom: 2em; padding-bottom: 2em; border-bottom: 1px solid #ccc; }
+#inner { padding: 10px; margin: 0px auto; background: #f5f5f5; border: solid #666; border-width: 8px 0 8px 0; }
+.yui-gf { padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid #ccc; }
 
 /* //-- header, body, footer -- */
-#hd { margin: 2.5em 0 3em 0; padding-bottom: 1.5em; border-bottom: 1px solid #ccc }
+#hd { padding-bottom: 1.5em; border-bottom: 1px solid #ccc }
 #hd h2 { text-transform: uppercase; letter-spacing: 2px; }
-#bd, #ft { margin-bottom: 2em; }
+#bd, #ft { margin-bottom: 0em; }
 
 /* //-- footer -- */
-#ft { padding: 1em 0 5em 0; font-size: 92%; border-top: 1px solid #ccc; text-align: center; }
+#ft { padding: 1em 0 0em 0; font-size: 92%; border-top: 1px solid #ccc; text-align: center; }
 #ft p { margin-bottom: 0; text-align: center;   }
 
 /* //-- core typography and style -- */
