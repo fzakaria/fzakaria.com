@@ -74,7 +74,7 @@ namespace :blog do
         system "git remote add origin git@github.com:fzakaria/fzakaria.com.git"
 
         # Push the files to the gh-pages branch, forcing an overwrite.
-        system "git push origin master:refs/heads/gh-pages --force"
+        system "git push origin main:refs/heads/gh-pages --force"
       end
 
     end
