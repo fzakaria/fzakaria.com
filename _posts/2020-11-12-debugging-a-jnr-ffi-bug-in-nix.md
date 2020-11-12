@@ -152,7 +152,7 @@ Java uses the system property **java.library.path** or environment variable **LD
 
 I had neither set, so what gives?
 
-The final piece of the puzzle involves looking through the JDK source code itself, to discover that if neither is set, the JVM **automatically includes some as default**.
+The final piece of the puzzle involves looking through the [JDK source code](https://github.com/openjdk/jdk/blob/50357d136a775872999055bef61057b884d80693/src/hotspot/os/linux/os_linux.cpp#L413) itself, to discover that if neither is set, the JVM **automatically includes some as default**.
 
 ```cpp
   // See ld(1):
