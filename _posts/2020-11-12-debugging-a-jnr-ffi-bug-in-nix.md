@@ -138,7 +138,7 @@ Okay, so the _hunch_ is that the wrong _libc_ is being brought in, let's check w
 ...
 ```
 
-💡 Great! We are definitely resolving to a different lib than what is already set in the ELF header of our Java process.
+💡 Great! We are definitely resolving to a different libc than what is already set in the ELF header of our Java process.
 
 ```
 ❯ ldd $(which java)
