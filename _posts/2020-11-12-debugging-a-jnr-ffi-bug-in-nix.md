@@ -57,12 +57,12 @@ j  org.jruby.ext.socket.Ifaddr.setAddr(Lorg/jruby/Ruby;)V+61
 j  org.jruby.ext.socket.Ifaddr.<init>(Lorg/jruby/Ruby;Lorg/jruby/RubyClass;Ljava/net/NetworkInterface;)V+58
 ```
 
-Turned out that the failing line was the following which looks seemingly innocuous 🤔
+Turned out that the failing line was the following, which looks seemingly innocuous 🤔
 ```ruby
 UUID.generate.tr
 ```
 
-Digging into the gems, we trace [see](https://github.com/assaf/uuid/blob/master/lib/uuid.rb#L240) the code through.
+Digging into the gems, [we trace](https://github.com/assaf/uuid/blob/master/lib/uuid.rb#L240) the code through the _uuid_ gem.
 ```ruby
 ##
 # Uses system calls to get a mac address
@@ -76,7 +76,7 @@ def iee_mac_address
 end
 ```
 
-Which ends up [calling](https://github.com/ahoward/macaddr/blob/master/lib/macaddr.rb#L82) the following code
+Which ends up [calling](https://github.com/ahoward/macaddr/blob/master/lib/macaddr.rb#L82) the following code in the _macaddr_ gem.
 ```ruby
 def from_getifaddrs
   return unless Socket.respond_to? :getifaddrs
