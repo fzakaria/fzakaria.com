@@ -1,0 +1,1571 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://fzakaria.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://fzakaria.com/" rel="alternate" type="text/html" /><updated>2020-12-01T21:57:56-08:00</updated><id>https://fzakaria.com/feed.xml</id><title type="html">Farid Zakaria’s Blog</title><subtitle>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong &lt;a href=&quot;https://fareedzakaria.com/&quot;&gt;Fareed&lt;/a&gt;.</subtitle><entry><title type="html">autopatchelf - what it can look like</title><link href="https://fzakaria.com/2020/12/01/autopatchelf-what-it-can-look-like.html" rel="alternate" type="text/html" title="autopatchelf - what it can look like" /><published>2020-12-01T21:18:00-08:00</published><updated>2020-12-01T21:18:00-08:00</updated><id>https://fzakaria.com/2020/12/01/autopatchelf-what-it-can-look-like</id><content type="html" xml:base="https://fzakaria.com/2020/12/01/autopatchelf-what-it-can-look-like.html">&lt;blockquote&gt;
+  &lt;p&gt;This is a follow up post to my previous one to &lt;a href=&quot;/2020/11/17/on-demand-linked-libraries-for-nix.html&quot;&gt;on-demand linked libraries for NixOS&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I previously wrote about the work into a new NixOS tool &lt;a href=&quot;https://github.com/Mic92/nix-ld&quot;&gt;nix-ld&lt;/a&gt;, which will allow the possibility of hot-patching the linking of dynamic libraries.&lt;/p&gt;
+
+&lt;p&gt;At the moment the goal of the tool is modest in allowing modification of the library search path via a custom environment variable &lt;em&gt;NIX_LD_LIBRARY_PATH&lt;/em&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I’m minimizing the task as there’s a ton of complexity, such as not loading in a different glibc and other subtleties – ask &lt;a href=&quot;https://github.com/Mic92&quot;&gt;Mic92&lt;/a&gt; about it on &lt;a href=&quot;irc://irc.freenode.net/#nixos&quot;&gt;#nixos&lt;/a&gt;!&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I finished with a bit of a &lt;em&gt;teaser&lt;/em&gt; on what a full-fledged tool may look like…&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;autopatchelf&quot;&gt;autopatchelf&lt;/h3&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://github.com/fzakaria/autopatchelf&quot;&gt;autopatchelf&lt;/a&gt; is my &lt;em&gt;work in progress&lt;/em&gt; in what the other half of on-demand linked libraries may look &amp;amp; feel like.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Don’t judge me on the code, it’s still in exploratory phase. 👨‍⚖️&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;It’s goal is quite simple and works in tandem with &lt;a href=&quot;https://github.com/Mic92/nix-ld&quot;&gt;nix-ld&lt;/a&gt;. &lt;em&gt;autopatchelf&lt;/em&gt; attempts to locate a valid &lt;em&gt;/nix/store&lt;/em&gt; entry for every required library required by the binary.&lt;/p&gt;
+
+&lt;p&gt;An &lt;em&gt;asciinema&lt;/em&gt; is worth a thousand words.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Here is a small example of how running &lt;em&gt;autopatchelf&lt;/em&gt; will prompt the user to select the most appropriate matching library for the Ruby binary. It’s pretty quick..&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;script id=&quot;asciicast-376182&quot; src=&quot;https://asciinema.org/a/376182.js&quot; async=&quot;&quot; data-speed=&quot;0.5&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Once the libraries are chosen, it’s &lt;em&gt;mostly&lt;/em&gt; a straightforward invocation to &lt;a href=&quot;https://github.com/Mic92/nix-ld&quot;&gt;nix-ld&lt;/a&gt; with the set &lt;em&gt;NIX_LD_LIBRARY_PATH&lt;/em&gt; environment variable.&lt;/p&gt;
+
+&lt;h4 id=&quot;challenges&quot;&gt;Challenges&lt;/h4&gt;
+
+&lt;p&gt;I already foresee a few challenges (all solvable!) that need to be addressed for a thorough solution which I want to articulate here for others that might want to pursue this idea.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;A garbage-collection root must be created for all realised &lt;em&gt;/nix/store&lt;/em&gt; entries. This is to avoid the chosen libraries from being garbage-collected during process run.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://github.com/fzakaria/autopatchelf&quot;&gt;autopatchelf&lt;/a&gt; will try to normalize or find closest matching libraries if a non-exact match can be found. The ELF binary itself then must be patched to set the selected names.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Solving for diamond dependencies must be performed. For instance, the selected glibc version must match the same one used in all the selected &lt;em&gt;/nix/store&lt;/em&gt; paths. It may be necessary to build a depth-first graph of selected libraries.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;A cache file “fingerprint” of the selected libraries can be saved for the binary so that subsequent startups are faster.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;An option to directly edit the ELF binary rather than supply the &lt;em&gt;NIX_LD_LIBRARY_PATH&lt;/em&gt; variable should be possible.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The long-term vision is anyone can either start any non-NixOS binary if this functionality is directly embedded within the &lt;em&gt;ld&lt;/em&gt; interpreter, patch the ELF binary interactively for the required libraries or even ship the “fingerprint” file alongside the binary for others to consume.&lt;/p&gt;
+
+&lt;p&gt;There’s a lot of promise in the idea especially for unlocking cases where users may lean on &lt;a href=&quot;https://nixos.org/manual/nixpkgs/stable/#sec-fhs-environments&quot;&gt;buildFHSUserEnv&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you’d like to work on this together reach out to me or contribute at &lt;a href=&quot;https://github.com/fzakaria/autopatchelf&quot;&gt;https://github.com/fzakaria/autopatchelf&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">This is a follow up post to my previous one to on-demand linked libraries for NixOS. I previously wrote about the work into a new NixOS tool nix-ld, which will allow the possibility of hot-patching the linking of dynamic libraries. At the moment the goal of the tool is modest in allowing modification of the library search path via a custom environment variable NIX_LD_LIBRARY_PATH. I’m minimizing the task as there’s a ton of complexity, such as not loading in a different glibc and other subtleties – ask Mic92 about it on #nixos! I finished with a bit of a teaser on what a full-fledged tool may look like…</summary></entry><entry><title type="html">On-demand linked libraries for Nix</title><link href="https://fzakaria.com/2020/11/17/on-demand-linked-libraries-for-nix.html" rel="alternate" type="text/html" title="On-demand linked libraries for Nix" /><published>2020-11-17T21:32:00-08:00</published><updated>2020-11-17T21:32:00-08:00</updated><id>https://fzakaria.com/2020/11/17/on-demand-linked-libraries-for-nix</id><content type="html" xml:base="https://fzakaria.com/2020/11/17/on-demand-linked-libraries-for-nix.html">&lt;blockquote&gt;
+  &lt;p&gt;This is a write up of some discussion ongoing with some folks on the &lt;a href=&quot;irc://irc.freenode.net/nix-community&quot;&gt;#nix-community&lt;/a&gt; IRC chat primarily being driven by &lt;a href=&quot;https://github.com/Mic92&quot;&gt;Mic92&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Nixpkgs maintains the highest rating on &lt;a href=&quot;https://repology.org/&quot;&gt;Repology&lt;/a&gt; for having the most packages &amp;amp; which are up to date. Unfortunately even with the current ecosystem of packages, there will always be gaps, and for beginners in NixOS a common question is:&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;“I’ve download a binary and would like to run it on NixOS”&lt;/em&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Take a look at this graph &lt;a href=&quot;https://repology.org/repositories/graphs&quot;&gt;https://repology.org/repositories/graphs&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/repology.svg&quot; alt=&quot;repology graph&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Can we do better &amp;amp; streamline running non-Nix software?&lt;/strong&gt; 🤔&lt;/p&gt;
+
+&lt;p&gt;This was some of the questions posed by some Nix contributors and I wanted to capture the ideas put forward for others.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;a-brief-tour-of-linking&quot;&gt;A brief tour of linking&lt;/h2&gt;
+
+&lt;p&gt;Without going into a ton of detail about how dynamic libraries are performed on Linux; a Linux binary - &lt;a href=&quot;https://en.wikipedia.org/wiki/Executable_and_Linkable_Format&quot;&gt;ELF format&lt;/a&gt; - contains information pertaining to the dynamic libraries necessary for the binary.&lt;/p&gt;
+
+&lt;p&gt;For instance, here is a non-NixOS Ruby installation.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ readelf &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which ruby&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;NEEDED
+ 0x0000000000000001 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NEEDED&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;             Shared library: &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;libruby-2.7.so.2.7]
+ 0x0000000000000001 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;NEEDED&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;             Shared library: &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;libc.so.6]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;It requires two dynamic libraries &lt;em&gt;libruby&lt;/em&gt; &amp;amp; &lt;em&gt;libc&lt;/em&gt;. These libraries may themselves have other dependencies, so we can use &lt;strong&gt;ldd&lt;/strong&gt; to recursively find the dependency closure.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ ldd &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which ruby&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt;
+    linux-vdso.so.1 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007ffed1705000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    /lib/x86_64-linux-gnu/libnss_cache.so.2 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f3626cd0000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    libruby-2.7.so.2.7 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/libruby-2.7.so.2.7 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f3626960000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    libc.so.6 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/libc.so.6 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f362679b000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    libpthread.so.0 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/libpthread.so.0 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f3626779000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    librt.so.1 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/librt.so.1 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f362676e000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    libgmp.so.10 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/libgmp.so.10 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f36266eb000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    libdl.so.2 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/libdl.so.2 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f36266e3000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    libcrypt.so.1 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/libcrypt.so.1 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f36266a8000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    libm.so.6 &lt;span class=&quot;o&quot;&gt;=&amp;gt;&lt;/span&gt; /lib/x86_64-linux-gnu/libm.so.6 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f3626564000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    /lib64/ld-linux-x86-64.so.2 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;0x00007f3626cde000&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We can see here that &lt;strong&gt;ldd&lt;/strong&gt; resolved the libraries to locations in my &lt;a href=&quot;https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard&quot;&gt;Filesystem Hierarchy Standard&lt;/a&gt;(FHS).&lt;/p&gt;
+
+&lt;p&gt;This is &lt;em&gt;not hermetic&lt;/em&gt;, as the FHS is a global shared state across my machine.
+This is the exact problem that Nix itself wants to address.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I’m on a Debian distro at the moment.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Nix addresses this generally by patching the ELF header to &lt;em&gt;fully specify&lt;/em&gt; where the shared libraries can be found in the &lt;em&gt;/nix/store&lt;/em&gt;; so that they are not resolved or searched on the FHS.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ readelf -d $(which ruby) | grep RUNPATH
+ 0x000000000000001d (RUNPATH) Library runpath:
+ [/nix/store/z5lira1853d97gbmv1qbdjjpkjn7ksj8-ruby-2.6.6/lib:
+ /nix/store/8fcxqg8dmwlkjw2vgkgz607kr5jy552w-zlib-1.2.11/lib:
+ /nix/store/kah5n342wz4i0s9lz9ka4bgz91xa2i94-glibc-2.32/lib]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;This &lt;em&gt;patching&lt;/em&gt; however relies on the Nix &lt;em&gt;stdenv&lt;/em&gt; derivation builder and ultimately is what makes binaries in Nix work.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Nix actually takes it a step further and patches the linker so that it does not even try to check the FHS.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Binaries downloaded from the Internet are not patched. What can be done?&lt;/p&gt;
+
+&lt;h2 id=&quot;interpreter&quot;&gt;Interpreter&lt;/h2&gt;
+
+&lt;p&gt;A key insight into the bootstrapping of an ELF binary in Linux is the &lt;em&gt;interpreter&lt;/em&gt;, whose presence is there to help satisfy any dynamic linkage.&lt;/p&gt;
+
+&lt;p&gt;Let’s take a look again at my non-Nix Ruby binary&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ readelf &lt;span class=&quot;nt&quot;&gt;-l&lt;/span&gt; &lt;span class=&quot;si&quot;&gt;$(&lt;/span&gt;which ruby&lt;span class=&quot;si&quot;&gt;)&lt;/span&gt; | &lt;span class=&quot;nb&quot;&gt;grep &lt;/span&gt;interpreter
+      &lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Nix built binaries use a &lt;a href=&quot;https://github.com/NixOS/patchelf&quot;&gt;patchelf&lt;/a&gt; utility that not only sets the &lt;em&gt;RUNPATH&lt;/em&gt; to pin libraries but also changes the interpreter to one in the &lt;em&gt;/nix/store&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;It is the interpreter’s goal to find the libraries listed in the ELF file either via the &lt;em&gt;RUNPATH&lt;/em&gt;, &lt;em&gt;LD_LIBRARY_PATH&lt;/em&gt; or the &lt;em&gt;FHS&lt;/em&gt; well known directories.&lt;/p&gt;
+
+&lt;p&gt;⚠️ On NixOS &lt;code class=&quot;highlighter-rouge&quot;&gt;/lib64/ld-linux-x86-64.so.2&lt;/code&gt; normally &lt;strong&gt;does not exist&lt;/strong&gt; and as a result you will be greeted with an unfriendly &lt;em&gt;“bad ELF interpreter: No such file or directory”&lt;/em&gt; error.&lt;/p&gt;
+
+&lt;h2 id=&quot;nix-ld&quot;&gt;nix-ld&lt;/h2&gt;
+
+&lt;p&gt;We have a binary that needs some shared libraries &amp;amp; the bootstrapping process calls out to the interpreter set in the ELF header.&lt;/p&gt;
+
+&lt;p&gt;💡 Let’s put a &lt;em&gt;fake&lt;/em&gt; interpreter on NixOS machines!&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;This idea works since the path of Linux &lt;em&gt;ld&lt;/em&gt; is well known for each distribution.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;For instance, NixOS machines can place an entry at &lt;em&gt;/lib64/ld-linux-x86-64.so.2&lt;/em&gt; for a custom binary that can help resolve dynamic libraries &lt;strong&gt;at runtime&lt;/strong&gt; to libraries within the &lt;em&gt;/nix/store&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;This is in fact what &lt;a href=&quot;https://github.com/Mic92&quot;&gt;Mic92&lt;/a&gt; has started with his project &lt;a href=&quot;https://github.com/Mic92/nix-ld&quot;&gt;nix-ld&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;How can our custom &lt;em&gt;ld&lt;/em&gt; locate the necessary libraries though? This is where we can get really crazy. 🤪&lt;/p&gt;
+
+&lt;p&gt;We can use &lt;a href=&quot;https://github.com/bennofs/nix-index&quot;&gt;nix-index&lt;/a&gt; – a files database for nixpkgs – to locate packages in Nix that provide the necessary library. 🤯&lt;/p&gt;
+
+&lt;p&gt;The packages can be realized on-demand onto the host and their &lt;em&gt;/nix/store&lt;/em&gt; entry can then be included into the &lt;em&gt;LD_LIBRARY_PATH&lt;/em&gt; environment variable set when handing off to the &lt;em&gt;real ld&lt;/em&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If gc-roots are set for the required libraries, this determination can then be cached for a given binary.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Fancier best-effort matching on picking packages that have the highest % of required symbols could also be done.&lt;/p&gt;
+
+&lt;p&gt;It seems kind of crazy that just picking random packages from the &lt;em&gt;nix-index&lt;/em&gt; would ultimately let us run the binary; except that is how traditional software in Linux normally works! 😱&lt;/p&gt;
+
+&lt;p&gt;At worst it is providing the same experience users typically experience on non-NixOS distributions but giving a gentler onboarding for people as they see the Nix-light 😇&lt;/p&gt;</content><author><name></name></author><summary type="html">This is a write up of some discussion ongoing with some folks on the #nix-community IRC chat primarily being driven by Mic92. Nixpkgs maintains the highest rating on Repology for having the most packages &amp;amp; which are up to date. Unfortunately even with the current ecosystem of packages, there will always be gaps, and for beginners in NixOS a common question is: “I’ve download a binary and would like to run it on NixOS” Take a look at this graph https://repology.org/repositories/graphs Can we do better &amp;amp; streamline running non-Nix software? 🤔 This was some of the questions posed by some Nix contributors and I wanted to capture the ideas put forward for others.</summary></entry><entry><title type="html">Debugging a JNR-FFI bug in Nix</title><link href="https://fzakaria.com/2020/11/12/debugging-a-jnr-ffi-bug-in-nix.html" rel="alternate" type="text/html" title="Debugging a JNR-FFI bug in Nix" /><published>2020-11-12T09:46:00-08:00</published><updated>2020-11-12T09:46:00-08:00</updated><id>https://fzakaria.com/2020/11/12/debugging-a-jnr-ffi-bug-in-nix</id><content type="html" xml:base="https://fzakaria.com/2020/11/12/debugging-a-jnr-ffi-bug-in-nix.html">&lt;blockquote&gt;
+  &lt;p&gt;This is a write-up of an issue I discovered when using more advanced features of Java within a Nix environment. Please refer to the GitHub issue &lt;a href=&quot;https://github.com/NixOS/nixpkgs/issues/103493&quot;&gt;#103493&lt;/a&gt; to see any ongoing process&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I have been onboarding several engineers to doing their development workflow using Nix; promising all the benefits of hermeticity &amp;amp; reproducibility. The biggest challenge is making sure that onboarding continues to be &lt;em&gt;seemless&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Therefore it’s 🚨 &lt;em&gt;all hands on deck&lt;/em&gt; when someone has encountered a SIGSEGV; especially since the environment is within the JVM.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# A fatal error has been detected by the Java Runtime Environment:&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#  SIGSEGV (0xb) at pc=0x0000000000000680, pid=3229039, tid=0x00007ff8c5834640&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# JRE version: OpenJDK Runtime Environment (8.0_265) (build 1.8.0_265-ga)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Java VM: OpenJDK 64-Bit Server VM (25.265-bga mixed mode linux-amd64 compressed oops)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Problematic frame:&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# C  0x0000000000000680&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;!--more--&gt;
+
+&lt;h2 id=&quot;debugging&quot;&gt;Debugging&lt;/h2&gt;
+
+&lt;p&gt;Typically Java &amp;amp; Nix work well together since there’s not much reliance on system libraries beyond than what the JVM pulls in, unless you use JNI or JNR.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;a href=&quot;https://github.com/jnr/jnr-ffi&quot;&gt;jnr-ffi&lt;/a&gt; is a Java library for loading native libraries without writing JNI code by hand, or using tools such as SWIG.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The fist challenge in any SIGSEGV or bug for that matter is getting the &lt;strong&gt;smallest reproducible failure&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;Our team is using &lt;a href=&quot;https://github.com/jruby/jruby&quot;&gt;JRuby&lt;/a&gt;, so coming up with a small one-liner to reproduce the issue was useful.&lt;/p&gt;
+
+&lt;p&gt;Analyzing the stack trace in the coredump logs in JRuby is not very helpful, so stepping through the code to find the failing line was the method of choice here.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;Java frames: (J=compiled Java code, j=interpreted, Vv=VM code)
+j  com.kenai.jffi.Foreign.invokeN5O1(JJJJJJJLjava/lang/Object;III)J+0
+j  com.kenai.jffi.Invoker.invokeN5(Lcom/kenai/jffi/CallContext;JJJJJJILjava/lang/Object;Lcom/kenai/jffi/ObjectParameterStrategy;Lcom/kenai/jffi/ObjectParameterInfo;Ljava/lang/Object;Lcom/kenai/jffi/ObjectParameterStrategy;Lcom/kenai/jffi/ObjectParameterInfo;Ljava/lang/Object;Lcom/kenai/jffi/ObjectParameterStrategy;Lcom/kenai/jffi/ObjectParameterInfo;Ljava/lang/Object;Lcom/kenai/jffi/ObjectParameterStrategy;Lcom/kenai/jffi/ObjectParameterInfo;)J+198
+j  jnr.netdb.NativeProtocolsDB$LinuxLibProto$jnr$ffi$3.getprotobyname_r(Ljava/lang/String;Ljnr/netdb/NativeProtocolsDB$UnixProtoent;Ljnr/ffi/Pointer;Ljnr/ffi/NativeLong;Ljnr/ffi/Pointer;)I+223
+j  jnr.netdb.NativeProtocolsDB$LinuxNativeProtocolsDB.getProtocolByName(Ljava/lang/String;)Ljnr/netdb/Protocol;+48
+j  jnr.netdb.NativeProtocolsDB.load()Ljnr/netdb/NativeProtocolsDB;+244
+j  jnr.netdb.NativeProtocolsDB.access$000()Ljnr/netdb/NativeProtocolsDB;+0
+j  jnr.netdb.NativeProtocolsDB$SingletonHolder.&amp;lt;clinit&amp;gt;()V+0
+v  ~StubRoutines::call_stub
+j  jnr.netdb.NativeProtocolsDB.getInstance()Ljnr/netdb/NativeProtocolsDB;+0
+j  jnr.netdb.Protocol$ProtocolDBSingletonHolder.load()Ljnr/netdb/ProtocolsDB;+0
+j  jnr.netdb.Protocol$ProtocolDBSingletonHolder.&amp;lt;clinit&amp;gt;()V+0
+v  ~StubRoutines::call_stub
+j  jnr.netdb.Protocol.getProtocolDB()Ljnr/netdb/ProtocolsDB;+0
+j  jnr.netdb.Protocol.getProtocolByNumber(I)Ljnr/netdb/Protocol;+0
+j  org.jruby.ext.socket.Addrinfo.&amp;lt;init&amp;gt;(Lorg/jruby/Ruby;Lorg/jruby/RubyClass;Ljava/net/NetworkInterface;Z)V+38
+j  org.jruby.ext.socket.Ifaddr.setAddr(Lorg/jruby/Ruby;)V+61
+j  org.jruby.ext.socket.Ifaddr.&amp;lt;init&amp;gt;(Lorg/jruby/Ruby;Lorg/jruby/RubyClass;Ljava/net/NetworkInterface;)V+58
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Turned out that the failing line was the following, which looks seemingly innocuous 🤔&lt;/p&gt;
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;no&quot;&gt;UUID&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;generate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;tr&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Digging into the gems, &lt;a href=&quot;https://github.com/assaf/uuid/blob/master/lib/uuid.rb#L240&quot;&gt;we trace&lt;/a&gt; the code through the &lt;em&gt;uuid&lt;/em&gt; gem.&lt;/p&gt;
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c1&quot;&gt;##&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;# Uses system calls to get a mac address&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;iee_mac_address&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;begin&lt;/span&gt;
+    &lt;span class=&quot;no&quot;&gt;Mac&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;gsub&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;sr&quot;&gt;/:|-/&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s1&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;hex&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;mh&quot;&gt;0x7FFFFFFFFFFF&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;rescue&lt;/span&gt;
+    &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Which ends up &lt;a href=&quot;https://github.com/ahoward/macaddr/blob/master/lib/macaddr.rb#L82&quot;&gt;calling&lt;/a&gt; the following code in the &lt;em&gt;macaddr&lt;/em&gt; gem.&lt;/p&gt;
+&lt;div class=&quot;language-ruby highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;def&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;from_getifaddrs&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;unless&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;respond_to?&lt;/span&gt; &lt;span class=&quot;ss&quot;&gt;:getifaddrs&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;interfaces&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;Socket&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;getifaddrs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;select&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;|&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;addr&lt;/span&gt;  &lt;span class=&quot;c1&quot;&gt;# Some VPN ifcs don't have an addr - ignore them&lt;/span&gt;
+      &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;pfamily&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;INTERFACE_PACKET_FAMILY&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;💡 Aha! This now correlates to portions of the stacktrace that at first were not fully clear.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;j  jnr.netdb.Protocol.getProtocolDB&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt;Ljnr/netdb/ProtocolsDB&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;+0
+j  jnr.netdb.Protocol.getProtocolByNumber&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;I&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;Ljnr/netdb/Protocol&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;+0
+j  org.jruby.ext.socket.Addrinfo.&amp;lt;init&amp;gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Lorg/jruby/Ruby&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;Lorg/jruby/RubyClass&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;Ljava/net/NetworkInterface&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;Z&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;V+38
+j  org.jruby.ext.socket.Ifaddr.setAddr&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Lorg/jruby/Ruby&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;V+61
+j  org.jruby.ext.socket.Ifaddr.&amp;lt;init&amp;gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Lorg/jruby/Ruby&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;Lorg/jruby/RubyClass&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;Ljava/net/NetworkInterface&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;V+58
+j  org.jruby.ext.socket.RubySocket.getifaddrs&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;Lorg/jruby/runtime/ThreadContext&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;Lorg/jruby/runtime/builtin/IRubyObject&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;Lorg/jruby/runtime/builtin/IRubyObject&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;+61
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Putting this all together, we can now write a minimal reproducer.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ which jruby
+/nix/store/v0frl1gs13bxs7g3hvlrm3656zq9ra5f-jruby-9.2.13.0/bin/jruby
+
+❯ gem &lt;span class=&quot;nb&quot;&gt;install &lt;/span&gt;macaddr
+❯ jruby &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;require 'macaddr'; require 'jruby/path_helper'; puts Mac.addr&quot;&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# A fatal error has been detected by the Java Runtime Environment:&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#  SIGSEGV (0xb) at pc=0x0000000000000680, pid=3229039, tid=0x00007ff8c5834640&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now that we have a small reproducer, we can start to investigate.&lt;/p&gt;
+
+&lt;h2 id=&quot;investigation&quot;&gt;Investigation&lt;/h2&gt;
+
+&lt;p&gt;Jumping to the &lt;a href=&quot;https://github.com/jnr/jnr-netdb&quot;&gt;jnr-netdb&lt;/a&gt; library, we &lt;a href=&quot;https://github.com/jnr/jnr-netdb/blob/cf6b34662cea211e58736d0fec91d25d6a186912/src/main/java/jnr/netdb/NativeProtocolsDB.java#L68&quot;&gt;find&lt;/a&gt; that the only external library opened is &lt;em&gt;libc&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;libnames&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;SOLARIS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;socket&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;nsl&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;c&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]{&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;c&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;lib&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;equals&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;no&quot;&gt;LINUX&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Library&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;loadLibrary&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;LinuxLibProto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;libnames&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Library&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;loadLibrary&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;LibProto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;libnames&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Okay, so the &lt;em&gt;hunch&lt;/em&gt; is that the wrong &lt;em&gt;libc&lt;/em&gt; is being brought in, let’s check with &lt;strong&gt;LD_DEBUG=libs&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ &lt;span class=&quot;nv&quot;&gt;LD_DEBUG&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;libs jruby &lt;span class=&quot;nt&quot;&gt;-e&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;require 'macaddr'; require 'jruby/path_helper'; puts Mac.addr&quot;&lt;/span&gt;
+...
+   3769338: calling init: /lib/x86_64-linux-gnu/libc.so.6
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;💡 Great! We are definitely resolving to a different libc than what is already set in the ELF header of our Java process.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ ldd $(which java)
+    ...
+    libc.so.6 =&amp;gt;
+    /nix/store/bdf8iipzya03h2amgfncqpclf6bmy3a1-glibc-2.32/lib/libc.so.6 (0x00007f9e58bc6000)
+    ...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Java uses the system property &lt;strong&gt;java.library.path&lt;/strong&gt; or environment variable &lt;strong&gt;LD_LIBRARY_PATH&lt;/strong&gt; (on Linux) to check where to load libraries.&lt;/p&gt;
+
+&lt;p&gt;I had neither set, so what gives?&lt;/p&gt;
+
+&lt;p&gt;The final piece of the puzzle involves looking through the &lt;a href=&quot;https://github.com/openjdk/jdk/blob/50357d136a775872999055bef61057b884d80693/src/hotspot/os/linux/os_linux.cpp#L413&quot;&gt;JDK source code&lt;/a&gt; itself, to discover that if neither is set, the JVM &lt;strong&gt;automatically includes some as default&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-cpp highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;  &lt;span class=&quot;c1&quot;&gt;// See ld(1):&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;//      The linker uses the following search paths to locate required&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;//      shared libraries:&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;//        1: ...&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;//        ...&lt;/span&gt;
+  &lt;span class=&quot;c1&quot;&gt;//        7: The default directories, normally /lib and /usr/lib.&lt;/span&gt;
+&lt;span class=&quot;cp&quot;&gt;#ifndef OVERRIDE_LIBPATH
+&lt;/span&gt;  &lt;span class=&quot;cp&quot;&gt;#if defined(AMD64) || (defined(_LP64) &amp;amp;&amp;amp; defined(SPARC)) || defined(PPC64) || defined(S390)
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#define DEFAULT_LIBPATH &quot;/usr/lib64:/lib64:/lib:/usr/lib&quot;
+&lt;/span&gt;  &lt;span class=&quot;cp&quot;&gt;#else
+&lt;/span&gt;    &lt;span class=&quot;cp&quot;&gt;#define DEFAULT_LIBPATH &quot;/lib:/usr/lib&quot;
+&lt;/span&gt;  &lt;span class=&quot;cp&quot;&gt;#endif
+#else
+&lt;/span&gt;  &lt;span class=&quot;cp&quot;&gt;#define DEFAULT_LIBPATH OVERRIDE_LIBPATH
+#endif
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h2 id=&quot;solution&quot;&gt;Solution&lt;/h2&gt;
+
+&lt;p&gt;The &lt;em&gt;long term / correct&lt;/em&gt; solution would be to patch the Nix distribution of the JDK to exclude these default library paths. However in the interest of solving it immediately for the engineers, specifying the correct library paths is essential.&lt;/p&gt;
+
+&lt;p&gt;I added the following to our &lt;em&gt;shell.nix&lt;/em&gt; file&lt;/p&gt;
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# This is a way to globally set Java system properties without having to specify&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# them on the CLI&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Specifically, here we make sure to set the equivalent of Java's LD_LIBRARY_PATH to find&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# the correct glibc library.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# `java.library.path` is used by Java when dynamic linking&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# This needs to be set in order to determine where to find libraries&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# https://docs.oracle.com/en/java/javase/14/docs/api/java.base/java/lang/System.html#java.library.path&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# https://docs.oracle.com/javase/8/docs/platform/jvmti/jvmti.html#tooloptions&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;export&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;JAVA_TOOL_OPTIONS&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=-&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;Djava&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;library&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;path&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;makeLibraryPath&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;cc&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;libc&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;]}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;⚠️ You &lt;strong&gt;do not&lt;/strong&gt; want to set &lt;em&gt;LD_LIBRARY_PATH&lt;/em&gt; because that will affect &lt;strong&gt;every binary&lt;/strong&gt; you run in your &lt;em&gt;nix-shell&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Another suitable solution would be to use &lt;a href=&quot;https://nixos.org/manual/nixpkgs/stable/#ssec-stdenv-functions&quot;&gt;makeWrapper&lt;/a&gt; on Java itself to set &lt;em&gt;LD_LIBRARY_PATH&lt;/em&gt; only for itself.&lt;/p&gt;
+
+&lt;p&gt;Are you looking to help contribute to Nix? Reach out to &lt;a href=&quot;mailto:farid.m.zakaria@gmail.com&quot;&gt;me&lt;/a&gt; and let’s fix the JDK as mentioned above. I’m also looking for other people to help improve the overall language-support of Java in Nix. 🙏&lt;/p&gt;</content><author><name></name></author><summary type="html">This is a write-up of an issue I discovered when using more advanced features of Java within a Nix environment. Please refer to the GitHub issue #103493 to see any ongoing process I have been onboarding several engineers to doing their development workflow using Nix; promising all the benefits of hermeticity &amp;amp; reproducibility. The biggest challenge is making sure that onboarding continues to be seemless. Therefore it’s 🚨 all hands on deck when someone has encountered a SIGSEGV; especially since the environment is within the JVM. # # A fatal error has been detected by the Java Runtime Environment: # # SIGSEGV (0xb) at pc=0x0000000000000680, pid=3229039, tid=0x00007ff8c5834640 # # JRE version: OpenJDK Runtime Environment (8.0_265) (build 1.8.0_265-ga) # Java VM: OpenJDK 64-Bit Server VM (25.265-bga mixed mode linux-amd64 compressed oops) # Problematic frame: # C 0x0000000000000680</summary></entry><entry><title type="html">Isolation using Java’s ClassLoader</title><link href="https://fzakaria.com/2020/11/10/isolation-using-java-s-classloader.html" rel="alternate" type="text/html" title="Isolation using Java's ClassLoader" /><published>2020-11-10T10:32:00-08:00</published><updated>2020-11-10T10:32:00-08:00</updated><id>https://fzakaria.com/2020/11/10/isolation-using-java-s-classloader</id><content type="html" xml:base="https://fzakaria.com/2020/11/10/isolation-using-java-s-classloader.html">&lt;blockquote&gt;
+  &lt;p&gt;This is a small write-up of one I sent to my team to help disseminate some knowledge regarding Java’s ClassLoader mechanism.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;A codebase I’m working on uses Java &lt;a href=&quot;https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html&quot;&gt;ClassLoader&lt;/a&gt; to help load multiple JDBC drivers with their &lt;em&gt;complete&lt;/em&gt; dependencies.&lt;/p&gt;
+
+&lt;p&gt;Typically, using Maven or Gradle, a project would have to pin to common dependencies due to the diamond dependency problem at the cost of potential unforeseen bugs due to drift in versions.&lt;/p&gt;
+
+&lt;p&gt;Can we do better? Let’s dig into ClassLoaders.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;Java uses the &lt;em&gt;CLASS_PATH&lt;/em&gt;, similar to your shell’s &lt;em&gt;PATH&lt;/em&gt; when searching to resolve classes.&lt;/p&gt;
+
+&lt;p&gt;It’s important to understand though that the &lt;em&gt;CLASS_PATH&lt;/em&gt; is used during &lt;strong&gt;compilation&lt;/strong&gt; and during &lt;strong&gt;runtime&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Did you know JAR files are just zip files ?&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ file some-jar.jar
+some-jar.jar: Zip archive data, at least v1.0 to extract
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s consider a trivial example where I have three files:&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;Dog.java&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;Rottweiler.java&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Rottweiler&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Woof!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;p&gt;&lt;em&gt;Main.java&lt;/em&gt;&lt;/p&gt;
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Main&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;moose&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Rottweiler&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;moose&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;bark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I can go ahead and compile these classes &amp;amp; run it.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ javac Main.java
+❯ java Main
+Woof!
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Java searches the current directory automatically as part of the &lt;em&gt;CLASS_PATH&lt;/em&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I can however go ahead and change &lt;em&gt;Rottweiler.java&lt;/em&gt; to now emit &lt;em&gt;meow&lt;/em&gt; instead.&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Rottweiler&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;bark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nc&quot;&gt;System&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;out&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;println&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Meow!&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ javac Dog.java
+❯ java Main
+Starting application!
+Meow!
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I &lt;strong&gt;did not&lt;/strong&gt; have to recompile &lt;em&gt;Main.java&lt;/em&gt; however.&lt;/p&gt;
+
+&lt;p&gt;This distinguishes that a class file or dependency can be compiled against a certain version of a class but run using a different version ultimately.&lt;/p&gt;
+
+&lt;p&gt;This gets at the heart of &lt;em&gt;dependency management&lt;/em&gt; &amp;amp; why we use tools like Gradle.&lt;/p&gt;
+
+&lt;p&gt;When you perform &lt;strong&gt;compilation&lt;/strong&gt;, Java resolves classes to validate the public API (public classes &amp;amp; methods) are present, however at &lt;strong&gt;runtime&lt;/strong&gt; you can use a different implementation.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If you are familiar with C/C++ this is similar in concept to header &amp;amp; object files. In fact Google has a neat tool &lt;a href=&quot;https://github.com/bazelbuild/bazel/tree/master/third_party/ijar&quot;&gt;ijar&lt;/a&gt; that turns class files into only their public signatures, resembling even more closer to header files.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;A common problem though is what if I am pulling in two libraries that both require the same dependency but were built (compiled) using different versions – this is known as the “&lt;em&gt;diamond dependency problem&lt;/em&gt;”.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/version-sat.svg&quot; alt=&quot;Diamond Dependency&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Oftentimes “code just works”, especially if the dependency is properly following semantic versioning, you are hopefully not likely to encounter a &lt;em&gt;ClassNotFoundException&lt;/em&gt; or &lt;em&gt;MethodNotFoundException&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;There’s &lt;strong&gt;no guarantee&lt;/strong&gt; that internal logic hasn’t changed enough to make the different versions meaningful such as in the case of the Dog example above (woof vs meow).&lt;/p&gt;
+
+&lt;p&gt;The best you can do for classes A, B &amp;amp; C is to make sure they were both built &amp;amp; run with the same version (Google’s raison d’etre for the mono repo) or extensive testing to make sure there’s no meaningful drift in implementation when pinning to a single version.&lt;/p&gt;
+
+&lt;p&gt;Let’s change our Dog example to resemble the following:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ tree
+&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt;
+├── Dog.class
+├── Dog.java
+├── Main.class
+├── Main.java
+├── v1
+│   ├── Rottweiler.class
+│   └── Rottweiler.java
+└── v2
+    ├── Rottweiler.class
+    └── Rottweiler.java
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We now have a V1 and V2 of the Rottweiler class (V1 has the incorrect &lt;em&gt;Meow!&lt;/em&gt;)&lt;/p&gt;
+
+&lt;p&gt;We can load both versions of the Rottweiler class using a custom &lt;em&gt;ClassLoader&lt;/em&gt; for each version.&lt;/p&gt;
+
+&lt;div class=&quot;language-java highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.io.File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.net.URL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;java.net.URLClassLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;;&lt;/span&gt;
+
+&lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Main&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;kd&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;static&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;args&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;kd&quot;&gt;throws&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;Exception&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassLoader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v1Loader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;URLClassLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;URL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;v1/&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toURL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+                        &lt;span class=&quot;nc&quot;&gt;ClassLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSystemClassLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clazzV1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v1Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;loadClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Rottweiler&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mooseV1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clazzV1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;mooseV1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;bark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+
+        &lt;span class=&quot;kd&quot;&gt;final&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;ClassLoader&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v2Loader&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;URLClassLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;
+                        &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;URL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;[]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;new&lt;/span&gt; &lt;span class=&quot;nc&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;v2/&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;).&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;toURL&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;},&lt;/span&gt;
+                        &lt;span class=&quot;nc&quot;&gt;ClassLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;getSystemClassLoader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;());&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;Class&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;?&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clazzV2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;v2Loader&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;loadClass&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Rottweiler&quot;&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;);&lt;/span&gt;
+        &lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mooseV2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nc&quot;&gt;Dog&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clazzV2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;newInstance&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;mooseV2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;na&quot;&gt;bark&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;();&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ java Main
+Woof!
+Meow!
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Ultimately, we used &lt;em&gt;ClassLoader&lt;/em&gt; as a way to create &lt;strong&gt;isolation&lt;/strong&gt; between the classes so we can resolve to multiple versions at a time.&lt;/p&gt;
+
+&lt;p&gt;For this to work though, we must have used an &lt;em&gt;interface&lt;/em&gt; (Dog) otherwise there would be no way to perform the casting to the &lt;em&gt;Rottweiler&lt;/em&gt; implementation, since that would need to be resolved at compile time!&lt;/p&gt;
+
+&lt;p&gt;You can do a lot of fancier stuff with &lt;em&gt;ClassLoaders&lt;/em&gt;, such as even creating classes dynamically at runtime. Wow! I’ll leave that as a follow-up excercise :)&lt;/p&gt;</content><author><name></name></author><summary type="html">This is a small write-up of one I sent to my team to help disseminate some knowledge regarding Java’s ClassLoader mechanism. A codebase I’m working on uses Java ClassLoader to help load multiple JDBC drivers with their complete dependencies. Typically, using Maven or Gradle, a project would have to pin to common dependencies due to the diamond dependency problem at the cost of potential unforeseen bugs due to drift in versions. Can we do better? Let’s dig into ClassLoaders.</summary></entry><entry><title type="html">Nix parallelism &amp;amp; Import From Derivation</title><link href="https://fzakaria.com/2020/10/20/nix-parallelism-import-from-derivation.html" rel="alternate" type="text/html" title="Nix parallelism &amp; Import From Derivation" /><published>2020-10-20T22:24:00-07:00</published><updated>2020-10-20T22:24:00-07:00</updated><id>https://fzakaria.com/2020/10/20/nix-parallelism-import-from-derivation</id><content type="html" xml:base="https://fzakaria.com/2020/10/20/nix-parallelism-import-from-derivation.html">&lt;p&gt;I recently submitted a pull-request &lt;a href=&quot;https://github.com/NixOS/nixpkgs/pull/101096&quot;&gt;#101096&lt;/a&gt; for &lt;a href=&quot;https://github.com/NixOS/nixpkgs&quot;&gt;nixpkgs&lt;/a&gt; to include new functionality to list all files recursively within a directory.&lt;/p&gt;
+
+&lt;p&gt;One of the feedback from &lt;a href=&quot;https://github.com/grahamc&quot;&gt;@grahamc&lt;/a&gt; &amp;amp; &lt;a href=&quot;https://github.com/roberth&quot;&gt;@roberth&lt;/a&gt; was that function may cause Nix evaluation to &lt;em&gt;stall&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;It was not clear why and even more confusing is the name given to this &lt;em&gt;gotcha&lt;/em&gt;; &lt;a href=&quot;https://nixos.wiki/wiki/Import_From_Derivation&quot;&gt;Import From Derivation&lt;/a&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Import From Derivation (IFD) is where during a single Nix evaluation, the Nix expression:&lt;/p&gt;
+  &lt;ol&gt;
+    &lt;li&gt;creates a derivation which will build a Nix expression&lt;/li&gt;
+    &lt;li&gt;imports that expression&lt;/li&gt;
+    &lt;li&gt;uses the results of the evaluation of the expression.&lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Let’s dig into this problem and how it’s caused.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;First off, let’s consider a super simple Nix derivation that takes &lt;em&gt;15 seconds&lt;/em&gt; to build.&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixpkgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}}:&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;runCommand&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;long-running&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;Sleeping!&quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    sleep 15&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;Finished sleeping&quot; &amp;gt; $out&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We can confirm that &lt;em&gt;nix-instantiate&lt;/em&gt; is &lt;strong&gt;instant&lt;/strong&gt;, whereas &lt;em&gt;nix-build&lt;/em&gt; takes 15 seconds to realise “build” the derivation. &lt;em&gt;This makes sense, as the sleep is part of the builder of the derivation.&lt;/em&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ &lt;span class=&quot;nb&quot;&gt;time &lt;/span&gt;nix-instantiate long-running.nix
+warning: you did not specify &lt;span class=&quot;s1&quot;&gt;'--add-root'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; the result might be removed by the garbage collector
+/nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv
+nix-instantiate long-running.nix  0.19s user 0.04s system 100% cpu 0.227 total
+
+❯ &lt;span class=&quot;nb&quot;&gt;time &lt;/span&gt;nix-build &lt;span class=&quot;nt&quot;&gt;--no-out-link&lt;/span&gt; long-running.nix
+these derivations will be built:
+  /nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv
+building &lt;span class=&quot;s1&quot;&gt;'/nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv'&lt;/span&gt;...
+Sleeping!
+/nix/store/smw0a75w5h0hc2wxayh93gzv4nwlnzf9-long-running
+nix-build &lt;span class=&quot;nt&quot;&gt;--no-out-link&lt;/span&gt; long-running.nix  0.25s user 0.07s system 2% cpu 15.356 total
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;strong&gt;What if I use this derivation as a dependency of another derivation?&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s consider a simple case that uses the derivation within the builder script of another derivation. The derivation &lt;em&gt;basic-using-long-running&lt;/em&gt; builder merely stores the &lt;em&gt;/nix/store&lt;/em&gt; entry for &lt;em&gt;long-running&lt;/em&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixpkgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}}:&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;long-running&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;runCommand&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;long-running&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;Sleeping!&quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    sleep 15&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;Finished sleeping&quot; &amp;gt; $out&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;in&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;runCommand&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;basic-using-long-running&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;long-running&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot; &amp;gt; $out&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Here we see that &lt;em&gt;nix-instantiate&lt;/em&gt; continue to be &lt;strong&gt;instant&lt;/strong&gt; and &lt;em&gt;nix-build&lt;/em&gt; continues to be roughly 15 seconds to build both derivations.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ &lt;span class=&quot;nb&quot;&gt;time &lt;/span&gt;nix-instantiate uses-long-running-simple.nix
+warning: you did not specify &lt;span class=&quot;s1&quot;&gt;'--add-root'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; the result might be removed by the garbage collector
+/nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv
+nix-instantiate uses-long-running-simple.nix  0.20s user 0.02s system 94% cpu 0.238 total
+
+❯ &lt;span class=&quot;nb&quot;&gt;time &lt;/span&gt;nix-build &lt;span class=&quot;nt&quot;&gt;--no-out-link&lt;/span&gt; uses-long-running-simple.nix
+these derivations will be built:
+  /nix/store/5dqxa586rdb0hiw3d0sbv2xjx6w3wa4y-long-running.drv
+  /nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv
+building &lt;span class=&quot;s1&quot;&gt;'/nix/store/5dqxa586rdb0hiw3d0sbv2xjx6w3wa4y-long-running.drv'&lt;/span&gt;...
+Sleeping!
+building &lt;span class=&quot;s1&quot;&gt;'/nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv'&lt;/span&gt;...
+/nix/store/6jg8sa5wj8zbynnq5irvxazlcl6cd655-basic-using-long-running
+nix-build &lt;span class=&quot;nt&quot;&gt;--no-out-link&lt;/span&gt; uses-long-running-simple.nix  0.42s user 0.12s system 3% cpu 16.933 total
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;However, if we access the derivation within a Nix expression itself, it forces the derivation to be built during &lt;em&gt;nix-instantiate&lt;/em&gt;. 😞&lt;/p&gt;
+
+&lt;p&gt;Consider this example, where we read the contents of the first derivation via &lt;em&gt;builtins.readFile&lt;/em&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixpkgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}}:&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;long-running&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;runCommand&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;long-running&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;Sleeping!&quot;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    sleep 15&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;Finished sleeping&quot; &amp;gt; $out&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;contents&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;builtins&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;readFile&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;long-running&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;in&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;runCommand&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;basic-using-long-running&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{}&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    echo &quot;&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;${&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;contents&lt;/span&gt;&lt;span class=&quot;si&quot;&gt;}&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot; &amp;gt; $out&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;In this case, &lt;em&gt;nix-instantiate&lt;/em&gt; takes roughly 16 seconds!&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ &lt;span class=&quot;nb&quot;&gt;time &lt;/span&gt;nix-instantiate uses-long-running-complex.nix
+building &lt;span class=&quot;s1&quot;&gt;'/nix/store/7fwqhzlnd7z21n63s2qrisvd5mjwpyji-long-running.drv'&lt;/span&gt;...
+Sleeping!
+warning: you did not specify &lt;span class=&quot;s1&quot;&gt;'--add-root'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; the result might be removed by the garbage collector
+/nix/store/n7jiryhhcik4ps26p4ml4r27c5rc0sdn-basic-using-long-running.drv
+nix-instantiate uses-long-running-complex.nix  0.40s user 0.06s system 2% cpu 16.273 total
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;nix-instantiate&lt;/em&gt; is designed to evaluate quickly and is done serially. Parallelism in Nix enters during realisation of derivations; therefore, any slowing down &lt;em&gt;nix-instantiate&lt;/em&gt; simply head-of-line blocks the subsequent building and is no longer eligible to build concurrently potentially.&lt;/p&gt;
+
+&lt;p&gt;This was somewhat frustrating since I  prefer to do certain logic in the Nix language than Bash, which I find difficult to read. Helping understand the problem at hand, though, makes it an easier pill to swallow.&lt;/p&gt;
+
+&lt;p&gt;=)&lt;/p&gt;</content><author><name></name></author><summary type="html">I recently submitted a pull-request #101096 for nixpkgs to include new functionality to list all files recursively within a directory. One of the feedback from @grahamc &amp;amp; @roberth was that function may cause Nix evaluation to stall. It was not clear why and even more confusing is the name given to this gotcha; Import From Derivation. Import From Derivation (IFD) is where during a single Nix evaluation, the Nix expression: creates a derivation which will build a Nix expression imports that expression uses the results of the evaluation of the expression. Let’s dig into this problem and how it’s caused.</summary></entry><entry><title type="html">nix-copy-closure your nix-shell</title><link href="https://fzakaria.com/2020/09/28/nix-copy-closure-your-nix-shell.html" rel="alternate" type="text/html" title="nix-copy-closure your nix-shell" /><published>2020-09-28T22:01:00-07:00</published><updated>2020-09-28T22:01:00-07:00</updated><id>https://fzakaria.com/2020/09/28/nix-copy-closure-your-nix-shell</id><content type="html" xml:base="https://fzakaria.com/2020/09/28/nix-copy-closure-your-nix-shell.html">&lt;blockquote&gt;
+  &lt;p&gt;This is a synopsis of &lt;a href=&quot;https://github.com/NixOS/nix/issues/1985&quot;&gt;https://github.com/NixOS/nix/issues/1985&lt;/a&gt;. I recommend reading it for additional detail. Many thanks to contributors on the issue like &lt;a href=&quot;https://github.com/Infinisil&quot;&gt;Infinisil&lt;/a&gt; for adding context.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Someone reached out to me over e-mail to discuss my previous post on &lt;a href=&quot;/2020/08/11/caching-your-nix-shell.html&quot;&gt;caching your nix-shell&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;“What I wish to do is to copy a particular development environment (nix-shell)
+from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and &lt;strong&gt;does not&lt;/strong&gt; have Internet access.”&lt;/em&gt;&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;Seems straightforward, so let’s investigate. Let’s use a very basic &lt;em&gt;shell.nix&lt;/em&gt; file.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Very important we make sure to pin &lt;em&gt;nixpkgs&lt;/em&gt;. In the example below I do it inline in the Nix expression but you can also use &lt;a href=&quot;https://github.com/nmattia/niv&quot;&gt;niv&lt;/a&gt; or pin the channel to a particular commit.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;kd&quot;&gt;let&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;nixpkgs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;builtins&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;fetchTarball&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;nixos-unstable-2020-09-24&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;url&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;
+      &lt;span class=&quot;s2&quot;&gt;&quot;https://github.com/nixos/nixpkgs/archive/5aba0fe9766a7201a336249fd6cb76e0d7ba2faf.tar.gz&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;sha256&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;05gawlhizp85agdpw3kpjn41vggdiywbabsbmk76r2dr513188jz&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;nixpkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;stdenv&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;lib&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;nv&quot;&gt;mkShell&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;example-shell&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;buildInputs&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;hello&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;shellHook&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;''&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;    export MESSAGE=&quot;$(hello)&quot;;&lt;/span&gt;&lt;span class=&quot;err&quot;&gt;
+&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;  ''&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s see it in action:&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ nix-shell shell.nix
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;nix-shell:~/code/nix/playground]&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$MESSAGE&lt;/span&gt;
+Hello, world!
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Recently an improvement &lt;a href=&quot;https://github.com/NixOS/nixpkgs/pull/95536&quot;&gt;#95536&lt;/a&gt; by &lt;a href=&quot;https://github.com/Infinisil&quot;&gt;Infinisil&lt;/a&gt; made the workflow to discover the &lt;em&gt;transitive runtime closure&lt;/em&gt; much simpler than what I had &lt;a href=&quot;/2020/08/11/caching-your-nix-shell.html&quot;&gt;blogged about&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;✨ A new attribute for derivations &lt;em&gt;inputDerivation&lt;/em&gt; is introduced that is &lt;em&gt;always buildable&lt;/em&gt; and whose runtime dependences are it’s build dependencies; exactly what we need for nix-shell!&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ nix-build &lt;span class=&quot;nt&quot;&gt;--no-out-link&lt;/span&gt; shell.nix &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; inputDerivation
+these derivations will be built:
+  /nix/store/bjn4imm9dw7xnxpjrwyrpk0wsy0j7xwh-example-shell.drv
+building &lt;span class=&quot;s1&quot;&gt;'/nix/store/bjn4imm9dw7xnxpjrwyrpk0wsy0j7xwh-example-shell.drv'&lt;/span&gt;...
+/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We now have a store path &lt;em&gt;/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell&lt;/em&gt; which we can check the immediate dependencies.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The below is simply the &lt;em&gt;immediate&lt;/em&gt; dependencies and not the full transitive closure for brevity.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ nix-store &lt;span class=&quot;nt&quot;&gt;--query&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--references&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    /nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+
+/nix/store/2jysm3dfsgby5sw5jgj43qjrb5v79ms9-bash-4.4-p23
+/nix/store/333six1faw9bhccsx9qw5718k6b1wiq2-stdenv-linux
+/nix/store/9krlzvny65gdc8s7kpb6lkx8cd02c25b-default-builder.sh
+/nix/store/w9yy7v61ipb5rx6i35zq1mvc2iqfmps1-hello-2.10
+/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;I will now copy the &lt;em&gt;shell.nix&lt;/em&gt; file to my other machine &amp;amp; copy the transitive closure to it.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ scp shell.nix machine-b:~
+
+❯ nix-copy-closure &lt;span class=&quot;nt&quot;&gt;--to&lt;/span&gt; machine-b &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+    /nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+copying 36 paths...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s hop on &lt;em&gt;machine B&lt;/em&gt; and create a network namespace to pretend we do not have Internet access.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A network namespace is logically another copy of the network stack,
+with its own routes, firewall rules, and network devices.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ ssh machine-b
+
+&lt;span class=&quot;c&quot;&gt;# since we won't have any Internet access, hydrate the cache&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# with our nixpkgs version&lt;/span&gt;
+❯ nix-prefetch-url &lt;span class=&quot;nt&quot;&gt;--unpack&lt;/span&gt; &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+https://github.com/nixos/nixpkgs/archive/5aba0fe9766a7201a336249fd6cb76e0d7ba2faf.tar.gz &lt;span class=&quot;se&quot;&gt;\&lt;/span&gt;
+&lt;span class=&quot;nt&quot;&gt;--name&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;nixos-unstable-2020-09-24&quot;&lt;/span&gt;
+
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns add nixshell
+&lt;span class=&quot;c&quot;&gt;# enter the namespace&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;nixshell su &lt;span class=&quot;nv&quot;&gt;$USER&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-c&lt;/span&gt; zsh
+
+&lt;span class=&quot;c&quot;&gt;# let's confirm we do not have Internet access&lt;/span&gt;
+❯ ping google.com
+ping: google.com: Temporary failure &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;name resolution
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s fire up our &lt;em&gt;nix-shell&lt;/em&gt; and see if it works.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# don't forget we are within our network namespace&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# without access to the Internet&lt;/span&gt;
+❯ nix-shell shell.nix
+bash: cannot &lt;span class=&quot;nb&quot;&gt;set &lt;/span&gt;terminal process group &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nt&quot;&gt;-1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;: Inappropriate ioctl &lt;span class=&quot;k&quot;&gt;for &lt;/span&gt;device
+bash: no job control &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;this shell
+
+&lt;span class=&quot;o&quot;&gt;[&lt;/span&gt;nix-shell:~]&lt;span class=&quot;nv&quot;&gt;$ &lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;echo&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$MESSAGE&lt;/span&gt;
+Hello, world!
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;🎆 Huzzah!
+We have now copied over our development environment &lt;em&gt;hermetically&lt;/em&gt; with the help of Nix. This is a great demonstration of the power of Nix &amp;amp; reproducibility.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;An important take-away though is that it’s important to make sure &lt;em&gt;we pin&lt;/em&gt; the exact version of &lt;em&gt;nixpkgs&lt;/em&gt; otherwise the &lt;em&gt;nix-shell&lt;/em&gt; may calculate different hashes.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Do you have an interesting workflow or innovative use of Nix with development environments? &lt;a href=&quot;mailto:farid.m.zakaria@gmail.com&quot;&gt;Let me know about it.&lt;/a&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">This is a synopsis of https://github.com/NixOS/nix/issues/1985. I recommend reading it for additional detail. Many thanks to contributors on the issue like Infinisil for adding context. Someone reached out to me over e-mail to discuss my previous post on caching your nix-shell. “What I wish to do is to copy a particular development environment (nix-shell) from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and does not have Internet access.”</summary></entry><entry><title type="html">VPNs continued</title><link href="https://fzakaria.com/2020/09/23/vpns-continued.html" rel="alternate" type="text/html" title="VPNs continued" /><published>2020-09-23T21:46:00-07:00</published><updated>2020-09-23T21:46:00-07:00</updated><id>https://fzakaria.com/2020/09/23/vpns-continued</id><content type="html" xml:base="https://fzakaria.com/2020/09/23/vpns-continued.html">&lt;blockquote&gt;
+  &lt;p&gt;This is &lt;em&gt;part 2&lt;/em&gt; of a post regarding VPNs. Please see &lt;a href=&quot;/2020/09/20/vpns-from-first-principles.html&quot;&gt;here&lt;/a&gt; for part 1.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In the &lt;a href=&quot;/2020/09/20/vpns-from-first-principles.html&quot;&gt;previous post&lt;/a&gt;, we discussed the basics of setting up a virtual private network; the goal of which was bridging two distinct private subnets.&lt;/p&gt;
+
+&lt;p&gt;This gave us the alluring property of treating separate networks as they were colocated and can be accessed easily. However most people are first introduced into VPNs for other features such as: &lt;em&gt;anonymity&lt;/em&gt;, &lt;em&gt;secrecy&lt;/em&gt; &amp;amp; &lt;em&gt;privacy&lt;/em&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A common example may be to tunnel traffic through a host in another country to disguise the origin. For instance, maybe you are in Canada but want to browse the American Netflix catalog.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;em&gt;How can we extend &lt;a href=&quot;https://github.com/fzakaria/lametun&quot;&gt;lametun&lt;/a&gt; to do this?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;I’ll present a few alternatives. The main goal however will to forward all traffic, including ones destined for the Internet, through the tunnel.&lt;/p&gt;
+
+&lt;!--more--&gt;
+&lt;h3 id=&quot;common-setup&quot;&gt;Common Setup&lt;/h3&gt;
+
+&lt;p&gt;In both alternatives, we will want to make some adjustments to our server. We will want to &lt;strong&gt;enable&lt;/strong&gt; &lt;em&gt;ip_forward&lt;/em&gt; &amp;amp; &lt;strong&gt;disable&lt;/strong&gt; &lt;em&gt;rp_filter&lt;/em&gt;. &lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; We also want to create an &lt;em&gt;iptable&lt;/em&gt; rule to setup a NAT.&lt;/p&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;&lt;em&gt;ip_forward&lt;/em&gt;&lt;/dt&gt;
+  &lt;dd&gt;IP forwarding is the ability for an operating system to accept incoming network packets on one interface, recognize that it is not meant for the system itself, but that it should be passed on to another network, and then forwards it accordingly.&lt;/dd&gt;
+  &lt;dt&gt;&lt;em&gt;rp_filter&lt;/em&gt;&lt;/dt&gt;
+  &lt;dd&gt;Reverse Path filtering is a mechanism to check whether a receiving packet source address is routable. The machine will first check whether the source of the received packet is reachable through the interface it came in. If it is not routable, it will *drop the packet.&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;sysctl &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;net.ipv4.conf.all.rp_filter=0&quot;&lt;/span&gt;
+sysctl &lt;span class=&quot;nt&quot;&gt;-w&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;net.ipv4.ip_forward=1&quot;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now on &lt;strong&gt;the server&lt;/strong&gt;, we will introduce an &lt;em&gt;iptable&lt;/em&gt; rule to forward all incoming packets from our &lt;em&gt;tun0&lt;/em&gt; device to &lt;em&gt;eth0&lt;/em&gt;, or whatever our physical device is.
+Furthermore, we will set the target to &lt;em&gt;MASQUERADE&lt;/em&gt;.&lt;/p&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;&lt;em&gt;MASQUERADE&lt;/em&gt;&lt;/dt&gt;
+  &lt;dd&gt;Masks requests from LAN nodes with the IP address of the physical device; it is used in conjunction with NAT.&lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# The -j MASQUERADE target is specified to mask the private IP address of a node&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# with the external IP address of the firewall/gateway&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# POSTROUTING allows packets to be altered as they are leaving the device&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# The -t nat creates the rule on the NAT table for address translation&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;iptables &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; nat &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; POSTROUTING &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; eth0 &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 172.31.255.7 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; MASQUERADE
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;&lt;em&gt;The reason why the NAT is necessary?&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Well if the packets destined for the Internet were sent off with the &lt;em&gt;source IP&lt;/em&gt; of our new private CIDR (i.e. 172.31.255.7 for tun0), how would they ever route back to the machine?&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;It’s not clear yet to me whether you can fake or respond to ARP requests to have the other private IP route back. I’d love to hear &lt;a href=&quot;mailto:farid.m.zakaria@gmail.com&quot;&gt;from you&lt;/a&gt; if you think it can!&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;approach-1-routing-rules&quot;&gt;Approach #1: routing rules&lt;/h3&gt;
+
+&lt;p&gt;Now that our server is setup to forward all traffic to &lt;em&gt;eth0&lt;/em&gt; using the &lt;em&gt;iptable rule&lt;/em&gt;, our remaining action is to make sure our public traffic flows through our &lt;em&gt;tun0&lt;/em&gt; device.&lt;/p&gt;
+
+&lt;p&gt;We will use Linux’s support for multiple routing tables,&lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; to accomplish this goal. We will create a new routing table &lt;em&gt;lametun&lt;/em&gt;, which is referred to when the &lt;em&gt;source IP&lt;/em&gt; of the packet is that of our &lt;em&gt;tun0&lt;/em&gt; device.&lt;/p&gt;
+
+&lt;p&gt;The route table &lt;em&gt;lametun&lt;/em&gt;, only needs a &lt;strong&gt;single&lt;/strong&gt; entry. Route everything through the &lt;em&gt;tun0&lt;/em&gt; device!&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Add the rule if the src address is our tun0 addr then&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# lookup the lametun routing table&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip rule add from 172.31.255.7 lookup lametun
+
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip rule show table lametun
+5209:   from 172.31.255.7 lookup lametun
+
+&lt;span class=&quot;c&quot;&gt;# Add the single route to send all traffic to our &quot;gateway&quot; (the tunnel)&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip route add default via 172.31.255.7 dev tun0 table lametun
+
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip route show table lametun
+default via 172.31.255.7 dev tun0
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now let’s try to use &lt;em&gt;ping&lt;/em&gt; but have it select the &lt;em&gt;source IP&lt;/em&gt; to that of our &lt;em&gt;tun0&lt;/em&gt; device; let’s &lt;code class=&quot;highlighter-rouge&quot;&gt;ping 8.8.8.8&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ ping &lt;span class=&quot;nt&quot;&gt;-I&lt;/span&gt; tun0 8.8.8.8
+PING 8.8.8.8 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;8.8.8.8&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; from 172.31.255.7 tun0: 56&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;84&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; bytes of data.
+64 bytes from 8.8.8.8: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;112 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;9.09 ms
+64 bytes from 8.8.8.8: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;112 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;9.03 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Let’s prove though that this traffic is going through our tunnel by using &lt;a href=&quot;https://www.wireshark.org/docs/man-pages/tshark.html&quot;&gt;tshark&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Running this on the laptop&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;tshark &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; tun0 icmp
+Running as user &lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt; and group &lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; This could be dangerous.
+Capturing on &lt;span class=&quot;s1&quot;&gt;'tun0'&lt;/span&gt;
+    1 0.000000000 172.31.255.7 ? 8.8.8.8      ICMP 84 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; request  &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;17/4352, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64
+    2 0.008801187      8.8.8.8 ? 172.31.255.7 ICMP 84 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; reply    &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;17/4352, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;112 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+    3 1.000493576 172.31.255.7 ? 8.8.8.8      ICMP 84 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; request  &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;18/4608, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64
+    4 1.009073436      8.8.8.8 ? 172.31.255.7 ICMP 84 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; reply    &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;18/4608, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;112 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;3&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# Running this on the server&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;tshark &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; tun0 icmp
+Running as user &lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt; and group &lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; This could be dangerous.
+Capturing on &lt;span class=&quot;s1&quot;&gt;'tun0'&lt;/span&gt;
+    1 0.000000000 172.31.255.7 → 8.8.8.8      ICMP 84 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; request  &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;88/22528, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64
+    2 0.002077891      8.8.8.8 → 172.31.255.7 ICMP 84 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; reply    &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;88/22528, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;112 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;tshark icmp
+Running as user &lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt; and group &lt;span class=&quot;s2&quot;&gt;&quot;root&quot;&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;.&lt;/span&gt; This could be dangerous.
+Capturing on &lt;span class=&quot;s1&quot;&gt;'eth0'&lt;/span&gt;
+    1 0.000000000 172.31.9.116 → 8.8.8.8      ICMP 98 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; request  &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;110/28160, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;63
+    2 0.002246902      8.8.8.8 → 172.31.9.116 ICMP 98 Echo &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;ping&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; reply    &lt;span class=&quot;nb&quot;&gt;id&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0x3f0d, &lt;span class=&quot;nb&quot;&gt;seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;110/28160, &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;113 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;request &lt;span class=&quot;k&quot;&gt;in &lt;/span&gt;1&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Sweet! &lt;em&gt;Validated&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;We even can see the IP being &lt;em&gt;masqueraded&lt;/em&gt; from &lt;em&gt;172.31.255.7&lt;/em&gt; -&amp;gt; &lt;em&gt;172.31.9.116&lt;/em&gt; as it leaves the server.&lt;/p&gt;
+
+&lt;p&gt;Since my server is in AWS, ultimately the &lt;em&gt;public IP&lt;/em&gt; seen by the Internet will be that attached to my server. With this setup, we now can conceal our source physical location by having a server masquerade as us :)&lt;/p&gt;
+
+&lt;h3 id=&quot;approach-2-network-namespace&quot;&gt;Approach #2: network namespace&lt;/h3&gt;
+
+&lt;p&gt;Routing tables work great, however they rely on the ability to tell the desired process what &lt;em&gt;source IP&lt;/em&gt; to use when opening the socket; that is not always plausible.&lt;/p&gt;
+
+&lt;p&gt;Consider an application like Chrome or Firefox, it does not expose a method in which to control which &lt;em&gt;source IP&lt;/em&gt; it uses.&lt;/p&gt;
+
+&lt;p&gt;For such cases, we will rely on a more thorough setup using &lt;em&gt;network namespaces&lt;/em&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A network namespace is logically another copy of the network stack,
+with its own routes, firewall rules, and network devices.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;First let’s setup the network namespace using a &lt;em&gt;virtual ethernet device&lt;/em&gt; that we will use to bridge the network namespace &amp;amp; the host namespace.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Create a new network namespace&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns add lametun
+
+&lt;span class=&quot;c&quot;&gt;# Create a virtual ethernet device which will help move traffic&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# from the netns to the host namespace&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Consider this like a wire connecting our network namespcae &amp;amp;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# the host namespace.&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip &lt;span class=&quot;nb&quot;&gt;link &lt;/span&gt;add veth0 &lt;span class=&quot;nb&quot;&gt;type &lt;/span&gt;veth peer name veth1
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip &lt;span class=&quot;nb&quot;&gt;link set &lt;/span&gt;up dev veth0
+&lt;span class=&quot;c&quot;&gt;# Let's give it it's own subnet for simplicity&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip addr add 10.0.0.7/24 dev veth0
+
+&lt;span class=&quot;c&quot;&gt;# Move the veth1 to the lametun network namespace&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip &lt;span class=&quot;nb&quot;&gt;link set &lt;/span&gt;veth1 netns lametun
+&lt;span class=&quot;c&quot;&gt;# Make sure to give it in an address in the same subnet&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# and set all the devices up!&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip addr add 10.0.0.3/24 dev veth1
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip &lt;span class=&quot;nb&quot;&gt;link set &lt;/span&gt;up dev veth1
+
+&lt;span class=&quot;c&quot;&gt;# Let's verify we can ping our virtual ethernet devices!&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ping 10.0.0.7
+PING 10.0.0.7 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;10.0.0.7&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; 56&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;84&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; bytes of data.
+64 bytes from 10.0.0.7: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0.070 ms
+64 bytes from 10.0.0.7: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0.147 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now let’s add Internet access!&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If there is a simpler approach using bridges, macvlan or ipvlan &lt;a href=&quot;mailto:farid.m.zakaria@gmail.com&quot;&gt;let me know&lt;/a&gt;. I didn’t want to move the IP address from my main ethernet device to the bridge, so this approach seemed easy enough but it needs &lt;em&gt;iptables&lt;/em&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Let's add our default route to go the other veth which will act&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# as our router&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip route add default via 10.0.0.7
+
+&lt;span class=&quot;c&quot;&gt;# It's not 100% clear this is needed since we have enabled ip_forward,&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# however for now it's enabled to help send the packets up/down the physical&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# device&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; FORWARD &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; eth0 &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; veth0 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;iptables &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; FORWARD &lt;span class=&quot;nt&quot;&gt;-i&lt;/span&gt; eth0 &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; veth0 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; ACCEPT
+
+&lt;span class=&quot;c&quot;&gt;# We then need to NAT the veth IP similar to how we did in the server.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# Here however we make sure we just set the source to be the whole subnet.&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;iptables &lt;span class=&quot;nt&quot;&gt;-t&lt;/span&gt; nat &lt;span class=&quot;nt&quot;&gt;-A&lt;/span&gt; POSTROUTING &lt;span class=&quot;nt&quot;&gt;-o&lt;/span&gt; eth0 &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 10.0.0.0/24 &lt;span class=&quot;nt&quot;&gt;-j&lt;/span&gt; MASQUERADE
+
+&lt;span class=&quot;c&quot;&gt;# Test out we can ping from inside the namespace&lt;/span&gt;
+❯ &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ping 8.8.8.8
+PING 8.8.8.8 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;8.8.8.8&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; 56&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;84&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; bytes of data.
+64 bytes from 8.8.8.8: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;115 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;6.28 ms
+64 bytes from 8.8.8.8: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;115 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;5.77 ms
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Great! We have Internet traffic but it’s just going through the typical flow.&lt;/p&gt;
+
+&lt;p&gt;We can now start &lt;strong&gt;lametun&lt;/strong&gt; inside this network namespace and all &lt;em&gt;default traffic&lt;/em&gt; will go through our VPN!&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Create the TUN device in the namespace &amp;amp; set it up&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip tuntap add dev tun0 mode tun user &lt;span class=&quot;nv&quot;&gt;$USER&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip &lt;span class=&quot;nb&quot;&gt;link set &lt;/span&gt;dev tun0 up
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip addr add 172.31.255.7/24 dev tun0
+&lt;span class=&quot;c&quot;&gt;# Set the default route to be sending all traffic to the tun0 device&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip route add default via 172.31.255.7
+
+&lt;span class=&quot;c&quot;&gt;# This is super important so we don't create a closed loop.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# We need to make sure to send the tunnel not through itself.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# We route the VPN IP route directly to our veth1 address&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ip route add 54.219.126.112 via 10.0.0.7
+
+&lt;span class=&quot;c&quot;&gt;# Start the tunnel and enjoy!&lt;/span&gt;
+&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip netns &lt;span class=&quot;nb&quot;&gt;exec &lt;/span&gt;lametun ./lametun &lt;span class=&quot;nt&quot;&gt;-server&lt;/span&gt; 54.219.126.112
+listen:false server:54.219.126.112 dev:tun0 port:1234
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The final &lt;em&gt;cherry on top&lt;/em&gt;, is to make sure DNS works inside the namespace.
+For that let’s create a file &lt;strong&gt;/etc/netns/lametun/resolv.conf&lt;/strong&gt; with the following contents:&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ &lt;span class=&quot;nb&quot;&gt;cat&lt;/span&gt; /etc/netns/lametun/resolv.conf
+nameserver 8.8.8.8
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We now have a &lt;em&gt;really lame&lt;/em&gt; VPN that you can use to try and add some level of indirection to your requests. Just make sure to star the desired process within the network namespace.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt&quot;&gt;https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://linux-ip.net/html/routing-tables.html&quot;&gt;http://linux-ip.net/html/routing-tables.html&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html">This is part 2 of a post regarding VPNs. Please see here for part 1. In the previous post, we discussed the basics of setting up a virtual private network; the goal of which was bridging two distinct private subnets. This gave us the alluring property of treating separate networks as they were colocated and can be accessed easily. However most people are first introduced into VPNs for other features such as: anonymity, secrecy &amp;amp; privacy. A common example may be to tunnel traffic through a host in another country to disguise the origin. For instance, maybe you are in Canada but want to browse the American Netflix catalog. How can we extend lametun to do this? I’ll present a few alternatives. The main goal however will to forward all traffic, including ones destined for the Internet, through the tunnel.</summary></entry><entry><title type="html">VPNs from first principles</title><link href="https://fzakaria.com/2020/09/20/vpns-from-first-principles.html" rel="alternate" type="text/html" title="VPNs from first principles" /><published>2020-09-20T10:17:00-07:00</published><updated>2020-09-20T10:17:00-07:00</updated><id>https://fzakaria.com/2020/09/20/vpns-from-first-principles</id><content type="html" xml:base="https://fzakaria.com/2020/09/20/vpns-from-first-principles.html">&lt;blockquote&gt;
+  &lt;p&gt;If you enjoy the &lt;em&gt;from first principles&lt;/em&gt; theme, consider reading the one
+on &lt;a href=&quot;/2020/05/31/containers-from-first-principles.html&quot;&gt;containers&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Networking can seem like &lt;em&gt;voodoo&lt;/em&gt;; many of us take for granted how data transmits from one computer to the next. Recently, &lt;a href=&quot;https://www.wireguard.com/&quot;&gt;wireguard&lt;/a&gt;, has attracted a lot of publicity for it’s inclusion into the Linux kernel &amp;amp; for it’s stated goal of making setting up VPNs simpler.&lt;/p&gt;
+
+&lt;p&gt;Behind all the magic, is a very simple premise. Let’s shed some of the complexity and break it down to &lt;em&gt;first principles&lt;/em&gt;.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;A virtual private network extends a private network across a public network and enables users to send and receive data across shared or public networks as if their computing devices were directly connected to the private network. &lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; &lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/VPN_overview-en.svg&quot; alt=&quot;VPN graphic&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The definition seems &lt;em&gt;simple&lt;/em&gt; enough. Bridge two discrete private networks &amp;amp; make them look like they are &lt;strong&gt;one&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;p&gt;We will accomplish this task with a &lt;em&gt;tunnel&lt;/em&gt;.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;h3 id=&quot;network-reachability&quot;&gt;Network Reachability&lt;/h3&gt;
+
+&lt;p&gt;Let’s consider a very simple example with two distinct private networks: &lt;em&gt;home&lt;/em&gt; &amp;amp; &lt;em&gt;office&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Home Network&lt;/strong&gt;: A 192.168.1.0/24 subnet and has a laptop with the &lt;em&gt;private IP address&lt;/em&gt; of 192.168.1.192.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Office Network&lt;/strong&gt;: A 172.31.0.1/20 subnet and has a server with &lt;em&gt;private IP address&lt;/em&gt; of 172.31.9.116 &amp;amp; a &lt;em&gt;public IP address&lt;/em&gt; of 54.219.126.112.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/vpn_simple_drawing.png&quot; alt=&quot;VPN graphic&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I did not include the routers or gateways in the figure.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;This is pretty common to what most people might experience with their home setup.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;private&lt;/em&gt; IP addresses are those that can only be reached from other machines within the subnet.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;public&lt;/em&gt; IP addresses are those that are broadcasted to neighboring routers and exchanged via the BGP protocol.&lt;/p&gt;
+
+&lt;p&gt;The goal of the tunnel will be to join these two &lt;em&gt;distinct&lt;/em&gt; subnets into a &lt;em&gt;virtual&lt;/em&gt; one; a &lt;em&gt;virtual private network&lt;/em&gt; (VPN).&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/vpn_simple_drawing_merge.png&quot; alt=&quot;VPN graphic&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Let’s choose a VPN CIDR range of 172.31.255.0/24. I don’t need a subnet so large, so let’s set a mask of /24 which gives us ~254 hosts.&lt;/p&gt;
+
+&lt;p&gt;We will then assign two IP addresses within that subnet to the two hosts.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Server&lt;/strong&gt;: 172.31.255.13&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Laptop&lt;/strong&gt;: 172.31.255.7&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The private network address range is 172.16.0.0/12 according to &lt;a href=&quot;https://www.arin.net/reference/research/statistics/address_filters/&quot;&gt;https://www.arin.net/reference/research/statistics/address_filters/&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;tun-network-interface-device&quot;&gt;TUN network interface device&lt;/h3&gt;
+
+&lt;p&gt;The first step in setting up our tunnel will be to create a &lt;em&gt;tun&lt;/em&gt; network interface device&lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt;. A &lt;em&gt;tun&lt;/em&gt; device is a kernel virtual network device, they are not backed by a physical device.&lt;/p&gt;
+
+&lt;p&gt;Packets sent by the operating system via the &lt;em&gt;tun&lt;/em&gt; device are delivered to a user space program which attaches itself to the device. A userspace program may also pass packets into a &lt;em&gt;tun&lt;/em&gt; device. In this case the device delivers these packets to the operating-system network stack thus emulating as if it has arrived from an external source.&lt;sup id=&quot;fnref:4&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:4&quot; class=&quot;footnote&quot;&gt;4&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;tun&lt;/em&gt; devices operate at the L3 layer (IP). There is an analogous &lt;em&gt;tap&lt;/em&gt; device that operates at the L2 layer (Ethernet).&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# on server &amp;amp; laptop run the following&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# adding the user will allow userspace programs running as that user&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# to attach to it without needing `sudo`&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip tuntap add dev tun0 mode tun user &lt;span class=&quot;nv&quot;&gt;$USER&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip &lt;span class=&quot;nb&quot;&gt;link set &lt;/span&gt;dev tun0 up
+
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ip &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;link &lt;/span&gt;show tun0
+9: tun0: &amp;lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&amp;gt; mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 500
+    &lt;span class=&quot;nb&quot;&gt;link&lt;/span&gt;/none  promiscuity 0 minmtu 68 maxmtu 65535
+    tun &lt;span class=&quot;nb&quot;&gt;type &lt;/span&gt;tun pi on vnet_hdr off persist on user youruser addrgenmode random numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;We then need to assign the new &lt;em&gt;private IP addresses&lt;/em&gt; for our new subnet.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# on the laptop run the following&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip addr add 172.31.255.7/24 dev tun0
+&lt;span class=&quot;c&quot;&gt;# on the server run the following&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip addr add 172.31.255.13/24 dev tun0
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Now let’s create a general routing rule so that anything destined for that subnet routes to the desired &lt;em&gt;tun&lt;/em&gt; device.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# run the following on both laptop &amp;amp; server&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip route add 172.16.0.0/12 dev tun0
+
+&lt;span class=&quot;c&quot;&gt;# Let's validate our route. Pick a machine and&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# test the route for the other one.&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ip route get 172.31.255.8
+172.31.255.8 dev tun0 src 172.31.255.7 uid 780412
+    cache
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;We make sure to test the route with an IP address not present on either machine, otherwise it will match to the &lt;em&gt;lo&lt;/em&gt; (loopback) device.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Great! We have setup some network interfaces and routing rules, but what is actually transmitting the packets to give the &lt;em&gt;illusion&lt;/em&gt; of a single network?&lt;/p&gt;
+
+&lt;p&gt;Our &lt;strong&gt;tunneling&lt;/strong&gt; software.&lt;/p&gt;
+
+&lt;h3 id=&quot;lametun&quot;&gt;lametun&lt;/h3&gt;
+
+&lt;p&gt;The &lt;em&gt;heart&lt;/em&gt; to setting up VPN is the software bridging the packets across the two networks. In our case, we will be using a userspace program and the &lt;em&gt;tun&lt;/em&gt; device; however &lt;a href=&quot;https://www.wireguard.com/&quot;&gt;wireguard&lt;/a&gt; has included this capability within the kernel itself.&lt;/p&gt;
+
+&lt;p&gt;Since this will be a &lt;em&gt;toy&lt;/em&gt; example, I’ve named the program &lt;strong&gt;lametun&lt;/strong&gt;. It will be a single &lt;em&gt;golang&lt;/em&gt; file with minimal dependencies to demonstrate how simple it is.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/vpn_lametun_simple.png&quot; alt=&quot;VPN graphic&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;lametun&lt;/strong&gt; will read all incoming packets at a particular UDP port (i.e. &lt;em&gt;1234&lt;/em&gt;) and write it to the &lt;em&gt;tun&lt;/em&gt; device.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;lametun&lt;/strong&gt; will read all outgoing packets from the &lt;em&gt;tun&lt;/em&gt; device and write it back out the physical network device.&lt;/p&gt;
+
+&lt;p&gt;Both the &lt;em&gt;server&lt;/em&gt; &amp;amp; &lt;em&gt;laptop&lt;/em&gt; will run &lt;strong&gt;lametun&lt;/strong&gt; on UDP port &lt;em&gt;1234&lt;/em&gt;, listening on the physical network device.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Make sure your firewall allows whatever port we are using for &lt;strong&gt;lametun&lt;/strong&gt;.
+I was using an EC2 host and had to also allow the UDP port through the SecurityGroup as well.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The TUN device however emits raw L3 packets (IP packets), and the IP address of the device is not-routable. Simply copying the packet to the physical device is not enough; it must be routable.&lt;/p&gt;
+
+&lt;p&gt;We will &lt;em&gt;encapsulate&lt;/em&gt; the packet with a routable IP &amp;amp; UDP header destined for the VPN peer.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;UDP is chosen since there is a lot of literature how TCP over TCP is a bad idea; TCP Meltdown.&lt;sup id=&quot;fnref:6&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:6&quot; class=&quot;footnote&quot;&gt;5&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h3 id=&quot;encapsulation&quot;&gt;Encapsulation&lt;/h3&gt;
+
+&lt;p&gt;Encapsulation as a concept is straightforward. It is the act of embedding a protocol within the data/payload of another. Here we see an example of embedding TCP-IP within the payload of a UDP packet.&lt;sup id=&quot;fnref:5&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:5&quot; class=&quot;footnote&quot;&gt;6&lt;/a&gt;&lt;/sup&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/images/foo-encap.png&quot; alt=&quot;VPN graphic&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Using encapsulation, we can now have non-routable packets traverse the Internet. Once they arrive at the &lt;strong&gt;lametun&lt;/strong&gt; destination, the inner packet is forwarded onto the &lt;em&gt;tun&lt;/em&gt; device to continue routing.&lt;/p&gt;
+
+&lt;h3 id=&quot;mtu&quot;&gt;MTU&lt;/h3&gt;
+
+&lt;p&gt;Typically, in order to guarantee delivery across the Internet, network devices restrict the &lt;em&gt;maximum transmission unit&lt;/em&gt; (MTU), which is the size of the Ethernet frame, to &lt;em&gt;1500&lt;/em&gt; bytes.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Although IP protocol supports fragmentation, there is no guarantee that every link along the way does. It’s best to stay within the 1500 byte limit.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Given that we are embedding our transmission protocol within a IP-UDP datagram, we must account for this reserved headroom accordingly or risk breaking the 1500 byte boundary.&lt;/p&gt;
+
+&lt;p&gt;Given that the IP header is 20 bytes (minimum) and the UDP header is 8 bytes, our new MTU is &lt;em&gt;1472&lt;/em&gt; bytes.&lt;/p&gt;
+
+&lt;p&gt;A simple demonstration will help.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# Upper limit MTU is 1500 safely across the Internet&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# IPv4 header is 20 bytes (minimum)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# UDP header is 8 bytes&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# ICMP header is 8 bytes&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 1500 - 20 (IP) - 8 (UDP) =  1472 new maximum MTU&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;#&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# 1472 - 20 (IP) - 8 (ICMP) = 1444 maximum payload for ICMP payload&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# (We actually remove another 4 bytes due to metadata the TUN device includes)&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;# = 1440 maximum payload&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# We will run the following on the laptop&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ping &lt;span class=&quot;nt&quot;&gt;-M&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 1440 172.31.255.13
+
+&lt;span class=&quot;c&quot;&gt;# Use wireshark to check the packet&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; tshark udp port 1234
+1 0.000000000 76.242.91.200 → 172.31.9.116 UDP 1514 1234 → 1234 &lt;span class=&quot;nv&quot;&gt;Len&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1472
+
+&lt;span class=&quot;c&quot;&gt;# If we bump the ICMP payload by a single byte, it will fragment&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ping &lt;span class=&quot;nt&quot;&gt;-M&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;do&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;-s&lt;/span&gt; 1441 172.31.255.13
+
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;tshark udp port 1234
+1 0.000000000 76.242.91.200 → 172.31.9.116 IPv4 1514 Fragmented IP protocol &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;proto&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;UDP 17, &lt;span class=&quot;nv&quot;&gt;off&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;0, &lt;span class=&quot;nv&quot;&gt;ID&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;3136&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;So we simply need to adjust the MTU on our TUN device accordingly.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# run the following on both laptop and server&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;ip &lt;span class=&quot;nb&quot;&gt;link set &lt;/span&gt;dev tun0 mtu 1472
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;code&quot;&gt;Code&lt;/h3&gt;
+
+&lt;p&gt;Sweet! Enough theory, show me the code!&lt;/p&gt;
+
+&lt;p&gt;I’ve kept the code to a single-file for demonstration purposes but you can also find it on GitHub &lt;a href=&quot;https://github.com/fzakaria/lametun&quot;&gt;https://github.com/fzakaria/lametun&lt;/a&gt;. It is heavily commented for learning purposes.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I tried to make the code somewhat Go-idiomatic without being too pedantic as a learning exercise. If you feel the code can be improved, please &lt;a href=&quot;mailto:farid.m.zakaria@gmail.com&quot;&gt;reach out&lt;/a&gt; or open a pull-request.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;div class=&quot;language-go highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;k&quot;&gt;package&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;flag&quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;fmt&quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;golang.org/x/sys/unix&quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;net&quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;os&quot;&lt;/span&gt;
+    &lt;span class=&quot;s&quot;&gt;&quot;unsafe&quot;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;// sizeof(struct ifreq)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;IfReqSize&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;40&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;// let's open the TUN device&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;// A tun device is a bit wonky in that you have to first open &quot;/dev/net/tun&quot;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;// then run a IOCTL syscall to turn the fd returned for the desired network tun device.&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;// This code makes use of some unsafe golang code, this is merely to avoid pulling in&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;// dependencies since this is for demonstration&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;openTunDevice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;string&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;File&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;error&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Open&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;/dev/net/tun&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;O_RDWR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;// IOCTL for TUN requires the ifreq struct&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;// https://elixir.bootlin.com/linux/v5.8.10/source/include/uapi/linux/if.h#L234&lt;/span&gt;
+    &lt;span class=&quot;c&quot;&gt;// we fill in the required struct members such as the device name &amp;amp; that it is a TUN&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ifr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IfReqSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;
+    &lt;span class=&quot;nb&quot;&gt;copy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ifr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;uint16&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unsafe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Pointer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ifr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IFNAMSIZ&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]))&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;IFF_TUN&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;unix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Syscall&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;unix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SYS_IOCTL&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;uintptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;uintptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TUNSETIFF&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;
+        &lt;span class=&quot;kt&quot;&gt;uintptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;unsafe&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Pointer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ifr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])),&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Errorf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;error syscall.Ioctl(): %v&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;errno&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;unix&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;SetNonblock&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;NewFile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;uintptr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fd&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;/dev/net/tun&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;func&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;port&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Int&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;port&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;1234&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;The protocol port for lametun&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;device&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;tun0&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;The TUN device name&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Bool&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;listen&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;false&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Whether to designate this machine as the server&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;String&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;server&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;The server to connect to&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;flag&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Parse&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;listen:%v server:%v dev:%v port:%v&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;listen&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;Cannot listen and set server flag&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;listen&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&amp;amp;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;You must specify the server or mark this host to listen&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Exit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;m&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;tun&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;openTunDevice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dev&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;n&quot;&gt;conn&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;net&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ListenUDP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;udp4&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;net&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;UDPAddr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Port&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;nb&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;defer&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;conn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Close&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;var&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raddr&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;net&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Addr&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;k&quot;&gt;chan&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{})&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;&quot;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;raddr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;net&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ResolveUDPAddr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;udp&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Sprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;%s:%d&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;server&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;port&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;nb&quot;&gt;panic&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;// we make sure to pick a buffer size at least greater than our MTU&lt;/span&gt;
+        &lt;span class=&quot;c&quot;&gt;// 2048 is much larger :)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2048&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;conn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ReadFromUDP&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;error reading from UDP connection: %v&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Writing %d bytes to the tun device.&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;raddr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;addr&lt;/span&gt;
+
+            &lt;span class=&quot;c&quot;&gt;// write to the tun device&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tun&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Write&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;])&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;error writing to tun: %v&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;c&quot;&gt;// signal to terminate&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}{}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
+
+    &lt;span class=&quot;k&quot;&gt;go&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;func&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;// we make sure to pick a buffer size at least greater than our MTU&lt;/span&gt;
+            &lt;span class=&quot;c&quot;&gt;// 2048 is much larger :)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;make&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([]&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;byte&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;m&quot;&gt;2048&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tun&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Read&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;error reading from tun: %v&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+            &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;Read %d bytes from the tun device.&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raddr&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;UDP connection to server has not been established yet.&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;continue&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+            &lt;span class=&quot;c&quot;&gt;// at this point the buffer is a complete UDP packet; let's forward it to our UDP peer&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;_&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;conn&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;WriteTo&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;buffer&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;bytes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;raddr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;no&quot;&gt;nil&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;fmt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Fprintf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;os&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Stderr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&quot;error writing to UDP connection: %v&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+                &lt;span class=&quot;k&quot;&gt;break&lt;/span&gt;
+            &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+        &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+        &lt;span class=&quot;c&quot;&gt;// signal to terminate&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;struct&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;{}{}&lt;/span&gt;
+    &lt;span class=&quot;p&quot;&gt;}()&lt;/span&gt;
+
+    &lt;span class=&quot;c&quot;&gt;// wait until an error is given&lt;/span&gt;
+    &lt;span class=&quot;o&quot;&gt;&amp;lt;-&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;quit&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Running the code is quite simple.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;c&quot;&gt;# the server runs it in listen mode&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ./lametun &lt;span class=&quot;nt&quot;&gt;-listen&lt;/span&gt;
+
+&lt;span class=&quot;c&quot;&gt;# the client needs to provide the server's IP&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ./lametun &lt;span class=&quot;nt&quot;&gt;-server&lt;/span&gt; 54.219.126.112
+
+&lt;span class=&quot;c&quot;&gt;# We can now ping the server from our laptop through the private IP!&lt;/span&gt;
+&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; ping 172.31.255.13
+PING 172.31.255.13 &lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;172.31.255.13&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; 56&lt;span class=&quot;o&quot;&gt;(&lt;/span&gt;84&lt;span class=&quot;o&quot;&gt;)&lt;/span&gt; bytes of data.
+64 bytes from 172.31.255.13: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;1 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;6.42 ms
+64 bytes from 172.31.255.13: &lt;span class=&quot;nv&quot;&gt;icmp_seq&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;2 &lt;span class=&quot;nv&quot;&gt;ttl&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;64 &lt;span class=&quot;nb&quot;&gt;time&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;6.33 ms
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;encryption--nat&quot;&gt;Encryption &amp;amp; NAT&lt;/h3&gt;
+
+&lt;p&gt;In order to simplify the tunneling code &amp;amp; avoid having to solve cases where both machines are behind a NAT, &lt;strong&gt;lametun&lt;/strong&gt; requires that one peer acts as the “server”; it must have a publicly accessible IP.&lt;/p&gt;
+
+&lt;p&gt;When a UDP packet arrives to the “server”, it will store the remote address which it will use when sending back encapsulated responses. This is how the server can &lt;em&gt;learn&lt;/em&gt; about the NAT address of the &lt;em&gt;laptop&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;There are solutions to where both machines are behind a NAT such as using &lt;a href=&quot;https://en.wikipedia.org/wiki/STUN&quot;&gt;STUN&lt;/a&gt;; however it adds quite a bit of complexity.&lt;/p&gt;
+
+&lt;p&gt;The inner protocol is unencrypted, which can be a problem if it’s also in cleartext like &lt;em&gt;HTTP&lt;/em&gt;. More robust solutions like &lt;em&gt;wireguard&lt;/em&gt;, encrypt the encapsulated packet. The equivalent would be to extend &lt;strong&gt;lametun&lt;/strong&gt; such that the UDP payloads are encrypted. That part is straightforward, key management is difficult :)&lt;/p&gt;
+
+&lt;p&gt;Consider these remaining gaps &lt;em&gt;homework assignment&lt;/em&gt; or now you can use the mature product offerings with a better conceptual understanding and appreciation.&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/Virtual_private_network&quot;&gt;https://en.wikipedia.org/wiki/Virtual_private_network&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;By Michel Bakni - Derived from files [1], [2] and [3].Dulaney, Emmett (2009) CompTIA Security+ Deluxe Study Guide, Wiley Publishing, Inc., p. 124 ISBN: 9780470372968., CC BY-SA 4.0 &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://www.kernel.org/doc/Documentation/networking/tuntap.txt&quot;&gt;https://www.kernel.org/doc/Documentation/networking/tuntap.txt&lt;/a&gt; &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:4&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://en.wikipedia.org/wiki/TUN/TAP&quot;&gt;https://en.wikipedia.org/wiki/TUN/TAP&lt;/a&gt; &lt;a href=&quot;#fnref:4&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:6&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Why TCP Over TCP Is A Bad Idea &lt;a href=&quot;http://sites.inka.de/bigred/devel/tcp-tcp.html&quot;&gt;http://sites.inka.de/bigred/devel/tcp-tcp.html&lt;/a&gt; &lt;a href=&quot;#fnref:6&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:5&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;Foo over UDP &lt;a href=&quot;https://lwn.net/Articles/614348/&quot;&gt;https://lwn.net/Articles/614348/&lt;/a&gt; &lt;a href=&quot;#fnref:5&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html">If you enjoy the from first principles theme, consider reading the one on containers. Networking can seem like voodoo; many of us take for granted how data transmits from one computer to the next. Recently, wireguard, has attracted a lot of publicity for it’s inclusion into the Linux kernel &amp;amp; for it’s stated goal of making setting up VPNs simpler. Behind all the magic, is a very simple premise. Let’s shed some of the complexity and break it down to first principles.</summary></entry><entry><title type="html">Tailscale is magic; even more so with NixOS</title><link href="https://fzakaria.com/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html" rel="alternate" type="text/html" title="Tailscale is magic; even more so with NixOS" /><published>2020-09-17T16:01:00-07:00</published><updated>2020-09-17T16:01:00-07:00</updated><id>https://fzakaria.com/2020/09/17/tailscale-is-magic-even-more-so-with-nixos</id><content type="html" xml:base="https://fzakaria.com/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html">&lt;p&gt;Our adventure into NixOS continues; this time let’s look into how we can &lt;strong&gt;harden&lt;/strong&gt; our NixOS machines by putting them within a VPN. We will be using &lt;a href=&quot;https://tailscale.com/&quot;&gt;tailscale&lt;/a&gt; to setup our VPN.&lt;/p&gt;
+
+&lt;p&gt;Restricting your machines; especially SSH for servers; behind a VPN is a great way to add a layer of security without having to mess with various checklists like making sure &lt;em&gt;password based logins&lt;/em&gt; are disabled.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;p&gt;First off, &lt;a href=&quot;https://tailscale.com/&quot;&gt;tailscale&lt;/a&gt; delivers on it’s promise of &lt;em&gt;“VPN made easy”&lt;/em&gt;; it’s &lt;strong&gt;magic&lt;/strong&gt;. Few often do I get to use a product that delivers on the ease of use so wonderfully that it comes off as magic. It has turned the act of setting up a VPN into a &lt;em&gt;brain dead&lt;/em&gt; process; made even easier when coupled with NixOS.&lt;/p&gt;
+
+&lt;p&gt;For the purpose of following along; we will be using my NixOS AWS EC2 machine.
+It had a SecurityGroup with &lt;strong&gt;SSH 22&lt;/strong&gt; open previously so that I could access it.&lt;/p&gt;
+
+&lt;p&gt;Simply create a new module &lt;strong&gt;vpn.nix&lt;/strong&gt; with the following contents and perform a &lt;code class=&quot;highlighter-rouge&quot;&gt;nixos-rebuild switch&lt;/code&gt;&lt;/p&gt;
+
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;...&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;}:&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# enable the tailscale daemon; this will do a variety of tasks:&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# 1. create the TUN network device&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# 2. setup some IP routes to route through the TUN&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;services&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;tailscale&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;enable&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kc&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# Let's open the UDP port with which the network is tunneled through&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;networking&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;firewall&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;allowedUDPPorts&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;41641&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# Disable SSH access through the firewall&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Only way into the machine will be through&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# This may cause a chicken &amp;amp; egg problem since you need to register a machine&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# first using `tailscale up`&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# Better to rely on EC2 SecurityGroups&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# services.openssh.openFirewall = false;&lt;/span&gt;
+
+  &lt;span class=&quot;c&quot;&gt;# Let's make the tailscale binary available to all users&lt;/span&gt;
+  &lt;span class=&quot;nv&quot;&gt;environment&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;systemPackages&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;tailscale&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Specifically for EC2, I had to also add &lt;strong&gt;41641&lt;/strong&gt; as an ingress rule to my SecurityGroup.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;After the rebuild, let’s register the machine. Let’s now register the machine &amp;amp; connect to the VPN network.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nb&quot;&gt;sudo &lt;/span&gt;tailscale up
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;The above will provide a HTTPS link for you to login through your registered identity provider (i.e. Google); and register the machine.&lt;/p&gt;
+
+&lt;p&gt;After running this, you checkout the changes that were done.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Confirm that &lt;em&gt;tailscaled&lt;/em&gt; is running properly
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ❯ systemctl is-active tailscaled
+ active
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Checkout the new network device created.
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ❯ ip &lt;span class=&quot;nb&quot;&gt;link &lt;/span&gt;show dev tailscale0
+ 6: tailscale0: &amp;lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&amp;gt; mtu 1280 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 500
+ &lt;span class=&quot;nb&quot;&gt;link&lt;/span&gt;/none
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+    &lt;blockquote&gt;
+      &lt;p&gt;Interestingly, the MTU is set to 1280 which is very conservative for the necessary encapsulation headers to tunnel traffic. &lt;a href=&quot;https://github.com/tailscale/tailscale/issues/246&quot;&gt;#246&lt;/a&gt;&lt;/p&gt;
+    &lt;/blockquote&gt;
+  &lt;/li&gt;
+  &lt;li&gt;Checkout the route table created
+    &lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt; ❯ ip route show table 52
+ 100.87.7.89 dev tailscale0 scope &lt;span class=&quot;nb&quot;&gt;link
+ &lt;/span&gt;100.100.100.100 dev tailscale0 scope &lt;span class=&quot;nb&quot;&gt;link
+ &lt;/span&gt;100.101.102.103 dev tailscale0 scope &lt;span class=&quot;nb&quot;&gt;link&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;    &lt;/div&gt;
+
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;100.100.100.100&lt;/code&gt; is the DNS server you can use.&lt;/p&gt;
+
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;100.101.102.103&lt;/code&gt; is the default IRC server they make available when you create an account.&lt;/p&gt;
+
+    &lt;p&gt;&lt;code class=&quot;highlighter-rouge&quot;&gt;100.87.7.89&lt;/code&gt; is another machine in my VPN.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Now remove the ability to SSH through the default network interface. If you have access to the server directly, go ahead and uncomment the line above.&lt;/p&gt;
+
+&lt;div class=&quot;highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;services.openssh.openFirewall = false;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;If you are on a cloud provider (i.e. AWS), simply remove the SSH ingress rule.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Unfortunately, I could not think through a way to disable the firewall for a clouded server. On a fresh NixOS rebuild, tailscale will not have been registered but it will disable SSH. Have an idea ? Reach out to &lt;a href=&quot;mailto:farid.m.zakaria@gmail.com&quot;&gt;me&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;strong&gt;Wow!&lt;/strong&gt; That’s it, we’re done! We’ve setup a full VPN between any machines with the help of tailscale.&lt;/p&gt;
+
+&lt;p&gt;Now the strength of our SSH is directly related to our identity provider. For instance, I’ve setup MFA for my Google account.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;tailscale&lt;/em&gt; &amp;amp; &lt;em&gt;NixOS&lt;/em&gt; are a great match.&lt;/p&gt;
+
+&lt;h3 id=&quot;extra-credit&quot;&gt;Extra credit&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The following is only really useful for those running home-networks; please don’t use it in any production setting.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now that access via &lt;em&gt;ssh&lt;/em&gt; is only allowed through the VPN; which requires it’s own authentication – we can make further simplifications.&lt;/p&gt;
+
+&lt;p&gt;If we wanted to, we could now make &lt;em&gt;sshd&lt;/em&gt; accept &lt;em&gt;password based logins&lt;/em&gt; &amp;amp; have our user have an &lt;em&gt;empty password&lt;/em&gt; for a real simple login experience.&lt;/p&gt;
+
+&lt;p&gt;At first this would have the drawback that any user with access to the VPN could access any host &amp;amp; as any user. We can however make use of tailscale’s &lt;a href=&quot;https://tailscale.com/kb/1018/acls&quot;&gt;ACL feature&lt;/a&gt; to restrict access only to the correct users.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;I leave the implementation as an exercise.&lt;/em&gt;&lt;/p&gt;</content><author><name></name></author><summary type="html">Our adventure into NixOS continues; this time let’s look into how we can harden our NixOS machines by putting them within a VPN. We will be using tailscale to setup our VPN. Restricting your machines; especially SSH for servers; behind a VPN is a great way to add a layer of security without having to mess with various checklists like making sure password based logins are disabled.</summary></entry><entry><title type="html">NixOS; what’s in a rebuild? Continued.</title><link href="https://fzakaria.com/2020/09/08/nixos-what-s-in-a-rebuild-continued.html" rel="alternate" type="text/html" title="NixOS; what's in a rebuild? Continued." /><published>2020-09-08T16:17:00-07:00</published><updated>2020-09-08T16:17:00-07:00</updated><id>https://fzakaria.com/2020/09/08/nixos-what-s-in-a-rebuild-continued</id><content type="html" xml:base="https://fzakaria.com/2020/09/08/nixos-what-s-in-a-rebuild-continued.html">&lt;blockquote&gt;
+  &lt;p&gt;This is &lt;em&gt;part 2&lt;/em&gt; of a series on &lt;strong&gt;nixos-rebuild&lt;/strong&gt;. You can read part 1 &lt;a href=&quot;/2020/09/06/nixos-what-s-in-a-rebuild.html&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;We previously broke down that one of the first tasks done by &lt;em&gt;nixos-rebuild&lt;/em&gt; is to build the &lt;em&gt;system&lt;/em&gt; attribute.&lt;/p&gt;
+
+&lt;p&gt;What happens next for &lt;strong&gt;switch&lt;/strong&gt; ? Let’s go back to the &lt;a href=&quot;https://github.com/NixOS/nixpkgs/blob/02590c96209d374d7f720293fcb8337e17104bc9/nixos/modules/installer/tools/nixos-rebuild.sh#L428-L429&quot;&gt;source&lt;/a&gt;.&lt;/p&gt;
+
+&lt;!--more--&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;...
+copyToTarget &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$pathToConfig&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+targetHostCmd nix-env &lt;span class=&quot;nt&quot;&gt;-p&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$profile&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt; &lt;span class=&quot;nt&quot;&gt;--set&lt;/span&gt; &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$pathToConfig&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;It will attempt to copy the &lt;em&gt;system&lt;/em&gt; &lt;em&gt;/nix/store&lt;/em&gt; path if a target host is set &amp;amp; also change the profile (&lt;em&gt;/nix/var/nix/profiles/system&lt;/em&gt;) to the new &lt;em&gt;system&lt;/em&gt;.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ tree /nix/var/nix/profiles/
+/nix/var/nix/profiles/
+...
+├── system -&amp;gt; system-18-link
+...
+├── system-8-link -&amp;gt; /nix/store/3n0563wd5c0jxppaaj2y4nlw2ybvikl3-nixos-system-unnamed-20.03post-git
+└── system-9-link -&amp;gt; /nix/store/9y3gp7llvinvra8qcx9n52s0kpvvyzh8-nixos-system-unnamed-20.03post-git
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Finally the &lt;em&gt;system&lt;/em&gt; is activated; by calling the generated &lt;em&gt;switch-to-configuration&lt;/em&gt; script created within the system store entry.&lt;/p&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;...
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!&lt;/span&gt; targetHostCmd &lt;span class=&quot;nv&quot;&gt;$pathToConfig&lt;/span&gt;/bin/switch-to-configuration &lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;$action&lt;/span&gt;&lt;span class=&quot;s2&quot;&gt;&quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+...
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;❯ tree /nix/store/rpfin018i0s2bdvmsikkrdvd0wvwg287-nixos-system-altaria-20.03post-git/bin
+/nix/store/rpfin018i0s2bdvmsikkrdvd0wvwg287-nixos-system-altaria-20.03post-git/bin
+└── switch-to-configuration
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;These &lt;strong&gt;4&lt;/strong&gt; tasks; are the basic steps that &lt;em&gt;nixos-rebuild&lt;/em&gt; will perform.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Build the &lt;em&gt;system&lt;/em&gt; attribute&lt;/li&gt;
+  &lt;li&gt;Copy the &lt;em&gt;/nix/store&lt;/em&gt; transitive closure&lt;/li&gt;
+  &lt;li&gt;Set the &lt;em&gt;/nix/var/nix/profiles/system&lt;/em&gt; to the new version&lt;/li&gt;
+  &lt;li&gt;Run the &lt;em&gt;switch-to-configuration&lt;/em&gt; script&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Many&lt;sup id=&quot;fnref:1&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt; &lt;sup id=&quot;fnref:2&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:2&quot; class=&quot;footnote&quot;&gt;2&lt;/a&gt;&lt;/sup&gt; &lt;sup id=&quot;fnref:3&quot; role=&quot;doc-noteref&quot;&gt;&lt;a href=&quot;#fn:3&quot; class=&quot;footnote&quot;&gt;3&lt;/a&gt;&lt;/sup&gt; have already written about these simple steps; simple scripts can be found on GitHub or even simple wrappers such as &lt;a href=&quot;https://github.com/misuzu/nix-simple-deploy&quot;&gt;nix-simple-deploy&lt;/a&gt;; however &lt;em&gt;nixos-rebuild&lt;/em&gt; natively supports remote machines.&lt;/p&gt;
+
+&lt;div class=&quot;language-bash highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;nixos-rebuild switch &lt;span class=&quot;nt&quot;&gt;--target-host&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;$REMOTE_HOST&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;p&gt;Is there a need for these small wrappers given that &lt;em&gt;nixos-rebuild&lt;/em&gt; can do it?&lt;/p&gt;
+
+&lt;p&gt;There is a simplicity to running the minimal number of commands needed for your workflow; avoiding &lt;em&gt;nixos-rebuild.sh&lt;/em&gt; which is ~500 LOC.&lt;/p&gt;
+
+&lt;h3 id=&quot;linux--nixos&quot;&gt;Linux 🎮 NixOS&lt;/h3&gt;
+
+&lt;p&gt;I admitted earlier that I have just recently finally started running NixOS after having run Nix on my Debian system for a while now.&lt;/p&gt;
+
+&lt;p&gt;&lt;em&gt;I am only running NixOS on my personal server and not my laptop&lt;/em&gt;; which continues to be Debian. The non-NixOS Nix distribution does not come with &lt;em&gt;nixos-rebuild&lt;/em&gt;;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;I use my laptop primarily for my work which does not support NixOS.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;I would like to however continue hacking on my laptop; building NixOS VMs or running &lt;em&gt;nixos-rebuild&lt;/em&gt; with &lt;code class=&quot;highlighter-rouge&quot;&gt;--target-host&lt;/code&gt; set to my server. Can this be achieved?&lt;/p&gt;
+
+&lt;p&gt;With the help of &lt;a href=&quot;https://github.com/Infinisil&quot;&gt;Infinisil&lt;/a&gt;; he helped demonstrate how I can easily install not only &lt;em&gt;nixos-rebuild&lt;/em&gt;; but even the manpages.&lt;/p&gt;
+
+&lt;p&gt;Here is an example of adding the two if you are using &lt;a href=&quot;https://github.com/rycee/home-manager&quot;&gt;home-manager&lt;/a&gt;.&lt;/p&gt;
+&lt;div class=&quot;language-nix highlighter-rouge&quot;&gt;&lt;div class=&quot;highlight&quot;&gt;&lt;pre class=&quot;highlight&quot;&gt;&lt;code&gt;&lt;span class=&quot;nv&quot;&gt;home&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;packages&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;with&lt;/span&gt; &lt;span class=&quot;nv&quot;&gt;pkgs&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# I want the NixOS manpages even when not on nixos&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kr&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;sx&quot;&gt;nixpkgs/nixos&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+    &lt;span class=&quot;nv&quot;&gt;configuration&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;};&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;config&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;system&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;build&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;manual&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;manpages&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+  &lt;span class=&quot;c&quot;&gt;# I want NixOS tooling even when not on NixOS&lt;/span&gt;
+  &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixos&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;})&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;nv&quot;&gt;nixos-rebuild&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;/div&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;em&gt;Bonus&lt;/em&gt;; the above actually includes all NixOS manpages including &lt;code class=&quot;highlighter-rouge&quot;&gt;configuration.nix&lt;/code&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now I can continue to play around with NixOS even while on my Linux distribution! Hurray?&lt;/p&gt;
+
+&lt;p&gt;I would love to dig deeper or understand the &lt;em&gt;active&lt;/em&gt; &amp;amp; &lt;em&gt;init&lt;/em&gt; scripts within the &lt;em&gt;system&lt;/em&gt; target that take care of making NixOS bootable; if you have a good write-up please share!&lt;/p&gt;
+
+&lt;div class=&quot;footnotes&quot; role=&quot;doc-endnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://vaibhavsagar.com/blog/2019/08/22/industrial-strength-deployments/#fnref1&quot;&gt;https://vaibhavsagar.com/blog/2019/08/22/industrial-strength-deployments/#fnref1&lt;/a&gt; &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:2&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;https://ixmatus.net/articles/deploy-software-nix-deploy.html&quot;&gt;https://ixmatus.net/articles/deploy-software-nix-deploy.html&lt;/a&gt; &lt;a href=&quot;#fnref:2&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+    &lt;li id=&quot;fn:3&quot; role=&quot;doc-endnote&quot;&gt;
+      &lt;p&gt;&lt;a href=&quot;http://www.haskellforall.com/2018/08/nixos-in-production.html&quot;&gt;http://www.haskellforall.com/2018/08/nixos-in-production.html&lt;/a&gt; &lt;a href=&quot;#fnref:3&quot; class=&quot;reversefootnote&quot; role=&quot;doc-backlink&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;</content><author><name></name></author><summary type="html">This is part 2 of a series on nixos-rebuild. You can read part 1 here. We previously broke down that one of the first tasks done by nixos-rebuild is to build the system attribute. What happens next for switch ? Let’s go back to the source.</summary></entry></feed>

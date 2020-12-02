@@ -1,0 +1,72 @@
+==================================================================
+https://keybase.io/fzakaria
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://fzakaria.com
+  * I am fzakaria (https://keybase.io/fzakaria) on keybase.
+  * I have a public key with fingerprint 0D68 D1FD E13D EBD6 95B9  19B2 81FB F501 D1B2 32E7
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "012099d0533a795675f4ea9286959952c53fe09e2d40ce7b380f85bf51632614c1490a",
+      "fingerprint": "0d68d1fde13debd695b919b281fbf501d1b232e7",
+      "host": "keybase.io",
+      "key_id": "81fbf501d1b232e7",
+      "kid": "0101af0791df7d987cdefcf2fe67da61670993f86734551ef732694c88ac97c9cd0f0a",
+      "uid": "2153f1a5594cbd566a07ae8bd0938a00",
+      "username": "fzakaria"
+    },
+    "service": {
+      "hostname": "fzakaria.com",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 1
+  },
+  "ctime": 1586110313,
+  "expire_in": 157680000,
+  "prev": "e0492a5ad24e495013b6bf4ae0d8ed24db0986dc19e4779ae07c064a0f3107d8",
+  "seqno": 10,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+-----BEGIN PGP MESSAGE-----
+Version: Keybase OpenPGP v2.1.13
+Comment: https://keybase.io/crypto
+
+yMLqAnicbZJvTJVVHMfv9aZXL7QwbQxeVHtc+WdXOuf5f9AljAgr/9ALbIR6O89z
+znN5Qu5zee4DeAXTdG1YLtowpkuvLdFGQxat5RpOrgyVJDKNLAsukUbZ0kauIdS4
+nYflm9Z5c3Z+5/v9nO/vt9N3v88T8L7615/eyx/xP3sHzh6s9Wx9/RGzgdMsEufy
+G7gqOrvRbYTGnFCVSbh8DkAeIESAJAhYQZKsSIZIMeJVGUkISbwuCQYFiPJEBDpV
+NEEFhipphgRlgZehqEMRAcwFOcOMhKkdtc2I42KJrBJoEAoFQjXCYBqCSONVaDAv
+gARqvMBThRkrrZjrYOE0HKN5psVq7BCajfc/+nu5AcQGUBAkhkKQquiEGrrBG1RW
+CJahrLC2BEOVFUGUJEgNhcVFoq6qWEeKjnQCjNnctbM4HrI+IZYkJtGIJMsYKJiq
+GgFIUDEArjBG7Qiupkxt7MBV2DYxtzPIsWqdqVN3sG4n/1Hk6VY180Zty7F0axu7
+qXScaCzfdTrxqCutp1roX0hIMyOEzZE56qgdM60Ilw+ZUndMlwolVYYQCFAIcnR7
+1LRpyHQVkiKrgC33HVrHkBSIiMcSJrxIRcTGJ2iyZoiYAqJSViQaQKpMdIioqCiI
+1RUdyCIGhgCBQlTObasmYjE2gzo4zJgxMxzBTq1NuZ29yeH7PN6AZ97cOe4H8wQW
+ZN37djl7M9Kld3Nv9rx8rPrW7zM3Ew+VN27/oSxj7LHv1x68+MGRVbvxTOBoaapo
+shNPbkm1nfc5azbkth4dXf/hmqL+qcxUdtn4nfTzOc9WDI7He8ovTImTaw/Hx0b3
+7RlqHxxaipcsPfT0xEgq0Xz9xPxpsvuP04c2LX7qwPXGZMHCxplkJj7/yfKWLSt3
+nXvGd8a7+uy6QHHWRt/Q/mWdI5dKlnRwX5aHXjv+jXkhffLJQW7xinM3evs2lqwL
+dl+8Wz/nl5/eqP/02Irx5+K5Gxb83Xr1265H22p+G1g+UDxhFzbV510+9dUu+fMf
+m7oaptu7u6b6vcM1E6F+VDE1vLop8/T7vcbcwuTtxvQLfW92/hqOv/d4kX/0lUV1
+zVZhNmnd93DZtUGSeGK+cKRlqPnM24dLr8y7UfL1A1nttwtSL/lbwg8e/y44luOn
+X3irPwbp7hfDcvFIdsdKv3/kas/0+q1XfIm9RSc8t05NC5cSlW2fncw90NBhJjcv
+q7o2XvHupoVvvbN5T8adVQXDO8o8i/b/A6A8iyc=
+=CHP6
+-----END PGP MESSAGE-----
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/fzakaria
+
+==================================================================
