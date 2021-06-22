@@ -136,6 +136,9 @@ copying path '/nix/store/czf8l5nlp2kaag96hb42qvqd85glr8f8-lolhello' from 's3://n
 
 🎉 Nice! That was surprisingly straightforward to setup GCS as our Nix binary cache pretending to be S3.
 
+📣 Shoutout to my colleague [Micah Catlin](https://www.linkedin.com/in/micah-catlin-0718991) who did a proof of concept originally and
+introduced me to the interoperability support of GCS.
+
 ### Addendum
 
 Originally I spent quite a while trying the demo above with a different demo derivation that used a _trivial builder_.
