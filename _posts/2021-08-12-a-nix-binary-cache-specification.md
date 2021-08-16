@@ -97,7 +97,7 @@ Let's get some statistics about it.
 
 ```bash
 ❯ nix-hash --type sha256 --flat \
-       --base32 <(curl --silent https://cache.nixos.org/nar/1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3.nar.xz | unxz)
+       --base32 <(curl --silent https://cache.nixos.org/nar/1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3.nar.xz)
 
 1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3
 ```
