@@ -5,19 +5,19 @@ date: 2021-09-02 18:01 -0700
 excerpt_separator: <!--more-->
 ---
 
-I have been on a mission to bring reproducibility through the use of [Nix](http://nixos.org/) into my workplace as we invision the next version of our development environment.
+I have been on a mission to bring reproducibility through the use of [Nix](http://nixos.org/) into my workplace as we envision the next version of our development environment.
 
 Similar to the movies I watch that take place in space, it only takes a small hole to destroy your hermetic environment. 🧑‍🚀 
 
 <!--more-->
 
-I've [written previously]({% post_url _posts/2020-11-12-debugging-a-jnr-ffi-bug-in-nix %}) about my encounters trying to remove all impurities within a JVM environment.
+I've [written previously]({% post_url 2020-11-12-debugging-a-jnr-ffi-bug-in-nix %}) about my encounters trying to remove all impurities within a JVM environment.
 
 I've actually [upstreamed](https://github.com/NixOS/nixpkgs/pull/123708) fixing the default _java.library.path_ for the OpenJDK distributed by Nixpkgs. 🙌 
 
 Awesome! That should have solved my problem, right ?...
 
-Unfortunately, _impurities_ are tough to stamp out. NixOS is trying to accomplish a paradigm shift by dismissing the _[filesystem hierarchy standard](https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard)_ but it is deeply routed in assumptions when people build for Linux.
+Unfortunately, _impurities_ are tough to stamp out. NixOS is trying to accomplish a paradigm shift by dismissing the _[filesystem hierarchy standard](https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard)_ but it is deeply rooted in assumptions when people build for Linux.
 
 In my specific case, the search paths for the JNR libraries were [hardcoded](https://github.com/jnr/jnr-ffi/blob/2161d3d875869bdaf292b0e9267bb0fbdb0f3f2b/src/main/java/jnr/ffi/LibraryLoader.java#L511).
 
@@ -67,9 +67,15 @@ Secondly, we have many developers that are being hit by this particular workflow
 2. Developer changes their Git branch to a different point in time where JRuby points to a different _/nix/store_ path **X** linked with glibc **Z**.
 3. The developer restarts IntelliJ and picks up the new environment variable _JAVA_TOOL_OPTIONS_ 💥
 
-> If you read [my earlier post]({% post_url _posts/2020-11-12-debugging-a-jnr-ffi-bug-in-nix %}), you'll understand why _JAVA_TOOL_OPTIONS_ includes glibc.
+> If you read [my earlier post]({% post_url 2020-11-12-debugging-a-jnr-ffi-bug-in-nix %}), you'll understand why _JAVA_TOOL_OPTIONS_ includes glibc.
 
 That _JAVA_TOOL_OPTIONS_ references glibc **Z** but their JRuby SDK is pointing to JRuby **A** which was built against glibc **B**.
+
+They are then graced with this _wonderful_ message.
+```
+java.lang.UnsatisfiedLinkError: /nix/store/cvr0kjg2q7z2wwhjblx6c73rv422k8cm-glibc-2.33-47/lib/libc.so.6: undefined symbol: _dl_catch_error_ptr, version GLIBC_PRIVATE
+	at jnr.ffi.provider.jffi.NativeLibrary.loadNativeLibraries(NativeLibrary.java:93)
+```
 
 Ugh! The fix here is straightforward ultimately -- the developer needs to be mindful of their JRuby SDK set in IntelliJ and keep it in sync with their local checkout.
 

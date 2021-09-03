@@ -7,7 +7,7 @@ excerpt_separator: <!--more-->
 
 > “The simplest things are often the truest.” - Richard Bach, 1936.
 
-Earlier [I wrote about]({% post_url _posts/2021-08-02-a-minimal-nix-shell %}) trying to get a minimal nix-shell. The goal and challenge of the post was about reducing the dependency closure size of the shell.
+Earlier [I wrote about]({% post_url 2021-08-02-a-minimal-nix-shell %}) trying to get a minimal nix-shell. The goal and challenge of the post was about reducing the dependency closure size of the shell.
 
 > I was asked what's the point in trying to minimize the closure size ?
 > 
