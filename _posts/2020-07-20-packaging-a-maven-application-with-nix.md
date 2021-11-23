@@ -204,6 +204,6 @@ Each _somewhat work_ but have odd limitations of trying to work around Maven's c
 
 **mvn2nix-maven-plugin** seems like it has the best _shot_ with included support within [nixpkgs](https://github.com/NixOS/nixpkgs) through [buildMaven](https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/build-maven.nix) build support but it's slow & has limited support for different repositories.
 
-I started work on a separate binary [mvn2nix](https://github.com/fzakaria/mvn2nix/settings); and seeking collaborators.
+I started work on a separate binary [mvn2nix](https://github.com/fzakaria/mvn2nix); and seeking collaborators.
 
 The goal is a minimal binary that duplicates Maven's dependency resolution through the exposed APIs to generate a Nix expression for use with _fetchUrl_.
