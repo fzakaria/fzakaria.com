@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Shrinkwrap: Taming dyamic shared objects'
+title: 'Shrinkwrap: Taming dynamic shared objects'
 date: 2022-03-14 18:53 -0700
 excerpt_separator: <!--more-->
 ---
