@@ -2,6 +2,7 @@
 layout: post
 title: 'Shrinkwrap: Taming dyamic shared objects'
 date: 2022-03-14 18:53 -0700
+excerpt_separator: <!--more-->
 ---
 > This is a blog post of a paper I have submitted for a [UCSC course](https://catalog.ucsc.edu/en/Current/General-Catalog/Courses/CSE-Computer-Science-and-Engineering/Graduate/CSE-215) project.
 >
