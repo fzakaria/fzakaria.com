@@ -29,7 +29,9 @@ performance, as a result of building upon tooling that was designed for a differ
 
 > For a different approach to this problem, check out [this blog post](https://guix.gnu.org/blog/2021/taming-the-stat-storm-with-a-loader-cache/) by the Guix developers.
 
-The number of dependencies needed for a particular binary transitively, and the `RUNPATH` can vary greatly. For instance, *emacs* lists 36 directories in it’s RUNPATH and requires 103 dependencies to be resolved. The result is that the dynamic linker must attempt potentially 3600 filesystem operations to resolve the needed dependencies **every time the process is started**.
+The number of dependencies needed for a particular binary transitively, and the `RUNPATH` can vary greatly. For instance, *emacs* lists 36 directories in it’s `RUNPATH` and requires 103 dependencies to be resolved.
+
+The result is that the dynamic linker must attempt potentially 3600 filesystem operations (openat or stat) to resolve the needed dependencies **every time the process is started**.
 
 🐌 This exorbitant cost can be made worse if the store itself resides on a shared filesystem such as NFS. 🐌
 
@@ -75,7 +77,7 @@ $ patchelf --print-needed emacs_stamped
 ```
 
 Applying Shrinkwrap resulted in a large reduction in syscalls, which equates to a **36 speedup**. The absolute amount
-recovered may seem negligible however this unecessary penalty is payed on every process invocation, and on every machine executing the binary.
+recovered may seem negligible however this unecessary penalty is paid on every process invocation, and on every machine executing the binary.
 
 | Program      | Calls(stat/openat)     | Time (Seconds) |
 | :---:           | :---:               | :---:          |
