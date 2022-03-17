@@ -76,7 +76,7 @@ $ patchelf --print-needed emacs_stamped
 /nix/store/jvbyjnjh4w8qg7izfq4x5d2wy9lv9461-icu4c-70.1/lib/libicuuc.so.70
 ```
 
-Applying Shrinkwrap resulted in a large reduction in syscalls, which equates to a **36 speedup**. The absolute amount
+Applying Shrinkwrap resulted in a large reduction in syscalls, which equates to a **36x speedup**. The absolute amount
 recovered may seem negligible however this unecessary penalty is paid on every process invocation, and on every machine executing the binary.
 
 | Program      | Calls(stat/openat)     | Time (Seconds) |
