@@ -47,6 +47,13 @@ layout: base
         <a href="/publickey.txt">D1B232E7</a>
       </p>
       <p>
+        <a href="{{ site.baseurl }}/archive">Archive</a>
+      </p>
+      <p>
+        <a href="{{ site.baseurl }}{% link old_blog.html %}">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
         Web friendly version of my <a href="/resume/index.html">resume</a>.
       </p>
     </div>
@@ -60,6 +67,7 @@ layout: base
       <a href="{{ site.baseurl }}{% link old_blog.html %}">Click here</a> for the archive
       of my old blog posts from Wordpress.
     </p>
+    -->
     {% if page.url != '/' %}
     <h3>Recent Posts</h3>
     {% for post in site.posts limit: 3 %}

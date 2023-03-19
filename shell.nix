@@ -1,4 +1,7 @@
-{ pkgs ? import <nixpkgs> { } }:
+let
+ sources = import ./nix/sources.nix;
+  pkgs = import sources.nixpkgs { };
+in
 with pkgs;
 with stdenv;
 let
@@ -9,5 +12,5 @@ let
   };
 in mkShell {
   name = "blog-shell";
-  buildInputs = [jekyll_env bundix ruby];
+  buildInputs = [jekyll_env bundix ruby niv];
 }
