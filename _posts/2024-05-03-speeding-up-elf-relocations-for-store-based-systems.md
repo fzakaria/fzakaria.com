@@ -17,7 +17,7 @@ Extending the idea further, I have been looking at how we can optimize the ELF r
 
 ## ELF Relocations and Symbol Resolution
 
-ELF (Executable and Linkable Format) files are a the defacto format for executables and shared libraries on Linux systems. A crucial part of this structure involves relocations.
+ELF (Executable and Linkable Format) files are the defacto format for executables and shared libraries on Linux systems. A crucial part of this structure involves relocations.
 
 ### What Are ELF Relocations?
 
