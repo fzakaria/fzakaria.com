@@ -102,7 +102,7 @@ In fact, the cost of relocations is even worse. Each check for a symbol involves
 A popular historic method for optimizing relocations involved the [prelink](https://wiki.gentoo.org/wiki/Prelink) tool that effectively performed all relocations ahead-of-time and saved the resulting
 binary to disk. This method, however, has become obsolete with the advent of ASLR since the prelinked binary and it's dependent shared libraries are no longer loaded at the same base address.
 
-The GNU toolchain includes an alternative symbol table `DT_GNU_HASH` that can be used to speedup symbol resolution. The main effecicieny improvement is to include a bloom-filter in the ELF file that can be used to quickly determine if a symbol is present in the symbol table. This can reduce the number of `strcmp` calls that are made and walking the symbol table.
+The GNU toolchain includes an alternative symbol table `DT_GNU_HASH` that can be used to speedup symbol resolution. The main efficiency improvement is to include a bloom-filter in the ELF file that can be used to quickly determine if a symbol is present in the symbol table. This can reduce the number of `strcmp` calls that are made and walking the symbol table.
 
 The `DT_GNU_HASH` method is helpful but fundamentally fails to take advantage of the static nature of store-based systems. The symbol table is still loaded into memory and symbols must be re-resolved at runtime. Given the deterministic set of shared-libraries, we can do something similar to that of _prelink_ but with a twist. 🌀
 
@@ -126,6 +126,8 @@ Benchmark 1: DEBUG=1 RELOC_READ=1 ./1_million_functions.bin > /dev/null
 🏎️ That is a **7.5x speedup**! 🏎️
 
 To achieve this improvement, I have a basic implementation built atop musl's dynamic loader.
+
+> You can try, play with and track my changes on my [fork of musl](https://github.com/fzakaria/musllibc/blob/relocs/ldso/dynlink.c)
 
 1. I've added support for a new environment variable `RELOC_WRITE` that when set will write the resolved symbols for each relocation to disk in a file set by the variable.
 
