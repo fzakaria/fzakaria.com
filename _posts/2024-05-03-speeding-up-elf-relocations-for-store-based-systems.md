@@ -87,7 +87,7 @@ Working with the [musl](https://www.musl-libc.org/) dynamic loader, I've augment
 
 🤯 Relocation can take nearly **4.5 seconds** for **1 million** symbols!
 
-Profiling the linker with _perf_ and visualizing the results with _FlameGraph_ (click the image below to explore), we can see that the majority (+60% of cycles) of the time is spent in symbol resolution.
+Profiling the linker with _perf_ and visualizing the results with _FlameGraph_ (click the image below to explore), we can see that the majority (+60% of cycles) of the time is spent in symbol resolution in the _find_sym_ function.
 
 [![flamegraph of unoptimized linker](/assets/images/flame_graph_unoptimized_linker.svg)](/assets/images/flame_graph_unoptimized_linker.svg)
 
