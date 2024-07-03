@@ -13,4 +13,7 @@ let
 in mkShell {
   name = "blog-shell";
   buildInputs = [jekyll_env bundix ruby niv];
+  
+  # https://github.com/nix-community/bundix/issues/88
+  BUNDLE_FORCE_RUBY_PLATFORM = "true";
 }
