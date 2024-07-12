@@ -54,11 +54,24 @@ _How does this all fit in with NixOS ?_
 The goal is to get an encrypted secret from one machine to another.
 _agenix_ takes advantage of the fact that most systems built with NixOS have a default host key generated via [services.openssh.hostKeys](https://search.nixos.org/options?channel=unstable&show=services.openssh.hostKeys&from=0&size=50&sort=relevance&type=packages&query=services.openssh.hostKeys).
 
+```console
+❯ ls /etc/ssh/*_key
+/etc/ssh/ssh_host_ed25519_key  /etc/ssh/ssh_host_rsa_key
+❯ ls /etc/ssh/*_key*pub
+/etc/ssh/ssh_host_ed25519_key.pub  /etc/ssh/ssh_host_rsa_key.pub
+```
+
+> You can also use `ssh-keyscan localhost` to get the public keys for the current host or any host (just change localhost to the desired one).
+
 🤔 We can encrypt our secret with our own personal key and the keys of any machine we'd like to deploy to. Any single key can decrypt the secret.
 
 _agenix_ sets up the mapping of which keys to use to encrypt each secret via the file _secrets.nix_
 
 > I found the [installation instructions](https://github.com/ryantm/agenix?tab=readme-ov-file#installation) for _agenix_ great so they are not covered here.
+
+The systems keys should be what's inside _/etc/ssh/ssh_host_ed25519_key.pub_
+
+The users key could be a custom supplied private key (Yubikey) or by default will search  SSH key in _~/.ssh/id_ed25519_
 
 ```nix
 let
