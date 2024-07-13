@@ -27,7 +27,7 @@ swordfish
 
 age's popularity is all centered around it's minimalism and ease-of-use.
 
-You encrypt files in _age_ with "recipients" (public-keys) and decrypt them with "identifies" (private-keys). 
+You encrypt files in _age_ with "recipients" (public-keys) and decrypt them with "identities" (private-keys). 
 
 ❗You can encrypt a file for multiple recipients but **any single one** can decrypt the file. This will prove to be useful for _agenix_.
 
@@ -112,9 +112,9 @@ You should now have _password.age_. Feel free to commit this to your repository.
 
 How do we make use of this secret? That's where the _agenix_ NixOS module comes into play.
 
-Simply, declare which secrets you want to try to decrypt. agenix will use the **target machine's** SSH public key to decrypt the secret.
+Simply, declare which secrets you want to try to decrypt. agenix will use the **target machine's** SSH private key to decrypt the secret.
 
-_Remember we encrypted the secret with host keys of the machines that could decrypt it!_
+_Remember we encrypted the secret with host public keys of the machines that could decrypt it!_
 
 ```nix
   age.secrets = {
