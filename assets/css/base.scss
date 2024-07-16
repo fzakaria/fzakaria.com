@@ -36,7 +36,7 @@ pre code {
 // This is needed for the old code snippets
 // from the blog so they stay within the boundary
 // of the blog
-p code {
+p code.oldblog {
     max-width: 600px;
     overflow-x: auto;
     display: inline-block;
