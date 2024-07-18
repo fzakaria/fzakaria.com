@@ -17,7 +17,7 @@ In practice, it should not that bad since scripts can set a shebang like `#! /us
 
 Here is a little trick I've used to get the _best of both_.
 
-1. Set your login shell to bash, _even though we intend to use bash_.
+1. Set your login shell to bash, _even though we intend to use fish_.
 
     ```nix
     users.extraUsers.fmzakari = {
