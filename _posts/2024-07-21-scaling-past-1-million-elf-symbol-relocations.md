@@ -10,6 +10,8 @@ excerpt_separator: <!--more-->
 
 I wrote earlier about some impressive speedups that can be achieved by foregoing the typical dynamic linking that can be applied to systems such as Nix where the dependencies for a given application are static.
 
+<!--more-->
+
 The first attempt at memoization ELF symbol relocations involved `strcmp` on the shared library name.
 
 The code would memoize the relocations into entries such as the one below.
