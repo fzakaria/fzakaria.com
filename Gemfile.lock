@@ -274,6 +274,7 @@ DEPENDENCIES
   jekyll-feed
   jekyll-github-metadata
   jekyll-paginate
+  jekyll-redirect-from
   jekyll-seo-tag
   jekyll-sitemap
   rake

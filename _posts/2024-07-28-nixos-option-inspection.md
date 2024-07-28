@@ -1,7 +1,11 @@
 ---
 layout: post
-title: Nix Module Attribute Inspection
+title: NixOS Option Inspection
 date: 2024-07-28 14:51 -0700
+redirect_from:
+  - /2024/07/28/nix-module-attribute-inspection.html
+  - /2024/07/28/nix-module-attribute-inspection
+  - /2024/07/28/nix-module-attribute-inspection/
 excerpt_separator: <!--more-->
 ---
 
