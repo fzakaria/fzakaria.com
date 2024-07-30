@@ -30,7 +30,7 @@ Turns out, in order to get `definitionsWithLocations` to play nice, you have to 
 
 Let's use an incredibly simple example to demonstrate the bug.
 
-First let's make our module `greet.nix`; it's a trivial module with a single option. We also have a `config.nix` which you could think of as our `configuration.nix` in a typical NixOS installation.
+First let's make our module `greet.nix`; it's a trivial module that sets a single option. We also have a `config.nix` which you could think of as our `configuration.nix` in a typical NixOS installation that defines the option.
 
 ```nix
 # greet.nix
