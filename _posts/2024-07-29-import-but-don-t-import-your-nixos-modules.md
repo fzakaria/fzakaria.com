@@ -20,7 +20,7 @@ If you are using [NixOS](https://nixos.org), you've likely encountered the _modu
 }
 ```
 
-In a [prior post]({% post_url 2024-07-28-nixos-option-inspection %}), I wrote about how it can be challenging to work bakcwards ⏪ from a NixOS option's value to where it was defined.
+In a [prior post]({% post_url 2024-07-28-nixos-option-inspection %}), I wrote about how it can be challenging to work backwards ⏪ from a NixOS option's value to where it was defined.
 
 Turns out, the answer in the post was _relatively simple_ and Nixpkgs has a gesture for discovering the answer via `definitionsWithLocations`.
 
