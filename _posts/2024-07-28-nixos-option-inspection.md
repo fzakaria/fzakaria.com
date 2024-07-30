@@ -134,3 +134,5 @@ uncover where options may be set.
 
 ❗This works great for the most part but doesn't seem to give the correct location for modules imported via Flakes (_I see the humor in this_).
 I filed [Issue #11210](https://github.com/NixOS/nix/issues/11210) to track the bug 🐛 and document the behavior.
+
+**UPDATE(2024-07-29)** I wrote a follow-up post on [pitfalls importing modules]({% post_url 2024-07-29-import-but-don-t-import-your-nixos-modules %}) which articulates what the problem was with [Issue #11210](https://github.com/NixOS/nix/issues/11210) and how to fix it.
