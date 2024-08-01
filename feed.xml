@@ -1,0 +1,1231 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="https://fzakaria.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://fzakaria.com/" rel="alternate" type="text/html" /><updated>2024-07-31T22:50:02-07:00</updated><id>https://fzakaria.com/feed.xml</id><title type="html">Farid Zakaria’s Blog</title><subtitle>I&apos;m a software engineer, father and wishful amateur surfer. If you&apos;ve come seeking my political views; you&apos;ve found the wrong &lt;a href=&quot;https://fareedzakaria.com/&quot;&gt;Fareed&lt;/a&gt;.</subtitle><entry><title type="html">Automatic Nix flake follows</title><link href="https://fzakaria.com/2024/07/31/automatic-nix-flake-follows.html" rel="alternate" type="text/html" title="Automatic Nix flake follows" /><published>2024-07-31T22:21:00-07:00</published><updated>2024-07-31T22:21:00-07:00</updated><id>https://fzakaria.com/2024/07/31/automatic-nix-flake-follows</id><content type="html" xml:base="https://fzakaria.com/2024/07/31/automatic-nix-flake-follows.html"><![CDATA[<p>If you have used <a href="https://nixos.org">Nix</a> flakes, you likely encountered something like the following. 🤢</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">std</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:divnix/std"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">devshell</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"devshell"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixago</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixago"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixpkgs"</span><span class="p">;</span>
+
+<span class="nv">hive</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:divnix/hive"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">colmena</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"colmena"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">disko</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"disko"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixos-generators</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixos-generators"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixpkgs"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Why is this follows necessary? 🤔</p>
+
+<p>It’s in fact <strong>not necessary</strong> but it makes the Nix evaluation simpler and as a result faster. 🤓</p>
+
+<!--more-->
+
+<p>Rather than using the exact Nix flake commit your dependency desires, we are overriding it, with one we have likely already declared. This has the effect of making our graph smaller, which is faster to evaluate and likely build.</p>
+
+<p>For very large Nix projects, the Nix evaluator can be surprisingly slow, so the pattern of <em>follows</em>, especially for <em>nixpkgs</em>, is incredibly common.</p>
+
+<blockquote>
+  <p>Note: Although it’s faster it’s <em>less correct</em> since we are deviating from what the authors of the flake desired.</p>
+</blockquote>
+
+<p>Writing all those follows can get real teadious 🥱, and it’s tough to even know you did them all.</p>
+
+<p>Surely there has to be a better way? 🙏</p>
+
+<p>Well take a look at <a href="https://github.com/fzakaria/nix-auto-follow">nix-auto-follow</a> 🥳</p>
+
+<p>Simply run the script which will modify your <em>flake.lock</em> file. Commit the change and voilà!</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>python all-follow.py flake.lock <span class="nt">-i</span>
+</code></pre></div></div>
+
+<p>How does it work? 🧐 Let’s dive in with an example.</p>
+
+<p>Here let’s create our main top-level flake. You can think of this as your application or NixOS machine.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Top Levle Flake"</span><span class="p">;</span>
+
+  <span class="nv">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="nv">path</span><span class="p">:</span><span class="sx">./a</span><span class="p">;</span>
+    <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:nixos/nixpkgs/nixos-24.05"</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nv">outputs</span> <span class="o">=</span> <span class="p">{</span> <span class="nv">self</span><span class="p">,</span> <span class="nv">a</span><span class="p">,</span> <span class="nv">nixpkgs</span> <span class="p">}:</span> 
+  <span class="p">{</span>
+    <span class="nv">versions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nv">a</span><span class="o">.</span><span class="nv">nixpkgs</span> <span class="o">=</span> <span class="nv">a</span><span class="o">.</span><span class="nv">versions</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="p">;</span>
+        <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">lib</span><span class="o">.</span><span class="nv">version</span><span class="p">;</span>
+    <span class="p">};</span>
+    
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Our flake has <strong>2</strong> dependencies: <code class="language-plaintext highlighter-rouge">a</code> &amp; <code class="language-plaintext highlighter-rouge">nixpkgs</code>.</p>
+
+<p>To keep this example simple, <code class="language-plaintext highlighter-rouge">a</code> is another local flake which itself only has <strong>1</strong> dependency: <code class="language-plaintext highlighter-rouge">nixpkgs</code>.</p>
+
+<p>❗ Important to notice here that <code class="language-plaintext highlighter-rouge">nixpkgs</code> is at a different version in <code class="language-plaintext highlighter-rouge">a</code>. We have two versions <strong>23.11</strong> &amp; <strong>24.05</strong>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Flake A"</span><span class="p">;</span>
+
+  <span class="nv">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:nixos/nixpkgs/nixos-23.11"</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nv">outputs</span> <span class="o">=</span> <span class="p">{</span> <span class="nv">self</span><span class="p">,</span> <span class="nv">nixpkgs</span> <span class="p">}:</span> 
+  <span class="p">{</span>
+    <span class="nv">versions</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">lib</span><span class="o">.</span><span class="nv">version</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Our flake emits a <code class="language-plaintext highlighter-rouge">versions</code> attribute which we can evaluate.
+We correcltly see at the start the two different versions of <em>nixpkgs</em>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">❯ nix eval "#</span>versions<span class="s2">"
+</span><span class="go">
+{
+</span><span class="gp">  a = {nixpkgs = "23.11pre-git";</span><span class="o">}</span><span class="p">;</span>
+<span class="gp">  nixpkgs = "24.05.20240729.12bf098";</span><span class="w">
+</span><span class="go">}
+</span></code></pre></div></div>
+
+<p>If we peek in our <code class="language-plaintext highlighter-rouge">flake.lock</code> file we see that <code class="language-plaintext highlighter-rouge">nixpkgs</code> is listed twice as an <em>inputs</em> (<code class="language-plaintext highlighter-rouge">nixpkgs</code> &amp; <code class="language-plaintext highlighter-rouge">nixpkgs_2</code>) and that they reference nodess that exist.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"a"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"nixpkgs"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nixpkgs"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"root"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"a"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"nixpkgs"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nixpkgs_2"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"nixpkgs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">...</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"nixpkgs_2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">...</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Turns out if we make the nodes references by the <code class="language-plaintext highlighter-rouge">inputs</code> in <code class="language-plaintext highlighter-rouge">roots</code> (our top level <em>flake.nix</em>) the same everywhere, we’ve effectively done an <strong>automatic follows</strong>.</p>
+
+<p>Let’s apply <em>all-follow.py</em> and see what happens.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ python all-follow.py flake.lock -i
+
+</span><span class="gp">❯ nix eval "#</span>versions<span class="s2">"
+</span><span class="go">{
+</span><span class="gp">  a = {nixpkgs = "24.05.20240729.12bf098";</span><span class="o">}</span><span class="p">;</span>
+<span class="gp">  nixpkgs = "24.05.20240729.12bf098";</span><span class="w">
+</span><span class="go">}
+</span></code></pre></div></div>
+
+<p>The <em>nixpkgs</em> versions are now the same! 🎆</p>
+
+<p>Although this <em>post-processing</em> happens out of band from the Nix tool, it’s an incredibly simple way to simplify your Nix evaluation and build graph and save you from <strong>follows hell</strong> (Nix’s version of <em>DLL Hell</em>)</p>
+
+<p>If you find the tool useful, please consider contributing. You can find it at <a href="https://github.com/fzakaria/nix-auto-follow">https://github.com/fzakaria/nix-auto-follow</a>.</p>
+
+<blockquote>
+  <p>Special thanks to <a href="https://github.com/edolstra">edolstra</a> &amp; <a href="https://github.com/roberth">roberth</a> who helped me think through this. 🙇‍♂️</p>
+</blockquote>]]></content><author><name></name></author><summary type="html"><![CDATA[If you have used Nix flakes, you likely encountered something like the following. 🤢 std.url = "github:divnix/std"; std.inputs.devshell.follows = "devshell"; std.inputs.nixago.follows = "nixago"; std.inputs.nixpkgs.follows = "nixpkgs"; hive.url = "github:divnix/hive"; hive.inputs.colmena.follows = "colmena"; hive.inputs.disko.follows = "disko"; hive.inputs.nixos-generators.follows = "nixos-generators"; hive.inputs.nixpkgs.follows = "nixpkgs"; Why is this follows necessary? 🤔 It’s in fact not necessary but it makes the Nix evaluation simpler and as a result faster. 🤓]]></summary></entry><entry><title type="html">Import but don’t import your NixOS modules</title><link href="https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html" rel="alternate" type="text/html" title="Import but don’t import your NixOS modules" /><published>2024-07-29T19:38:00-07:00</published><updated>2024-07-29T19:38:00-07:00</updated><id>https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules</id><content type="html" xml:base="https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html"><![CDATA[<blockquote>
+  <p>This is a follow-up post to my prior one <a href="/2024/07/28/nixos-option-inspection.html">NixOS Option Inspection</a>. Many thanks to <a href="https://github.com/roberth">@roberth</a> who followed up on my <a href="https://github.com/NixOS/nix/issues/11210">issue</a> and helped explain it. 🙏</p>
+</blockquote>
+
+<p>If you are using <a href="https://nixos.org">NixOS</a>, you’ve likely encountered the <em>module system</em>. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span> <span class="sx">./hello.nix</span> <span class="p">];</span>
+  
+  <span class="nv">services</span><span class="o">.</span><span class="nv">hello</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">greeter</span> <span class="o">=</span> <span class="s2">"Bob"</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In a <a href="/2024/07/28/nixos-option-inspection.html">prior post</a>, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined.</p>
+
+<p>Turns out, the answer in the post was <em>relatively simple</em> and Nixpkgs has a gesture for discovering the answer via <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code>.</p>
+
+<p>Turns out, in order to get <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code> to play nice, you have to avoid a suprisingly common <a href="https://notes.rmhogervorst.nl/post/2022/11/21/what-is-a-footgun/">footgun</a> 🥵.</p>
+
+<!--more-->
+
+<p>Let’s use an incredibly simple example to demonstrate the bug.</p>
+
+<p>First let’s make our module <code class="language-plaintext highlighter-rouge">greet.nix</code>; it’s a trivial module that sets a single option. We also have a <code class="language-plaintext highlighter-rouge">config.nix</code> which you could think of as our <code class="language-plaintext highlighter-rouge">configuration.nix</code> in a typical NixOS installation that defines the option.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># greet.nix</span>
+<span class="p">{</span><span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+    <span class="nv">greet</span><span class="o">.</span><span class="nv">name</span> <span class="o">=</span> <span class="s2">"hi"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c"># config.nix</span>
+<span class="kd">let</span> 
+<span class="nv">modules</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nv">greet</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./greet.nix</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="nv">system</span> <span class="o">=</span> <span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nv">modules</span><span class="o">.</span><span class="nv">greet</span>
+  <span class="p">];</span>
+
+  <span class="nv">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">greet</span><span class="o">.</span><span class="nv">name</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkOption</span> <span class="p">{</span>
+        <span class="nv">type</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">types</span><span class="o">.</span><span class="nv">str</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+<span class="kn">in</span> <span class="p">(</span><span class="kr">import</span> <span class="o">&lt;</span><span class="sx">nixpkgs/lib</span><span class="o">&gt;</span><span class="p">)</span><span class="o">.</span><span class="nv">evalModules</span> <span class="p">{</span>
+  <span class="nv">modules</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">system</span>  <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Next, let’s import this module, à la <code class="language-plaintext highlighter-rouge">imports</code> keyword attribute in a NixOS module.</p>
+
+<p>❗I have chosen to create a container attrset <em>modules</em> to mimic what we might accomplish in a Nix Flakes.</p>
+
+<p>Everything looks OK, and evaluates correctly.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-instantiate --eval config.nix -A config.greet.name
+"hi"
+</span></code></pre></div></div>
+
+<p>If we try <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code> however we don’t get what we expected. 🤮</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl 
+Nix 2.23.2
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:l ./config.nix
+<span class="go">Added 7 variables.
+
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p options.greet.name.definitionsWithLocations
+<span class="go">[
+  {
+</span><span class="gp">    file = "&lt;unknown-file&gt;</span><span class="s2">";
+</span><span class="gp">    value = "hi";</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>Did you spot the problem ? 🕵️‍♂️🧐🤔</p>
+
+<p>It was the <code class="language-plaintext highlighter-rouge">import ./greet.nix</code> 🤯</p>
+
+<p>We <em>imported</em> the Nix expression into our modules container and as a result lost any traceability back to the originating file.</p>
+
+<p>Luckily, the fix is simple! <strong>Don’t <code class="language-plaintext highlighter-rouge">import</code> within an <code class="language-plaintext highlighter-rouge">imports</code></strong> 👌</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This is better ✅</span>
+<span class="nv">modules</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nv">greet</span> <span class="o">=</span> <span class="sx">./greet.nix</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c"># This is also good ✅</span>
+<span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sx">./greet.nix</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p>With the applied fix, the results are what we want, and the world makes sense again. 😌</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl
+Nix 2.23.2
+Type :? for help.
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:l ./config.nix                                
+<span class="go">Added 7 variables.
+
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p options.greet.name.definitionsWithLocations
+<span class="go">[
+  {
+</span><span class="gp">    file = "greet.nix";</span><span class="w">
+</span><span class="gp">    value = "hi";</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>How common is this <em>footgun</em> ?</p>
+
+<p>Turns out incredibly common (anecdotally) since there is nothing from preventing one from doing it; and it still “works”. The Nix Flake’s format makes this setup increasingly more common as well.</p>
+
+<p>For a demonstration of how easy the fix is, I contributed a patch to <a href="https://github.com/ryantm/agenix">agenix</a> in <a href="https://github.com/ryantm/agenix/pull/277">#277</a> that fixes the issue.</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh">diff --git a/flake.nix b/flake.nix
+index 587138e..3a68940 100644
+</span><span class="gd">--- a/flake.nix
+</span><span class="gi">+++ b/flake.nix
+</span><span class="p">@@ -23,13 +23,13 @@</span>
+   }: let
+     eachSystem = nixpkgs.lib.genAttrs (import systems);
+   in {
+<span class="gd">-    nixosModules.age = import ./modules/age.nix;
+</span><span class="gi">+    nixosModules.age = ./modules/age.nix;
+</span>     nixosModules.default = self.nixosModules.age;
+ 
+<span class="gd">-    darwinModules.age = import ./modules/age.nix;
+</span><span class="gi">+    darwinModules.age = ./modules/age.nix;
+</span>     darwinModules.default = self.darwinModules.age;
+ 
+<span class="gd">-    homeManagerModules.age = import ./modules/age-home.nix;
+</span><span class="gi">+    homeManagerModules.age = ./modules/age-home.nix;
+</span>     homeManagerModules.default = self.homeManagerModules.age;
+ 
+     overlays.default = import ./overlay.nix;
+</code></pre></div></div>
+
+<p><strong>Don’t <code class="language-plaintext highlighter-rouge">import</code> within an <code class="language-plaintext highlighter-rouge">imports</code></strong></p>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a follow-up post to my prior one NixOS Option Inspection. Many thanks to @roberth who followed up on my issue and helped explain it. 🙏 If you are using NixOS, you’ve likely encountered the module system. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix { imports = [ ./hello.nix ]; services.hello = { enable = true; greeter = "Bob"; }; } In a prior post, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined. Turns out, the answer in the post was relatively simple and Nixpkgs has a gesture for discovering the answer via definitionsWithLocations. Turns out, in order to get definitionsWithLocations to play nice, you have to avoid a suprisingly common footgun 🥵.]]></summary></entry><entry><title type="html">NixOS Option Inspection</title><link href="https://fzakaria.com/2024/07/28/nixos-option-inspection.html" rel="alternate" type="text/html" title="NixOS Option Inspection" /><published>2024-07-28T14:51:00-07:00</published><updated>2024-07-28T14:51:00-07:00</updated><id>https://fzakaria.com/2024/07/28/nixos-option-inspection</id><content type="html" xml:base="https://fzakaria.com/2024/07/28/nixos-option-inspection.html"><![CDATA[<p><a href="https://nixos.org">NixOS</a> modules are great; and it’s one of the <em>superpowers</em> of NixOS.
+They’re so great, there was a <a href="https://discourse.nixos.org/t/working-group-member-search-module-system-for-packages/26574">working group</a> to look into how to apply the concept to Nixpkgs itself.</p>
+
+<blockquote>
+  <p>For those uninitiated, there are plenty of guides online describing it’s value and purpose such as
+<a href="https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/module-system">this one</a> or on <a href="https://nix.dev/tutorials/module-system/deep-dive.html">nix.dev</a>.</p>
+</blockquote>
+
+<p>My <em>largest complaint</em> thus far with it was that it’s hard to go backwards. ⏪</p>
+
+<p><em>“Who and what defined a particular option?”</em> 🕵️</p>
+
+<!--more-->
+
+<p>The problem I often want to solve is where did a particular NixOS module option get set.</p>
+
+<p>Imagine we have 3 modules: A, B &amp; C</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Module A</span>
+<span class="c"># moudleA.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkOption</span> <span class="p">{</span>
+      <span class="nv">type</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">types</span><span class="o">.</span><span class="nv">bool</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The common way people find out that a particular option is being set by multiple modules are when their values conflict.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Module B</span>
+<span class="c"># moduleB.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="c"># Module C</span>
+<span class="c"># moduleC.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If <code class="language-plaintext highlighter-rouge">Module B</code> and <code class="language-plaintext highlighter-rouge">Module C</code> were to conflict with how they set <code class="language-plaintext highlighter-rouge">a.value</code>, you are presented with a friendly error telling you to decide on a priority.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-instantiate --eval default.nix -A config.a.value
+error: The option `a.value' has conflicting definition values:
+- In `moduleC.nix': false
+- In `moduleB.nix': true
+Use `lib.mkForce value` or `lib.mkDefault value` to change
+the priority on any of these definitions.
+</span></code></pre></div></div>
+
+<p><em>This only works if you are using non-mergeable values. What if the values do merge?</em></p>
+
+<p>How can I discover all the locations where a particular option is set. 🤔</p>
+
+<blockquote>
+  <p>Note: This is a real problem I often face. A recent example was I noticed my fingerprint reader <code class="language-plaintext highlighter-rouge">services.fprintd</code> was enabled.
+I could not figure out where the option was being toggled however.</p>
+</blockquote>
+
+<p>When the majority of NixOS modules resided in Nixpkgs, I rarely had the problem of attributing where a particular option was set.
+I had the not great, but usable, workflow of searching (<a href="https://github.com/BurntSushi/ripgrep"><code class="language-plaintext highlighter-rouge">rg</code></a>) through the whole codebase to find all the likely spots
+that might have set it.</p>
+
+<p>With the <em>proliferation</em> of Nix Flakes, this problem has gotten increasingly worse. There is no longer a <em>single source of truth</em> for all your NixOS modules. The Nix Flakes system, encourages decentralized configurations and bringing in individual NixOS modules from many “registries” (<em>sic: GitHub repositories</em>).</p>
+
+<blockquote>
+  <p>Note: One could have pulled in NixOS modules from multiple repositories in the legacy mechanism, but it was hard to manage versioning even with tools like <a href="https://github.com/nmattia/niv">niv</a> or <a href="https://github.com/andir/npins">npins</a> so most people upstreamed their module to Nixpkgs itself.</p>
+</blockquote>
+
+<p>Turns out, the solution to my woes has been in Nixpkgs for over 2 years (circa 2022) via <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code>. 🎉</p>
+
+<p>You can load up the <code class="language-plaintext highlighter-rouge">nix repl</code> for a given Nix Flake and find all the locations (only file sadly 😔 no line number) along with their values.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl --extra-experimental-features 'flakes repl-flake' .
+warning: unknown experimental feature 'repl-flake'
+Nix 2.23.2
+Type :? for help.
+warning: Git tree '/home/fmzakari/code/github.com/fzakaria/nix-home' is dirty
+</span><span class="gp">Loading installable 'git+file:///home/fmzakari/code/github.com/fzakaria/nix-home#</span><span class="s1">'...
+</span><span class="go">Added 7 variables.
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>options <span class="o">=</span> nixosConfigurations.nyx.options  
+<span class="gp">nix-repl&gt;</span><span class="w"> </span>pkgs <span class="o">=</span> nixosConfigurations.nyx.pkgs                                                
+<span class="go">
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p <span class="o">(</span>pkgs.lib.take 2 options.environment.pathsToLink.definitionsWithLocations<span class="o">)</span>      
+<span class="go">[
+  {
+</span><span class="gp">    file = "/nix/store/hxhym8c5xz6dxkl3d9yppiwlnzk3khn7-source/nixos/common.nix";</span><span class="w">
+</span><span class="gp">    value = [ "/etc/profile.d" ];</span><span class="w">
+</span><span class="go">  }
+  {
+</span><span class="gp">    file = "/nix/store/ncinwsh2j3197rp8pl4yw7amri5yf9zw-source/users";</span><span class="w">
+</span><span class="go">    value = [
+      "/share/zsh"
+      "/share/fish"
+      "/share/bash"
+</span><span class="gp">    ];</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>If you only care to see the files, you can use <code class="language-plaintext highlighter-rouge">files</code> instead.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p <span class="o">(</span>pkgs.lib.take 2 options.environment.pathsToLink.files<span class="o">)</span>
+<span class="go">[
+  "/nix/store/hxhym8c5xz6dxkl3d9yppiwlnzk3khn7-source/nixos/common.nix"
+  "/nix/store/ncinwsh2j3197rp8pl4yw7amri5yf9zw-source/users"
+]
+</span></code></pre></div></div>
+
+<p>❗ Anywhere you see <code class="language-plaintext highlighter-rouge">XXXXXX-source</code> is the current Flake (your repository) but you can likely tell
+from the path and filenames as well.</p>
+
+<p><strong>Awesome</strong>; we now have a gesture to find where a particular option is being set along with their values.
+Now we can have our cake 🍰 and eat it too; we can have the magic of NixOS modules 🪄 while still having a workflow to
+uncover where options may be set.</p>
+
+<p>❗This works great for the most part but doesn’t seem to give the correct location for modules imported via Flakes (<em>I see the humor in this</em>).
+I filed <a href="https://github.com/NixOS/nix/issues/11210">Issue #11210</a> to track the bug 🐛 and document the behavior.</p>
+
+<p><strong>UPDATE(2024-07-29)</strong> I wrote a follow-up post on <a href="/2024/07/29/import-but-don-t-import-your-nixos-modules.html">pitfalls importing modules</a> which articulates what the problem was with <a href="https://github.com/NixOS/nix/issues/11210">Issue #11210</a> and how to fix it.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[NixOS modules are great; and it’s one of the superpowers of NixOS. They’re so great, there was a working group to look into how to apply the concept to Nixpkgs itself. For those uninitiated, there are plenty of guides online describing it’s value and purpose such as this one or on nix.dev. My largest complaint thus far with it was that it’s hard to go backwards. ⏪ “Who and what defined a particular option?” 🕵️]]></summary></entry><entry><title type="html">Management Time</title><link href="https://fzakaria.com/2024/07/24/management-time.html" rel="alternate" type="text/html" title="Management Time" /><published>2024-07-24T07:48:00-07:00</published><updated>2024-07-24T07:48:00-07:00</updated><id>https://fzakaria.com/2024/07/24/management-time</id><content type="html" xml:base="https://fzakaria.com/2024/07/24/management-time.html"><![CDATA[<blockquote>
+  <p><strong>Note</strong><br />
+This is the third (<a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">part1</a> &amp; <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">part2</a>) installment on my series of improving ELF symbol relocation processing.
+Consider reading them if this post interests you. 📖</p>
+</blockquote>
+
+<p>I have written <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">previously</a> about <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">improvements</a> to the dynamic linking process, specifically processing relocations for entries with symbols.</p>
+
+<p>The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to <strong>22x</strong> speedup compared to the traditional methadology, is memoizing the relocation entries.</p>
+
+<p>This memoization is possible since the linking order of the loader is <em>deterministic</em> and in store-based systems such as <a href="https://nixos.org/">NixOS</a> the libraries to be loaded are <em>fixed &amp; static</em>.</p>
+
+<!--more-->
+
+<p>The key datastructure used to freeze the relocations is a relatively simple struct.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">type</span><span class="p">;</span>                   <span class="c1">// Type of the relocation</span>
+    <span class="kt">size_t</span> <span class="n">addend</span><span class="p">;</span>              <span class="c1">// Addend of the relocation</span>
+    <span class="kt">size_t</span> <span class="n">st_value</span><span class="p">;</span>            <span class="c1">// Symbol value</span>
+    <span class="kt">size_t</span> <span class="n">st_size</span><span class="p">;</span>             <span class="c1">// Symbol size</span>
+    <span class="kt">size_t</span> <span class="n">offset</span><span class="p">;</span>              <span class="c1">// Offset of the relocation</span>
+    <span class="c1">// 0-based index starting from the head of the DSO list</span>
+    <span class="kt">size_t</span> <span class="n">symbol_dso_index</span><span class="p">;</span>
+    <span class="c1">// 0-based index starting from the head of the DSO list</span>
+    <span class="kt">size_t</span> <span class="n">dso_index</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">symbol_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>       <span class="c1">// Name of the symbol</span>
+    <span class="kt">char</span> <span class="n">symbol_dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>   <span class="c1">// Name of the DSO</span>
+    <span class="kt">char</span> <span class="n">dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>          <span class="c1">// Name of the DSO</span>
+<span class="p">}</span> <span class="n">CachedRelocInfo</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>These <em>fixed-width</em> entries are serialized to a separate file that is told to the loader to be loaded through the use of an environment variable <code class="language-plaintext highlighter-rouge">RELOC_READ</code></p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ RELOC_READ='hello_world_relo.bin' hello_world
+</span></code></pre></div></div>
+
+<p>In practice, the binaries are <em>wrapped</em> when deployed through NixOS so that this is all transparent to the user via a simple gesture in Nix.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">optimized_hello_world</span> <span class="o">=</span>
+     <span class="nv">optimizeRelocationLinking</span> <span class="p">{</span>
+        <span class="c"># You can pass any nixpkgs attribute here</span>
+        <span class="nv">executable</span> <span class="o">=</span> <span class="nv">hello_world</span><span class="p">;</span>
+    <span class="p">};</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Wrapped file hello_world-optimized</span>
+<span class="c">#! /nix/store/xxx-bash-5.2-p15/bin/bash -e</span>
+<span class="nb">export </span><span class="nv">RELOC_READ</span><span class="o">=</span><span class="s1">'/nix/store/xxx-patched_hello_world/bin/hello_world_relo.bin'</span>
+<span class="nb">exec</span> <span class="s2">"/nix/store/xxx-patched_hello_world/bin/hello_world"</span>  <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span> 
+</code></pre></div></div>
+
+<p>ℹ️ I’ve chosen to encode the cached relocation infos as a separate file since NixOS has solved the <em>multi-file update problem</em>; and I find having a separate file simpler to work with. The cached relocations could also be placed within a segment/section on the ELF file itself as well.</p>
+
+<p>🕵️ Turns out though that having this information <em>frozen</em> is not only useful to optimize the process itself but can be used for workflows relating to <strong>auditing</strong>, <strong>validation</strong> and <strong>modification</strong>.</p>
+
+<p>Some of these workflows may occur today during <em>compile time</em> or <em>runtime</em>.
+Performing them in between, has led us (coined by my advisor <a href="https://arquinn.github.io/">Prof. Andrew Quinn</a>) to label it <strong>management time</strong>.</p>
+
+<p>To demonstrate <em>management time</em>, I wrote a small Python utility <a href="https://github.com/fzakaria/musllibc/blob/management-time/examples/swiss-army-knife/sak.py">sak</a> (swiss army knife).</p>
+
+<h2 id="converting-to-jsonsqlite-and-back">Converting to JSON/SQLite and back</h2>
+
+<p>The current file format is a binary protocol and not suitable for auditing. We can easily transform it to JSON or a SQLite database, to perform audits.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ sak file-to-sqlite ./hello_world_relo.bin \
+                     --db hello_world.sqlite
+
+❯ sqlite3 hello_world.sqlite
+</span><span class="gp">sqlite&gt;</span><span class="w"> </span>.mode json
+<span class="gp">sqlite&gt;</span><span class="w"> </span><span class="k">select</span> <span class="k">*</span> from CachedRelocInfo LIMIT 1<span class="p">;</span>
+<span class="go">[
+  {
+    "id": 1,
+    "type": 7,
+    "addend": 0,
+    "st_value": 562266,
+    "st_size": 193,
+    "offset": 16336,
+    "symbol_dso_index": 2,
+    "dso_index": 1,
+    "symbol_name": "puts",
+    "symbol_dso_name": "/nix/store/xxx-musl/lib/libc.so",
+    "dso_name": "/nix/store/xxx-libfoo/lib/libfoo.so"
+  }
+]
+</span></code></pre></div></div>
+<p>This file is a <em>frozen snapshot</em> of the exact symbol bindings that will occur during process startup. If you’ve ever wanted to easily audit whether a particular CVE may have affected you, you can either construct a <code class="language-plaintext highlighter-rouge">jq</code> or <code class="language-plaintext highlighter-rouge">SQL</code> query to demonstrably prove it.</p>
+
+<p>😮 You can even modify the JSON file or SQLite perform serializing it back to the binary format. You could change the binding of symbols effectively customizing the interposition (shadow) order. Effectively akin to Solaris’s <a href="https://en.wikipedia.org/wiki/Direct_binding">direct binding</a> but done during <em>management time</em>, as opposed to compile time.</p>
+
+<blockquote>
+  <p>A workflow I am developing is supporting new libraries injected into the format so that you can do extremely targeted <code class="language-plaintext highlighter-rouge">LD_PRELOAD</code> equivalent workflows.</p>
+</blockquote>
+
+<h2 id="upgrades-made-easy">Upgrades Made Easy</h2>
+
+<p>Knowing the surface area the transitive closure (<em>not just the application</em>) uses for a given library gives us a <em>fingerprint</em> with which to test new libraries against whether they can be upgraded.</p>
+
+<p>We can validate that we could replace a library with a different version, or even a different library that may offer the same symbols, without needing to run our application.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ sak has-necessary-symbols hello_world_relo.bin \
+        --new-library /nix/store/xxx-libfoo-1.1/lib/libfoo.so \
+        --symbol-dso-name "/nix/store/xxx-libfoo-1.0/lib/libfoo.so"
+The following symbols are missing:
+bar
+</span></code></pre></div></div>
+
+<p>The power of this workflow boils down to a simple <code class="language-plaintext highlighter-rouge">LEFT JOIN</code> since the data is all present.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- ELFSymbols is a table with the symbol entries solely</span>
+<span class="c1">-- from the new library you are hoping to supplant with</span>
+<span class="k">SELECT</span> <span class="n">cri</span><span class="p">.</span><span class="n">symbol_name</span>
+<span class="k">FROM</span> <span class="n">CachedRelocInfo</span> <span class="n">cri</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">ELFSymbols</span> <span class="n">es</span>
+<span class="k">ON</span> <span class="n">cri</span><span class="p">.</span><span class="n">symbol_name</span> <span class="o">=</span> <span class="n">es</span><span class="p">.</span><span class="n">symbol_name</span>
+<span class="k">WHERE</span> <span class="n">es</span><span class="p">.</span><span class="n">symbol_name</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span>
+      <span class="n">cri</span><span class="p">.</span><span class="n">symbol_dso_name</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">SYMBOL_DSO_NAME</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>ℹ️ SQL is a powerful language to introspect binaries. Check out <a href="https://github.com/fzakaria/sqlelf">sqlelf</a> for a more general utility. I have also published a paper on the benefits of using SQL to drive ELF analysis; <a href="https://arxiv.org/abs/2405.03883">sqlelf: a SQL-centric Approach to ELF Analysis</a>.</p>
+
+<p>I have only begun to scratch the surface of the possibilities of <em>management time</em>. Having memoized linking information frozen within something like the <em>/nix/store</em> for every package availble within <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> opens pretty imaginative workflows that no other distribution could compete with 🤯.</p>
+
+<p>We’ve all taken the underpinnings of our toolchain for granted. It’s true we are building on the shoulders of giants, but it’s imperative to look back and rethink decisions that may have existed for decades especially in-light of newer development models (i.e. NixOS) that offer us a chance to radically deviate from pre-existing conventions.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Note This is the third (part1 &amp; part2) installment on my series of improving ELF symbol relocation processing. Consider reading them if this post interests you. 📖 I have written previously about improvements to the dynamic linking process, specifically processing relocations for entries with symbols. The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to 22x speedup compared to the traditional methadology, is memoizing the relocation entries. This memoization is possible since the linking order of the loader is deterministic and in store-based systems such as NixOS the libraries to be loaded are fixed &amp; static.]]></summary></entry><entry><title type="html">Scaling past 1 million ELF symbol relocations</title><link href="https://fzakaria.com/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html" rel="alternate" type="text/html" title="Scaling past 1 million ELF symbol relocations" /><published>2024-07-21T11:25:00-07:00</published><updated>2024-07-21T11:25:00-07:00</updated><id>https://fzakaria.com/2024/07/21/scaling-past-1-million-elf-symbol-relocations</id><content type="html" xml:base="https://fzakaria.com/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html"><![CDATA[<blockquote>
+  <p><strong>Note</strong><br />
+This is a follow up to my previous post on <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">speeding up elf relocations for store based systems</a>.</p>
+</blockquote>
+
+<p>I wrote earlier about some impressive speedups that can be achieved by foregoing the typical dynamic linking that can be applied to systems such as Nix where the dependencies for a given application are static.</p>
+
+<!--more-->
+
+<p>The first attempt at memoization ELF symbol relocations involved <code class="language-plaintext highlighter-rouge">strcmp</code> on the shared library name.</p>
+
+<p>The code would memoize the relocations into entries such as the one below.</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"type"</span><span class="p">:</span><span class="w"> </span><span class="mi">6</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"addend"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"st_value"</span><span class="p">:</span><span class="w"> </span><span class="mi">16392</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"st_size"</span><span class="p">:</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"offset"</span><span class="p">:</span><span class="w"> </span><span class="mi">16368</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"symbol_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"global_variable"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"symbol_dso_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/nix/store/fni9dgkmimqi54q308zi37ycpfx5mq54-libfoo/lib/libfoo.so"</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dso_name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"/nix/store/6xqcsfhh1pk6s9cib8lkp5k9ybf05sq7-patched_hello_world/bin/hello_world"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>For each entry, the appropriate <code class="language-plaintext highlighter-rouge">struct dso</code> pointer would be located by <code class="language-plaintext highlighter-rouge">strcmp</code>.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span><span class="nf">find_dso</span><span class="p">(</span><span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span><span class="n">dso</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">for</span> <span class="p">(;</span> <span class="n">dso</span><span class="p">;</span> <span class="n">dso</span><span class="o">=</span><span class="n">dso</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">strcmp</span><span class="p">(</span><span class="n">dso</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">dso</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>🙄 Of course this is non-optimal and is <code class="language-plaintext highlighter-rouge">θ(nm)</code>; but I wanted to prove that <em>it would work first</em>.</p>
+
+<p>Now that I’ve proven efficacy, I began optimizing the lookups.</p>
+
+<p>A <em>small-trick</em> I was able to leverage was that the linked list produced by the dynamic linker must be deterministic in order; otherwise symbol interposition (shadowing) could be varied across invocations.</p>
+
+<p>I was able to store the <em>index into the linked list</em> rather than the name itself to find the <code class="language-plaintext highlighter-rouge">struct dso</code>.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"symbol_dso_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+  </span><span class="nl">"dso_index"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span><span class="nf">find_dso</span><span class="p">(</span><span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span><span class="n">app</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">index</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">index</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">app</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+        <span class="n">index</span><span class="o">--</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">app</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This brought the lookup to <code class="language-plaintext highlighter-rouge">θ(n)</code> – <em>can we do better?</em></p>
+
+<p>Turns out we can get to <code class="language-plaintext highlighter-rouge">θ(k)</code> (constant time), if we are willing to pay <em>one-time cost</em> of converting the linked list to an array for index-based access.</p>
+
+<p>We iterate the array once to discover the size of the array and then leverage VLA, variable length arrays, to allocate a dynamic array onto the stack.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">static</span> <span class="kt">void</span> <span class="nf">make_dso_table</span><span class="p">(</span><span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span><span class="n">app</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dso</span> <span class="o">**</span><span class="n">dso_table</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">dso_table</span><span class="p">[</span><span class="n">count</span><span class="o">++</span><span class="p">]</span> <span class="o">=</span> <span class="n">app</span><span class="p">;</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">app</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">size_t</span> <span class="nf">number_of_dso</span><span class="p">(</span><span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span><span class="n">app</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">app</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="n">app</span> <span class="o">=</span> <span class="n">app</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">count</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="nf">reloc_symbols_from_cache</span><span class="p">(</span><span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span><span class="n">app</span><span class="p">,</span>
+                                     <span class="k">const</span> <span class="n">CachedRelocInfo</span> <span class="o">*</span> <span class="n">info</span><span class="p">,</span>
+                                     <span class="kt">size_t</span> <span class="n">reloc_count</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">size_t</span> <span class="n">number_of_dsos</span> <span class="o">=</span> <span class="n">number_of_dso</span><span class="p">(</span><span class="n">app</span><span class="p">);</span>
+    <span class="k">struct</span> <span class="n">dso</span> <span class="o">*</span> <span class="n">dso_table</span><span class="p">[</span><span class="n">number_of_dsos</span><span class="p">];</span>
+    <span class="n">make_dso_table</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">dso_table</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>Do these optimization make a difference in practice, especially given how much time is spent on dynamic linking? 🤔</p>
+
+<p>Turns out for sufficiently large number of symbol relocations distributed over multiple shared libraries, we can see even more drastic results.</p>
+
+<p>On a synthetic benchmark, creating 1000 shared objects each with 1000 symbols  for a total of 1_000_000 (million) total relocations can see speedups as large as <strong>18-22x</strong>.</p>
+
+<p><img src="/assets/images/benchmark_heatmap.png" alt="benchmark heatmap" /></p>
+
+<p>A noticable speedup was seen in the established benchmark <a href="https://github.com/LLNL/pynamic">pynamic</a>. Pynamic is a benchmark written by Lawrence Livermore National Laboratory (LLNL) to simulate internal software written.</p>
+
+<p>Similar to the prior synthetic benchmark, Pynamic creates an MPI application which starts an embedded Python interpreter and links it against a desired amount of Python modules.</p>
+
+<p>Running the same configuration as outlined in <a href="https://asc.llnl.gov/sites/asc/files/2020-09/pynamic-coral-2-benchmark-summary-v1-2.pdf">documentation</a> written by LLNL shows speedups as large as <strong>8x</strong> (3.672 secs ± 0.084 vs. 26.152 secs ± 0.095). 🏎️</p>
+
+<p>Finding real world applications beyond the software Pynamic itself may be emulating which contain 1_000_000+ symbol relocations proved challenging; but seeing the time needed to perform the relocations (26 seconds) it is understandable.</p>
+
+<p>Ulrich Drepper (long time glibc author) in fact devotes a large section of his guide on <a href="https://www.cs.dartmouth.edu/~sergey/cs258/ABI/UlrichDrepper-How-To-Write-Shared-Libraries.pdf">How to Write Shared Libraries</a>. Portions of the advice centers around shortening symbol names and being judicious about which symbols are exported to minimize the number of symbol relocations created. This optimziation technique eschews much of that advice and allows applications to scale beyond traditional limits and still appear relatively responsive in startup.</p>
+
+<p>Similar to the <a href="https://en.wikipedia.org/wiki/C10k_problem">C10K</a> problem faced in the earlier 2000s as the Linux kernel was attempting to scale to 10_000 connections; this work allows applications to think about scaling to 1 million symbol relocations.</p>
+
+<p><em>Go forth and link.</em></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Note This is a follow up to my previous post on speeding up elf relocations for store based systems. I wrote earlier about some impressive speedups that can be achieved by foregoing the typical dynamic linking that can be applied to systems such as Nix where the dependencies for a given application are static.]]></summary></entry><entry><title type="html">Fish the bash way</title><link href="https://fzakaria.com/2024/07/17/fish-the-bash-way.html" rel="alternate" type="text/html" title="Fish the bash way" /><published>2024-07-17T20:20:00-07:00</published><updated>2024-07-17T20:20:00-07:00</updated><id>https://fzakaria.com/2024/07/17/fish-the-bash-way</id><content type="html" xml:base="https://fzakaria.com/2024/07/17/fish-the-bash-way.html"><![CDATA[<p>I have been a big fan of the <a href="https://fishshell.com/">fish shell</a> lately mostly because it delivers what it promises; <em>works out of the box™️</em>.</p>
+
+<p>The <strong>obvious downside</strong> to fish is that it is non-standard POSIX <code class="language-plaintext highlighter-rouge">sh</code> – meaning some (not all!) of the 1-line scripts you find on the Internet <em>may not work</em>.</p>
+
+<blockquote>
+  <p>I use to be a pretty big <em>zsh</em> fan but I hit enough oddities with my setup that I gave up in anger one day.  😤</p>
+</blockquote>
+
+<!--more-->
+
+<p>In practice, it should not that bad since scripts can set a shebang like <code class="language-plaintext highlighter-rouge">#! /usr/bin/env bash</code> to make sure they are portable. <strong>In reality</strong>, I’ve been bit too much by tools that run commands without explicitly setting the shell and relying on my login <code class="language-plaintext highlighter-rouge">$SHELL</code>. 🙅‍♂️🤯</p>
+
+<p>Here is a little trick I’ve used to get the <em>best of both</em>.</p>
+
+<ol>
+  <li>
+    <p>Set your login shell to bash, <em>even though we intend to use fish</em>.</p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">users</span><span class="o">.</span><span class="nv">extraUsers</span><span class="o">.</span><span class="nv">fmzakari</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="nv">isNormalUser</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+     <span class="nv">shell</span> <span class="o">=</span> <span class="nv">pkgs</span><span class="o">.</span><span class="nv">bash</span><span class="p">;</span>
+     <span class="nv">extraGroups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"wheel"</span> <span class="s2">"networkmanager"</span><span class="p">];</span>
+     <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Farid Zakaria"</span><span class="p">;</span>
+ <span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Set your <code class="language-plaintext highlighter-rouge">.bash_profile</code> or (<code class="language-plaintext highlighter-rouge">.bashrc</code> conditional on interactive shell) to exec into fish.</p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">bash</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+     <span class="nv">initExtra</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">     # I have had so much trouble running fish as my login shell</span><span class="err">
+</span><span class="s2">     # instead run bash as my default login shell but just exec into it.</span><span class="err">
+</span><span class="s2">     # Check if the shell is interactive.</span><span class="err">
+</span><span class="s2">     if [[ $- == *i* &amp;&amp; -z "$NO_FISH_BASH" ]]; then</span><span class="err">
+</span><span class="s2">         exec </span><span class="si">${</span><span class="nv">pkgs</span><span class="o">.</span><span class="nv">fish</span><span class="si">}</span><span class="s2">/bin/fish</span><span class="err">
+</span><span class="s2">     fi</span><span class="err">
+</span><span class="s2">     ''</span><span class="p">;</span>
+ <span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Create a bash function in fish that starts bash with the <em>secret</em> environment variable <code class="language-plaintext highlighter-rouge">NO_FISH_BASH</code> so that we don’t get into an endless loop.</p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">programs</span><span class="o">.</span><span class="nv">fish</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+     <span class="nv">functions</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="c"># to avoid going into a loop from bash -&gt; fish -&gt; bash</span>
+         <span class="c"># set the environment variable which stops that.</span>
+         <span class="nv">bash</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="nv">body</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">             NO_FISH_BASH="1" command bash $argv</span><span class="err">
+</span><span class="s2">         ''</span><span class="p">;</span>
+         <span class="nv">wraps</span> <span class="o">=</span> <span class="s2">"bash"</span><span class="p">;</span>
+         <span class="p">};</span>
+     <span class="p">};</span>
+ <span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>Now when you start your shell, via an interactive session, it will automatically exec into a fish shell 🎉.</p>
+
+<p><strong>AND</strong></p>
+
+<p>Your <code class="language-plaintext highlighter-rouge">$SHELL</code> remains bash, which means that any non-interactive use by programs will get the common bash they unfortunately implicilty rely on.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">❯ ps -p $</span>fish_pid
+<span class="go">    PID TTY          TIME CMD
+  71116 pts/2    00:00:00 fish
+
+</span><span class="gp">❯ echo $</span>SHELL
+<span class="go">/run/current-system/sw/bin/bash
+
+</span><span class="gp">❯ bash -c "echo $</span>SHELL<span class="s2">"
+</span><span class="go">/run/current-system/sw/bin/bash
+</span></code></pre></div></div>]]></content><author><name></name></author><summary type="html"><![CDATA[I have been a big fan of the fish shell lately mostly because it delivers what it promises; works out of the box™️. The obvious downside to fish is that it is non-standard POSIX sh – meaning some (not all!) of the 1-line scripts you find on the Internet may not work. I use to be a pretty big zsh fan but I hit enough oddities with my setup that I gave up in anger one day. 😤]]></summary></entry><entry><title type="html">Nix secrets for dummies</title><link href="https://fzakaria.com/2024/07/12/nix-secrets-for-dummies.html" rel="alternate" type="text/html" title="Nix secrets for dummies" /><published>2024-07-12T10:25:00-07:00</published><updated>2024-07-12T10:25:00-07:00</updated><id>https://fzakaria.com/2024/07/12/nix-secrets-for-dummies</id><content type="html" xml:base="https://fzakaria.com/2024/07/12/nix-secrets-for-dummies.html"><![CDATA[<p>Despite having used Nix for several years already, I feel secure in admitting that new concepts in Nix continue to be confusing at first glance.</p>
+
+<p>I had avoided doing any <em>secret management</em> for Nix for a long time, largely because I ran Nix atop another Linux distribution, but now that I’m on NixOS <em>my time hath come</em>.</p>
+
+<p>I wanted to write out my learnings here so that others may benefit from the <em>ELI5</em> style of learning that we are missing in Nix.</p>
+
+<!--more-->
+
+<p>Doing any basic Google-fu lands on two solutions for Nix for secret management: <a href="https://github.com/ryantm/agenix">agenix</a> or <a href="https://github.com/Mic92/sops-nix">sops-nix</a>.</p>
+
+<p>Let me save you time, and we will focus solely on <em>agenix</em>. <em>agenix</em> is a Nix module + helpful tooling built around <a href="https://github.com/FiloSottile/age">age</a>.</p>
+
+<p>We will work around the example of a secret file: <em>password</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ echo "swordfish" &gt; password
+❯ cat password
+swordfish
+</code></pre></div></div>
+
+<p>age’s popularity is all centered around it’s minimalism and ease-of-use.</p>
+
+<p>You encrypt files in <em>age</em> with “recipients” (public-keys) and decrypt them with “identities” (private-keys).</p>
+
+<p>❗You can encrypt a file for multiple recipients but <strong>any single one</strong> can decrypt the file. This will prove to be useful for <em>agenix</em>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ age --armor \
+    -r age1yubikey1qg8nf40dfw4gprmywplggtg2wuvv55fcmujzrm65z8s3j6rhwje2vm3hhs7 \
+</span><span class="gp">    password &gt;</span><span class="w"> </span>password.age
+<span class="go">
+❯ cat password.age 
+-----BEGIN AGE ENCRYPTED FILE-----
+YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IGVUczBkQSBBeEIwTlVC
+TE1ZU3dhS1I4UlphT1dhaXNUY2Z2L1pLaWUxS0dwZFB6V0x4VApLWCs5R2hjY3JT
+V2RxTk13RFE0bDNRZXZ1NVJWUzhrQm05dlNsSTN2eSs0Ci0tLSB4eUpVaC9FUm56
+OEJQaVp0aEFRS2VZSlJQYWl0dGU5a2dpYVhOb2hsN05NCprozK/msLjTafWAkrSe
++wYeAyI82vEwa0d5MO/CZzxwixKlRKbzZ2flKg==
+-----END AGE ENCRYPTED FILE-----
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>recipients can be an age public key generated by age-keygen (“age1…”), an SSH public key (“ssh-ed25519 AAAA…”, “ssh-rsa AAAA…”) or even a private key stored on a Yubikey using <a href="https://github.com/str4d/age-plugin-yubikey">age-plugin-yubikey</a>.</p>
+</blockquote>
+
+<p><em>How does this all fit in with NixOS ?</em></p>
+
+<p>The goal is to get an encrypted secret from one machine to another.
+<em>agenix</em> takes advantage of the fact that most systems built with NixOS have a default host key generated via <a href="https://search.nixos.org/options?channel=unstable&amp;show=services.openssh.hostKeys&amp;from=0&amp;size=50&amp;sort=relevance&amp;type=packages&amp;query=services.openssh.hostKeys">services.openssh.hostKeys</a>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ ls /etc/ssh/*_key
+/etc/ssh/ssh_host_ed25519_key  /etc/ssh/ssh_host_rsa_key
+❯ ls /etc/ssh/*_key*pub
+/etc/ssh/ssh_host_ed25519_key.pub  /etc/ssh/ssh_host_rsa_key.pub
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>You can also use <code class="language-plaintext highlighter-rouge">ssh-keyscan localhost</code> to get the public keys for the current host or any host (just change localhost to the desired one).</p>
+</blockquote>
+
+<p>🤔 We can encrypt our secret with our own personal key and the keys of any machine we’d like to deploy to. Any single key can decrypt the secret.</p>
+
+<p><em>agenix</em> sets up the mapping of which keys to use to encrypt each secret via the file <em>secrets.nix</em></p>
+
+<blockquote>
+  <p>I found the <a href="https://github.com/ryantm/agenix?tab=readme-ov-file#installation">installation instructions</a> for <em>agenix</em> great so they are not covered here.</p>
+</blockquote>
+
+<p>The systems keys should be what’s inside <em>/etc/ssh/ssh_host_ed25519_key.pub</em></p>
+
+<p>The users key could be a custom supplied private key (Yubikey) or by default will search  SSH key in <em>~/.ssh/id_ed25519</em></p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="c"># put the machine you want to deploy to here</span>
+  <span class="nv">systems</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">nyx</span> <span class="o">=</span> <span class="s2">"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOXmzOre8wnaZm4zXuXqzFRS+5GFlMyfhth9ie9AvW8t root@nyx"</span><span class="p">;</span>
+  <span class="p">};</span>
+  <span class="c"># put which users should also be able to decrypt the secret</span>
+  <span class="nv">users</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">fmzakari-yubikey</span> <span class="o">=</span> <span class="s2">"age1yubikey1qg8nf40dfw4gprmywplggtg2wuvv55fcmujzrm65z8s3j6rhwje2vm3hhs7"</span><span class="p">;</span>
+  <span class="p">};</span>
+  <span class="nv">allUsers</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="nv">attrValues</span> <span class="nv">users</span><span class="p">;</span>
+  <span class="nv">allSystems</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="nv">attrValues</span> <span class="nv">systems</span><span class="p">;</span>
+<span class="kn">in</span> <span class="p">{</span>
+  <span class="s2">"password.age"</span><span class="o">.</span><span class="nv">publicKeys</span> <span class="o">=</span> <span class="nv">allUsers</span> <span class="o">++</span> <span class="p">[</span><span class="nv">systems</span><span class="o">.</span><span class="nv">nyx</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>You run it with <code class="language-plaintext highlighter-rouge">agenix -e &lt;FILE&gt;</code> where <em>FILE</em> is one of the keys in the attrset in <em>secrets.nix</em>.</p>
+
+<p>🤔 This mapping is not specific to Nix and could even be a TOML file with a very minimal <em>secrets.nix</em></p>
+
+<div class="language-toml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nn">["password.age"]</span>
+<span class="py">publicKeys</span> <span class="p">=</span> <span class="p">[</span>
+  <span class="s">"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOXmzOre8wnaZm4zXuXqzFRS+5GFlMyfhth9ie9AvW8t"</span>
+  <span class="s">"age1yubikey1qg8nf40dfw4gprmywplggtg2wuvv55fcmujzrm65z8s3j6rhwje2vm3hhs7"</span>
+<span class="p">]</span>
+</code></pre></div></div>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kr">builtins</span><span class="o">.</span><span class="nv">fromTOML</span> <span class="p">(</span><span class="kr">builtins</span><span class="o">.</span><span class="nv">readFile</span> <span class="sx">./secrets.toml</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>❗ You don’t even have to use the <em>agenix</em> CLI tool if you want to just list the recipients yourself and use <em>age</em> to encrypt secrets.</p>
+
+<p>You should now have <em>password.age</em>. Feel free to commit this to your repository.</p>
+
+<p>How do we make use of this secret? That’s where the <em>agenix</em> NixOS module comes into play.</p>
+
+<p>Simply, declare which secrets you want to try to decrypt. agenix will use the <strong>target machine’s</strong> SSH private key to decrypt the secret.</p>
+
+<p><em>Remember we encrypted the secret with host public keys of the machines that could decrypt it!</em></p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="nv">age</span><span class="o">.</span><span class="nv">secrets</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"password"</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="c"># change to whatever path it is in your NixOS configuration</span>
+      <span class="nv">file</span> <span class="o">=</span> <span class="sx">./secrets/password.age</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+</code></pre></div></div>
+
+<p>After you deploy your NixOS configuration, you can find the secret at <em>/run/agenix</em> decrypted at switch time via an activation script.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ sudo ls /run/agenix/
+password
+</span></code></pre></div></div>
+
+<p>You can read from the filesystem or reference this path in Nix itself.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">${</span><span class="nv">config</span><span class="o">.</span><span class="nv">age</span><span class="o">.</span><span class="nv">secrets</span><span class="o">.</span><span class="s2">"password"</span><span class="o">.</span><span class="nv">path</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>🎆 You now have unlocked a new level in NixOS: <em>Secret Management</em>.</p>
+
+<p>If you think this post can be improved <a href="mailto:farid.m.zakaria@gmail.com">please let me know</a></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Despite having used Nix for several years already, I feel secure in admitting that new concepts in Nix continue to be confusing at first glance. I had avoided doing any secret management for Nix for a long time, largely because I ran Nix atop another Linux distribution, but now that I’m on NixOS my time hath come. I wanted to write out my learnings here so that others may benefit from the ELI5 style of learning that we are missing in Nix.]]></summary></entry><entry><title type="html">Nix remote building with Yubikey</title><link href="https://fzakaria.com/2024/07/10/nix-remote-building-with-yubikey.html" rel="alternate" type="text/html" title="Nix remote building with Yubikey" /><published>2024-07-10T18:46:00-07:00</published><updated>2024-07-10T18:46:00-07:00</updated><id>https://fzakaria.com/2024/07/10/nix-remote-building-with-yubikey</id><content type="html" xml:base="https://fzakaria.com/2024/07/10/nix-remote-building-with-yubikey.html"><![CDATA[<p>There isn’t that much Nix documentation for remote building with Nix.</p>
+
+<p>I’m leaving my tiny module that I’m using to enable my Framework Laptop running NixOS to perform remote builds using the <a href="https://nix-community.org/community-builder/">Nix Community builders</a>, specifically that I use a Yubikey key as my SSH private key.</p>
+
+<blockquote>
+  <p>Actually some of the best documentation is courtesy of <a href="https://docs.nixbuild.net/remote-builds/">nixbuild</a>.</p>
+</blockquote>
+
+<!--more-->
+
+<h3 id="prequisites">Prequisites</h3>
+
+<ol>
+  <li>
+    <p>Using a Yubikey for SSH access</p>
+
+    <p>You can get your public key using <em>ssh-add -L</em></p>
+
+    <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go"> ❯ ssh-add -L
+</span><span class="gp"> ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDruWlzuyOXV0Ltjv0vVoCSkf4/ic4ET4of6NTqLWfvw/wpNFDr3SXRDAftOFcyoKp0ls0z6xy3CH99pUNmVnU19nwPdPfY93FJHaVDmS3VUzhco+e+bd1Azds5bltg06H+2vuHFcFMA28Y1o5h6ISlVY45bUzhKnW6+9whwECGBQo5KSvSW0D50eP557DD1KZlWUuJrcno65iQUz6dZ+R5cwfoTRhCvh4ltzJ6Fel6RuHPzG3u56lHM+upsF1REljHsNGI6XF3bcRuIoSssvaT0ZzVJQz/YnI1+wGZDNSKJI7WE+xmhfhcGLDzVaxNkLuJLMv/goTcDsDBb1BVw0YF YubiKey #</span>8531869 PIV Slot 9a
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Use <a href="https://filippo.io">Filippo Valsorda</a> excellent <a href="https://github.com/FiloSottile/yubikey-agent">Yubikey SSH agent</a></p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">yubikey-agent</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="nix-module">Nix Module</h3>
+
+<p>The <em>surprising</em> (and a bit ugly unfortunately) part is to include a default <em>ssh_config</em> for the root user; this is necessary because on NixOS the nix builds are done by the daemon which is running as <em>root</em>.</p>
+
+<p>In order to give the <em>root</em> user access to the Yubikey we pass in the <code class="language-plaintext highlighter-rouge">SSH_AUTH_SOCK</code> value which is <em>/run/user/1000/yubikey-agent/yubikey-agent.sock</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nv">config</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">programs</span><span class="o">.</span><span class="nv">ssh</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># Community builder for Linux</span>
+    <span class="nv">knownHosts</span><span class="o">.</span><span class="s2">"build-box.nix-community.org"</span><span class="o">.</span><span class="nv">publicKey</span> <span class="o">=</span> <span class="s2">"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIElIQ54qAy7Dh63rBudYKdbzJHrrbrrMXLYl7Pkmk88H"</span><span class="p">;</span>
+
+    <span class="c"># nix remote builders don't work with Yubikey and on NixOS the builder runs as root</span>
+    <span class="c"># so what we do is tell it the user to login as but give it the identity agent to connect</span>
+    <span class="c"># to for my (fmzakari) user. A bit of a hack but....not sure a better alternative.</span>
+    <span class="nv">extraConfig</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">      Host build-box.nix-community.org</span><span class="err">
+</span><span class="s2">        IdentityAgent /run/user/1000/yubikey-agent/yubikey-agent.sock</span><span class="err">
+</span><span class="s2">    ''</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nv">nix</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">distributedBuilds</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="c"># Nix will instruct remote build machines to use their own binary substitutes if available.</span>
+    <span class="c"># In practical terms, this means that remote hosts will fetch as many build dependencies as</span>
+    <span class="c"># possible from their own substitutes (e.g, from cache.nixos.org), instead of waiting for this</span>
+    <span class="c"># host to upload them all. This can drastically reduce build times if the network connection</span>
+    <span class="c"># between this computer and the remote build host is slow.</span>
+    <span class="nv">settings</span><span class="o">.</span><span class="nv">builders-use-substitutes</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="nv">buildMachines</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nv">protocol</span> <span class="o">=</span> <span class="s2">"ssh-ng"</span><span class="p">;</span>
+        <span class="nv">hostName</span> <span class="o">=</span> <span class="s2">"build-box.nix-community.org"</span><span class="p">;</span>
+        <span class="nv">maxJobs</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+        <span class="nv">systems</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"x86_64-linux"</span><span class="p">];</span>
+        <span class="nv">supportedFeatures</span> <span class="o">=</span> <span class="p">[</span>
+          <span class="s2">"benchmark"</span>
+          <span class="s2">"big-parallel"</span>
+          <span class="s2">"kvm"</span>
+          <span class="s2">"nixos-test"</span>
+        <span class="p">];</span>
+        <span class="nv">sshUser</span> <span class="o">=</span> <span class="s2">"fmzakari"</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">];</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If you think this Nix code can be improved, <strong>please let me know</strong>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[There isn’t that much Nix documentation for remote building with Nix. I’m leaving my tiny module that I’m using to enable my Framework Laptop running NixOS to perform remote builds using the Nix Community builders, specifically that I use a Yubikey key as my SSH private key. Actually some of the best documentation is courtesy of nixbuild.]]></summary></entry><entry><title type="html">Learn Nix the Fun Way</title><link href="https://fzakaria.com/2024/07/05/learn-nix-the-fun-way.html" rel="alternate" type="text/html" title="Learn Nix the Fun Way" /><published>2024-07-05T17:37:00-07:00</published><updated>2024-07-05T17:37:00-07:00</updated><id>https://fzakaria.com/2024/07/05/learn-nix-the-fun-way</id><content type="html" xml:base="https://fzakaria.com/2024/07/05/learn-nix-the-fun-way.html"><![CDATA[<blockquote>
+  <p>This is a post inspired by many talks I’ve given to engineering groups about Nix. You can see an example of one such talk <a href="https://docs.google.com/presentation/d/e/2PACX-1vT1xW7f8xFwg1g5LYMxumQ-XnFsg96_Vh6eTcb7gh31JBS2PsJpDR-fnUUCKF_IDFi-qNkceUIGjtze/pub?start=false&amp;loop=false&amp;delayms=5000">Why I love Nix, and you should too</a></p>
+</blockquote>
+
+<p>I’ve given <em>a lot</em> of Nix talks. I’ve given Nix talks internally at companies where I’ve introduced it, at local meetups and even at NixCon.</p>
+
+<p>Giving a talk about Nix is hard. As engineers I find often we try to explain <strong>why</strong> or <strong>how</strong> Nix works but never show the end result.</p>
+
+<p>Many of the talks I’ve given start explaining <em>“Nix developed as part of Eelco’s PhD thesis in 2003”</em> and immediately eyes roll.</p>
+
+<p><img src="/assets/images/picard_nix_hash_meme_50p.jpg" alt="A meme photo of Picard hearing Nix terminology" /></p>
+
+<p>Let’s do it different this time. Let’s learn <em>Nix the fun way</em>.</p>
+
+<!--more-->
+
+<h2 id="what-is-my-ip">what-is-my-ip</h2>
+
+<p>Let’s walk through a single example of a shell script one may write: <em>what-is-my-ip</em></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#! /usr/bin/env bash</span>
+curl <span class="nt">-s</span> http://httpbin.org/get | <span class="se">\</span>
+    jq <span class="nt">--raw-output</span> .origin
+</code></pre></div></div>
+
+<p>Sure, it’s <em>sort of portable</em>, if you tell the person running it to have <em>curl</em> and <em>jq</em>. What if you relied on a specific version of either though?</p>
+
+<p>Nix <strong>guarantees</strong> portability.</p>
+
+<p>We might leverage <em><a href="https://ryantm.github.io/nixpkgs/builders/trivial-builders/">Nixpkgs’ trivial builders</a></em> to turn this into a Nix derivation (i.e. build recipe).</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">)</span> <span class="p">{</span> <span class="p">},</span>
+<span class="p">}:</span>
+<span class="nv">pkgs</span><span class="o">.</span><span class="nv">writeShellScriptBin</span> <span class="s2">"what-is-my-ip"</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">  </span><span class="si">${</span><span class="nv">pkgs</span><span class="o">.</span><span class="nv">curl</span><span class="si">}</span><span class="s2">/bin/curl -s http://httpbin.org/get | \</span><span class="err">
+</span><span class="s2">    </span><span class="si">${</span><span class="nv">pkgs</span><span class="o">.</span><span class="nv">jq</span><span class="si">}</span><span class="s2">/bin/jq --raw-output .origin</span><span class="err">
+</span><span class="s2">''</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>😬 Avoid over-focusing on the fact I just introduced a new language. Just come along for the ride.</p>
+</blockquote>
+
+<p>Here we are pinning our package to dependencies which come from NixOS/Nixpkgs release branch 24.05.</p>
+
+<p>If we build this, we get the the result:</p>
+
+<p><strong>/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ /nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip 
+24.5.113.148
+</code></pre></div></div>
+
+<p>Now that this is in Nix and we’ve modeled our dependencies, we can do <em>fun</em> things like generate graph diagrams to view them (click the image to view larger).</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-store <span class="nt">--query</span> <span class="nt">--graph</span> <span class="si">$(</span>nix-build what-is-my-ip.nix<span class="si">)</span> | <span class="se">\</span>
+dot <span class="nt">-Tpng</span> <span class="nt">-o</span> what-is-my-ip-deps.png
+</code></pre></div></div>
+
+<p><a href="/assets/images/what-is-my-ip-deps.png"><img src="/assets/images/what-is-my-ip-deps.png" alt="Image of what-is-my-ip dependencies as a graph" /></a></p>
+
+<p>Let’s create a <em>developer environment</em> and bring in our new tool.
+This is a great way to create developer environment with reproducible tools</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">pkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">)</span> <span class="p">{};</span>
+  <span class="nv">what-is-my-ip</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./what-is-my-ip.nix</span> <span class="p">{</span><span class="kn">inherit</span> <span class="nv">pkgs</span><span class="p">;};</span>
+<span class="kn">in</span>
+  <span class="nv">pkgs</span><span class="o">.</span><span class="nv">mkShell</span> <span class="p">{</span>
+    <span class="nv">packages</span> <span class="o">=</span> <span class="p">[</span><span class="nv">what-is-my-ip</span><span class="p">];</span>
+    <span class="nv">shellHook</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">      echo "Hello, Nix!"</span><span class="err">
+</span><span class="s2">    ''</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-shell what-is-my-ip-shell.nix
+Hello, Nix!
+
+[nix-shell:~/tutorial]$ which what-is-my-ip
+/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip
+</code></pre></div></div>
+
+<p>🕵️ Notice that the hash <strong>lr6wlz2652r35rwzc79samg77l6iqmii</strong> is <em>exactly</em> the same which we built earlier.</p>
+
+<p>We can now do binary or source deployments 🚀🛠️📦 since we know the full dependency closure of our tool. We simply copy the necessary <em>/nix/store</em> paths to another machine with Nix installed.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix copy <span class="nt">--to</span> ssh://nixie.tail9f4b5.ts.net <span class="se">\</span>
+    <span class="si">$(</span>nix-build what-is-my-ip.nix<span class="si">)</span> <span class="nt">--no-check-sigs</span>
+
+❯ ssh nixie.tail9f4b5.ts.net
+
+<span class="o">[</span>fmzakari@nixie:~]<span class="nv">$ </span>/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip
+98.147.178.19
+</code></pre></div></div>
+
+<p>Maybe though you are stuck with Kubernetes or Docker. Let’s use Nix to create an OCI compatible image.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">pkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">)</span> <span class="p">{};</span>
+  <span class="nv">what-is-my-ip</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./what-is-my-ip.nix</span> <span class="p">{</span><span class="kn">inherit</span> <span class="nv">pkgs</span><span class="p">;};</span>
+<span class="kn">in</span>
+  <span class="nv">pkgs</span><span class="o">.</span><span class="nv">dockerTools</span><span class="o">.</span><span class="nv">buildImage</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"what-is-my-ip-docker"</span><span class="p">;</span>
+    <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">Cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"</span><span class="si">${</span><span class="nv">what-is-my-ip</span><span class="si">}</span><span class="s2">/bin/what-is-my-ip"</span><span class="p">];</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ docker load &lt; <span class="si">$(</span>nix-build what-is-my-ip-docker.nix<span class="si">)</span>
+Loaded image: what-is-my-ip-docker:c9g6x30invdq1bjfah3w1aw5w52vkdfn
+
+❯ docker run <span class="nt">-it</span> what-is-my-ip-docker:c9g6x30invdq1bjfah3w1aw5w52vkdfn
+24.5.113.148
+</code></pre></div></div>
+
+<p>Cool! Nix + Docker integration perfectly. The image produced has only the files exactly necessary to run the tool provided, effectively <strong>distroless</strong>.</p>
+
+<p>Finally, let’s take the last step and create a reproducible operating system using NixOS to contain only the programs we want.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">;</span>
+  <span class="nv">pkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="nv">nixpkgs</span> <span class="p">{};</span>
+  <span class="nv">what-is-my-ip</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./what-is-my-ip.nix</span> <span class="p">{</span><span class="kn">inherit</span> <span class="nv">pkgs</span><span class="p">;};</span>
+  <span class="nv">nixos</span> <span class="o">=</span> <span class="kr">import</span> <span class="s2">"</span><span class="si">${</span><span class="nv">nixpkgs</span><span class="si">}</span><span class="s2">/nixos"</span> <span class="p">{</span>
+    <span class="nv">configuration</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">users</span><span class="o">.</span><span class="nv">users</span><span class="o">.</span><span class="nv">alice</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nv">isNormalUser</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="c"># enable sudo</span>
+        <span class="nv">extraGroups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"wheel"</span><span class="p">];</span>
+        <span class="nv">packages</span> <span class="o">=</span> <span class="p">[</span>
+          <span class="nv">what-is-my-ip</span>
+        <span class="p">];</span>
+        <span class="nv">initialPassword</span> <span class="o">=</span> <span class="s2">"swordfish"</span><span class="p">;</span>
+      <span class="p">};</span>
+
+      <span class="nv">system</span><span class="o">.</span><span class="nv">stateVersion</span> <span class="o">=</span> <span class="s2">"24.05"</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="kn">in</span>
+  <span class="nv">nixos</span><span class="o">.</span><span class="nv">vm</span>
+</code></pre></div></div>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-build what-is-my-ip-vm.nix
+
+</span><span class="gp">❯ QEMU_KERNEL_PARAMS=console=ttyS0 ./result/bin/run-nixos-vm -nographic;</span><span class="w"> </span>reset
+<span class="go">
+</span><span class="gp">&lt;&lt;&lt; Welcome to NixOS 24.05pre-git (x86_64) - ttyS0 &gt;</span><span class="o">&gt;&gt;</span>
+<span class="go">
+Run 'nixos-help' for the NixOS manual.
+
+nixos login: alice
+Password: 
+
+</span><span class="gp">[alice@nixos:~]$</span><span class="w"> </span>which what-is-my-ip
+<span class="go">/etc/profiles/per-user/alice/bin/what-is-my-ip
+
+</span><span class="gp">[alice@nixos:~]$</span><span class="w"> </span><span class="nb">readlink</span> <span class="si">$(</span>which what-is-my-ip<span class="si">)</span>
+<span class="go">/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip
+
+</span><span class="gp">[alice@nixos:~]$</span><span class="w"> </span>what-is-my-ip
+<span class="go">24.5.113.148
+</span></code></pre></div></div>
+
+<p>💥 Hash <strong>lr6wlz2652r35rwzc79samg77l6iqmii</strong> present again!</p>
+
+<p>We took a relatively simple script through a variety of applications in the Nix ecosystem: build recipe, shell, docker image and finally NixOS VM.</p>
+
+<p>Hopefully, seeing the <em>fun things</em> you can do with Nix might inspire you to push through the hard parts.</p>
+
+<p>There is a golden pot 💰 at the end of this rainbow 🌈 awaiting you.</p>
+
+<p><strong>Learn Nix the fun way.</strong></p>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a post inspired by many talks I’ve given to engineering groups about Nix. You can see an example of one such talk Why I love Nix, and you should too I’ve given a lot of Nix talks. I’ve given Nix talks internally at companies where I’ve introduced it, at local meetups and even at NixCon. Giving a talk about Nix is hard. As engineers I find often we try to explain why or how Nix works but never show the end result. Many of the talks I’ve given start explaining “Nix developed as part of Eelco’s PhD thesis in 2003” and immediately eyes roll. Let’s do it different this time. Let’s learn Nix the fun way.]]></summary></entry><entry><title type="html">Reproducibility in Disguise: Bazel, Dependencies, and the Versioning Lie</title><link href="https://fzakaria.com/2024/07/02/reproducibility-in-disguise.html" rel="alternate" type="text/html" title="Reproducibility in Disguise: Bazel, Dependencies, and the Versioning Lie" /><published>2024-07-02T16:49:00-07:00</published><updated>2024-07-02T16:49:00-07:00</updated><id>https://fzakaria.com/2024/07/02/reproducibility-in-disguise</id><content type="html" xml:base="https://fzakaria.com/2024/07/02/reproducibility-in-disguise.html"><![CDATA[<p>Reproducibility has become a <em>big</em> deal. Whether it’s having higher confidence in one’s build or trying to better understand your supply chain for provenance, having an accurate view of your build graph is a <em>must</em>.</p>
+
+<p>Tools such as <a href="https://bazel.build/">Bazel</a> have picked up mainstream usage from their advocacy by large companies that use it or via similar derivatives such as Buck. These companies write &amp; proclaim how internally it’s solved many of their software development lifecycle problems. They’ve graciously open-sourced these tools for us to use so that we may also reap similar benefits. <em>Sounds great right?</em></p>
+
+<!--more-->
+
+<p>These companies however have a very distinctive software development practice from most of us: <strong>they vendor all their dependencies</strong>.</p>
+
+<p>Vendoring all third party dependencies has proven too onerous for most. Few developers truly understand the amount of code they pull in via transitive dependencies from their language package managers.</p>
+
+<p><img src="/assets/images/iceberg_third_party_50p.jpg" alt="third party iceberg" /></p>
+
+<p>To help those onboard to Bazel, the tool has introduced incrementally the concept of non-vendored dependencies (remote repositories) and integration with typical language package management tools such as <em>maven</em>, <em>pip</em> or <em>npm</em>. More recently, they’ve fully launched the <em>bazel mod</em> system which is a semantic versioning solver for dependencies. These are features that
+are not used internally at these companies that promote and have built out the tools themselves.</p>
+
+<p><em>Ah, diamond dependency problem, how I’ve missed you.</em> 🙃</p>
+
+<p>The introduction and use of Bazel has given many a <strong>false</strong> sense of security in that they have a lot better reproducibility than they did before.</p>
+
+<p><img src="/assets/images/head_in_sand_bazel_50p.jpeg" alt="head in sand meme" /></p>
+
+<p>The inconvenient truth is that by leveraging language package management packages and patterns, they’ve <em>infected</em> or <em>poisoned</em> the build system with ultimately the same root problems (diamond dependency) Google set out to thwart when building Bazel and vendoring dependencies.</p>
+
+<p>To illustrate this, let’s walk through an example within the Python ecosystem how one can easily run-amuck with semantic versioning, diamond dependencies and shared libraries.</p>
+
+<p>We will build two Python packages <strong>a</strong> &amp; <strong>b</strong>. Each package will have its own Python C extension which in turn depends on a C shared library <strong>foo</strong>. The idea here is that two distinct developers develop <strong>a</strong> &amp; <strong>b</strong> but they rely on the same common <strong>foo</strong> C shared object library.</p>
+
+<p>Using these packages in a Bazel build system, would like like:</p>
+<pre><code class="language-starlark">py_library(
+    name = "example",
+    srcs = [ "example.py"],
+    deps = [
+        # has a dependency on libfoo
+        "requirement(a)",
+        # has a dependency on libfoo
+        "requirement(b)"
+    ],
+)
+</code></pre>
+
+<p>Originally, when using package <strong>a</strong> or <strong>b</strong> you had to install the shared library on your system, likely using a package manager like <em>homebrew</em>, <em>dnf</em> or <em>apt</em>. The Python ecosystem recognized this was a UX nightmare and came out with <a href="https://peps.python.org/pep-0513/">PEP 513</a> which describes the process of bundling the shared library (in this case <em>foo</em>) within the wheel itself using something like <em>auditwheel</em> and giving the wheel produced the moniker “manylinux”.</p>
+
+<p><em>Thus solving the problem, right?</em>
+What happens when you have two packages that have built against a common shared object library at two different versions?</p>
+
+<p>Here is the <a href="https://github.com/fzakaria/python-shared-object-fallacy">sample repository</a> we will use to demonstrate how this is doomed for failure.
+We setup two packages <strong>a</strong> and <strong>b</strong> both with a C extension <strong>ext.c</strong>.
+Each C extension will link against <strong>libfoo</strong>. To mimic libfoo changing slightly across developer machines we have each package link against the variant within it’s directory.</p>
+
+<p>In the case of libfoo within A it has the symbol <em>buzz</em>.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">buzz</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"buzz from libfoo 1.1</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the case of libfoo within B it has the symbol <em>bar</em>.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">bar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"bar from libfoo 1.2</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Notably, they are each missing the other respective function.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">src
+├── a
+│   ├── ext.c
+│   ├── __init__.py
+│   └── libfoo
+│       ├── foo.c
+│       ├── foo.h
+│       ├── libfoo.so
+│       └── Makefile
+└── b
+    ├── ext.c
+    ├── __init__.py
+    └── libfoo
+        ├── foo.c
+        ├── foo.h
+        ├── libfoo.so
+        └── Makefile
+</span></code></pre></div></div>
+
+<p>Both C extensions get build and list needing <strong>libfoo</strong> as a shared object dependency.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">patchelf --print-needed a/ext.cpython-311-x86_64-linux-gnu.so 
+libfoo.so
+libc.so.6
+
+patchelf --print-needed b/ext.cpython-311-x86_64-linux-gnu.so 
+libfoo.so
+libc.so.6
+</span></code></pre></div></div>
+
+<p>Trying to import both packages though results in a failure 💥.</p>
+
+<p>The problem is that only a single library with the given name <em>libfoo.so</em> can be loaded by the dynamic linker at runtime.</p>
+
+<p>It doesn’t matter if the shared objects are included in the wheel in the case of manylinux variants or found in the system. This is a diamond-dependency problem for the dependent shared library between two Python packages.</p>
+
+<p>This problem is made even worse in that Python packages <em>include no information about the version of their dependent shared libraries</em>. <strong>Semantic versioning is a lie.</strong></p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="o">&gt;&gt;</span> import a.ext
+<span class="gp">&gt;</span><span class="o">&gt;&gt;</span> a.ext.buzz<span class="o">()</span>
+<span class="go">buzz from libfoo 1.1
+</span><span class="gp">&gt;</span><span class="o">&gt;&gt;</span> import b.ext
+<span class="go">Traceback (most recent call last):
+</span><span class="gp">  File "&lt;stdin&gt;</span><span class="s2">", line 1, in &lt;module&gt;
+</span><span class="gp">  File "/.../.venv/lib/python3.11/site-packages/root-1.1-py3.11-linux-x86_64.egg/b/__init__.py", line 1, in &lt;module&gt;</span><span class="w">
+</span><span class="go">    from b.ext import bar
+ImportError: /.../.venv/lib/python3.11/site-packages/root-1.1-py3.11-linux-x86_64.egg/b/ext.cpython-311-x86_64-linux-gnu.so:
+undefined symbol: bar
+</span></code></pre></div></div>
+<p>For most of us at the hobbyist level this may not be a problem as <em>thankfully</em> C library developers for popular packages have taken the onerous burden to making them forward and backwards compatible through the use of symbol versioning.</p>
+
+<p>As an enterprise company however whose adopted Bazel with the promise though of reproducible and hermetic builds, we’ve been grifted.</p>
+
+<p>The only true solution to this problem is to build all your software together and vendor all your dependencies so that at least you know which version of the diamond dependency problem you’ve chosen ahead of time and can plan accordingly.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Reproducibility has become a big deal. Whether it’s having higher confidence in one’s build or trying to better understand your supply chain for provenance, having an accurate view of your build graph is a must. Tools such as Bazel have picked up mainstream usage from their advocacy by large companies that use it or via similar derivatives such as Buck. These companies write &amp; proclaim how internally it’s solved many of their software development lifecycle problems. They’ve graciously open-sourced these tools for us to use so that we may also reap similar benefits. Sounds great right?]]></summary></entry></feed>

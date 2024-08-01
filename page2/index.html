@@ -1,0 +1,481 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Page 2 of 6 for Farid Zakaria’s Blog | I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.</title>
+<meta name="generator" content="Jekyll v3.9.5" />
+<meta property="og:title" content="Farid Zakaria’s Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<meta property="og:description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<link rel="canonical" href="https://fzakaria.com/page2/" />
+<meta property="og:url" content="https://fzakaria.com/page2/" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="website" />
+<link rel="prev" href="https://fzakaria.com/" />
+<link rel="next" href="https://fzakaria.com/page3" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Farid Zakaria’s Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.","headline":"Farid Zakaria’s Blog","url":"https://fzakaria.com/page2/"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Farid Zakaria's Blog
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/page2/">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <div class="media">
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-05-03
+      </span>
+      <span class="title">
+        
+        <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">Speeding up ELF relocations for store-based systems</a>
+        
+      </span>
+    </h2>
+    
+    <p>Since the introduction of Nix and similar store-based systems such as <a href="https://guix.gnu.org/">Guix</a> or <a href="https://spack.io/">Spack</a>, I have been fascinated about finding improvements that take advantage of the new paradigms they introduce. Linux distributions are traditionally dynamic in nature, with shared libraries and executables being linked at runtime. Store-based systems, however, are static in nature, with all dependencies being resolved at build time. This determinism allows for not only reproducibility but also the ability to optimize various aspects of our toolchain.</p>
+
+<p>Work that I’ve have <a href="/2022/03/14/shrinkwrap-taming-dynamic-shared-objects.html">written previously</a> about shows that there are worthwhile speedups that can be gained. While previously, I focused on improving the <em>stat storm</em> that occurs when resolving dependencies, I have recently been looking at speeding up the ELF relocations that occur when executing a program.</p>
+
+<blockquote>
+  <p>You can check out my publication <a href="https://arxiv.org/abs/2211.05118">Mapping Out the HPC Dependency Chaos</a> about the development of <a href="https://github.com/fzakaria/shrinkwrap">shrinkwrap</a> if you are interested in the topic.</p>
+</blockquote>
+
+<p>Extending the idea further, I have been looking at how we can optimize the ELF relocations that occur when executing a program. In this post, I will discuss the basics of ELF relocations and symbol resolution and how we can optimize these processes for store-based systems.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-03-03
+      </span>
+      <span class="title">
+        
+        <a href="/2024/03/03/visualizing-github-workflow-run-length-time.html">Visualizing GitHub workflow run length time</a>
+        
+      </span>
+    </h2>
+    
+    <p>GitHub Actions have now become an integral part of many open source projects, providing a free &amp; powerful CI system. I am surprised however there is no provided way to visualize the run length time (or other meaningful metrics) of your actions.</p>
+
+<blockquote>
+  <p>🕵️ I did find a few other third-party solutions that either extract the data or themselves can be added <a href="https://github.com/marketplace/actions/workflow-telemetry">as a step</a> to your workflow to get similar visualizations. I wanted something <em>simpler</em>.</p>
+</blockquote>
+
+<p>I previously wrote a post about <a href="/2024/02/27/hermetic-but-at-what-cost.html">the cost of runfiles</a> which had become evident when we noticed our GitHub Bazel build workflow had slowed down by 50x.</p>
+
+<p>After landing my fix, I wanted to <em>visualize</em> the run length time of the action; and objectively see if my fix had worked. <em>Trust <strong>but</strong> verify</em>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-02-27
+      </span>
+      <span class="title">
+        
+        <a href="/2024/02/27/hermetic-but-at-what-cost.html">Hermetic, but at what cost?</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p><strong>tl;dr;</strong> This is a little story about how making Bazel <em>hermetic</em> can lead to some unexpected consequences. In this particular case, it caused our GitHub action to slow down by 50x from 1 minute to over 60 minutes.</p>
+
+  <p>The fix recommended was to apply the following to your <code class="language-plaintext highlighter-rouge">.bazelrc</code> – I <strong>needed</strong> to understand why however.</p>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Disabling runfiles links drastically increases performance in slow disk IO situations
+# Do not build runfile trees by default. If an execution strategy relies on runfile
+# symlink tree, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/&gt; &gt; issues/6627
+# and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
+build --nobuild_runfile_links
+test --nobuild_runfile_links
+
+# https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles
+build --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
+</code></pre></div>  </div>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-01-14
+      </span>
+      <span class="title">
+        
+        <a href="/2024/01/14/abusing-github-as-a-pypi-server.html">Abusing GitHub as a PyPI server</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>I did not discover or invent this trick .</p>
+</blockquote>
+
+<p>I wanted to make available a Python wheel to some developers but I did not want to publish it on PyPI for a variety of reasons.</p>
+<ol>
+  <li>I am not the original author of the code and I did not want to take credit for it.</li>
+  <li>I wanted to include the git commit hash in the version number which PyPI does not allow.</li>
+</ol>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2023-09-11
+      </span>
+      <span class="title">
+        
+        <a href="/2023/09/11/quick-insights-using-sqlelf.html">Quick insights using sqlelf</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>Please checkout the <a href="https://github.com/fzakaria/sqlelf">sqlelf</a> repository and give me your feedback.</p>
+</blockquote>
+
+<p>I wrote in my earlier <a href="/2023/03/19/sqlelf-and-20-years-of-nix.html">post</a> about releasing <a href="https://github.com/fzakaria/sqlelf">sqlelf</a>.
+I had the hunch that the existing tooling we have to interface with our object formats, such as ELF, are antiquated and ill specified.</p>
+
+<p>Declarative languages, such as SQL, are such a wonderful abstraction to articulate over data layouts and let you reason about <em>what you want</em> rather than <em>how to get it</em>.</p>
+
+<p>Since continuing to noodle 👨‍💻 on the project, I’ve been pleasantly surprised at some of the introspection, specifically with respect to symbols, I’ve been able
+to accomplish with SQL that would have been a pain using traditional tools.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2023-03-19
+      </span>
+      <span class="title">
+        
+        <a href="/2023/03/19/sqlelf-and-20-years-of-nix.html">sqlelf and 20 years of Nix</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>If you want to skip ahead, please checkout the <a href="https://github.com/fzakaria/sqlelf">sqlelf</a> repository and give me your feedback.</p>
+</blockquote>
+
+<p>🎉 We are celebrating 20 years of <a href="https://nixos.org">Nix</a> 🎉</p>
+
+<p>Within that 20 years Nix has ushered in a new paradigm of how to build software reliably that is becoming more ubiquitous in the software industry.
+It has inspired imitators such as <a href="https://spack.io/">Spack</a> &amp; <a href="https://guix.gnu.org/">Guix</a>.</p>
+
+<p>Given the concepts introduced by Nix and it’s willingnes to eschew some fundamental Linux concepts such as the Filesystem Hierarchy Standard.</p>
+
+<p>I can’t help but think <em>has Nix gone far enough within the 20 years?</em></p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2022-09-12
+      </span>
+      <span class="title">
+        
+        <a href="/2022/09/12/making-runpath-redundant-for-nix.html">Making RUNPATH redundant for Nix</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This post is a direct translation of Harmen Stoppel’s <a href="https://stoppels.ch/2022/08/04/stop-searching-for-shared-libraries.html">blog</a> on the same subject for Nix. He has also contributed a fix to <a href="http://spack.io/">Spack</a>.</p>
+
+  <p>Please check out <a href="https://github.com/fzakaria/nix-harden-needed">https://github.com/fzakaria/nix-harden-needed</a> for my solution for the Nix ecosystem.</p>
+</blockquote>
+
+<p>Nix and other store-like systems (i.e. Guix or Spack), resolve all their dependencies within their store (<em>/nix/store</em>) to enforce hermiticity. They leverage for the most part <em>RUNPATH</em> which is a field on the ELF executable to instruct the
+dynamic linker where to discover the libraries – as opposed to searching default search paths like <em>/lib</em>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ which ruby
+/nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/bin/ruby
+
+</span><span class="gp">❯ patchelf --print-rpath $</span><span class="o">(</span>which ruby<span class="o">)</span>
+<span class="go">/nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/lib:/nix/store/r90cncsaa519pwqpijg7ii4rkcmwjn6h-zlib-1.2.12/lib:/nix/store/bvy2z17rzlvkx2sj7fy99ajm853yv898-glibc-2.34-210/lib
+</span></code></pre></div></div>
+
+<p>I have a paper about to published for <a href="https://sc22.supercomputing.org/">SuperComputing 2022</a> (please reach out if you’d like early copy) that demonstrates there is a non-trivial cost to continuously searching needlessly through
+the <em>RUNPATH</em>. In fact, I have <a href="/2022/03/14/shrinkwrap-taming-dynamic-shared-objects.html">written previously</a> about the specific costs and our tool <a href="https://github.com/fzakaria/shrinkwrap">Shrinkwrap</a> that can avoid it.</p>
+
+<p>Although Shrinkwrap is one approach for a solution, it is merely a bandaid over the existing problem.</p>
+
+<p>Can systems like Nix do more to solve this problem?</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2022-03-14
+      </span>
+      <span class="title">
+        
+        <a href="/2022/03/14/shrinkwrap-taming-dynamic-shared-objects.html">Shrinkwrap: Taming dynamic shared objects</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a blog post of a paper I have submitted for a <a href="https://catalog.ucsc.edu/en/Current/General-Catalog/Courses/CSE-Computer-Science-and-Engineering/Graduate/CSE-215">UCSC course</a> project.</p>
+
+  <p>If you are interested in the code check out <a href="https://github.com/fzakaria/shrinkwrap">https://github.com/fzakaria/shrinkwrap</a></p>
+</blockquote>
+
+<p>One of the fundamental data management units within a Linux system are the shared object files that are loaded into memory by dynamically linked
+processes at startup. The mechanism and approach to which dynamic linking is done has <strong>not changed</strong> since it’s inception however software has become
+increasingly complex.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2022-01-05
+      </span>
+      <span class="title">
+        
+        <a href="/2022/01/05/computing-all-output-paths-for-every-attribute-in-nixpkgs.html">Computing all output paths for every attribute in Nixpkgs</a>
+        
+      </span>
+    </h2>
+    
+    <p>Nix is an amazing tool, unfortunately doing <em>simple</em> things can be quite challenging.</p>
+
+<p>This is a little write-up of my attempt to try and accomplish what I would have thought to be a <em>simple</em> thing; computing all store paths for every attribute in <a href="https://github.com/NixOS/nixpkgs/">nixpkgs</a>.</p>
+
+<p>Why would I want to do such a thing?</p>
+
+<p>I had some <em>/nix/store</em> entries on my system and I wanted to revisit the <strong>exact</strong> nixpkgs commit with which it was built to debug something.
+Without this <a href="https://en.wikipedia.org/wiki/Reverse_index">reverse index</a> you are pretty much out of luck for figuring it out.</p>
+
+<blockquote>
+  <p>I want to give early <em>shoutout</em> to other similar tools in this space that let you do meta searches over nixpkgs such as <a href="https://lazamar.co.uk/nix-versions/">Nix Package Versions</a> and <a href="https://pkgs.on-nix.com/">Pkgs on Nix</a>.</p>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-09-10
+      </span>
+      <span class="title">
+        
+        <a href="/2021/09/10/using-an-overlay-filesystem-to-improve-nix-ci-builds.html">Using an overlay filesystem to improve Nix CI builds</a>
+        
+      </span>
+    </h2>
+    
+    <p>Using Nix in our CI system has been a huge <em>boon</em>. Through Nix we have a level of guarantee of reproducibility between our local development environment and our CI platform. 🙌</p>
+
+<p>Our CI infrastructure leverages containers (don’t they all now?) for each job and we explored different solutions to reduce the cost of constantly downloading the <em>/nix/store</em> necessary for the build.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+
+	
+	    <div class="pull-left">
+	        <a href="/" class="btn btn-primary">
+	            <span class="icon">
+	              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M192 127.338v257.324c0 17.818-21.543 26.741-34.142 14.142L29.196 270.142c-7.81-7.81-7.81-20.474 0-28.284l128.662-128.662c12.599-12.6 34.142-3.676 34.142 14.142z"/></svg>
+	            </span>
+	            Page 1
+	        </a>
+	    </div>
+	
+
+	
+    <div class="pull-right">
+        <a href="/page3" class="btn btn-primary">
+            Page 3
+            <span class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"/></svg>
+            </span>
+        </a>
+    </div>
+    
+</div>
+<div class="clearfix"></div>
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2024-07-31<br />
+      <a href="/2024/07/31/automatic-nix-flake-follows.html">Automatic Nix flake follows</a>
+    </div>
+    
+    <div class="post-stub">
+      2024-07-29<br />
+      <a href="/2024/07/29/import-but-don-t-import-your-nixos-modules.html">Import but don't import your NixOS modules</a>
+    </div>
+    
+    <div class="post-stub">
+      2024-07-28<br />
+      <a href="/2024/07/28/nixos-option-inspection.html">NixOS Option Inspection</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/page2/index.html">
+      Improve this page @ 1fcfe07
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>
