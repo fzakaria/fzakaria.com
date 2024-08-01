@@ -134,6 +134,8 @@ Turns out if we make the nodes references by the `inputs` in `roots` (our top le
 Let's apply _all-follow.py_ and see what happens.
 
 ```console
+❯ python all-follow.py flake.lock -i
+
 ❯ nix eval "#versions"
 {
   a = {nixpkgs = "24.05.20240729.12bf098";};
