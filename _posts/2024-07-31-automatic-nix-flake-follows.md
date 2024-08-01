@@ -36,7 +36,7 @@ Writing all those follows can get real teadious 🥱, and it's tough to even kno
 
 Surely there has to be a better way? 🙏
 
-Well take a look at [nix-auto-follow](github.com/fzakaria/nix-auto-follow) 🥳
+Well take a look at [nix-auto-follow](https://github.com/fzakaria/nix-auto-follow) 🥳
 
 Simply run the script which will modify your _flake.lock_ file. Commit the change and voilà!
 
