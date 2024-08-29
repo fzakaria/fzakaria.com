@@ -18,7 +18,7 @@ A surprising implementation detail I recently learned was how Bazel does depende
 To demonstrate, let's see a quick example. I have two sample workspaces that export a single target `//:version` that will either have 1.0 or 2.0.
 
 
-```starlark
+```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 http_archive(
@@ -58,7 +58,7 @@ So in this example it looks like it's _first version wins_.
 
 Let's try another slightly different example.
 
-```starlark
+```python
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
