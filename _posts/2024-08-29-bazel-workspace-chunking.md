@@ -107,7 +107,7 @@ I found references to this on some GitHub issues & was helped out by [@Wyverald]
 
 If you want to play with the example above, I've uploaded it to [bazel-workspace-chunking](https://github.com/fzakaria/bazel-workspace-chunking) on GitHub.
 
-❗ Don't trust `bazel query //external:workspace --out[out build` to see the version.
+❗ Don't trust `bazel query //external:workspace --output build` to see the version.
 
 You might be tempted to run the above query but it gives **incorrect** results.
 
