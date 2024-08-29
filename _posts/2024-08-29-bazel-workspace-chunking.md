@@ -38,8 +38,8 @@ http_archive(
 
 What is the version of `@workspace//:version` you expect ? 🤔
 
-```
-[nix-shell:/tmp/example-workspace]$ bazel build @workspace//:version
+```console
+$ bazel build @workspace//:version
 INFO: Analyzed target @workspace//:version (1 packages loaded, 1 target configured).
 INFO: Found 1 target...
 Target @workspace//:version up-to-date:
@@ -48,7 +48,7 @@ INFO: Elapsed time: 0.078s, Critical Path: 0.00s
 INFO: 1 process: 1 internal.
 INFO: Build completed successfully, 1 total action
 
-[nix-shell:/tmp/example-workspace]$ cat  bazel-bin/external/workspace/VERSION
+$ cat  bazel-bin/external/workspace/VERSION
 1.0
 ```
 
@@ -79,8 +79,8 @@ http_archive(
 What is the version of `@workspace//:version` you expect now ? 🤔
 
 
-```
-[nix-shell:/tmp/example-workspace]$ bazel build @workspace//:version
+```console
+$ bazel build @workspace//:version
 INFO: Analyzed target @workspace//:version (1 packages loaded, 2 targets configured).
 INFO: Found 1 target...
 Target @workspace//:version up-to-date:
@@ -89,7 +89,7 @@ INFO: Elapsed time: 0.145s, Critical Path: 0.02s
 INFO: 2 processes: 1 internal, 1 linux-sandbox.
 INFO: Build completed successfully, 2 total actions
 
-[nix-shell:/tmp/example-workspace]$ cat  bazel-bin/external/workspace/VERSION
+$ cat  bazel-bin/external/workspace/VERSION
 2.0
 ```
 
@@ -106,3 +106,37 @@ If you ever face an issue of having the wrong version of an external repoitory, 
 I found references to this on some GitHub issues & was helped out by [@Wyverald](https://github.com/Wyverald) on Slack but thought a clear concise example to demonstrate it was interesting.
 
 If you want to play with the example above, I've uploaded it to [bazel-workspace-chunking](https://github.com/fzakaria/bazel-workspace-chunking) on GitHub.
+
+❗ Don't trust `bazel query //external:workspace --outout build` to see the version.
+
+You might be tempted to ru nthe above query but it gives **incorrect** results.
+
+```console
+$ bazel build @workspace//:version
+INFO: Analyzed target @workspace//:version (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+Target @workspace//:version up-to-date:
+  bazel-bin/external/workspace/VERSION
+INFO: Elapsed time: 0.057s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+
+$ cat  bazel-bin/external/workspace/VERSION
+1.0
+
+$ bazel query //external:workspace --output build
+# /tmp/example-workspace/WORKSPACE.bazel:13:13
+http_archive(
+  name = "workspace",
+  url = "file:///tmp/example-workspace/workspace-2.0.tar.gz",
+  strip_prefix = "workspace-2.0",
+)
+# Rule workspace instantiated at (most recent call last):
+#   /tmp/example-workspace/WORKSPACE.bazel:13:13 in <toplevel>
+# Rule http_archive defined at (most recent call last):
+#   /home/fmzakari/.cache/bazel/_bazel_fmzakari/c72d1df8de0701fb5f44d35dec4b70b5/external/bazel_tools/tools/build_defs/repo/http.bzl:372:31 in <toplevel>
+
+Loading: 0 packages loaded
+```
+
+Even when the `VERSION` was still **1.0**, the query simply gives back the last version cited in the `WORKSPACE` file.
