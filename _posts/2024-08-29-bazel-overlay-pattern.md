@@ -86,9 +86,9 @@ $ tree $(bazel info output_base)/external/hello-world
 /home/fmzakari/.cache/bazel/_bazel_fmzakari/738ca8ce4d
 1d8ce828e952fe7b9fdd95/external/hello-world
 ├── cmd
-│   ├── BUILD.bazel -> /tmp/example-overlay-overlay/ba
+│   ├── BUILD.bazel -> /tmp/hello-world-overlay/ba
 zel-overlay/cmd/BUILD.bazel
-│   └── hello.c -> /tmp/example-overlay-overlay/third_party/hello-world/cmd/hello.c
+│   └── hello.c -> /tmp/hello-world-overlay/third_party/hello-world/cmd/hello.c
 └── WORKSPACE
 ```
 
