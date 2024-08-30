@@ -92,6 +92,19 @@ $ tree $(bazel info output_base)/external/hello-world
 
 It's as if the two repositories were merged! 😎
 
+```
+$ bazel run @hello-world//cmd:hello
+INFO: Analyzed target @hello-world//cmd:hello (24 pack ages loaded, 90 targets configured).
+INFO: Found 1 target...
+Target @hello-world//cmd:hello up-to-date:
+  bazel-bin/external/hello-world/cmd/hello
+INFO: Elapsed time: 0.068s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/external/hello-world/cmd/hello
+Hello, World!
+```
+
 This is a surprising powerful pattern that lets you explore adding the Bazel build system for a separate repository. The benefit to doing in a separate repository vs. a branch is that it's easy to track `HEAD`. If your `third_party` is a git-submodule, you can keep moving the submodule forward and validating the build succeeds.
 
 I'm moving forward with this pattern to explore upstreaming `$DAYJOB$` Bazel build system to the open source repository. 🙌
