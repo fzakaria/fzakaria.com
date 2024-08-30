@@ -50,7 +50,7 @@ hello_world-overlay/
 ├── configure.bzl
 ├── overlay_directories.py
 ├── third_party
-│   └── hello-world-> /tmp/hello-world
+│   └── hello_world-> /tmp/hello_world
 └── WORKSPACE
 ```
 
@@ -74,7 +74,7 @@ load(":configure.bzl", "overlay_configure")
 overlay_configure(
     name = "hello-world",
     overlay_path = "bazel-overlay",
-    src_path = "./third_party/hello-world",
+    src_path = "./third_party/hello_world",
 )
 ```
 
@@ -85,8 +85,8 @@ $ tree $(bazel info output_base)/external/hello-world
 
 /home/fmzakari/.cache/bazel/_bazel_fmzakari/738ca8ce4d1d8ce828e952fe7b9fdd95/external/hello-world
 ├── cmd
-│   ├── BUILD.bazel -> /tmp/hello-world-overlay/bazel-overlay/cmd/BUILD.bazel
-│   └── hello.c -> /tmp/hello-world-overlay/third_party/hello-world/cmd/hello.c
+│   ├── BUILD.bazel -> /tmp/hello_world-overlay/bazel-overlay/cmd/BUILD.bazel
+│   └── hello.c -> /tmp/hello_world-overlay/third_party/hello_world/cmd/hello.c
 └── WORKSPACE
 ```
 
