@@ -83,11 +83,9 @@ When you try to build the external repository `@hello-world//`, the repository r
 ```bash
 $ tree $(bazel info output_base)/external/hello-world
 
-/home/fmzakari/.cache/bazel/_bazel_fmzakari/738ca8ce4d
-1d8ce828e952fe7b9fdd95/external/hello-world
+/home/fmzakari/.cache/bazel/_bazel_fmzakari/738ca8ce4d1d8ce828e952fe7b9fdd95/external/hello-world
 ├── cmd
-│   ├── BUILD.bazel -> /tmp/hello-world-overlay/ba
-zel-overlay/cmd/BUILD.bazel
+│   ├── BUILD.bazel -> /tmp/hello-world-overlay/bazel-overlay/cmd/BUILD.bazel
 │   └── hello.c -> /tmp/hello-world-overlay/third_party/hello-world/cmd/hello.c
 └── WORKSPACE
 ```
