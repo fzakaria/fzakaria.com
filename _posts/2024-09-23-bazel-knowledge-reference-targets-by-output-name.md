@@ -9,7 +9,7 @@ In an attempt to try and record some of the smaller knowledge brain gains on usi
 
 Did you know you can reference an output file directly by name or the target name that produced it?
 
-```starlark
+```python
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 
 genrule(
