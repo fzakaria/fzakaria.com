@@ -13,7 +13,7 @@ Did you know you can reference an output file directly by name or the target nam
 load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 
 genrule(
-    name = "file.txt",
+    name = "src_file",
     outs = ["file.txt"],
     cmd = "echo 'Hello, Bazel!' > $@",
 )
