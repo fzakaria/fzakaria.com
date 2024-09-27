@@ -15,7 +15,7 @@ Let's consider this simple action graph in Bazel.
 
 <!--more-->
 
-Bazel constructs a [action key](https://bazel.build/reference/glossary#action-cache) for each action which we can simplify down to consituting the Starlark of the action itself & the SHA256 of the outputs of all the dependencies (i.e. srcs or deps).
+Bazel constructs an [action key](https://bazel.build/reference/glossary#action-cache) for each action which we can simplify down to consituting: the Starlark of the action itself & the SHA256 of the outputs of all the dependencies (i.e. srcs or deps).
 
 Let's consider a change to _File D_, which would mean that the action key for _Action C_ now differs.
 
