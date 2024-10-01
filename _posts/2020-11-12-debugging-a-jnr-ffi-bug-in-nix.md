@@ -7,7 +7,7 @@ excerpt_separator: <!--more-->
 
 > This is a write-up of an issue I discovered when using more advanced features of Java within a Nix environment. Please refer to the GitHub issue [#103493](https://github.com/NixOS/nixpkgs/issues/103493) to see any ongoing process
 
-I have been onboarding several engineers to doing their development workflow using Nix; promising all the benefits of hermeticity & reproducibility. The biggest challenge is making sure that onboarding continues to be _seemless_.
+I have been onboarding several engineers to doing their development workflow using Nix; promising all the benefits of hermeticity & reproducibility. The biggest challenge is making sure that onboarding continues to be _seamless_.
 
 Therefore it's 🚨 *all hands on deck* when someone has encountered a SIGSEGV; especially since the environment is within the JVM.
 ```bash

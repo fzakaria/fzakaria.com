@@ -29,7 +29,7 @@ _Sort of_. The `BUILD` files introduced into the registry either wrap the existi
 
 > I have created the project [bazel-overlay-example](https://github.com/fzakaria/bazel-overlay-example) that you can checkout on GitHub for reference.
 
-Let's run throgh a very minimal example to understand how this work.
+Let's run through a very minimal example to understand how this work.
 We have a C project, "hello_world", with a single file.
 
 ```

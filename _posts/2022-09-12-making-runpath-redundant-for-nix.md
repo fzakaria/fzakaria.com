@@ -32,7 +32,7 @@ Can systems like Nix do more to solve this problem?
 Nix and similar systems have the benefit of knowing ahead of time the exact path for every dependency. They are also particularly well positioned to make deep impactful changes because they rebuild the world __bottom up__, starting from libc.
 
 
-Although these systems are radical departures from traditional Linux distributions and try to rebel against the Filesystem Hierachy Standard, they nevertheless rely on fundamental tooling and control knobs such as _RUNPATH_ to bandaid over the solution.
+Although these systems are radical departures from traditional Linux distributions and try to rebel against the Filesystem Hierarchy Standard, they nevertheless rely on fundamental tooling and control knobs such as _RUNPATH_ to bandaid over the solution.
 
 🧐 Let's make the use of _RUNPATH_ in Nix obsolete and unnecessary.
 
@@ -42,7 +42,7 @@ We can do this through the observation that GCC will propagate the _soname_ stor
 Here is a small example to demonstrate
 ```
 # Let's build our library with an absolute path for soname
-# notice I have set the soname to an absoulte path
+# notice I have set the soname to an absolute path
 ❯ gcc -shared -o libf.so -Wl,-soname,/nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so -x c - <<EOF
         #include <stdio.h>
         void f() { puts("hello world"); }

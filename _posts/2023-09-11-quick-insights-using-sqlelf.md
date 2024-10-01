@@ -27,7 +27,7 @@ A typical question someone may ask themselves though is:
 
 __Which library that I load is providing _function foo_?__
 
-This is a worthwhile question because you would like to know which shared object is not only providing the symbol definition but also which the linker (`ld.so`) choses
+This is a worthwhile question because you would like to know which shared object is not only providing the symbol definition but also which the linker (`ld.so`) chooses
 to link against at runtime.
 
 The _state of the art_ (prior to sqlelf) of how to retrieve this diagnostic information is using `LD_DEBUG` environment variable and trolling through the large dump of logs it emits. 🤦
@@ -100,7 +100,7 @@ LIMIT 10"
 
 The reality of `LD_DEBUG` however is that it usefulness came in knowing the _final resolution_ of a given symbol.
 
-ELF files are free to have and export any symbols and often times, wether by accident (benign) or maliciously, the same symbol may be exported by
+ELF files are free to have and export any symbols and often times, whether by accident (benign) or maliciously, the same symbol may be exported by
 multiple libraries.
 
 > This is what empowers tools such as `LD_PRELOAD` so that users can take over symbols such as `malloc` and replace them with alternative strategies.
@@ -141,7 +141,7 @@ HAVING count(*) >= 2"
 │    name    │   version   │ symbol_count │                                libraries                                │
 │ __finite   │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __finitef  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
-│ __finitel  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
+│ __finite  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __signbit  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __signbitf │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __signbitl │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
@@ -150,7 +150,7 @@ HAVING count(*) >= 2"
 │ copysignl  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ finite     │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ finitef    │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
-│ finitel    │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
+│ finite    │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ frexp      │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ frexpf     │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ frexpl     │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │

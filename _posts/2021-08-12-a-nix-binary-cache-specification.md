@@ -108,7 +108,7 @@ Cool 😎! Looks like we computed the correct hash for the _FileHash_.
 > This is needed to shrink the necessary space to work within the POSIX filepath limits.
 > Frustratingly, [sha256sum](https://linux.die.net/man/1/sha256sum) doesn't have a base32 option.
 
-The NAR hash should be calcuated in a very similar fashion.
+The NAR hash should be calculated in a very similar fashion.
 
 Let's try by piping it into [unxz](https://linux.die.net/man/1/unxz).
 

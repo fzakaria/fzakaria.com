@@ -26,7 +26,7 @@ This was an interesting choice for a few reasons:
 
 We decided to seek out alternatives where we can remove the prebuild _/nix/store_ from the container but still reduce the cold-boot cost for CI jobs.
 
-The **caveat** to the solution we seeked is that the Docker image still **installed** Nix which meant it created a _/nix/store_ entry and the necessary _~/.nix_profile_ symlinks.
+The **caveat** to the solution we sought is that the Docker image still **installed** Nix which meant it created a _/nix/store_ entry and the necessary _~/.nix_profile_ symlinks.
 
 > [Overlayfs](https://github.com/torvalds/linux/commit/e9be9d5e76e34872f0c37d72e25bc27fe9e2c54c) allows one, usually read-write, directory tree to be
 overlaid onto another, read-only directory tree.  All modifications

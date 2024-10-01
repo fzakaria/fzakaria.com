@@ -50,7 +50,7 @@ Here let's create our main top-level flake. You can think of this as your applic
 
 ```nix
 {
-  description = "Top Levle Flake";
+  description = "Top Level Flake";
 
   inputs = {
     a.url = path:./a;
@@ -103,7 +103,7 @@ We correcltly see at the start the two different versions of _nixpkgs_.
 }
 ```
 
-If we peek in our `flake.lock` file we see that `nixpkgs` is listed twice as an _inputs_ (`nixpkgs` & `nixpkgs_2`) and that they reference nodess that exist.
+If we peek in our `flake.lock` file we see that `nixpkgs` is listed twice as an _inputs_ (`nixpkgs` & `nixpkgs_2`) and that they reference nodes that exist.
 
 ```json
 {

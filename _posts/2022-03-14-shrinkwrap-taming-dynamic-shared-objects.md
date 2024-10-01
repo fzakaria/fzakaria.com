@@ -44,7 +44,7 @@ $ ldd /nix/store/vvxcs4f8x14gyahw50ssff3sk2dij2b3-emacs-27.2/bin/.emacs-27.2-wra
 103
 ```
 
-💡 When faced with a recurring problem, often the solution is to cache the previous answer to avoid unecessary work.
+💡 When faced with a recurring problem, often the solution is to cache the previous answer to avoid unnecessary work.
 
 Shrinkwrap adopts this approach by freezing the required dependencies directly into the `DT_NEEDED` section of the binary by having it point to an absolute path. The
 transitive dependency list is also lifted to the top-level binary to simplify auditing the required dependencies.
@@ -77,7 +77,7 @@ $ patchelf --print-needed emacs_stamped
 ```
 
 Applying Shrinkwrap resulted in a large reduction in syscalls, which equates to a **36x speedup**. The absolute amount
-recovered may seem negligible however this unecessary penalty is paid on every process invocation, and on every machine executing the binary.
+recovered may seem negligible however this unnecessary penalty is paid on every process invocation, and on every machine executing the binary.
 
 | Program      | Calls(stat/openat)     | Time (Seconds) |
 | :---:           | :---:               | :---:          |
@@ -96,7 +96,7 @@ Shrinkwrap relies on the ability for a dynamic linker to deduplicate libraries w
 
 Nothing in Shrinkwrap assumes any Nix specifics and it may also be integrated into other store-like systems as well such as Guix and Spack.
 
-It is not yet integrated into Nixpkgs but I woud love feedback. 😊
+It is not yet integrated into Nixpkgs but I would love feedback. 😊
 
 ## Philosophical Questions
 

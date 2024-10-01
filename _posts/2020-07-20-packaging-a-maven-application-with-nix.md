@@ -49,7 +49,7 @@ mkDerivation {
     buildInputs = [ jdk11_headless maven ];
     src = ./.;
     buildPhase = ''
-      while mvn package -Dmaven.repo.local=$out/.m2 -Dmaven.wagon.rto=5000; [ $? = 1 ]; do
+      while mvn package -Dmaven.repo.local=$out/.m2 -Dmaven.wagon.to=5000; [ $? = 1 ]; do
         echo "timeout, restart maven to continue downloading"
       done
     '';

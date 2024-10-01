@@ -13,7 +13,7 @@ I'm leaving my tiny module that I'm using to enable my Framework Laptop running 
 
 <!--more-->
 
-### Prequisites
+### Prerequisites
 
 1. Using a Yubikey for SSH access
 

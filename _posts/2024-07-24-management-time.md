@@ -130,6 +130,6 @@ WHERE es.symbol_name IS NULL AND
 
 ℹ️ SQL is a powerful language to introspect binaries. Check out [sqlelf](https://github.com/fzakaria/sqlelf) for a more general utility. I have also published a paper on the benefits of using SQL to drive ELF analysis; [sqlelf: a SQL-centric Approach to ELF Analysis](https://arxiv.org/abs/2405.03883).
 
-I have only begun to scratch the surface of the possibilities of _management time_. Having memoized linking information frozen within something like the _/nix/store_ for every package availble within [nixpkgs](https://github.com/NixOS/nixpkgs) opens pretty imaginative workflows that no other distribution could compete with 🤯.
+I have only begun to scratch the surface of the possibilities of _management time_. Having memoized linking information frozen within something like the _/nix/store_ for every package available within [nixpkgs](https://github.com/NixOS/nixpkgs) opens pretty imaginative workflows that no other distribution could compete with 🤯.
 
 We've all taken the underpinnings of our toolchain for granted. It's true we are building on the shoulders of giants, but it's imperative to look back and rethink decisions that may have existed for decades especially in-light of newer development models (i.e. NixOS) that offer us a chance to radically deviate from pre-existing conventions.

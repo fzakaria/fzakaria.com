@@ -64,7 +64,7 @@ Now when you start your shell, via an interactive session, it will automatically
 
 **AND**
 
-Your `$SHELL` remains bash, which means that any non-interactive use by programs will get the common bash they unfortunately implicilty rely on.
+Your `$SHELL` remains bash, which means that any non-interactive use by programs will get the common bash they unfortunately implicitly rely on.
 
 ```console
 ❯ ps -p $fish_pid

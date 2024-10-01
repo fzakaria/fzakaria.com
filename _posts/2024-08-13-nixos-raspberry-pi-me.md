@@ -10,7 +10,7 @@ dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine.
 
 Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh.
 
-I have had always a positive experience with [Ubiquiti](https://www.ui.com/introduction) line of products. I installed two new AP (access points) and setup a _beautiful_ home rack server that is _completely unecessary_ since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲.
+I have had always a positive experience with [Ubiquiti](https://www.ui.com/introduction) line of products. I installed two new AP (access points) and setup a _beautiful_ home rack server that is _completely unnecessary_ since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲.
 
 <!--more-->
 
@@ -90,7 +90,7 @@ the following command which then copies the _/nix/store_ closure and activates t
     # Also don't use the vendored Linux kernel and just use the regular one.
     "${modulesPath}/installer/sd-card/sd-image-aarch64.nix"
     ../../modules/nix.nix
-    # Feedback from Matrix was to disable this and it's unecessary unless you are using
+    # Feedback from Matrix was to disable this and it's unnecessary unless you are using
     # some esoteric hardware.
     inputs.nixos-hardware.nixosModules.raspberry-pi-4
   ];
