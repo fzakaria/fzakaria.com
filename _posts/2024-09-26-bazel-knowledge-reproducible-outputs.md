@@ -15,7 +15,7 @@ Let's consider this simple action graph in Bazel.
 
 <!--more-->
 
-Bazel constructs an [action key](https://bazel.build/reference/glossary#action-cache) for each action which we can simplify down to consituting: the Starlark of the action itself & the SHA256 of the outputs of all the dependencies (i.e. srcs or deps).
+Bazel constructs an [action key](https://bazel.build/reference/glossary#action-cache) for each action which we can simplify down to constituting: the Starlark of the action itself & the SHA256 of the outputs of all the dependencies (i.e. srcs or deps).
 
 Let's consider a change to _File D_, which would mean that the action key for _Action C_ now differs.
 
@@ -125,6 +125,6 @@ override r-xr-xr-x fzakaria/wheel for bazel-bin/output.zip? y
 🙌  YES! As expected we now only re-run the _output_zip_ action and the final action
 can be skipped.
 
-We now have our graph reproducible in a way that can help Bazel give us incremental rebuilds by skipping portions of the grpah. 🥳
+We now have our graph reproducible in a way that can help Bazel give us incremental rebuilds by skipping portions of the graph. 🥳
 
 If reproducible builds interest you, I _highly_ recommend you check out the wealth of information on the subject by the [Reproducible Builds Group](https://reproducible-builds.org/docs/). They've documented all the various intricate ways they discovered software builds introduce nondeterminism into the build.

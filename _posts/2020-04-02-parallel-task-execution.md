@@ -74,11 +74,11 @@ The goal would be to process the list of tasks in _topological order_; however d
 
 A non-parallel topological walk may result in `d -> b -> c -> a` which would take 4 _units_.
 
-However if we were to optimize the processing it would be posssible to do it
+However if we were to optimize the processing it would be possible to do it
 in `[d, c] -> [b] -> [a]`; 3 _units_.
 
 Topological sort is well understood[^1], however I was not able to find online
-a succint code snippet for doing so in parallel.
+a succinct code snippet for doing so in parallel.
 
 {::nomarkdown}
 <div style="clear: both"/>
@@ -98,7 +98,7 @@ executor = construct an executor service
 # unless the grap you are using is thread safe
 mutex = construct mutex
 
-mutex.sychronize do
+mutex.synchronize do
     # keep looping until the graph is empty
     until graph.empty?
         # sinks are nodes whose outdegree is 0;
@@ -111,7 +111,7 @@ mutex.sychronize do
             executor.submit do
                 # run the task!
                 task.run
-                mutex.sychronize do
+                mutex.synchronize do
                     # remove this task from the graph
                     graph.remove_node sink
                 end

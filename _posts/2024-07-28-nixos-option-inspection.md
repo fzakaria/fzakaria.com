@@ -27,7 +27,7 @@ Imagine we have 3 modules: A, B & C
 
 ```nix
 # Module A
-# moudleA.nix
+# moduleA.nix
 {lib, ...}: {
   options = {
     a.value = lib.mkOption {

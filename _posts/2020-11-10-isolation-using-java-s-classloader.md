@@ -155,4 +155,4 @@ Ultimately, we used _ClassLoader_ as a way to create **isolation** between the c
 
 For this to work though, we must have used an _interface_ (Dog) otherwise there would be no way to perform the casting to the _Rottweiler_ implementation, since that would need to be resolved at compile time!
 
-You can do a lot of fancier stuff with _ClassLoaders_, such as even creating classes dynamically at runtime. Wow! I'll leave that as a follow-up excercise :)
+You can do a lot of fancier stuff with _ClassLoaders_, such as even creating classes dynamically at runtime. Wow! I'll leave that as a follow-up exercise :)

@@ -111,7 +111,7 @@ On a synthetic benchmark, creating 1000 shared objects each with 1000 symbols  f
 
 ![benchmark heatmap](/assets/images/benchmark_heatmap.png)
 
-A noticable speedup was seen in the established benchmark [pynamic](https://github.com/LLNL/pynamic). Pynamic is a benchmark written by Lawrence Livermore National Laboratory (LLNL) to simulate internal software written.
+A noticeable speedup was seen in the established benchmark [pynamic](https://github.com/LLNL/pynamic). Pynamic is a benchmark written by Lawrence Livermore National Laboratory (LLNL) to simulate internal software written.
 
 Similar to the prior synthetic benchmark, Pynamic creates an MPI application which starts an embedded Python interpreter and links it against a desired amount of Python modules.
 
@@ -119,7 +119,7 @@ Running the same configuration as outlined in [documentation](https://asc.llnl.g
 
 Finding real world applications beyond the software Pynamic itself may be emulating which contain 1_000_000+ symbol relocations proved challenging; but seeing the time needed to perform the relocations (26 seconds) it is understandable.
 
-Ulrich Drepper (long time glibc author) in fact devotes a large section of his guide on [How to Write Shared Libraries](https://www.cs.dartmouth.edu/~sergey/cs258/ABI/UlrichDrepper-How-To-Write-Shared-Libraries.pdf). Portions of the advice centers around shortening symbol names and being judicious about which symbols are exported to minimize the number of symbol relocations created. This optimziation technique eschews much of that advice and allows applications to scale beyond traditional limits and still appear relatively responsive in startup.
+Ulrich Drepper (long time glibc author) in fact devotes a large section of his guide on [How to Write Shared Libraries](https://www.cs.dartmouth.edu/~sergey/cs258/ABI/UlrichDrepper-How-To-Write-Shared-Libraries.pdf). Portions of the advice centers around shortening symbol names and being judicious about which symbols are exported to minimize the number of symbol relocations created. This optimization technique eschews much of that advice and allows applications to scale beyond traditional limits and still appear relatively responsive in startup.
 
 Similar to the [C10K](https://en.wikipedia.org/wiki/C10k_problem) problem faced in the earlier 2000s as the Linux kernel was attempting to scale to 10_000 connections; this work allows applications to think about scaling to 1 million symbol relocations.
 

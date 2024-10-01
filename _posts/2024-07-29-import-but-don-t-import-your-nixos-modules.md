@@ -24,7 +24,7 @@ In a [prior post]({% post_url 2024-07-28-nixos-option-inspection %}), I wrote ab
 
 Turns out, the answer in the post was _relatively simple_ and Nixpkgs has a gesture for discovering the answer via `definitionsWithLocations`.
 
-Turns out, in order to get `definitionsWithLocations` to play nice, you have to avoid a suprisingly common [footgun](https://notes.rmhogervorst.nl/post/2022/11/21/what-is-a-footgun/) 🥵.
+Turns out, in order to get `definitionsWithLocations` to play nice, you have to avoid a surprisingly common [footgun](https://notes.rmhogervorst.nl/post/2022/11/21/what-is-a-footgun/) 🥵.
 
 <!--more-->
 
