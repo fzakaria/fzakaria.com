@@ -150,7 +150,7 @@ HAVING count(*) >= 2"
 │ copysignl  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ finite     │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ finitef    │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
-│ finite    │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
+│ finitel    │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ frexp      │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ frexpf     │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ frexpl     │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
