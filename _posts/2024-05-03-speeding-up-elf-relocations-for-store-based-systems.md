@@ -69,7 +69,7 @@ Relocation section '.real.plt' at offset 0x530 contains 5 entries:
 000000004000  000600000007 R_X86_64_JUMP_SLO 0000000000000000 foo + 0
 ```
 
-There are various types of relocation structures (REL vs. REAL) and types (R_X86_64_JUMP_SLOT, R_X86_64_GLOB_DAT, etc.) that can be present in an ELF file.
+There are various types of relocation structures (REL vs. RELA) and types (R_X86_64_JUMP_SLOT, R_X86_64_GLOB_DAT, etc.) that can be present in an ELF file.
 I am concerned about JUMP_SLOT relocations, which are used to resolve function calls to shared libraries.
 
 ### Why Is Symbol Resolution Necessary?
