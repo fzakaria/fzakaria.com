@@ -1,0 +1,1207 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.9.5">Jekyll</generator><link href="https://fzakaria.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://fzakaria.com/" rel="alternate" type="text/html" /><updated>2024-10-03T10:36:24-07:00</updated><id>https://fzakaria.com/feed.xml</id><title type="html">Farid Zakaria’s Blog</title><subtitle>I&apos;m a software engineer, father and wishful amateur surfer. If you&apos;ve come seeking my political views; you&apos;ve found the wrong &lt;a href=&quot;https://fareedzakaria.com/&quot;&gt;Fareed&lt;/a&gt;.</subtitle><entry><title type="html">Bazel Knowledge: reproducible outputs</title><link href="https://fzakaria.com/2024/09/26/bazel-knowledge-reproducible-outputs.html" rel="alternate" type="text/html" title="Bazel Knowledge: reproducible outputs" /><published>2024-09-26T11:50:00-07:00</published><updated>2024-09-26T11:50:00-07:00</updated><id>https://fzakaria.com/2024/09/26/bazel-knowledge-reproducible-outputs</id><content type="html" xml:base="https://fzakaria.com/2024/09/26/bazel-knowledge-reproducible-outputs.html"><![CDATA[<p>You might hear a lot of about how Bazel is <em>“reproducible”</em> and <em>“hermetic”</em>, but what does that even mean ? 😕</p>
+
+<p>Part of what makes Bazel incredibly fast is it effectively <strong>skips work</strong> by foregoing doing portions of the graph if the inputs have not changed.</p>
+
+<p>Let’s consider this simple action graph in Bazel.</p>
+
+<p><img src="/assets/images/action_graph_bazel.png" alt="Bazel Action Graph" /></p>
+
+<!--more-->
+
+<p>Bazel constructs an <a href="https://bazel.build/reference/glossary#action-cache">action key</a> for each action which we can simplify down to constituting: the Starlark of the action itself &amp; the SHA256 of the outputs of all the dependencies (i.e. srcs or deps).</p>
+
+<p>Let’s consider a change to <em>File D</em>, which would mean that the action key for <em>Action C</em> now differs.</p>
+
+<p>At this point Bazel will decide to rerun <em>Action C</em> and will produce an output <em>SHA256-C</em>.</p>
+
+<p>If the <em>SHA256-C</em> is the exact same as before, Bazel <strong>will forgoe</strong> executing <em>Action A</em> again. 🤯</p>
+
+<blockquote>
+  <p>How often does this happen in practice? 🤔 A ton! Consider changes to comments that don’t effect the output. Bazel also considers the output hash on the target’s ABI, so in the case of C++ that might constitute the header files and in Java they strip out all private methods to create an “interface jar” (<a href="https://github.com/bazelbuild/bazel/blob/master/third_party/ijar/README.txt">ijar</a>).</p>
+</blockquote>
+
+<p>Watch out though, if you use <a href="https://bazel.build/reference/be/general#genrule">genrule</a> you can find yourself easily producing outputs that are not reproducible if nothing changes which will kill this pruning of the action graph.</p>
+
+<p>Let’s look at an example.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"output_zip"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"output.zip"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    echo 'Hello, World!' &gt; hello.txt &amp;&amp; </span><span class="se">\\</span><span class="s">
+    zip output.zip hello.txt &amp;&amp; mv output.zip $@
+    """</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello_text"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">":output_jar"</span><span class="p">],</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"hello.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    unzip $(location :output_jar) hello.txt -d $(GENDIR) </span><span class="se">\\</span><span class="s">
+    &amp;&amp; mv $(GENDIR)/hello.txt $@
+    """</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>This is a very simple setup where I’m producing a ZIP file and in in the final target unzipping it.</p>
+
+<p>ZIP files unfortunately are normally non-reproducible because they include modification timestamp information embedded in them &amp; the order the files are included are non-ordered.</p>
+
+<p>Let’s build this with Bazel. We will use the <a href="https://github.com/bazelbuild/bazel/blob/master/src/tools/execlog/README.md">execlog</a> to view all the actions that were processed.</p>
+
+<blockquote>
+  <p>The <em>execlog</em> is an output file that is generated of all the actions Bazel undertook. 
+We simply select the <em>targetLabel</em> to view the actions executed.</p>
+</blockquote>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel <span class="nt">--ignore_all_rc_files</span> build //:hello_text <span class="se">\</span>
+<span class="go">    --execution_log_json_file=/tmp/exec.log.json
+
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat</span> /tmp/exec.log.json | jq .targetLabel
+<span class="go">"//:output_zip"
+"//:hello_text"
+</span></code></pre></div></div>
+
+<p>Now let’s <strong>delete</strong> the <em>output.zip</em> file by doing <code class="language-plaintext highlighter-rouge">rm bazel-bin/output.zip</code> and
+re-run Bazel.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel <span class="nt">--ignore_all_rc_files</span> build //:hello_text <span class="se">\</span>
+<span class="go">    --execution_log_json_file=/tmp/exec.log.json
+
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat</span> /tmp/exec.log.json | jq .targetLabel
+<span class="go">"//:output_zip"
+"//:hello_text"
+</span></code></pre></div></div>
+
+<p>Both targets are still being run! 😢</p>
+
+<p>Fortunately, there are a few alternatives we can use such as <a href="https://github.com/bazelbuild/rules_pkg">rules_pkg</a> or <a href="https://github.com/bazelbuild/bazel/blob/master/tools/zip/BUILD">@bazel_tools//tools/zip:zipper</a> that has support for creating ZIP archive format in <em>a reproducible way</em>.</p>
+
+<p>Let’s modify our code now to use <code class="language-plaintext highlighter-rouge">@bazel_tools//tools/zip:zipper</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"output_zip"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"output.zip"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    echo 'Hello, World!' &gt; hello.txt &amp;&amp; </span><span class="se">\\</span><span class="s">
+    $(location @bazel_tools//tools/zip:zipper) c $@ hello.txt
+    """</span><span class="p">,</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="p">[</span><span class="s">"@bazel_tools//tools/zip:zipper"</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello_text"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">":output_zip"</span><span class="p">],</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"hello.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    unzip $(location :output_zip) hello.txt -d $(GENDIR) </span><span class="se">\\</span><span class="s">
+    &amp;&amp; mv $(GENDIR)/hello.txt $@
+    """</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>We’ve effectively done the same thing as before, but we are being more mindful about
+creating our output to be reproducible if the inputs are the same.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span><span class="nb">rm </span>bazel-bin/output.zip
+<span class="go">override r-xr-xr-x fzakaria/wheel for bazel-bin/output.zip? y
+
+</span><span class="gp">&gt;</span><span class="w"> </span>bazel <span class="nt">--ignore_all_rc_files</span> build //:hello_text <span class="se">\</span>
+<span class="go">    --execution_log_json_file=/tmp/exec.log.json
+
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat</span> /tmp/exec.log.json | jq .targetLabel
+<span class="go">"//:output_zip"
+</span></code></pre></div></div>
+
+<p>🙌  YES! As expected we now only re-run the <em>output_zip</em> action and the final action
+can be skipped.</p>
+
+<p>We now have our graph reproducible in a way that can help Bazel give us incremental rebuilds by skipping portions of the graph. 🥳</p>
+
+<p>If reproducible builds interest you, I <em>highly</em> recommend you check out the wealth of information on the subject by the <a href="https://reproducible-builds.org/docs/">Reproducible Builds Group</a>. They’ve documented all the various intricate ways they discovered software builds introduce nondeterminism into the build.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[You might hear a lot of about how Bazel is “reproducible” and “hermetic”, but what does that even mean ? 😕 Part of what makes Bazel incredibly fast is it effectively skips work by foregoing doing portions of the graph if the inputs have not changed. Let’s consider this simple action graph in Bazel.]]></summary></entry><entry><title type="html">Bazel Knowledge: Secret //external directory</title><link href="https://fzakaria.com/2024/09/25/bazel-knowledge-secret-external-directory.html" rel="alternate" type="text/html" title="Bazel Knowledge: Secret //external directory" /><published>2024-09-25T13:47:00-07:00</published><updated>2024-09-25T13:47:00-07:00</updated><id>https://fzakaria.com/2024/09/25/bazel-knowledge-secret-external-directory</id><content type="html" xml:base="https://fzakaria.com/2024/09/25/bazel-knowledge-secret-external-directory.html"><![CDATA[<p>Did you know Bazel has a <em>secret</em> <code class="language-plaintext highlighter-rouge">//external</code> package that is created that contains
+all the external repositories that are you added to <em>WORKSPACE.bazel</em> or <em>MODULE.bazel</em> ? 🤓</p>
+
+<p>Let’s start with a very minimal <em>WORKSPACE</em> that pulls in the <a href="https://www.gnu.org/software/hello/">GNU Hello</a> codebase.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:http.bzl"</span><span class="p">,</span> <span class="s">"http_archive"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"gnu_hello"</span><span class="p">,</span>
+    <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">"https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz"</span><span class="p">],</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"hello-2.10"</span><span class="p">,</span>
+    <span class="n">sha256</span> <span class="o">=</span> <span class="s">"31e066137a962676e89f69d1b65382de95a7ef7d914b8cb956f41ea72e0f516b"</span><span class="p">,</span>
+    <span class="n">build_file</span> <span class="o">=</span> <span class="s">"//third_party:gnu_hello.BUILD"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<!--more-->
+
+<p>We can query for this repository directly. You can provide any of the output types (i.e. build, label, graph) but I tend to find <em>build</em> useful to see how a transitive dependency might be defined.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel query //external:gnu_hello <span class="nt">--output</span> build
+<span class="go">
+</span><span class="gp">#</span><span class="w"> </span>/Users/fzakaria/code/playground/bazel/external-example/WORKSPACE:3:13
+<span class="go">http_archive(
+  name = "gnu_hello",
+  urls = ["https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz"],
+  sha256 = "31e066137a962676e89f69d1b65382de95a7ef7d914b8cb956f41ea72e0f516b",
+  strip_prefix = "hello-2.10",
+  build_file = "//third_party:gnu_hello.BUILD",
+)
+</span><span class="gp">#</span><span class="w"> </span>Rule gnu_hello instantiated at <span class="o">(</span>most recent call last<span class="o">)</span>:
+<span class="gp">#</span><span class="w">   </span>/Users/fzakaria/code/playground/bazel/external-example/WORKSPACE:3:13 <span class="k">in</span> &lt;toplevel&gt;
+<span class="gp">#</span><span class="w"> </span>Rule http_archive defined at <span class="o">(</span>most recent call last<span class="o">)</span>:
+<span class="gp">#</span><span class="w">   </span>/private/var/tmp/_bazel_fzakaria/33b8700aff3f6dee9e443aa52af0983c/external/bazel_tools/tools/build_defs/repo/http.bzl:382:31 <span class="k">in</span> &lt;toplevel&gt;
+</code></pre></div></div>
+
+<p>🕵️ I wrote earlier about <a href="/2024/08/29/bazel-workspace-chunking.html">WORKSPACE chunking</a> that talks about how figuring out the version for a particular version can be challenging. Unfortunately, it’s a known bug that querying <code class="language-plaintext highlighter-rouge">//external</code> gives you a different result than what’s actually fetched. 😭</p>
+
+<p>Finally, if we wanted to audit <strong>all</strong> repositories (i.e. <code class="language-plaintext highlighter-rouge">http_archive</code>) we are bringing in you can use <code class="language-plaintext highlighter-rouge">//external:*</code> or <code class="language-plaintext highlighter-rouge">//external:all-targets</code>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel query //external:all-targets | <span class="nb">head</span>
+<span class="go">Loading: 0 packages loaded
+//external:WORKSPACE
+//external:android/crosstool
+//external:android/d8_jar_import
+//external:android/dx_jar_import
+//external:android/sdk
+</span><span class="c">...
+</span></code></pre></div></div>
+
+<p>🟢 This is a great way to see which repositories are included by <em>default</em> by Bazel.</p>
+
+<p>This <code class="language-plaintext highlighter-rouge">//external</code> directory contains all the downloaded source information. This is useful to audit as you write the <em>BUILD</em> files for the third-party package.</p>
+
+<p>💁 A great tip is to create a symlink <em>external</em> in the root of your project that maps to this “secret” directory.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">ln -s $</span><span class="o">(</span>bazel info output_base<span class="o">)</span>/external external
+</code></pre></div></div>
+
+<p>We can now easily view the GNU Hello source code as we write our build files.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>ll external/gnu_hello
+<span class="go">.rw-r--r--  94k fzakaria 16 Nov  2014 ABOUT-NLS
+.rw-r--r--  44k fzakaria 16 Nov  2014 aclocal.m4
+.rw-r--r--  593 fzakaria 19 Jul  2014 AUTHORS
+drwxr-xr-x    - fzakaria 25 Sep 13:39 build-aux
+.rwxr-xr-x  622 fzakaria 25 Sep 13:39 BUILD.bazel
+.rw-r--r--  13k fzakaria 16 Nov  2014 ChangeLog
+</span><span class="c">...
+</span></code></pre></div></div>
+
+<p>You can in fact see <em>all source</em> for external repositories you are building!</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>tree <span class="nt">-d</span> <span class="nt">-L</span> 1 external | <span class="nb">head</span>
+<span class="go">external
+├── apple_support~
+├── apple_support~~apple_cc_configure_extension~local_config_apple_cc_toolchains
+├── bazel_features~
+├── bazel_features~~version_extension~bazel_features_globals
+├── bazel_features~~version_extension~bazel_features_version
+├── bazel_skylib
+├── bazel_skylib~
+</span><span class="gp">├── bazel_tools -&gt;</span><span class="w"> </span>/var/tmp/_bazel_fzakaria/install/b80b54a596e0fa4a6772cc7889abb086/embedded_tools
+<span class="go">├── bazel_tools~cc_configure_extension~local_config_cc
+</span><span class="c">...
+</span></code></pre></div></div>
+
+<blockquote>
+  <p>All these external repositories have their own <em>WORKSPACE</em> file which allows bazel to avoid building them when you use <code class="language-plaintext highlighter-rouge">//...</code></p>
+</blockquote>
+
+<p>⚠️ This is why you might have run into errors previously if you tried to create an <em>external</em> directory in your repository - <a href="https://github.com/bazelbuild/bazel/issues/4508">issues#4508</a></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Did you know Bazel has a secret //external package that is created that contains all the external repositories that are you added to WORKSPACE.bazel or MODULE.bazel ? 🤓 Let’s start with a very minimal WORKSPACE that pulls in the GNU Hello codebase. load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive") http_archive( name = "gnu_hello", urls = ["https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz"], strip_prefix = "hello-2.10", sha256 = "31e066137a962676e89f69d1b65382de95a7ef7d914b8cb956f41ea72e0f516b", build_file = "//third_party:gnu_hello.BUILD", )]]></summary></entry><entry><title type="html">Bazel Knowledge: Reference targets by output name</title><link href="https://fzakaria.com/2024/09/23/bazel-knowledge-reference-targets-by-output-name.html" rel="alternate" type="text/html" title="Bazel Knowledge: Reference targets by output name" /><published>2024-09-23T08:41:00-07:00</published><updated>2024-09-23T08:41:00-07:00</updated><id>https://fzakaria.com/2024/09/23/bazel-knowledge-reference-targets-by-output-name</id><content type="html" xml:base="https://fzakaria.com/2024/09/23/bazel-knowledge-reference-targets-by-output-name.html"><![CDATA[<p>In an attempt to try and record some of the smaller knowledge brain gains on using Bazel, I’m hoping to write a few smaller article. 🤓</p>
+
+<p>Did you know you can reference an output file directly by name or the target name that produced it?</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_skylib//rules:diff_test.bzl"</span><span class="p">,</span> <span class="s">"diff_test"</span><span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"src_file"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"file.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"echo 'Hello, Bazel!' &gt; $@"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">diff_test</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"test_equality"</span><span class="p">,</span>
+    <span class="n">file1</span> <span class="o">=</span> <span class="s">":src_file"</span><span class="p">,</span>
+    <span class="n">file2</span> <span class="o">=</span> <span class="s">":file.txt"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>⚠️ If the output is the same name as the rule Bazel will give you a <strong>warning</strong> but everything still seems to work.</p>
+
+<p>I tend to prefer matching by rule name. I’m not yet aware of any reason to
+prefer one over the other.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[In an attempt to try and record some of the smaller knowledge brain gains on using Bazel, I’m hoping to write a few smaller article. 🤓 Did you know you can reference an output file directly by name or the target name that produced it? load("@bazel_skylib//rules:diff_test.bzl", "diff_test") genrule( name = "src_file", outs = ["file.txt"], cmd = "echo 'Hello, Bazel!' &gt; $@", ) diff_test( name = "test_equality", file1 = ":src_file", file2 = ":file.txt", ) ⚠️ If the output is the same name as the rule Bazel will give you a warning but everything still seems to work. I tend to prefer matching by rule name. I’m not yet aware of any reason to prefer one over the other.]]></summary></entry><entry><title type="html">Bazel Overlay Pattern</title><link href="https://fzakaria.com/2024/08/29/bazel-overlay-pattern.html" rel="alternate" type="text/html" title="Bazel Overlay Pattern" /><published>2024-08-29T20:06:00-07:00</published><updated>2024-08-29T20:06:00-07:00</updated><id>https://fzakaria.com/2024/08/29/bazel-overlay-pattern</id><content type="html" xml:base="https://fzakaria.com/2024/08/29/bazel-overlay-pattern.html"><![CDATA[<p>Do you have an internal fork of a codebase you’ve added Bazel <code class="language-plaintext highlighter-rouge">BUILD</code> files to?</p>
+
+<p>Do you want to open-source the BUILD files (+ additional files) but doing so into the upstream project might be a bit too onerous to start? 🤔</p>
+
+<p>Continuing with my dive 🤿 into <a href="https://bazel.build/">Bazel</a> for <code class="language-plaintext highlighter-rouge">$DAYJOB$</code>, I wanted to touch on a pattern I’ve only ever seen employed by Google for <a href="https://github.com/llvm/llvm-project">LLVM</a> but I’m finding very powerful: <em>Bazel Overlay Pattern</em>.</p>
+
+<!--more-->
+
+<blockquote>
+  <p>I have first encountered this pattern employed by Google in their <a href="https://github.com/google/llvm-bazel">llvm-bazel</a> repository.</p>
+</blockquote>
+
+<p>With the <em>Bazel Overlay Pattern</em>, you can open-source the Bazel build system for a <strong>separate</strong> project &amp; repository.</p>
+
+<p>This is useful if the upstream project does not want to accept the <code class="language-plaintext highlighter-rouge">BUILD</code> files themselves or if you want to validate it working in the open first before proposing the change itself.</p>
+
+<p>🤨 Wait… I thought Bazel has the <em>“Bazel Registry”</em> which already has a bunch of external projects building with Bazel.</p>
+
+<p><em>Sort of</em>. The <code class="language-plaintext highlighter-rouge">BUILD</code> files introduced into the registry either wrap the existing build-system using something <a href="https://github.com/bazelbuild/rules_foreign_cc">rules_foreign_cc</a> or bring in the minimal Bazel BUILD files needed to build the final target. The BUILD files offered in the registry are not suited for daily development for that project, they are missing granular build targets, test targets &amp; other developer producitivity targets (i.e. lint, format etc..).</p>
+
+<p>🤌🏼 We want to upstream BUILD files that are meant to be the “real” build system for the project.</p>
+
+<h2 id="bazel-overlay-pattern">Bazel Overlay Pattern</h2>
+
+<blockquote>
+  <p>I have created the project <a href="https://github.com/fzakaria/bazel-overlay-example">bazel-overlay-example</a> that you can checkout on GitHub for reference.</p>
+</blockquote>
+
+<p>Let’s run through a very minimal example to understand how this work.
+We have a C project, “hello_world”, with a single file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hello_world/
+└── cmd
+    └── hello.c
+</code></pre></div></div>
+
+<p>In a separate project, “hello_world-overlay”, we create a directory with a directory structure <strong>matching</strong> that of the target project.
+In this repository within a folder called <em>bazel-overlay</em>, include all the files we <strong>only</strong> need to build our project using Bazel.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hello_world-overlay/
+├── bazel-overlay
+│   └── cmd
+│       └── BUILD.bazel
+├── BUILD.bazel
+├── configure.bzl
+├── overlay_directories.py
+├── third_party
+│   └── hello_world-&gt; /tmp/hello_world
+└── WORKSPACE
+</code></pre></div></div>
+
+<p>Additionally, create a reference to the original project in a directory <em>third_party</em>. This can likely a git-submodule but it can even be a symlink or http_archive in the <code class="language-plaintext highlighter-rouge">WORKSPACE.bazel</code> file.</p>
+
+<p>The 💡 awesome idea for the <em>overlay pattern</em> leverages Bazel’s <a href="https://bazel.build/extending/repo">repository rules</a>.</p>
+
+<p>We’ve added two extra files: <a href="https://github.com/fzakaria/bazel-overlay-example/blob/main/configure.bzl">configure.bzl</a> and <a href="https://github.com/fzakaria/bazel-overlay-example/blob/main/overlay_directories.py">overlay_directories.py</a>.</p>
+
+<blockquote>
+  <p>These two files were simplified copies, nearly verbatim, from Google’s <a href="https://github.com/google/llvm-bazel">llvm-bazel</a> repository.</p>
+</blockquote>
+
+<p>These two files do the “magic” 🪄.</p>
+
+<blockquote>
+  <p>Feel free to read the files to see how they work. They are a bit too long to include verbatim on this post. They simply iterate over the files and setup symlinks.</p>
+</blockquote>
+
+<p>We set it up in our <code class="language-plaintext highlighter-rouge">WORKSPACE</code> like so:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">":configure.bzl"</span><span class="p">,</span> <span class="s">"overlay_configure"</span><span class="p">)</span>
+
+<span class="n">overlay_configure</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello-world"</span><span class="p">,</span>
+    <span class="n">overlay_path</span> <span class="o">=</span> <span class="s">"bazel-overlay"</span><span class="p">,</span>
+    <span class="n">src_path</span> <span class="o">=</span> <span class="s">"./third_party/hello_world"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>When you try to build the external repository <code class="language-plaintext highlighter-rouge">@hello-world//</code>, the repository rule will symlink all the files in the <em>overlay_path</em> &amp; the <em>src_path</em> together.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>tree <span class="si">$(</span>bazel info output_base<span class="si">)</span>/external/hello-world
+
+/home/fmzakari/.cache/bazel/_bazel_fmzakari/738ca8ce4d1d8ce828e952fe7b9fdd95/external/hello-world
+├── cmd
+│   ├── BUILD.bazel -&gt; /tmp/hello_world-overlay/bazel-overlay/cmd/BUILD.bazel
+│   └── hello.c -&gt; /tmp/hello_world-overlay/third_party/hello_world/cmd/hello.c
+└── WORKSPACE
+</code></pre></div></div>
+
+<p>It’s as if the two repositories were merged! 😎</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bazel run @hello-world//cmd:hello
+INFO: Analyzed target @hello-world//cmd:hello (24 pack ages loaded, 90 targets configured).
+INFO: Found 1 target...
+Target @hello-world//cmd:hello up-to-date:
+  bazel-bin/external/hello-world/cmd/hello
+INFO: Elapsed time: 0.068s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/external/hello-world/cmd/hello
+Hello, World!
+</code></pre></div></div>
+
+<p>This is a surprising powerful pattern that lets you explore adding the Bazel build system for a separate repository. The benefit to doing in a separate repository vs. a branch is that it’s easy to track <code class="language-plaintext highlighter-rouge">HEAD</code>. If your <code class="language-plaintext highlighter-rouge">third_party</code> is a git-submodule, you can keep moving the submodule forward and validating the build succeeds.</p>
+
+<p>I’m moving forward with this pattern to explore upstreaming <code class="language-plaintext highlighter-rouge">$DAYJOB$</code> Bazel build system to the open source repository. 🙌</p>
+
+<p>❗ I recently contributed <a href="https://github.com/bazelbuild/bazel/pull/22349">PR#22349</a> to Bazel which does add an <em>overlay</em> concept to <code class="language-plaintext highlighter-rouge">http_archive</code> which almost looks like it could do this as well <strong>but</strong> if you had a lot BUILD files it would be tedious to manually list them out.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">http_archive</span><span class="p">(</span>
+  <span class="n">name</span><span class="o">=</span><span class="s">"hello_world"</span><span class="p">,</span>
+  <span class="n">strip_prefix</span><span class="o">=</span><span class="s">"hello_world-0.1.2"</span><span class="p">,</span>
+  <span class="n">urls</span><span class="o">=</span><span class="p">[</span><span class="s">"https://fake.com/hello_world.zip"</span><span class="p">],</span>
+  <span class="n">remote_file_urls</span><span class="o">=</span><span class="p">{</span>
+    <span class="s">"WORKSPACE"</span><span class="p">:</span> <span class="p">[</span><span class="s">"https://fake.com/WORKSPACE"</span><span class="p">],</span>
+    <span class="s">"cmd/BUILD.bazel"</span><span class="p">:</span> <span class="p">[</span><span class="s">"https://fake.com/cmd/BUILD.bazel"</span><span class="p">],</span>
+  <span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>For now, I’m sticking with the <em>Bazel Overlay Pattern</em>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Do you have an internal fork of a codebase you’ve added Bazel BUILD files to? Do you want to open-source the BUILD files (+ additional files) but doing so into the upstream project might be a bit too onerous to start? 🤔 Continuing with my dive 🤿 into Bazel for $DAYJOB$, I wanted to touch on a pattern I’ve only ever seen employed by Google for LLVM but I’m finding very powerful: Bazel Overlay Pattern.]]></summary></entry><entry><title type="html">Bazel WORKSPACE chunking</title><link href="https://fzakaria.com/2024/08/29/bazel-workspace-chunking.html" rel="alternate" type="text/html" title="Bazel WORKSPACE chunking" /><published>2024-08-29T10:36:00-07:00</published><updated>2024-08-29T10:36:00-07:00</updated><id>https://fzakaria.com/2024/08/29/bazel-workspace-chunking</id><content type="html" xml:base="https://fzakaria.com/2024/08/29/bazel-workspace-chunking.html"><![CDATA[<p>I have been doing quite a lot of <a href="https://bazel.build/">Bazel</a> for <code class="language-plaintext highlighter-rouge">$DAYJOB$</code>; and it’s definitely got it’s <em>fair share of warts</em>.</p>
+
+<blockquote>
+  <p>I have my own misgivings of it’s migration to <em>bzlmod</em> and it converging to a standard-issue dependency-management style tool.</p>
+</blockquote>
+
+<p>We have yet to transition to <code class="language-plaintext highlighter-rouge">MODULE.bazel</code> and our codebase is quite large. As you’d expect, we hit quite a lot of <em>diamond dependency</em> issues &amp; specifically with external repositories in our <code class="language-plaintext highlighter-rouge">WORKSPACE</code> file.</p>
+
+<p>A surprising implementation detail I recently learned was how Bazel does dependency resolution for external repositories in WORKSPACE.</p>
+
+<!--more-->
+
+<p>To demonstrate, let’s see a quick example. I have two sample workspaces that export a single target <code class="language-plaintext highlighter-rouge">//:version</code> that will either have 1.0 or 2.0.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:http.bzl"</span><span class="p">,</span> <span class="s">"http_archive"</span><span class="p">,</span> <span class="s">"http_file"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-1.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-1.0"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:git.bzl"</span><span class="p">,</span> <span class="s">"git_repository"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-2.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-2.0"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>What is the version of <code class="language-plaintext highlighter-rouge">@workspace//:version</code> you expect ? 🤔</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>bazel build @workspace//:version
+<span class="go">INFO: Analyzed target @workspace//:version (1 packages loaded, 1 target configured).
+INFO: Found 1 target...
+Target @workspace//:version up-to-date:
+  bazel-bin/external/workspace/VERSION
+INFO: Elapsed time: 0.078s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat  </span>bazel-bin/external/workspace/VERSION
+<span class="go">1.0
+</span></code></pre></div></div>
+
+<p>Huh. 😳. Okay.</p>
+
+<p>So in this example it looks like it’s <em>first version wins</em>.</p>
+
+<p>Let’s try another slightly different example.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:http.bzl"</span><span class="p">,</span> <span class="s">"http_archive"</span><span class="p">,</span> <span class="s">"http_file"</span><span class="p">)</span>
+
+<span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:git.bzl"</span><span class="p">,</span> <span class="s">"git_repository"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-1.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-1.0"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-2.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-2.0"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>What is the version of <code class="language-plaintext highlighter-rouge">@workspace//:version</code> you expect now ? 🤔</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>bazel build @workspace//:version
+<span class="go">INFO: Analyzed target @workspace//:version (1 packages loaded, 2 targets configured).
+INFO: Found 1 target...
+Target @workspace//:version up-to-date:
+  bazel-bin/external/workspace/VERSION
+INFO: Elapsed time: 0.145s, Critical Path: 0.02s
+INFO: 2 processes: 1 internal, 1 linux-sandbox.
+INFO: Build completed successfully, 2 total actions
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat  </span>bazel-bin/external/workspace/VERSION
+<span class="go">2.0
+</span></code></pre></div></div>
+
+<p>😳 2.0</p>
+
+<p>So now it looks like it’s last one wins? 🤨</p>
+
+<p>Turns out the version selection in Bazel is a little more <em>complex</em>.</p>
+
+<p>🕵️ The WORKSPACE file into <em>chunks</em> separated by load statements. For a repo named X (<code class="language-plaintext highlighter-rouge">@workspace//</code> in our case), the <em>last</em> definition of X in the <em>first</em> chunk that contains a definition of X is the winner</p>
+
+<p>If you ever face an issue of having the wrong version of an external repoitory, the thing to do is move it up <code class="language-plaintext highlighter-rouge">load</code> statements until you find the <em>chunk</em> that is defining it.</p>
+
+<p>I found references to this on some GitHub issues &amp; was helped out by <a href="https://github.com/Wyverald">@Wyverald</a> on Slack but thought a clear concise example to demonstrate it was interesting.</p>
+
+<p>If you want to play with the example above, I’ve uploaded it to <a href="https://github.com/fzakaria/bazel-workspace-chunking">bazel-workspace-chunking</a> on GitHub.</p>
+
+<p>❗ Don’t trust <code class="language-plaintext highlighter-rouge">bazel query //external:workspace --output build</code> to see the version.</p>
+
+<p>You might be tempted to run the above query but it gives <strong>incorrect</strong> results.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>bazel build @workspace//:version
+<span class="go">INFO: Analyzed target @workspace//:version (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+Target @workspace//:version up-to-date:
+  bazel-bin/external/workspace/VERSION
+INFO: Elapsed time: 0.057s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat  </span>bazel-bin/external/workspace/VERSION
+<span class="go">1.0
+
+</span><span class="gp">$</span><span class="w"> </span>bazel query //external:workspace <span class="nt">--output</span> build
+<span class="gp">#</span><span class="w"> </span>/tmp/example-workspace/WORKSPACE.bazel:13:13
+<span class="go">http_archive(
+  name = "workspace",
+  url = "file:///tmp/example-workspace/workspace-2.0.tar.gz",
+  strip_prefix = "workspace-2.0",
+)
+</span><span class="gp">#</span><span class="w"> </span>Rule workspace instantiated at <span class="o">(</span>most recent call last<span class="o">)</span>:
+<span class="gp">#</span><span class="w">   </span>/tmp/example-workspace/WORKSPACE.bazel:13:13 <span class="k">in</span> &lt;toplevel&gt;
+<span class="gp">#</span><span class="w"> </span>Rule http_archive defined at <span class="o">(</span>most recent call last<span class="o">)</span>:
+<span class="gp">#</span><span class="w">   </span>/home/fmzakari/.cache/bazel/_bazel_fmzakari/c72d1df8de0701fb5f44d35dec4b70b5/external/bazel_tools/tools/build_defs/repo/http.bzl:372:31 <span class="k">in</span> &lt;toplevel&gt;
+<span class="go">
+Loading: 0 packages loaded
+</span></code></pre></div></div>
+
+<p>Even when the <code class="language-plaintext highlighter-rouge">VERSION</code> was still <strong>1.0</strong>, the query simply gives back the last version cited in the <code class="language-plaintext highlighter-rouge">WORKSPACE</code> file.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I have been doing quite a lot of Bazel for $DAYJOB$; and it’s definitely got it’s fair share of warts. I have my own misgivings of it’s migration to bzlmod and it converging to a standard-issue dependency-management style tool. We have yet to transition to MODULE.bazel and our codebase is quite large. As you’d expect, we hit quite a lot of diamond dependency issues &amp; specifically with external repositories in our WORKSPACE file. A surprising implementation detail I recently learned was how Bazel does dependency resolution for external repositories in WORKSPACE.]]></summary></entry><entry><title type="html">NixOS, Raspberry Pi &amp;amp; Me</title><link href="https://fzakaria.com/2024/08/13/nixos-raspberry-pi-me.html" rel="alternate" type="text/html" title="NixOS, Raspberry Pi &amp;amp; Me" /><published>2024-08-13T08:52:00-07:00</published><updated>2024-08-13T08:52:00-07:00</updated><id>https://fzakaria.com/2024/08/13/nixos-raspberry-pi-me</id><content type="html" xml:base="https://fzakaria.com/2024/08/13/nixos-raspberry-pi-me.html"><![CDATA[<p>I have written <a href="/archive">a lot</a> about <a href="https://nixos.org/">NixOS</a>, so it’s no surprise that when I went to go
+dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine.</p>
+
+<p>Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh.</p>
+
+<p>I have had always a positive experience with <a href="https://www.ui.com/introduction">Ubiquiti</a> line of products. I installed two new AP (access points) and setup a <em>beautiful</em> home rack server that is <em>completely unnecessary</em> since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲.</p>
+
+<!--more-->
+
+<p><a href="/assets/images/home_rack.jpg"><img src="/assets/images/home_rack_50p.jpg" alt="Image of my home rack" /></a></p>
+
+<blockquote>
+  <p>I’m currently building a home-server that will fill a few of the empty slots on the rack.</p>
+</blockquote>
+
+<p>If you are interested in the setup here is the list of materials I used:</p>
+<ul>
+  <li><a href="https://store.ui.com/us/en/collections/unifi-dream-machine/products/udm-se">Dream Machine Special Edition</a></li>
+  <li><a href="https://store.ui.com/us/en/collections/unifi-wifi-flagship-compact">U6 Access Point</a></li>
+  <li><a href="https://amzn.to/4fGP59A">9U Wall Mount Rack</a></li>
+  <li><a href="https://amzn.to/3AvYFMc">1U Universal Rack Shelf</a></li>
+  <li><a href="https://amzn.to/4fGcHLr">Cat6 Keystone Coupler 5-Pack</a></li>
+  <li><a href="https://amzn.to/4dnyo1a">Blank Keystone Jack Inserts</a></li>
+  <li><a href="https://amzn.to/3YHTLWr">Cat6 Ethernet Cable 0.5ft 5 Pack</a></li>
+  <li><a href="https://amzn.to/46OzalE">24-Port Blank Keystone 1U Patch Panel</a></li>
+  <li><a href="https://amzn.to/3yE1iv6">1U PDU Power Strip Surge Protector</a></li>
+</ul>
+
+<p>Now, getting back to the Raspberry Pi, there’s quite a few blogs online on how to run NixOS but they all vary slightly in their setup
+and few are set up to use <em>flake.nix</em>.</p>
+
+<p>Now I’m throwing mine to the mix 🥳.</p>
+
+<p>You can find below <a href="https://github.com/fzakaria/nix-home/blob/1a3aee1f2bf31bdeb638276bf2b6e8076e3413c1/machines/kuato/configuration.nix">my minimal configuration.nix</a> for my Raspberry Pi (the link goes to GitHub permalink).</p>
+
+<p>Notable points I had to do:</p>
+<ul>
+  <li>Feedback from the community on Matrix was to avoid <a href="https://github.com/NixOS/nixos-hardware">nixos-hardware</a> since the base image <em>should just work</em>.
+Unfortunately <code class="language-plaintext highlighter-rouge">nixos-hardware.nixosModules.raspberry-pi-4</code> was necessary, as was the vendored Linux kernel it installs.</li>
+  <li>Cross compiling NixOS I believe <em>is possible</em> but I couldn’t find a simple set up with <em>flake.nix</em> to work. The ultimate workaround is to add
+support for emulation on your build host. This also does let you use the NixOS cache but <strong>be warned</strong> that if you install custom software might come to a crawl.
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binfmt.emulatedSystems = ["aarch64-linux"];
+</code></pre></div>    </div>
+  </li>
+  <li>I disabled ZFS to save a lot of time building my image.</li>
+  <li><code class="language-plaintext highlighter-rouge">compressImage</code> is disabled since it takes a long time with emulation.</li>
+  <li><code class="language-plaintext highlighter-rouge">makeModulesClosure</code> snippet below is needed since some Linux kernel modules fail to compile. 🤷</li>
+</ul>
+
+<p><em>Final thoughts</em> 🤔</p>
+
+<p>While it’s cathartic to have your Pi running NixOS and <em>“declarative”</em>, the whole experience left much to be desired.
+While cross-compiling feels tenable at the individual package level, it was confusing and challenging to setup (I gave up!) to build a complete image.</p>
+
+<p>Given the popularity of Raspberry Pi and the <em>Internet of things</em>, there is a strong opportunity to bring a simple setup for Pi’s into mainline Nixpkgs
+with clear support and guidance on how to cross-compile the image.</p>
+
+<p>❗ If you think my <em>configuration.nix</em> could be improved or you have the solution to cross-compiling, let me know!</p>
+
+<h3 id="configurationnix">configuration.nix</h3>
+
+<p>Having a starting NixOS configuration means you can avoid the base installer and 
+directly create the initial image via</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix build <span class="s1">'.#nixosConfigurations.kuato.config.system.build.sdImage'</span>
+</code></pre></div></div>
+
+<p>Subsequent updates can happen via <em>ssh</em>. I build the image on my <code class="language-plaintext highlighter-rouge">x86_64</code> machine via <em>emulation</em> using
+the following command which then copies the <em>/nix/store</em> closure and activates the new generation.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nixos-rebuild switch <span class="nt">--flake</span> .#kuato <span class="se">\</span>
+                       <span class="nt">--target-host</span> fmzakari@kuato <span class="se">\</span>
+                       <span class="nt">--use-remote-sudo</span>
+</code></pre></div></div>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">config</span><span class="p">,</span>
+  <span class="nv">pkgs</span><span class="p">,</span>
+  <span class="nv">inputs</span><span class="p">,</span>
+  <span class="nv">outputs</span><span class="p">,</span>
+  <span class="nv">lib</span><span class="p">,</span>
+  <span class="nv">modulesPath</span><span class="p">,</span>
+  <span class="o">...</span>
+<span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c"># had a big discussion on Matrix on which to use for the Raspberry Pi 4</span>
+    <span class="c"># looks like there are pi specific modules but they told me to not use them.</span>
+    <span class="c"># Also don't use the vendored Linux kernel and just use the regular one.</span>
+    <span class="s2">"</span><span class="si">${</span><span class="nv">modulesPath</span><span class="si">}</span><span class="s2">/installer/sd-card/sd-image-aarch64.nix"</span>
+    <span class="sx">../../modules/nix.nix</span>
+    <span class="c"># Feedback from Matrix was to disable this and it's unnecessary unless you are using</span>
+    <span class="c"># some esoteric hardware.</span>
+    <span class="nv">inputs</span><span class="o">.</span><span class="nv">nixos-hardware</span><span class="o">.</span><span class="nv">nixosModules</span><span class="o">.</span><span class="nv">raspberry-pi-4</span>
+  <span class="p">];</span>
+
+  <span class="c"># let's not build ZFS for the Raspberry Pi 4</span>
+  <span class="nv">boot</span><span class="o">.</span><span class="nv">supportedFilesystems</span><span class="o">.</span><span class="nv">zfs</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkForce</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="c"># compressing image when using binfmt is very time consuming</span>
+  <span class="c"># disable it. Not sure why we want to compress anyways?</span>
+  <span class="nv">sdImage</span><span class="o">.</span><span class="nv">compressImage</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="c"># enable the touch screen</span>
+  <span class="nv">hardware</span><span class="o">.</span><span class="nv">raspberry-pi</span><span class="o">.</span><span class="s2">"4"</span><span class="o">.</span><span class="nv">touch-ft5406</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+  <span class="c"># we don't import ../../modules/nixpkgs.nix since we don't want the overlay</span>
+  <span class="c"># rebuilding for the Raspberry Pi 4 is expensive; try to stick to what is in the cache.</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">hostPlatform</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkDefault</span> <span class="s2">"aarch64-linux"</span><span class="p">;</span>
+    <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">allowUnfree</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="nv">overlays</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="c"># Workaround: https://github.com/NixOS/nixpkgs/issues/154163</span>
+      <span class="c"># modprobe: FATAL: Module sun4i-drm not found in directory</span>
+      <span class="p">(</span><span class="nv">final</span><span class="p">:</span> <span class="nv">super</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nv">makeModulesClosure</span> <span class="o">=</span> <span class="nv">x</span><span class="p">:</span>
+          <span class="nv">super</span><span class="o">.</span><span class="nv">makeModulesClosure</span> <span class="p">(</span><span class="nv">x</span> <span class="o">//</span> <span class="p">{</span><span class="nv">allowMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;});</span>
+      <span class="p">})</span>
+    <span class="p">];</span>
+  <span class="p">};</span>
+
+  <span class="nv">fileSystems</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"/"</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">device</span> <span class="o">=</span> <span class="s2">"/dev/disk/by-label/NIXOS_SD"</span><span class="p">;</span>
+      <span class="nv">fsType</span> <span class="o">=</span> <span class="s2">"ext4"</span><span class="p">;</span>
+      <span class="nv">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"noatime"</span><span class="p">];</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="nv">networking</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">networkmanager</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">hostName</span> <span class="o">=</span> <span class="s2">"kuato"</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="c"># Set your time zone.</span>
+  <span class="nv">time</span><span class="o">.</span><span class="nv">timeZone</span> <span class="o">=</span> <span class="s2">"America/Los_Angeles"</span><span class="p">;</span>
+
+  <span class="nv">environment</span><span class="o">.</span><span class="nv">systemPackages</span> <span class="o">=</span> <span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span> <span class="p">[</span>
+    <span class="nv">libraspberrypi</span>
+    <span class="nv">raspberrypi-eeprom</span>
+  <span class="p">];</span>
+
+  <span class="nv">services</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># Enable the X11 windowing system.</span>
+    <span class="nv">xserver</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="nv">desktopManager</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nv">gnome</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="p">};</span>
+      <span class="nv">displayManager</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c"># Enable the GNOME Desktop Environment</span>
+        <span class="nv">gdm</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+          <span class="c"># FIXME: I want to disable wayland but the touch screen seems</span>
+          <span class="c"># to not work otherwise.</span>
+          <span class="c"># wayland = false;</span>
+        <span class="p">};</span>
+      <span class="p">};</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="c"># Normally we would re-use the same user configurations in the users directory</span>
+  <span class="c"># but since this is a Raspberry Pi 4, lets make a much smaller closure.</span>
+  <span class="nv">users</span><span class="o">.</span><span class="nv">users</span><span class="o">.</span><span class="nv">fmzakari</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">isNormalUser</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">shell</span> <span class="o">=</span> <span class="nv">pkgs</span><span class="o">.</span><span class="nv">bash</span><span class="p">;</span>
+    <span class="nv">extraGroups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"wheel"</span> <span class="s2">"networkmanager"</span><span class="p">];</span>
+    <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Farid Zakaria"</span><span class="p">;</span>
+    <span class="nv">openssh</span><span class="o">.</span><span class="nv">authorizedKeys</span><span class="o">.</span><span class="nv">keyFiles</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="sx">../../users/fmzakari/keys</span>
+    <span class="p">];</span>
+    <span class="c"># Allow the graphical user to login without password</span>
+    <span class="nv">initialHashedPassword</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="c"># simplify sudo</span>
+  <span class="nv">security</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">sudo</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="nv">wheelNeedsPassword</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="c"># Allow the user to log in as root without a password.</span>
+  <span class="nv">users</span><span class="o">.</span><span class="nv">users</span><span class="o">.</span><span class="nv">root</span><span class="o">.</span><span class="nv">initialHashedPassword</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+
+  <span class="nv">hardware</span><span class="o">.</span><span class="nv">enableRedistributableFirmware</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nv">system</span><span class="o">.</span><span class="nv">stateVersion</span> <span class="o">=</span> <span class="s2">"23.11"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>]]></content><author><name></name></author><summary type="html"><![CDATA[I have written a lot about NixOS, so it’s no surprise that when I went to go dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine. Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh. I have had always a positive experience with Ubiquiti line of products. I installed two new AP (access points) and setup a beautiful home rack server that is completely unnecessary since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲.]]></summary></entry><entry><title type="html">Automatic Nix flake follows</title><link href="https://fzakaria.com/2024/07/31/automatic-nix-flake-follows.html" rel="alternate" type="text/html" title="Automatic Nix flake follows" /><published>2024-07-31T22:21:00-07:00</published><updated>2024-07-31T22:21:00-07:00</updated><id>https://fzakaria.com/2024/07/31/automatic-nix-flake-follows</id><content type="html" xml:base="https://fzakaria.com/2024/07/31/automatic-nix-flake-follows.html"><![CDATA[<p>If you have used <a href="https://nixos.org">Nix</a> flakes, you likely encountered something like the following. 🤢</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">std</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:divnix/std"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">devshell</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"devshell"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixago</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixago"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixpkgs"</span><span class="p">;</span>
+
+<span class="nv">hive</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:divnix/hive"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">colmena</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"colmena"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">disko</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"disko"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixos-generators</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixos-generators"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixpkgs"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Why is this follows necessary? 🤔</p>
+
+<p>It’s in fact <strong>not necessary</strong> but it makes the Nix evaluation simpler and as a result faster. 🤓</p>
+
+<!--more-->
+
+<p>Rather than using the exact Nix flake commit your dependency desires, we are overriding it, with one we have likely already declared. This has the effect of making our graph smaller, which is faster to evaluate and likely build.</p>
+
+<p>For very large Nix projects, the Nix evaluator can be surprisingly slow, so the pattern of <em>follows</em>, especially for <em>nixpkgs</em>, is incredibly common.</p>
+
+<blockquote>
+  <p>Note: Although it’s faster it’s <em>less correct</em> since we are deviating from what the authors of the flake desired.</p>
+</blockquote>
+
+<p>Writing all those follows can get real teadious 🥱, and it’s tough to even know you did them all.</p>
+
+<p>Surely there has to be a better way? 🙏</p>
+
+<p>Well take a look at <a href="https://github.com/fzakaria/nix-auto-follow">nix-auto-follow</a> 🥳</p>
+
+<p>Simply run the script which will modify your <em>flake.lock</em> file. Commit the change and voilà!</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>python all-follow.py flake.lock <span class="nt">-i</span>
+</code></pre></div></div>
+
+<p>How does it work? 🧐 Let’s dive in with an example.</p>
+
+<p>Here let’s create our main top-level flake. You can think of this as your application or NixOS machine.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Top Level Flake"</span><span class="p">;</span>
+
+  <span class="nv">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="nv">path</span><span class="p">:</span><span class="sx">./a</span><span class="p">;</span>
+    <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:nixos/nixpkgs/nixos-24.05"</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nv">outputs</span> <span class="o">=</span> <span class="p">{</span> <span class="nv">self</span><span class="p">,</span> <span class="nv">a</span><span class="p">,</span> <span class="nv">nixpkgs</span> <span class="p">}:</span> 
+  <span class="p">{</span>
+    <span class="nv">versions</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nv">a</span><span class="o">.</span><span class="nv">nixpkgs</span> <span class="o">=</span> <span class="nv">a</span><span class="o">.</span><span class="nv">versions</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="p">;</span>
+        <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">lib</span><span class="o">.</span><span class="nv">version</span><span class="p">;</span>
+    <span class="p">};</span>
+    
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Our flake has <strong>2</strong> dependencies: <code class="language-plaintext highlighter-rouge">a</code> &amp; <code class="language-plaintext highlighter-rouge">nixpkgs</code>.</p>
+
+<p>To keep this example simple, <code class="language-plaintext highlighter-rouge">a</code> is another local flake which itself only has <strong>1</strong> dependency: <code class="language-plaintext highlighter-rouge">nixpkgs</code>.</p>
+
+<p>❗ Important to notice here that <code class="language-plaintext highlighter-rouge">nixpkgs</code> is at a different version in <code class="language-plaintext highlighter-rouge">a</code>. We have two versions <strong>23.11</strong> &amp; <strong>24.05</strong>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Flake A"</span><span class="p">;</span>
+
+  <span class="nv">inputs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:nixos/nixpkgs/nixos-23.11"</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nv">outputs</span> <span class="o">=</span> <span class="p">{</span> <span class="nv">self</span><span class="p">,</span> <span class="nv">nixpkgs</span> <span class="p">}:</span> 
+  <span class="p">{</span>
+    <span class="nv">versions</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">lib</span><span class="o">.</span><span class="nv">version</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Our flake emits a <code class="language-plaintext highlighter-rouge">versions</code> attribute which we can evaluate.
+We correcltly see at the start the two different versions of <em>nixpkgs</em>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">❯ nix eval "#</span>versions<span class="s2">"
+</span><span class="go">
+{
+</span><span class="gp">  a = {nixpkgs = "23.11pre-git";</span><span class="o">}</span><span class="p">;</span>
+<span class="gp">  nixpkgs = "24.05.20240729.12bf098";</span><span class="w">
+</span><span class="go">}
+</span></code></pre></div></div>
+
+<p>If we peek in our <code class="language-plaintext highlighter-rouge">flake.lock</code> file we see that <code class="language-plaintext highlighter-rouge">nixpkgs</code> is listed twice as an <em>inputs</em> (<code class="language-plaintext highlighter-rouge">nixpkgs</code> &amp; <code class="language-plaintext highlighter-rouge">nixpkgs_2</code>) and that they reference nodes that exist.</p>
+
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+  </span><span class="nl">"nodes"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"a"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+      </span><span class="nl">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"nixpkgs"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nixpkgs"</span><span class="w">
+      </span><span class="p">},</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"root"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="nl">"inputs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"a"</span><span class="p">:</span><span class="w"> </span><span class="s2">"a"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"nixpkgs"</span><span class="p">:</span><span class="w"> </span><span class="s2">"nixpkgs_2"</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"nixpkgs"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">...</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+    </span><span class="nl">"nixpkgs_2"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+        </span><span class="err">...</span><span class="w">
+    </span><span class="p">},</span><span class="w">
+  </span><span class="p">}</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<p>Turns out if we make the nodes references by the <code class="language-plaintext highlighter-rouge">inputs</code> in <code class="language-plaintext highlighter-rouge">roots</code> (our top level <em>flake.nix</em>) the same everywhere, we’ve effectively done an <strong>automatic follows</strong>.</p>
+
+<p>Let’s apply <em>all-follow.py</em> and see what happens.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ python all-follow.py flake.lock -i
+
+</span><span class="gp">❯ nix eval "#</span>versions<span class="s2">"
+</span><span class="go">{
+</span><span class="gp">  a = {nixpkgs = "24.05.20240729.12bf098";</span><span class="o">}</span><span class="p">;</span>
+<span class="gp">  nixpkgs = "24.05.20240729.12bf098";</span><span class="w">
+</span><span class="go">}
+</span></code></pre></div></div>
+
+<p>The <em>nixpkgs</em> versions are now the same! 🎆</p>
+
+<p>Although this <em>post-processing</em> happens out of band from the Nix tool, it’s an incredibly simple way to simplify your Nix evaluation and build graph and save you from <strong>follows hell</strong> (Nix’s version of <em>DLL Hell</em>)</p>
+
+<p>If you find the tool useful, please consider contributing. You can find it at <a href="https://github.com/fzakaria/nix-auto-follow">https://github.com/fzakaria/nix-auto-follow</a>.</p>
+
+<blockquote>
+  <p>Special thanks to <a href="https://github.com/edolstra">edolstra</a> &amp; <a href="https://github.com/roberth">roberth</a> who helped me think through this. 🙇‍♂️</p>
+</blockquote>]]></content><author><name></name></author><summary type="html"><![CDATA[If you have used Nix flakes, you likely encountered something like the following. 🤢 std.url = "github:divnix/std"; std.inputs.devshell.follows = "devshell"; std.inputs.nixago.follows = "nixago"; std.inputs.nixpkgs.follows = "nixpkgs"; hive.url = "github:divnix/hive"; hive.inputs.colmena.follows = "colmena"; hive.inputs.disko.follows = "disko"; hive.inputs.nixos-generators.follows = "nixos-generators"; hive.inputs.nixpkgs.follows = "nixpkgs"; Why is this follows necessary? 🤔 It’s in fact not necessary but it makes the Nix evaluation simpler and as a result faster. 🤓]]></summary></entry><entry><title type="html">Import but don’t import your NixOS modules</title><link href="https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html" rel="alternate" type="text/html" title="Import but don’t import your NixOS modules" /><published>2024-07-29T19:38:00-07:00</published><updated>2024-07-29T19:38:00-07:00</updated><id>https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules</id><content type="html" xml:base="https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html"><![CDATA[<blockquote>
+  <p>This is a follow-up post to my prior one <a href="/2024/07/28/nixos-option-inspection.html">NixOS Option Inspection</a>. Many thanks to <a href="https://github.com/roberth">@roberth</a> who followed up on my <a href="https://github.com/NixOS/nix/issues/11210">issue</a> and helped explain it. 🙏</p>
+</blockquote>
+
+<p>If you are using <a href="https://nixos.org">NixOS</a>, you’ve likely encountered the <em>module system</em>. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span> <span class="sx">./hello.nix</span> <span class="p">];</span>
+  
+  <span class="nv">services</span><span class="o">.</span><span class="nv">hello</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">greeter</span> <span class="o">=</span> <span class="s2">"Bob"</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In a <a href="/2024/07/28/nixos-option-inspection.html">prior post</a>, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined.</p>
+
+<p>Turns out, the answer in the post was <em>relatively simple</em> and Nixpkgs has a gesture for discovering the answer via <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code>.</p>
+
+<p>Turns out, in order to get <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code> to play nice, you have to avoid a surprisingly common <a href="https://notes.rmhogervorst.nl/post/2022/11/21/what-is-a-footgun/">footgun</a> 🥵.</p>
+
+<!--more-->
+
+<p>Let’s use an incredibly simple example to demonstrate the bug.</p>
+
+<p>First let’s make our module <code class="language-plaintext highlighter-rouge">greet.nix</code>; it’s a trivial module that sets a single option. We also have a <code class="language-plaintext highlighter-rouge">config.nix</code> which you could think of as our <code class="language-plaintext highlighter-rouge">configuration.nix</code> in a typical NixOS installation that defines the option.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># greet.nix</span>
+<span class="p">{</span><span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+    <span class="nv">greet</span><span class="o">.</span><span class="nv">name</span> <span class="o">=</span> <span class="s2">"hi"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c"># config.nix</span>
+<span class="kd">let</span> 
+<span class="nv">modules</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nv">greet</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./greet.nix</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="nv">system</span> <span class="o">=</span> <span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nv">modules</span><span class="o">.</span><span class="nv">greet</span>
+  <span class="p">];</span>
+
+  <span class="nv">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">greet</span><span class="o">.</span><span class="nv">name</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkOption</span> <span class="p">{</span>
+        <span class="nv">type</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">types</span><span class="o">.</span><span class="nv">str</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+<span class="kn">in</span> <span class="p">(</span><span class="kr">import</span> <span class="o">&lt;</span><span class="sx">nixpkgs/lib</span><span class="o">&gt;</span><span class="p">)</span><span class="o">.</span><span class="nv">evalModules</span> <span class="p">{</span>
+  <span class="nv">modules</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">system</span>  <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Next, let’s import this module, à la <code class="language-plaintext highlighter-rouge">imports</code> keyword attribute in a NixOS module.</p>
+
+<p>❗I have chosen to create a container attrset <em>modules</em> to mimic what we might accomplish in a Nix Flakes.</p>
+
+<p>Everything looks OK, and evaluates correctly.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-instantiate --eval config.nix -A config.greet.name
+"hi"
+</span></code></pre></div></div>
+
+<p>If we try <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code> however we don’t get what we expected. 🤮</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl 
+Nix 2.23.2
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:l ./config.nix
+<span class="go">Added 7 variables.
+
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p options.greet.name.definitionsWithLocations
+<span class="go">[
+  {
+</span><span class="gp">    file = "&lt;unknown-file&gt;</span><span class="s2">";
+</span><span class="gp">    value = "hi";</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>Did you spot the problem ? 🕵️‍♂️🧐🤔</p>
+
+<p>It was the <code class="language-plaintext highlighter-rouge">import ./greet.nix</code> 🤯</p>
+
+<p>We <em>imported</em> the Nix expression into our modules container and as a result lost any traceability back to the originating file.</p>
+
+<p>Luckily, the fix is simple! <strong>Don’t <code class="language-plaintext highlighter-rouge">import</code> within an <code class="language-plaintext highlighter-rouge">imports</code></strong> 👌</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This is better ✅</span>
+<span class="nv">modules</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nv">greet</span> <span class="o">=</span> <span class="sx">./greet.nix</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c"># This is also good ✅</span>
+<span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sx">./greet.nix</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p>With the applied fix, the results are what we want, and the world makes sense again. 😌</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl
+Nix 2.23.2
+Type :? for help.
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:l ./config.nix                                
+<span class="go">Added 7 variables.
+
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p options.greet.name.definitionsWithLocations
+<span class="go">[
+  {
+</span><span class="gp">    file = "greet.nix";</span><span class="w">
+</span><span class="gp">    value = "hi";</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>How common is this <em>footgun</em> ?</p>
+
+<p>Turns out incredibly common (anecdotally) since there is nothing from preventing one from doing it; and it still “works”. The Nix Flake’s format makes this setup increasingly more common as well.</p>
+
+<p>For a demonstration of how easy the fix is, I contributed a patch to <a href="https://github.com/ryantm/agenix">agenix</a> in <a href="https://github.com/ryantm/agenix/pull/277">#277</a> that fixes the issue.</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh">diff --git a/flake.nix b/flake.nix
+index 587138e..3a68940 100644
+</span><span class="gd">--- a/flake.nix
+</span><span class="gi">+++ b/flake.nix
+</span><span class="p">@@ -23,13 +23,13 @@</span>
+   }: let
+     eachSystem = nixpkgs.lib.genAttrs (import systems);
+   in {
+<span class="gd">-    nixosModules.age = import ./modules/age.nix;
+</span><span class="gi">+    nixosModules.age = ./modules/age.nix;
+</span>     nixosModules.default = self.nixosModules.age;
+ 
+<span class="gd">-    darwinModules.age = import ./modules/age.nix;
+</span><span class="gi">+    darwinModules.age = ./modules/age.nix;
+</span>     darwinModules.default = self.darwinModules.age;
+ 
+<span class="gd">-    homeManagerModules.age = import ./modules/age-home.nix;
+</span><span class="gi">+    homeManagerModules.age = ./modules/age-home.nix;
+</span>     homeManagerModules.default = self.homeManagerModules.age;
+ 
+     overlays.default = import ./overlay.nix;
+</code></pre></div></div>
+
+<p><strong>Don’t <code class="language-plaintext highlighter-rouge">import</code> within an <code class="language-plaintext highlighter-rouge">imports</code></strong></p>]]></content><author><name></name></author><summary type="html"><![CDATA[This is a follow-up post to my prior one NixOS Option Inspection. Many thanks to @roberth who followed up on my issue and helped explain it. 🙏 If you are using NixOS, you’ve likely encountered the module system. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix { imports = [ ./hello.nix ]; services.hello = { enable = true; greeter = "Bob"; }; } In a prior post, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined. Turns out, the answer in the post was relatively simple and Nixpkgs has a gesture for discovering the answer via definitionsWithLocations. Turns out, in order to get definitionsWithLocations to play nice, you have to avoid a surprisingly common footgun 🥵.]]></summary></entry><entry><title type="html">NixOS Option Inspection</title><link href="https://fzakaria.com/2024/07/28/nixos-option-inspection.html" rel="alternate" type="text/html" title="NixOS Option Inspection" /><published>2024-07-28T14:51:00-07:00</published><updated>2024-07-28T14:51:00-07:00</updated><id>https://fzakaria.com/2024/07/28/nixos-option-inspection</id><content type="html" xml:base="https://fzakaria.com/2024/07/28/nixos-option-inspection.html"><![CDATA[<p><a href="https://nixos.org">NixOS</a> modules are great; and it’s one of the <em>superpowers</em> of NixOS.
+They’re so great, there was a <a href="https://discourse.nixos.org/t/working-group-member-search-module-system-for-packages/26574">working group</a> to look into how to apply the concept to Nixpkgs itself.</p>
+
+<blockquote>
+  <p>For those uninitiated, there are plenty of guides online describing it’s value and purpose such as
+<a href="https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/module-system">this one</a> or on <a href="https://nix.dev/tutorials/module-system/deep-dive.html">nix.dev</a>.</p>
+</blockquote>
+
+<p>My <em>largest complaint</em> thus far with it was that it’s hard to go backwards. ⏪</p>
+
+<p><em>“Who and what defined a particular option?”</em> 🕵️</p>
+
+<!--more-->
+
+<p>The problem I often want to solve is where did a particular NixOS module option get set.</p>
+
+<p>Imagine we have 3 modules: A, B &amp; C</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Module A</span>
+<span class="c"># moduleA.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkOption</span> <span class="p">{</span>
+      <span class="nv">type</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">types</span><span class="o">.</span><span class="nv">bool</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The common way people find out that a particular option is being set by multiple modules are when their values conflict.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Module B</span>
+<span class="c"># moduleB.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="c"># Module C</span>
+<span class="c"># moduleC.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If <code class="language-plaintext highlighter-rouge">Module B</code> and <code class="language-plaintext highlighter-rouge">Module C</code> were to conflict with how they set <code class="language-plaintext highlighter-rouge">a.value</code>, you are presented with a friendly error telling you to decide on a priority.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-instantiate --eval default.nix -A config.a.value
+error: The option `a.value' has conflicting definition values:
+- In `moduleC.nix': false
+- In `moduleB.nix': true
+Use `lib.mkForce value` or `lib.mkDefault value` to change
+the priority on any of these definitions.
+</span></code></pre></div></div>
+
+<p><em>This only works if you are using non-mergeable values. What if the values do merge?</em></p>
+
+<p>How can I discover all the locations where a particular option is set. 🤔</p>
+
+<blockquote>
+  <p>Note: This is a real problem I often face. A recent example was I noticed my fingerprint reader <code class="language-plaintext highlighter-rouge">services.fprintd</code> was enabled.
+I could not figure out where the option was being toggled however.</p>
+</blockquote>
+
+<p>When the majority of NixOS modules resided in Nixpkgs, I rarely had the problem of attributing where a particular option was set.
+I had the not great, but usable, workflow of searching (<a href="https://github.com/BurntSushi/ripgrep"><code class="language-plaintext highlighter-rouge">rg</code></a>) through the whole codebase to find all the likely spots
+that might have set it.</p>
+
+<p>With the <em>proliferation</em> of Nix Flakes, this problem has gotten increasingly worse. There is no longer a <em>single source of truth</em> for all your NixOS modules. The Nix Flakes system, encourages decentralized configurations and bringing in individual NixOS modules from many “registries” (<em>sic: GitHub repositories</em>).</p>
+
+<blockquote>
+  <p>Note: One could have pulled in NixOS modules from multiple repositories in the legacy mechanism, but it was hard to manage versioning even with tools like <a href="https://github.com/nmattia/niv">niv</a> or <a href="https://github.com/andir/npins">npins</a> so most people upstreamed their module to Nixpkgs itself.</p>
+</blockquote>
+
+<p>Turns out, the solution to my woes has been in Nixpkgs for over 2 years (circa 2022) via <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code>. 🎉</p>
+
+<p>You can load up the <code class="language-plaintext highlighter-rouge">nix repl</code> for a given Nix Flake and find all the locations (only file sadly 😔 no line number) along with their values.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl --extra-experimental-features 'flakes repl-flake' .
+warning: unknown experimental feature 'repl-flake'
+Nix 2.23.2
+Type :? for help.
+warning: Git tree '/home/fmzakari/code/github.com/fzakaria/nix-home' is dirty
+</span><span class="gp">Loading installable 'git+file:///home/fmzakari/code/github.com/fzakaria/nix-home#</span><span class="s1">'...
+</span><span class="go">Added 7 variables.
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>options <span class="o">=</span> nixosConfigurations.nyx.options  
+<span class="gp">nix-repl&gt;</span><span class="w"> </span>pkgs <span class="o">=</span> nixosConfigurations.nyx.pkgs                                                
+<span class="go">
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p <span class="o">(</span>pkgs.lib.take 2 options.environment.pathsToLink.definitionsWithLocations<span class="o">)</span>      
+<span class="go">[
+  {
+</span><span class="gp">    file = "/nix/store/hxhym8c5xz6dxkl3d9yppiwlnzk3khn7-source/nixos/common.nix";</span><span class="w">
+</span><span class="gp">    value = [ "/etc/profile.d" ];</span><span class="w">
+</span><span class="go">  }
+  {
+</span><span class="gp">    file = "/nix/store/ncinwsh2j3197rp8pl4yw7amri5yf9zw-source/users";</span><span class="w">
+</span><span class="go">    value = [
+      "/share/zsh"
+      "/share/fish"
+      "/share/bash"
+</span><span class="gp">    ];</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>If you only care to see the files, you can use <code class="language-plaintext highlighter-rouge">files</code> instead.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p <span class="o">(</span>pkgs.lib.take 2 options.environment.pathsToLink.files<span class="o">)</span>
+<span class="go">[
+  "/nix/store/hxhym8c5xz6dxkl3d9yppiwlnzk3khn7-source/nixos/common.nix"
+  "/nix/store/ncinwsh2j3197rp8pl4yw7amri5yf9zw-source/users"
+]
+</span></code></pre></div></div>
+
+<p>❗ Anywhere you see <code class="language-plaintext highlighter-rouge">XXXXXX-source</code> is the current Flake (your repository) but you can likely tell
+from the path and filenames as well.</p>
+
+<p><strong>Awesome</strong>; we now have a gesture to find where a particular option is being set along with their values.
+Now we can have our cake 🍰 and eat it too; we can have the magic of NixOS modules 🪄 while still having a workflow to
+uncover where options may be set.</p>
+
+<p>❗This works great for the most part but doesn’t seem to give the correct location for modules imported via Flakes (<em>I see the humor in this</em>).
+I filed <a href="https://github.com/NixOS/nix/issues/11210">Issue #11210</a> to track the bug 🐛 and document the behavior.</p>
+
+<p><strong>UPDATE(2024-07-29)</strong> I wrote a follow-up post on <a href="/2024/07/29/import-but-don-t-import-your-nixos-modules.html">pitfalls importing modules</a> which articulates what the problem was with <a href="https://github.com/NixOS/nix/issues/11210">Issue #11210</a> and how to fix it.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[NixOS modules are great; and it’s one of the superpowers of NixOS. They’re so great, there was a working group to look into how to apply the concept to Nixpkgs itself. For those uninitiated, there are plenty of guides online describing it’s value and purpose such as this one or on nix.dev. My largest complaint thus far with it was that it’s hard to go backwards. ⏪ “Who and what defined a particular option?” 🕵️]]></summary></entry><entry><title type="html">Management Time</title><link href="https://fzakaria.com/2024/07/24/management-time.html" rel="alternate" type="text/html" title="Management Time" /><published>2024-07-24T07:48:00-07:00</published><updated>2024-07-24T07:48:00-07:00</updated><id>https://fzakaria.com/2024/07/24/management-time</id><content type="html" xml:base="https://fzakaria.com/2024/07/24/management-time.html"><![CDATA[<blockquote>
+  <p><strong>Note</strong><br />
+This is the third (<a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">part1</a> &amp; <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">part2</a>) installment on my series of improving ELF symbol relocation processing.
+Consider reading them if this post interests you. 📖</p>
+</blockquote>
+
+<p>I have written <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">previously</a> about <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">improvements</a> to the dynamic linking process, specifically processing relocations for entries with symbols.</p>
+
+<p>The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to <strong>22x</strong> speedup compared to the traditional methadology, is memoizing the relocation entries.</p>
+
+<p>This memoization is possible since the linking order of the loader is <em>deterministic</em> and in store-based systems such as <a href="https://nixos.org/">NixOS</a> the libraries to be loaded are <em>fixed &amp; static</em>.</p>
+
+<!--more-->
+
+<p>The key datastructure used to freeze the relocations is a relatively simple struct.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">type</span><span class="p">;</span>                   <span class="c1">// Type of the relocation</span>
+    <span class="kt">size_t</span> <span class="n">addend</span><span class="p">;</span>              <span class="c1">// Addend of the relocation</span>
+    <span class="kt">size_t</span> <span class="n">st_value</span><span class="p">;</span>            <span class="c1">// Symbol value</span>
+    <span class="kt">size_t</span> <span class="n">st_size</span><span class="p">;</span>             <span class="c1">// Symbol size</span>
+    <span class="kt">size_t</span> <span class="n">offset</span><span class="p">;</span>              <span class="c1">// Offset of the relocation</span>
+    <span class="c1">// 0-based index starting from the head of the DSO list</span>
+    <span class="kt">size_t</span> <span class="n">symbol_dso_index</span><span class="p">;</span>
+    <span class="c1">// 0-based index starting from the head of the DSO list</span>
+    <span class="kt">size_t</span> <span class="n">dso_index</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">symbol_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>       <span class="c1">// Name of the symbol</span>
+    <span class="kt">char</span> <span class="n">symbol_dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>   <span class="c1">// Name of the DSO</span>
+    <span class="kt">char</span> <span class="n">dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>          <span class="c1">// Name of the DSO</span>
+<span class="p">}</span> <span class="n">CachedRelocInfo</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>These <em>fixed-width</em> entries are serialized to a separate file that is told to the loader to be loaded through the use of an environment variable <code class="language-plaintext highlighter-rouge">RELOC_READ</code></p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ RELOC_READ='hello_world_relo.bin' hello_world
+</span></code></pre></div></div>
+
+<p>In practice, the binaries are <em>wrapped</em> when deployed through NixOS so that this is all transparent to the user via a simple gesture in Nix.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">optimized_hello_world</span> <span class="o">=</span>
+     <span class="nv">optimizeRelocationLinking</span> <span class="p">{</span>
+        <span class="c"># You can pass any nixpkgs attribute here</span>
+        <span class="nv">executable</span> <span class="o">=</span> <span class="nv">hello_world</span><span class="p">;</span>
+    <span class="p">};</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Wrapped file hello_world-optimized</span>
+<span class="c">#! /nix/store/xxx-bash-5.2-p15/bin/bash -e</span>
+<span class="nb">export </span><span class="nv">RELOC_READ</span><span class="o">=</span><span class="s1">'/nix/store/xxx-patched_hello_world/bin/hello_world_relo.bin'</span>
+<span class="nb">exec</span> <span class="s2">"/nix/store/xxx-patched_hello_world/bin/hello_world"</span>  <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span> 
+</code></pre></div></div>
+
+<p>ℹ️ I’ve chosen to encode the cached relocation infos as a separate file since NixOS has solved the <em>multi-file update problem</em>; and I find having a separate file simpler to work with. The cached relocations could also be placed within a segment/section on the ELF file itself as well.</p>
+
+<p>🕵️ Turns out though that having this information <em>frozen</em> is not only useful to optimize the process itself but can be used for workflows relating to <strong>auditing</strong>, <strong>validation</strong> and <strong>modification</strong>.</p>
+
+<p>Some of these workflows may occur today during <em>compile time</em> or <em>runtime</em>.
+Performing them in between, has led us (coined by my advisor <a href="https://arquinn.github.io/">Prof. Andrew Quinn</a>) to label it <strong>management time</strong>.</p>
+
+<p>To demonstrate <em>management time</em>, I wrote a small Python utility <a href="https://github.com/fzakaria/musllibc/blob/management-time/examples/swiss-army-knife/sak.py">sak</a> (swiss army knife).</p>
+
+<h2 id="converting-to-jsonsqlite-and-back">Converting to JSON/SQLite and back</h2>
+
+<p>The current file format is a binary protocol and not suitable for auditing. We can easily transform it to JSON or a SQLite database, to perform audits.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ sak file-to-sqlite ./hello_world_relo.bin \
+                     --db hello_world.sqlite
+
+❯ sqlite3 hello_world.sqlite
+</span><span class="gp">sqlite&gt;</span><span class="w"> </span>.mode json
+<span class="gp">sqlite&gt;</span><span class="w"> </span><span class="k">select</span> <span class="k">*</span> from CachedRelocInfo LIMIT 1<span class="p">;</span>
+<span class="go">[
+  {
+    "id": 1,
+    "type": 7,
+    "addend": 0,
+    "st_value": 562266,
+    "st_size": 193,
+    "offset": 16336,
+    "symbol_dso_index": 2,
+    "dso_index": 1,
+    "symbol_name": "puts",
+    "symbol_dso_name": "/nix/store/xxx-musl/lib/libc.so",
+    "dso_name": "/nix/store/xxx-libfoo/lib/libfoo.so"
+  }
+]
+</span></code></pre></div></div>
+<p>This file is a <em>frozen snapshot</em> of the exact symbol bindings that will occur during process startup. If you’ve ever wanted to easily audit whether a particular CVE may have affected you, you can either construct a <code class="language-plaintext highlighter-rouge">jq</code> or <code class="language-plaintext highlighter-rouge">SQL</code> query to demonstrably prove it.</p>
+
+<p>😮 You can even modify the JSON file or SQLite perform serializing it back to the binary format. You could change the binding of symbols effectively customizing the interposition (shadow) order. Effectively akin to Solaris’s <a href="https://en.wikipedia.org/wiki/Direct_binding">direct binding</a> but done during <em>management time</em>, as opposed to compile time.</p>
+
+<blockquote>
+  <p>A workflow I am developing is supporting new libraries injected into the format so that you can do extremely targeted <code class="language-plaintext highlighter-rouge">LD_PRELOAD</code> equivalent workflows.</p>
+</blockquote>
+
+<h2 id="upgrades-made-easy">Upgrades Made Easy</h2>
+
+<p>Knowing the surface area the transitive closure (<em>not just the application</em>) uses for a given library gives us a <em>fingerprint</em> with which to test new libraries against whether they can be upgraded.</p>
+
+<p>We can validate that we could replace a library with a different version, or even a different library that may offer the same symbols, without needing to run our application.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ sak has-necessary-symbols hello_world_relo.bin \
+        --new-library /nix/store/xxx-libfoo-1.1/lib/libfoo.so \
+        --symbol-dso-name "/nix/store/xxx-libfoo-1.0/lib/libfoo.so"
+The following symbols are missing:
+bar
+</span></code></pre></div></div>
+
+<p>The power of this workflow boils down to a simple <code class="language-plaintext highlighter-rouge">LEFT JOIN</code> since the data is all present.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- ELFSymbols is a table with the symbol entries solely</span>
+<span class="c1">-- from the new library you are hoping to supplant with</span>
+<span class="k">SELECT</span> <span class="n">cri</span><span class="p">.</span><span class="n">symbol_name</span>
+<span class="k">FROM</span> <span class="n">CachedRelocInfo</span> <span class="n">cri</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">ELFSymbols</span> <span class="n">es</span>
+<span class="k">ON</span> <span class="n">cri</span><span class="p">.</span><span class="n">symbol_name</span> <span class="o">=</span> <span class="n">es</span><span class="p">.</span><span class="n">symbol_name</span>
+<span class="k">WHERE</span> <span class="n">es</span><span class="p">.</span><span class="n">symbol_name</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span>
+      <span class="n">cri</span><span class="p">.</span><span class="n">symbol_dso_name</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">SYMBOL_DSO_NAME</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>ℹ️ SQL is a powerful language to introspect binaries. Check out <a href="https://github.com/fzakaria/sqlelf">sqlelf</a> for a more general utility. I have also published a paper on the benefits of using SQL to drive ELF analysis; <a href="https://arxiv.org/abs/2405.03883">sqlelf: a SQL-centric Approach to ELF Analysis</a>.</p>
+
+<p>I have only begun to scratch the surface of the possibilities of <em>management time</em>. Having memoized linking information frozen within something like the <em>/nix/store</em> for every package available within <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> opens pretty imaginative workflows that no other distribution could compete with 🤯.</p>
+
+<p>We’ve all taken the underpinnings of our toolchain for granted. It’s true we are building on the shoulders of giants, but it’s imperative to look back and rethink decisions that may have existed for decades especially in-light of newer development models (i.e. NixOS) that offer us a chance to radically deviate from pre-existing conventions.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Note This is the third (part1 &amp; part2) installment on my series of improving ELF symbol relocation processing. Consider reading them if this post interests you. 📖 I have written previously about improvements to the dynamic linking process, specifically processing relocations for entries with symbols. The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to 22x speedup compared to the traditional methadology, is memoizing the relocation entries. This memoization is possible since the linking order of the loader is deterministic and in store-based systems such as NixOS the libraries to be loaded are fixed &amp; static.]]></summary></entry></feed>
