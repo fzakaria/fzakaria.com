@@ -141,7 +141,7 @@ HAVING count(*) >= 2"
 │    name    │   version   │ symbol_count │                                libraries                                │
 │ __finite   │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __finitef  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
-│ __finite  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
+│ __finitel  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __signbit  │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __signbitf │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │
 │ __signbitl │ GLIBC_2.2.5 │ 2            │ /usr/lib/x86_64-linux-gnu/libm.so.6:/usr/lib/x86_64-linux-gnu/libc.so.6 │

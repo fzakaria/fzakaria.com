@@ -64,7 +64,7 @@ If we inspect the resulting executable file with _readelf_ we can see the reloca
 ```console
 ❯ readelf -r main
 ...
-Relocation section '.real.plt' at offset 0x530 contains 5 entries:
+Relocation section '.rela.plt' at offset 0x530 contains 5 entries:
   Offset          Info           Type           Sym. Value    Sym. Name + Addend
 000000004000  000600000007 R_X86_64_JUMP_SLO 0000000000000000 foo + 0
 ```
