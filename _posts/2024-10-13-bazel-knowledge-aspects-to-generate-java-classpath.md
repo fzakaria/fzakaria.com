@@ -46,17 +46,29 @@ def _classpath_aspect_impl(target, ctx):
     # Make sure the rule has a deps attribute.
     if hasattr(ctx.rule.attr, 'deps'):
         target_compile_jars = target[JavaInfo].full_compile_jars
-        # collect all the depsets from all the labels in the
-        # rule's deps
         dep_compile_jars = [
             dep[ClassPathInfo].compile_jars
             for dep in ctx.rule.attr.deps
         ]
-        # merge them into a single list
         all_compile_jars = [target_compile_jars] + dep_compile_jars
-        # return the merged depset by passing the
+        merged_depset = depset(transitive=all_compile_jars)
+
+        classpath_strings = []
+        for jar in merged_depset.to_list():
+            classpath_strings.append(jar.path)
+
+        output_file = ctx.actions.declare_file("classpath.txt")
+        ctx.actions.write(
+            output = output_file,
+            content = "\n".join(classpath_strings),
+            is_executable = False
+        )
+
         return [ClassPathInfo(
-                compile_jars = depset(transitive=all_compile_jars)
+            compile_jars = merged_depset
+            ),
+            OutputGroupInfo(
+                compile_jars = depset([output_file])
             )]
     return [ClassPathInfo(compile_jars = depset())]
 
@@ -68,7 +80,26 @@ classpath_aspect = aspect(
 )
 ```
 
-We now create a rule that defines the labels provided must be of the type aspect.
+A _less documented_ feature of Bazel is the "output groups" which you can see here we are
+by specifying `OuputGroupInfo`. The idea here is that we can now specify our apect for any
+label by using this command line invocation:
+
+```console
+> bazel build //java/app --aspects defs.bzl%classpath_aspect \
+        --output_groups=compile_jars
+
+INFO: Analyzed target //java/app:app (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+Aspect //:defs.bzl%classpath_aspect of //java/app:app up-to-date:
+  bazel-bin/java/app/classpath.txt
+
+>  cat bazel-bin/java/app/classpath.txt
+bazel-out/k8-fastbuild/bin/java/lib/liblib.jar
+bazel-out/k8-fastbuild/bin/java/lib2/liblib2.jar⏎
+```
+
+That's not all though! We can also create a rule that defines the labels provided must be of the type aspect.
+This let's us encode the build targets in our `BUILD` files themselves.
 
 The rule itself is straightforward. For each label provided, it goes through the
 items in the `compile_jars` depset and creates an output file which is the
@@ -96,6 +127,9 @@ generate_classpath_rule = rule(
 )
 ```
 
+> ❗ There is a bit of duplication in the rule for generating the output file. We could have also
+> used the OutputGroupInfo and merged all the files together.
+
 In order to invoke this rule you define it in a `BUILD` file and give it the top-level
 applications that you are working on.
 
@@ -108,5 +142,5 @@ generate_classpath_rule(
 )
 ```
 
-🎉 We now have a pretty simple way to generate the compile-time CLASSPATH for a label.
+🎉 We now have **two** pretty simple ways to generate the compile-time CLASSPATH for a label.
 This can make integrations with IDEs a bit more straightforward if they don't have a working Bazel plugin.
