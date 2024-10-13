@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss xmlns:iphoto="urn:iphoto:property" xmlns:iweb="http://www.apple.com/iweb" version="2.0">
+  <channel>
+    <title>Extra photos</title>
+    <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html</link>
+    <description>Checkout the right some additional photos I made during the ray tracing project. Not all of them are great :)</description>
+    <item>
+      <title>simple-cows-celShadingON</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#0</link>
+      <guid isPermaLink="false">40e8ce65-9b45-4da9-a21e-892d3d7c9469</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/simple-cows-celShadingON/simple-cows-celShadingON.jpg" length="17438" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/simple-cows-celShadingON/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/simple-cows-celShadingON/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;simple-cows-celShadingON&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>Cel-shading
+(changing gradient)</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#1</link>
+      <guid isPermaLink="false">5beb6e69-f31d-43dd-b180-1815f34d0574</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/sample-cellshaded%28newGradient%29/sample-cellshaded%28newGradient%29.jpg" length="42503" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/sample-cellshaded%28newGradient%29/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/sample-cellshaded%28newGradient%29/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;Cel-shading&lt;br/&gt;&lt;/p&gt;&lt;p style=&quot;padding-bottom: 0pt; &quot; class=&quot;Caption&quot;&gt;(changing gradient)&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>The initial idea of final scene. (plane primitive)</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#2</link>
+      <guid isPermaLink="false">94cadc7d-e945-4cab-824c-3353cab9a3f3</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/normal/normal.jpg" length="62208" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/normal/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/normal/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;The initial idea of final scene. (plane primitive)&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>playing around with texture mapping.</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#3</link>
+      <guid isPermaLink="false">bee4cbd6-3798-4244-b571-d92beb3864a4</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/nonhier/nonhier.jpg" length="46151" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/nonhier/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/nonhier/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;playing around with texture mapping.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>macho_cows from A4</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#4</link>
+      <guid isPermaLink="false">acdf31a6-751a-41f7-9632-26d2f44158a3</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/macho_cows/macho_cows.jpg" length="17468" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/macho_cows/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/macho_cows/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;macho_cows from A4&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>Final Scene without AA</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#5</link>
+      <guid isPermaLink="false">08107d6b-bd95-499b-ad9d-71c2e9e56aac</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/simple/simple.jpg" length="76385" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/simple/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/simple/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;Final Scene without AA&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>My awesome explanation of DOF</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#6</link>
+      <guid isPermaLink="false">a60154d0-a747-4e87-ac82-b1552cf12913</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/DOF_Explained/DOF_Explained.jpg" length="31393" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/DOF_Explained/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/DOF_Explained/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;My awesome explanation of DOF&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>Milestone for refraction working</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#7</link>
+      <guid isPermaLink="false">4f8652dc-f2e9-4429-9619-a3b1c26f83a0</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/refraction/refraction.jpg" length="62489" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/refraction/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/refraction/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;Milestone for refraction working&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>Milestone reflections</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#8</link>
+      <guid isPermaLink="false">9568ef41-9a3a-4dc4-8fa6-73cf9447165d</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/sample/sample.jpg" length="31807" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/sample/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/sample/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;Milestone reflections&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>Displaying bounding spheres.</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#9</link>
+      <guid isPermaLink="false">f3688ead-0c89-4128-9ad1-19982bd99931</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/macho_cows-noplane-bb/macho_cows-noplane-bb.jpg" length="20375" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/macho_cows-noplane-bb/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/macho_cows-noplane-bb/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;Displaying bounding spheres.&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>background-space</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#10</link>
+      <guid isPermaLink="false">fa106de0-6078-45c1-b1f6-aae3554df8f7</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/background-space/background-space.jpg" length="83719" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/background-space/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/background-space/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;background-space&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>rock2</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#11</link>
+      <guid isPermaLink="false">4bb49ae4-e795-40ae-a657-52791fa1a209</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock2/rock2.jpg" length="276459" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock2/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock2/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;rock2&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>rock2-normal</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#12</link>
+      <guid isPermaLink="false">609db423-c61d-45a1-b84e-2d7e73e6205b</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock2-normal/rock2-normal.jpg" length="212402" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock2-normal/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock2-normal/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;rock2-normal&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>wood</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#13</link>
+      <guid isPermaLink="false">dc12beae-6fcd-4640-9e6b-e4f12234e738</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/wood/wood.jpg" length="76638" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/wood/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/wood/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;wood&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>wood-normal</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#14</link>
+      <guid isPermaLink="false">da3967bc-c1ca-4b8c-bda3-8f49adf3aaae</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/wood-normal/wood-normal.jpg" length="131148" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/wood-normal/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/wood-normal/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;wood-normal&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>cow</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#15</link>
+      <guid isPermaLink="false">9f431985-fea6-46ca-bbf6-8ef9d4dc8c08</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/cow/cow.jpg" length="23666" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/cow/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/cow/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;cow&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>alien-metal</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#16</link>
+      <guid isPermaLink="false">7d2761b3-feb3-4f73-95d2-c494f70e6ce1</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/alien-metal/alien-metal.jpg" length="123104" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/alien-metal/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/alien-metal/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;alien-metal&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>alien-metal-normal</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#17</link>
+      <guid isPermaLink="false">31471734-704c-4dd5-98a5-92b51c5ce718</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/alien-metal-normal/alien-metal-normal.jpg" length="60581" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/alien-metal-normal/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/alien-metal-normal/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;alien-metal-normal&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+    <item>
+      <title>rock-normal</title>
+      <link>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos.html#18</link>
+      <guid isPermaLink="false">e5379aa5-2f3d-4b47-aa98-0718a9b42476</guid>
+      <enclosure url="file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock-normal/rock-normal.jpg" length="58446" type="image/jpeg"/>
+      <iphoto:thumbnail>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock-normal/thumb.jpg</iphoto:thumbnail>
+      <iweb:micro>file://localhost/Users/Setheron/Sites/raytracer/RayTracing/Additional_Photos_files/Media/rock-normal/micro.jpg</iweb:micro>
+      <iweb:richTitle>&lt;div style=&quot;padding: 0px; &quot; class=&quot;image_cluster_layout_style_default_External_102_28&quot;&gt;&lt;div class=&quot;image_cluster_layout_style_default&quot;&gt;&lt;p style=&quot;padding-bottom: 0pt; padding-top: 0pt; &quot; class=&quot;Caption&quot;&gt;rock-normal&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;</iweb:richTitle>
+    </item>
+  </channel>
+</rss>
