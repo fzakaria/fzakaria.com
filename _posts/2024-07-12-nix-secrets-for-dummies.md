@@ -20,7 +20,7 @@ Let me save you time, and we will focus solely on _agenix_. _agenix_ is a Nix mo
 We will work around the example of a secret file: _password_
 
 ```
-❯ echo "swordfish" > password
+❯ echo -n "swordfish" > password
 ❯ cat password
 swordfish
 ```
