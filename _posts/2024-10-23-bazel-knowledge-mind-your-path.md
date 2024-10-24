@@ -52,10 +52,12 @@ I then convert it to textual form and diff them.
 
 ```bash
 # build protoc normally
-> bazel build @com_google_protobuf//:protoc --execution_log_compact_file=/tmp/exec1.log
+> bazel build @com_google_protobuf//:protoc \
+    --execution_log_compact_file=/tmp/exec1.log
 
 # muck up the PATH
-> PATH=$PATH:/bin4/ bazel build @com_google_protobuf//:protoc --execution_log_compact_file=/tmp/exec2.log
+> PATH=$PATH:/bin4/ bazel build @com_google_protobuf//:protoc \
+    --execution_log_compact_file=/tmp/exec2.log
 
 > bazel-bin/src/tools/execlog/parser \
   --log_path=/tmp/exec1.log \
