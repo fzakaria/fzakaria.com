@@ -50,7 +50,7 @@ Bazel constructs a similar graph to determine when to do _early cutoff optimizat
 
 In Java-world, dependencies are expressed as JARs.
 
-Wouldn't that private-only changes to a dependency (i.e. renaming a private variable) cause the Action Key HASH to change (since it produced a different JAR) ?
+Wouldn't private-only changes to a dependency (i.e. renaming a private variable) cause the Action Key HASH to change (since it produced a different JAR) ?
 
 🤓 YES! That is why we need an `ijar` !
 
