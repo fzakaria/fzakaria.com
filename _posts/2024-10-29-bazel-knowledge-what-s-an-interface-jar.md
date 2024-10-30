@@ -126,4 +126,6 @@ e18e0ae82bdc4deb04f04aa  banana-interface.jar
 
 We now the equivalent of a header file for Java code.  🙌
 
+Bazel will use the `ijar` when computing the Action Key hash in lieu of the JAR for the dependencies you may depend on; thus avoiding costly rebuilds when only private information changes within your dependency.
+
 This is the amazing lesser known tool that makes Bazel super-powered 🦸 for JVM languages.
