@@ -9,6 +9,8 @@ Bazel has always had support for [protocol buffers (protobuf)](https://protobuf.
 Both being a Google product, one would think that their integration would be seamless and the best experience.
 Unfortunately, it's some of the worst part of the user experience with Bazel I've found. 😔
 
+<!--more-->
+
 Let's start with the basics; _What rule should I adopt for protobufs?_
 
 Well first I Google _"Bazel protobuf"_ and land on the [protobuf reference page](https://bazel.build/reference/be/protocol-buffer) for Bazel
