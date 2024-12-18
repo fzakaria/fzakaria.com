@@ -5,14 +5,14 @@ date: 2024-11-08 14:01 -0800
 excerpt_separator: <!--more-->
 ---
 
-_Ever heard of a JarIndex? I had been doing JVM develpoment for 10+ years and I hadn't. Read on to discover what it is and how it can speedup your compilation and boot time._ 🤓
+_Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn't. Read on to discover what it is and how it can speedup your compilation and boot time._ 🤓
 
 After having worked on [Shrinkwrap](https://github.com/fzakaria/shrinkwrap) and publishing our results in [Mapping Out the HPC Dependency Chaos](https://arxiv.org/abs/2211.05118), you start
 to see the Linux environment as a bit of an oddball.
 
 _Everything in Linux is structured around O(n) or O(n^2) search and lookup_.
 
-This feels now unsuprising given that everything in Linux searches across colon separate lists (i.e. _LD_LIBRARY_PATH_, _RUN_PATH_).
+This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. _LD_LIBRARY_PATH_, _RUN_PATH_).
 This idiom however is even more pervasive and has bled into all of our language.
 
 The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the _CLASS_PATH_.
