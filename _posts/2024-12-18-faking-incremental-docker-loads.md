@@ -55,7 +55,7 @@ Turns out if your image is moderately large (>2GiB), an individual upload can ta
 
 There is **no handshaking** or range-read of the compressed stream, meaning you must send the whole compressed image, which must then be uncompressed and validated for Docker to determine it already had the necessary layers present.
 
-We experienced this with our tests either failing or timeing out as each concurrent test tried to upload multi-gigabyte images concurrently.
+We experienced this with our tests either failing or timing out as each concurrent test tried to upload multi-gigabyte images concurrently.
 
 Turns out, this limitation is documented and known:
 * [docker/buildx/issues/107](https://github.com/docker/buildx/issues/107)
@@ -87,7 +87,7 @@ Don't despair! Turns out we can **fake incrementality** uploads in Docker with a
 
 Let's break it down.
 
-1. A Docker image, which is different than the OCI format, is a _tar_ file (or _tar.gz_) with a file `index.json` that dictates the files that should be present within the archive.
+1. A Docker image, which is different than the OCI format, is a _tar_ file (or _tar.gz_) with a file `manifest.json` that dictates the files that should be present within the archive.
 
     I've shortened the sha256 in the below example.
 
@@ -206,7 +206,9 @@ SIZE
 ```
 
 ### Where's time spent?
-At this point you have to improve the image or still upload it outsize of the Bazel context when the layer is large. I would like to dive deeper and understand why the uploads completely stall.
+At this point you have to improve the image by seggregating the data into more multiple layers or continue to upload it outside of the Bazel context.
+
+🕵️ I would like to dive deeper and understand why the uploads completely stall.
 
 The relevant code in Docker [can be found here](https://github.com/moby/moby/blob/0d53725a7f8abb0b75961806da252f31155cb813/image/tarexport/load.go#L33).
 
@@ -234,3 +236,5 @@ c68e52b834e4: Loading layer [==================================================>
 Loaded image: bad_example:0.1
 docker load < test.tar.gz  0.38s user 1.62s system 13% cpu 14.565 total
 ```
+
+That means creating the archive  and uploading it can take ~1 minute of test execution time. This problem seems to compound with multiple archives created and uploaded; more research is needed to know if the bottleneck is the Docker daemon itself (a global lock?) or the I/O of the disk.
