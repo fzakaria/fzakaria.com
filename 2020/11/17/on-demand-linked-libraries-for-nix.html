@@ -1,0 +1,273 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>On-demand linked libraries for Nix | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="On-demand linked libraries for Nix" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a write up of some discussion ongoing with some folks on the #nix-community IRC chat primarily being driven by Mic92. Nixpkgs maintains the highest rating on Repology for having the most packages &amp; which are up to date. Unfortunately even with the current ecosystem of packages, there will always be gaps, and for beginners in NixOS a common question is: “I’ve download a binary and would like to run it on NixOS” Take a look at this graph https://repology.org/repositories/graphs Can we do better &amp; streamline running non-Nix software? 🤔 This was some of the questions posed by some Nix contributors and I wanted to capture the ideas put forward for others." />
+<meta property="og:description" content="This is a write up of some discussion ongoing with some folks on the #nix-community IRC chat primarily being driven by Mic92. Nixpkgs maintains the highest rating on Repology for having the most packages &amp; which are up to date. Unfortunately even with the current ecosystem of packages, there will always be gaps, and for beginners in NixOS a common question is: “I’ve download a binary and would like to run it on NixOS” Take a look at this graph https://repology.org/repositories/graphs Can we do better &amp; streamline running non-Nix software? 🤔 This was some of the questions posed by some Nix contributors and I wanted to capture the ideas put forward for others." />
+<link rel="canonical" href="https://fzakaria.com/2020/11/17/on-demand-linked-libraries-for-nix.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/11/17/on-demand-linked-libraries-for-nix.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-11-17T21:32:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="On-demand linked libraries for Nix" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-11-17T21:32:00-08:00","datePublished":"2020-11-17T21:32:00-08:00","description":"This is a write up of some discussion ongoing with some folks on the #nix-community IRC chat primarily being driven by Mic92. Nixpkgs maintains the highest rating on Repology for having the most packages &amp; which are up to date. Unfortunately even with the current ecosystem of packages, there will always be gaps, and for beginners in NixOS a common question is: “I’ve download a binary and would like to run it on NixOS” Take a look at this graph https://repology.org/repositories/graphs Can we do better &amp; streamline running non-Nix software? 🤔 This was some of the questions posed by some Nix contributors and I wanted to capture the ideas put forward for others.","headline":"On-demand linked libraries for Nix","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/11/17/on-demand-linked-libraries-for-nix.html"},"url":"https://fzakaria.com/2020/11/17/on-demand-linked-libraries-for-nix.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    On-demand linked libraries for Nix
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-11-17
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/11/17/on-demand-linked-libraries-for-nix.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a write up of some discussion ongoing with some folks on the <a href="irc://irc.freenode.net/nix-community">#nix-community</a> IRC chat primarily being driven by <a href="https://github.com/Mic92">Mic92</a>.</p>
+</blockquote>
+
+<p>Nixpkgs maintains the highest rating on <a href="https://repology.org/">Repology</a> for having the most packages &amp; which are up to date. Unfortunately even with the current ecosystem of packages, there will always be gaps, and for beginners in NixOS a common question is:</p>
+
+<p><em>“I’ve download a binary and would like to run it on NixOS”</em></p>
+
+<blockquote>
+  <p>Take a look at this graph <a href="https://repology.org/repositories/graphs">https://repology.org/repositories/graphs</a></p>
+</blockquote>
+
+<p><img src="/assets/images/repology.svg" alt="repology graph" /></p>
+
+<p><strong>Can we do better &amp; streamline running non-Nix software?</strong> 🤔</p>
+
+<p>This was some of the questions posed by some Nix contributors and I wanted to capture the ideas put forward for others.</p>
+
+<!--more-->
+
+<h2 id="a-brief-tour-of-linking">A brief tour of linking</h2>
+
+<p>Without going into a ton of detail about how dynamic libraries are performed on Linux; a Linux binary - <a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">ELF format</a> - contains information pertaining to the dynamic libraries necessary for the binary.</p>
+
+<p>For instance, here is a non-NixOS Ruby installation.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ readelf <span class="nt">-d</span> <span class="si">$(</span>which ruby<span class="si">)</span> | <span class="nb">grep </span>NEEDED
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libruby-2.7.so.2.7]
+ 0x0000000000000001 <span class="o">(</span>NEEDED<span class="o">)</span>             Shared library: <span class="o">[</span>libc.so.6]
+</code></pre></div></div>
+<p>It requires two dynamic libraries <em>libruby</em> &amp; <em>libc</em>. These libraries may themselves have other dependencies, so we can use <strong>ldd</strong> to recursively find the dependency closure.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ ldd <span class="si">$(</span>which ruby<span class="si">)</span>
+    linux-vdso.so.1 <span class="o">(</span>0x00007ffed1705000<span class="o">)</span>
+    /lib/x86_64-linux-gnu/libnss_cache.so.2 <span class="o">(</span>0x00007f3626cd0000<span class="o">)</span>
+    libruby-2.7.so.2.7 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/libruby-2.7.so.2.7 <span class="o">(</span>0x00007f3626960000<span class="o">)</span>
+    libc.so.6 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/libc.so.6 <span class="o">(</span>0x00007f362679b000<span class="o">)</span>
+    libpthread.so.0 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/libpthread.so.0 <span class="o">(</span>0x00007f3626779000<span class="o">)</span>
+    librt.so.1 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/librt.so.1 <span class="o">(</span>0x00007f362676e000<span class="o">)</span>
+    libgmp.so.10 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/libgmp.so.10 <span class="o">(</span>0x00007f36266eb000<span class="o">)</span>
+    libdl.so.2 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/libdl.so.2 <span class="o">(</span>0x00007f36266e3000<span class="o">)</span>
+    libcrypt.so.1 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/libcrypt.so.1 <span class="o">(</span>0x00007f36266a8000<span class="o">)</span>
+    libm.so.6 <span class="o">=&gt;</span> /lib/x86_64-linux-gnu/libm.so.6 <span class="o">(</span>0x00007f3626564000<span class="o">)</span>
+    /lib64/ld-linux-x86-64.so.2 <span class="o">(</span>0x00007f3626cde000<span class="o">)</span>
+</code></pre></div></div>
+
+<p>We can see here that <strong>ldd</strong> resolved the libraries to locations in my <a href="https://en.wikipedia.org/wiki/Filesystem_Hierarchy_Standard">Filesystem Hierarchy Standard</a>(FHS).</p>
+
+<p>This is <em>not hermetic</em>, as the FHS is a global shared state across my machine.
+This is the exact problem that Nix itself wants to address.</p>
+
+<blockquote>
+  <p>I’m on a Debian distro at the moment.</p>
+</blockquote>
+
+<p>Nix addresses this generally by patching the ELF header to <em>fully specify</em> where the shared libraries can be found in the <em>/nix/store</em>; so that they are not resolved or searched on the FHS.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ readelf -d $(which ruby) | grep RUNPATH
+ 0x000000000000001d (RUNPATH) Library runpath:
+ [/nix/store/z5lira1853d97gbmv1qbdjjpkjn7ksj8-ruby-2.6.6/lib:
+ /nix/store/8fcxqg8dmwlkjw2vgkgz607kr5jy552w-zlib-1.2.11/lib:
+ /nix/store/kah5n342wz4i0s9lz9ka4bgz91xa2i94-glibc-2.32/lib]
+</code></pre></div></div>
+
+<p>This <em>patching</em> however relies on the Nix <em>stdenv</em> derivation builder and ultimately is what makes binaries in Nix work.</p>
+
+<blockquote>
+  <p>Nix actually takes it a step further and patches the linker so that it does not even try to check the FHS.</p>
+</blockquote>
+
+<p>Binaries downloaded from the Internet are not patched. What can be done?</p>
+
+<h2 id="interpreter">Interpreter</h2>
+
+<p>A key insight into the bootstrapping of an ELF binary in Linux is the <em>interpreter</em>, whose presence is there to help satisfy any dynamic linkage.</p>
+
+<p>Let’s take a look again at my non-Nix Ruby binary</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ readelf <span class="nt">-l</span> <span class="si">$(</span>which ruby<span class="si">)</span> | <span class="nb">grep </span>interpreter
+      <span class="o">[</span>Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+</code></pre></div></div>
+
+<blockquote>
+  <p>Nix built binaries use a <a href="https://github.com/NixOS/patchelf">patchelf</a> utility that not only sets the <em>RUNPATH</em> to pin libraries but also changes the interpreter to one in the <em>/nix/store</em></p>
+</blockquote>
+
+<p>It is the interpreter’s goal to find the libraries listed in the ELF file either via the <em>RUNPATH</em>, <em>LD_LIBRARY_PATH</em> or the <em>FHS</em> well known directories.</p>
+
+<p>⚠️ On NixOS <code class="language-plaintext highlighter-rouge">/lib64/ld-linux-x86-64.so.2</code> normally <strong>does not exist</strong> and as a result you will be greeted with an unfriendly <em>“bad ELF interpreter: No such file or directory”</em> error.</p>
+
+<h2 id="nix-ld">nix-ld</h2>
+
+<p>We have a binary that needs some shared libraries &amp; the bootstrapping process calls out to the interpreter set in the ELF header.</p>
+
+<p>💡 Let’s put a <em>fake</em> interpreter on NixOS machines!</p>
+
+<blockquote>
+  <p>This idea works since the path of Linux <em>ld</em> is well known for each distribution.</p>
+</blockquote>
+
+<p>For instance, NixOS machines can place an entry at <em>/lib64/ld-linux-x86-64.so.2</em> for a custom binary that can help resolve dynamic libraries <strong>at runtime</strong> to libraries within the <em>/nix/store</em>.</p>
+
+<p>This is in fact what <a href="https://github.com/Mic92">Mic92</a> has started with his project <a href="https://github.com/Mic92/nix-ld">nix-ld</a>.</p>
+
+<p>How can our custom <em>ld</em> locate the necessary libraries though? This is where we can get really crazy. 🤪</p>
+
+<p>We can use <a href="https://github.com/bennofs/nix-index">nix-index</a> – a files database for nixpkgs – to locate packages in Nix that provide the necessary library. 🤯</p>
+
+<p>The packages can be realized on-demand onto the host and their <em>/nix/store</em> entry can then be included into the <em>LD_LIBRARY_PATH</em> environment variable set when handing off to the <em>real ld</em>.</p>
+
+<blockquote>
+  <p>If gc-roots are set for the required libraries, this determination can then be cached for a given binary.</p>
+</blockquote>
+
+<p>Fancier best-effort matching on picking packages that have the highest % of required symbols could also be done.</p>
+
+<p>It seems kind of crazy that just picking random packages from the <em>nix-index</em> would ultimately let us run the binary; except that is how traditional software in Linux normally works! 😱</p>
+
+<p>At worst it is providing the same experience users typically experience on non-NixOS distributions but giving a gentler onboarding for people as they see the Nix-light 😇</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-11-17-on-demand-linked-libraries-for-nix.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

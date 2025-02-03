@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Eval the Nix | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Eval the Nix" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’ll keep this post short and sweet. I want to write a little blurb that I’ve been mostly enjoying using nix eval to introspect." />
+<meta property="og:description" content="I’ll keep this post short and sweet. I want to write a little blurb that I’ve been mostly enjoying using nix eval to introspect." />
+<link rel="canonical" href="https://fzakaria.com/2021/07/31/eval-the-nix.html" />
+<meta property="og:url" content="https://fzakaria.com/2021/07/31/eval-the-nix.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-07-31T17:14:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Eval the Nix" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-07-31T17:14:00-07:00","datePublished":"2021-07-31T17:14:00-07:00","description":"I’ll keep this post short and sweet. I want to write a little blurb that I’ve been mostly enjoying using nix eval to introspect.","headline":"Eval the Nix","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2021/07/31/eval-the-nix.html"},"url":"https://fzakaria.com/2021/07/31/eval-the-nix.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Eval the Nix
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2021-07-31
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2021/07/31/eval-the-nix.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I’ll keep this post short and <em>sweet</em>. I want to write a little blurb that I’ve been mostly enjoying using <strong>nix eval</strong> to introspect.</p>
+
+<!--more-->
+
+<p><strong>Scenario 1</strong>
+I wanted to set <em>JAVA_HOME</em> to a particular JDK.</p>
+
+<p>You can use <code class="language-plaintext highlighter-rouge">eval</code> to determine the <em>JAVA_HOME. The <strong>gotcha</strong> here however, is that the JDK may not necessarily be in your _/nix/home</em>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix <span class="nb">eval </span>nixpkgs.jdk8.home <span class="nt">--raw</span>
+/nix/store/0jfk27bplglsqh7m945pvayjwh2fy1m0-openjdk-8u272-b10/lib/openjdk
+</code></pre></div></div>
+
+<p>A more complete solution is the following.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">export </span><span class="nv">JAVA_HOME</span><span class="o">=</span><span class="si">$(</span>nix build nixpkgs.jdk8 <span class="o">&amp;&amp;</span> nix <span class="nb">eval </span>nixpkgs.jdk8.home <span class="nt">--raw</span><span class="si">)</span>
+</code></pre></div></div>
+
+<p><strong>Scenario 2</strong> I wanted to discover the calculated <em>/nix/store</em> path for a particular derivation.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix <span class="nb">eval </span>nixpkgs.hello.outPath <span class="nt">--raw</span>
+/nix/store/jmmw0d3nmklwafcwylvrjb9v69wrbcxf-hello-2.10
+</code></pre></div></div>
+
+<p>💡 You can also do something similar to find out the derivation path.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix <span class="nb">eval </span>nixpkgs.hello.drvPath <span class="nt">--raw</span>
+/nix/store/wqnx5cgcabxkfp771fmjr1nw7mjr9zlm-hello-2.10.drv
+</code></pre></div></div>
+
+<p><strong>Scenario 3</strong> I want a quick one-liner for what I can do with <code class="language-plaintext highlighter-rouge">nix repl</code>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix <span class="nb">eval</span> <span class="s1">'(builtins.attrNames (import &lt;nixpkgs&gt;{}).hello)'</span> <span class="nt">--json</span> | jq
+<span class="o">[</span>
+  <span class="s2">"__ignoreNulls"</span>,
+  <span class="s2">"all"</span>,
+  <span class="s2">"args"</span>,
+  <span class="s2">"buildInputs"</span>,
+  <span class="s2">"builder"</span>,
+  <span class="s2">"configureFlags"</span>,
+  <span class="s2">"depsBuildBuild"</span>,
+  <span class="s2">"depsBuildBuildPropagated"</span>,
+  <span class="s2">"depsBuildTarget"</span>,
+  <span class="s2">"depsBuildTargetPropagated"</span>,
+  <span class="s2">"depsHostHost"</span>,
+  <span class="s2">"depsHostHostPropagated"</span>,
+  <span class="s2">"depsTargetTarget"</span>,
+  <span class="s2">"depsTargetTargetPropagated"</span>,
+  <span class="s2">"doCheck"</span>,
+  <span class="s2">"doInstallCheck"</span>,
+  <span class="s2">"drvAttrs"</span>,
+  <span class="s2">"drvPath"</span>,
+  <span class="s2">"inputDerivation"</span>,
+  <span class="s2">"meta"</span>,
+  <span class="s2">"name"</span>,
+  <span class="s2">"nativeBuildInputs"</span>,
+  <span class="s2">"out"</span>,
+  <span class="s2">"outPath"</span>,
+  <span class="s2">"outputName"</span>,
+  <span class="s2">"outputUnspecified"</span>,
+  <span class="s2">"outputs"</span>,
+  <span class="s2">"override"</span>,
+  <span class="s2">"overrideAttrs"</span>,
+  <span class="s2">"overrideDerivation"</span>,
+  <span class="s2">"passthru"</span>,
+  <span class="s2">"patches"</span>,
+  <span class="s2">"pname"</span>,
+  <span class="s2">"propagatedBuildInputs"</span>,
+  <span class="s2">"propagatedNativeBuildInputs"</span>,
+  <span class="s2">"src"</span>,
+  <span class="s2">"stdenv"</span>,
+  <span class="s2">"strictDeps"</span>,
+  <span class="s2">"system"</span>,
+  <span class="s2">"tests"</span>,
+  <span class="s2">"type"</span>,
+  <span class="s2">"userHook"</span>,
+  <span class="s2">"version"</span>
+<span class="o">]</span>
+</code></pre></div></div>
+
+<p>⚠️ I do find however <strong>annoying</strong> differences between <code class="language-plaintext highlighter-rouge">nix repl</code> and <code class="language-plaintext highlighter-rouge">nix eval</code> that I’m not clear on.</p>
+
+<p>For instance the following works on <code class="language-plaintext highlighter-rouge">nix repl</code> but fails on <code class="language-plaintext highlighter-rouge">nix eval</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix repl
+Welcome to Nix version 2.3.12. Type :? <span class="k">for </span>help.
+
+nix-repl&gt; :l &lt;nixpkgs&gt;
+Added 14373 variables.
+
+nix-repl&gt; hello
+«derivation /nix/store/wqnx5cgcabxkfp771fmjr1nw7mjr9zlm-hello-2.10.drv»
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix <span class="nb">eval </span>nixpkgs#hello
+error: anonymous <span class="k">function </span>at /nix/store/h7b0frzjk6ylyqq471m667yd9bl9n6fm-source/pkgs/build-support/fetchurl/boot.nix:5:1 called with unexpected argument <span class="s1">'meta'</span>
+
+       at /nix/store/h7b0frzjk6ylyqq471m667yd9bl9n6fm-source/pkgs/build-support/fetchzip/default.nix:18:2:
+
+           17|
+           18| <span class="o">(</span>fetchurl <span class="o">(</span><span class="nb">let</span>
+             |  ^
+           19|   <span class="nb">basename</span> <span class="o">=</span> baseNameOf <span class="o">(</span><span class="k">if </span>url <span class="o">!=</span> <span class="s2">""</span> <span class="k">then </span>url <span class="k">else </span>builtins.head urls<span class="o">)</span><span class="p">;</span>
+<span class="o">(</span>use <span class="s1">'--show-trace'</span> to show detailed location information<span class="o">)</span>
+</code></pre></div></div>
+
+<p>If you happen to know why, answer <a href="https://discourse.nixos.org/t/nix-eval-has-terrible-messages-how-to-improve/14339">this message on discourse</a> or <a href="https://twitter.com/fmzakari">tweet me</a>.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2021-07-31-eval-the-nix.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

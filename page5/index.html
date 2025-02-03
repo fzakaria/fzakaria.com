@@ -1,0 +1,478 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Page 5 of 7 for Farid Zakaria’s Blog | I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Farid Zakaria’s Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<meta property="og:description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<link rel="canonical" href="https://fzakaria.com/page5/" />
+<meta property="og:url" content="https://fzakaria.com/page5/" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="website" />
+<link rel="prev" href="https://fzakaria.com/page4" />
+<link rel="next" href="https://fzakaria.com/page6" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Farid Zakaria’s Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.","headline":"Farid Zakaria’s Blog","url":"https://fzakaria.com/page5/"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Farid Zakaria's Blog
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/page5/">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <div class="media">
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-07-31
+      </span>
+      <span class="title">
+        
+        <a href="/2021/07/31/eval-the-nix.html">Eval the Nix</a>
+        
+      </span>
+    </h2>
+    
+    <p>I’ll keep this post short and <em>sweet</em>. I want to write a little blurb that I’ve been mostly enjoying using <strong>nix eval</strong> to introspect.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-06-27
+      </span>
+      <span class="title">
+        
+        <a href="/2021/06/27/java-nix-reproducibility.html">Java, Nix & Reproducibility</a>
+        
+      </span>
+    </h2>
+    
+    <p>I’ve written <em>a lot</em> about NixOS; specifically about some of the work I’ve done to improve the Java ecosystem.</p>
+
+<blockquote>
+  <p>In fact, I’ve upstreamed my notes into the <a href="https://nixos.org/manual/nixpkgs/unstable/#maven">Java Maven Nixpkgs documentation</a>.</p>
+</blockquote>
+
+<p>🎉 Recently, the minimal ISO for NixOS <a href="https://web.archive.org/web/20210620180034/https://r13y.com/">has become reproducible (r13y)</a>. 🎉</p>
+
+<p>The ability to produce binary reproducible artifacts is a powerful primitive. What does it take for the JVM ecosystem to adopt reproducible builds within the Nix environment?</p>
+
+<blockquote>
+  <p>For rationale on the <em>why</em>, please see <a href="https://reproducible-builds.org/">https://reproducible-builds.org/</a></p>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-06-22
+      </span>
+      <span class="title">
+        
+        <a href="/2021/06/22/setting-up-a-nix-google-cloud-storage-gcs-binary-cache.html">setting up a Nix Google Cloud Storage (GCS) binary cache</a>
+        
+      </span>
+    </h2>
+    
+    <p>A previous post documented how to <a href="/2020/07/15/setting-up-a-nix-s3-binary-cache.html">setup a binary cache directly on S3</a>.
+Many however are tied to a different public IaaS offering and may not be able to leverage the native S3 integration Nix offers.
+Luckily for those using GCP, Google’s blob storage equivalent <a href="https://cloud.google.com/storage">Google Cloud Storage (GCS)</a> has <a href="https://cloud.google.com/storage/docs/interoperability">interoperability</a> with the S3 API.</p>
+
+<p>This will allow us to host our binary cache on GCS while still using the native S3 integration in Nix.
+Following this guide will allow Nix to leverage GCS without having to use a proxy such as <a href="https://github.com/tweag/nix-store-gcs-proxy">nix-store-gcs-proxy</a>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-03-13
+      </span>
+      <span class="title">
+        
+        <a href="/2021/03/13/jruby-and-sorbet.html">JRuby and Sorbet</a>
+        
+      </span>
+    </h2>
+    
+    <p>A <a href="https://twitter.com/jruby/status/1367170867164295170">recent tweet</a> by the JRuby folks, let me know that the work I had done a while ago to get <a href="https://sorbet.org/">Sorbet</a> working seemed to have gone under the radar.</p>
+
+<blockquote>
+  <p>Sorbet is a fast, powerful type checker designed for Ruby.</p>
+</blockquote>
+
+<p>I wanted to reflect on it’s use at our current codebase, challenges still faced and where to go next.</p>
+
+<p>If you want to cut ahead and start using Sorbet right away, I’ve contributed some <a href="https://github.com/sorbet/sorbet/blob/master/docs/JRuby.md">documentation</a>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-12-01
+      </span>
+      <span class="title">
+        
+        <a href="/2020/12/01/autopatchelf-what-it-can-look-like.html">autopatchelf - what it can look like</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a follow up post to my previous one to <a href="/2020/11/17/on-demand-linked-libraries-for-nix.html">on-demand linked libraries for NixOS</a>.</p>
+</blockquote>
+
+<p>I previously wrote about the work into a new NixOS tool <a href="https://github.com/Mic92/nix-ld">nix-ld</a>, which will allow the possibility of hot-patching the linking of dynamic libraries.</p>
+
+<p>At the moment the goal of the tool is modest in allowing modification of the library search path via a custom environment variable <em>NIX_LD_LIBRARY_PATH</em>.</p>
+
+<blockquote>
+  <p>I’m minimizing the task as there’s a ton of complexity, such as not loading in a different glibc and other subtleties – ask <a href="https://github.com/Mic92">Mic92</a> about it on <a href="irc://irc.freenode.net/#nixos">#nixos</a>!</p>
+</blockquote>
+
+<p>I finished with a bit of a <em>teaser</em> on what a full-fledged tool may look like…</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-11-17
+      </span>
+      <span class="title">
+        
+        <a href="/2020/11/17/on-demand-linked-libraries-for-nix.html">On-demand linked libraries for Nix</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a write up of some discussion ongoing with some folks on the <a href="irc://irc.freenode.net/nix-community">#nix-community</a> IRC chat primarily being driven by <a href="https://github.com/Mic92">Mic92</a>.</p>
+</blockquote>
+
+<p>Nixpkgs maintains the highest rating on <a href="https://repology.org/">Repology</a> for having the most packages &amp; which are up to date. Unfortunately even with the current ecosystem of packages, there will always be gaps, and for beginners in NixOS a common question is:</p>
+
+<p><em>“I’ve download a binary and would like to run it on NixOS”</em></p>
+
+<blockquote>
+  <p>Take a look at this graph <a href="https://repology.org/repositories/graphs">https://repology.org/repositories/graphs</a></p>
+</blockquote>
+
+<p><img src="/assets/images/repology.svg" alt="repology graph" /></p>
+
+<p><strong>Can we do better &amp; streamline running non-Nix software?</strong> 🤔</p>
+
+<p>This was some of the questions posed by some Nix contributors and I wanted to capture the ideas put forward for others.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-11-12
+      </span>
+      <span class="title">
+        
+        <a href="/2020/11/12/debugging-a-jnr-ffi-bug-in-nix.html">Debugging a JNR-FFI bug in Nix</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a write-up of an issue I discovered when using more advanced features of Java within a Nix environment. Please refer to the GitHub issue <a href="https://github.com/NixOS/nixpkgs/issues/103493">#103493</a> to see any ongoing process</p>
+</blockquote>
+
+<p>I have been onboarding several engineers to doing their development workflow using Nix; promising all the benefits of hermeticity &amp; reproducibility. The biggest challenge is making sure that onboarding continues to be <em>seamless</em>.</p>
+
+<p>Therefore it’s 🚨 <em>all hands on deck</em> when someone has encountered a SIGSEGV; especially since the environment is within the JVM.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#</span>
+<span class="c"># A fatal error has been detected by the Java Runtime Environment:</span>
+<span class="c">#</span>
+<span class="c">#  SIGSEGV (0xb) at pc=0x0000000000000680, pid=3229039, tid=0x00007ff8c5834640</span>
+<span class="c">#</span>
+<span class="c"># JRE version: OpenJDK Runtime Environment (8.0_265) (build 1.8.0_265-ga)</span>
+<span class="c"># Java VM: OpenJDK 64-Bit Server VM (25.265-bga mixed mode linux-amd64 compressed oops)</span>
+<span class="c"># Problematic frame:</span>
+<span class="c"># C  0x0000000000000680</span>
+</code></pre></div></div>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-11-10
+      </span>
+      <span class="title">
+        
+        <a href="/2020/11/10/isolation-using-java-s-classloader.html">Isolation using Java's ClassLoader</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a small write-up of one I sent to my team to help disseminate some knowledge regarding Java’s ClassLoader mechanism.</p>
+</blockquote>
+
+<p>A codebase I’m working on uses Java <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html">ClassLoader</a> to help load multiple JDBC drivers with their <em>complete</em> dependencies.</p>
+
+<p>Typically, using Maven or Gradle, a project would have to pin to common dependencies due to the diamond dependency problem at the cost of potential unforeseen bugs due to drift in versions.</p>
+
+<p>Can we do better? Let’s dig into ClassLoaders.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-10-20
+      </span>
+      <span class="title">
+        
+        <a href="/2020/10/20/nix-parallelism-import-from-derivation.html">Nix parallelism & Import From Derivation</a>
+        
+      </span>
+    </h2>
+    
+    <p>I recently submitted a pull-request <a href="https://github.com/NixOS/nixpkgs/pull/101096">#101096</a> for <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> to include new functionality to list all files recursively within a directory.</p>
+
+<p>One of the feedback from <a href="https://github.com/grahamc">@grahamc</a> &amp; <a href="https://github.com/roberth">@roberth</a> was that function may cause Nix evaluation to <em>stall</em>.</p>
+
+<p>It was not clear why and even more confusing is the name given to this <em>gotcha</em>; <a href="https://nixos.wiki/wiki/Import_From_Derivation">Import From Derivation</a>.</p>
+
+<blockquote>
+  <p>Import From Derivation (IFD) is where during a single Nix evaluation, the Nix expression:</p>
+  <ol>
+    <li>creates a derivation which will build a Nix expression</li>
+    <li>imports that expression</li>
+    <li>uses the results of the evaluation of the expression.</li>
+  </ol>
+</blockquote>
+
+<p>Let’s dig into this problem and how it’s caused.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-28
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/28/nix-copy-closure-your-nix-shell.html">nix-copy-closure your nix-shell</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a synopsis of <a href="https://github.com/NixOS/nix/issues/1985">https://github.com/NixOS/nix/issues/1985</a>. I recommend reading it for additional detail. Many thanks to contributors on the issue like <a href="https://github.com/Infinisil">Infinisil</a> for adding context.</p>
+</blockquote>
+
+<p>Someone reached out to me over e-mail to discuss my previous post on <a href="/2020/08/11/caching-your-nix-shell.html">caching your nix-shell</a>.</p>
+
+<p><em>“What I wish to do is to copy a particular development environment (nix-shell)
+from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and <strong>does not</strong> have Internet access.”</em></p>
+
+
+    
+</div>
+
+		<hr>
+	
+
+	
+	    <div class="pull-left">
+	        <a href="/page4" class="btn btn-primary">
+	            <span class="icon">
+	              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M192 127.338v257.324c0 17.818-21.543 26.741-34.142 14.142L29.196 270.142c-7.81-7.81-7.81-20.474 0-28.284l128.662-128.662c12.599-12.6 34.142-3.676 34.142 14.142z"/></svg>
+	            </span>
+	            Page 4
+	        </a>
+	    </div>
+	
+
+	
+    <div class="pull-right">
+        <a href="/page6" class="btn btn-primary">
+            Page 6
+            <span class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"/></svg>
+            </span>
+        </a>
+    </div>
+    
+</div>
+<div class="clearfix"></div>
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/page5/index.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

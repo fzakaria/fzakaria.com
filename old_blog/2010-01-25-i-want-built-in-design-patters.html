@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>I want built in Design Patters | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="I want built in Design Patters" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="So I&#39;ve been going through the book Coders At Work by Peter Seibel, which has been amazing so far. It&#39;s almost jaw dropping reading the stories from the programmers he&#39;s interviewed and really reading about their thoughts at the time of key development. What was most shocking of all was just how a lot of the major milestones in web development and programming as a whole were not planned. Perhaps this message is most true when someone would discuss web development and how Javascript took off to be essentially the largest programming language of the world now in terms of SLOC written. It is comforting that everyone else seems to share a disdain for C++ and concurrency issues (no surprise in really though). As a software Engineer, I find the talks regarding Design Patterns pretty fascinating. I mean we were introduced Design Patterns by the GoF in University as these powerful tools to help solve intricate and complex problems. However I have always felt myself leaning towards the camp of that these design patters should be intrinsic to the language if they are so important and useful. Many notable programmers from the book divide themselves clearly on Design Patters as either a blessing from god or a curse from the devil and I find myself in the latter. I think to put it best, one of the programmers make note that the use of design patterns only display the defunct capabilities of the language in use. Definitely through my experience with C#, I enjoyed using EventHandlers nicely incorporated to the language in comparison to perhaps the way Observers are performed in Java. My only gripe with the book is how &quot;old school programmers&quot; are constantly referred to as &quot;hackers&quot; and how many of these hackers advocate that perhaps these new generations of programmers (such as myself) will never be up to par because of our lack of experience of bit twiddling and working immensely in machine code/assembly. On the internship side of things, I am finally approaching the top of the learning curve in my opinion of working with a huge code base. Perhaps the largest hurdle was just getting a mental map of the whole API and the network of dependencies. There is a fine line between discovering the implementation or interface for a specific functionality I am looking for or just asking a coworker. I think it is important to balance between doing it yourself so that I become more familiar with the code base but however do not waste too much time going in all directions. It&#39;s pretty eye opening to see how a multi platform game is being produced and the difficulties in such a task." />
+<meta property="og:description" content="So I&#39;ve been going through the book Coders At Work by Peter Seibel, which has been amazing so far. It&#39;s almost jaw dropping reading the stories from the programmers he&#39;s interviewed and really reading about their thoughts at the time of key development. What was most shocking of all was just how a lot of the major milestones in web development and programming as a whole were not planned. Perhaps this message is most true when someone would discuss web development and how Javascript took off to be essentially the largest programming language of the world now in terms of SLOC written. It is comforting that everyone else seems to share a disdain for C++ and concurrency issues (no surprise in really though). As a software Engineer, I find the talks regarding Design Patterns pretty fascinating. I mean we were introduced Design Patterns by the GoF in University as these powerful tools to help solve intricate and complex problems. However I have always felt myself leaning towards the camp of that these design patters should be intrinsic to the language if they are so important and useful. Many notable programmers from the book divide themselves clearly on Design Patters as either a blessing from god or a curse from the devil and I find myself in the latter. I think to put it best, one of the programmers make note that the use of design patterns only display the defunct capabilities of the language in use. Definitely through my experience with C#, I enjoyed using EventHandlers nicely incorporated to the language in comparison to perhaps the way Observers are performed in Java. My only gripe with the book is how &quot;old school programmers&quot; are constantly referred to as &quot;hackers&quot; and how many of these hackers advocate that perhaps these new generations of programmers (such as myself) will never be up to par because of our lack of experience of bit twiddling and working immensely in machine code/assembly. On the internship side of things, I am finally approaching the top of the learning curve in my opinion of working with a huge code base. Perhaps the largest hurdle was just getting a mental map of the whole API and the network of dependencies. There is a fine line between discovering the implementation or interface for a specific functionality I am looking for or just asking a coworker. I think it is important to balance between doing it yourself so that I become more familiar with the code base but however do not waste too much time going in all directions. It&#39;s pretty eye opening to see how a multi platform game is being produced and the difficulties in such a task." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2010-01-25-i-want-built-in-design-patters.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2010-01-25-i-want-built-in-design-patters.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2010-01-25T14:46:10-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="I want built in Design Patters" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2010-01-25T14:46:10-08:00","datePublished":"2010-01-25T14:46:10-08:00","description":"So I&#39;ve been going through the book Coders At Work by Peter Seibel, which has been amazing so far. It&#39;s almost jaw dropping reading the stories from the programmers he&#39;s interviewed and really reading about their thoughts at the time of key development. What was most shocking of all was just how a lot of the major milestones in web development and programming as a whole were not planned. Perhaps this message is most true when someone would discuss web development and how Javascript took off to be essentially the largest programming language of the world now in terms of SLOC written. It is comforting that everyone else seems to share a disdain for C++ and concurrency issues (no surprise in really though). As a software Engineer, I find the talks regarding Design Patterns pretty fascinating. I mean we were introduced Design Patterns by the GoF in University as these powerful tools to help solve intricate and complex problems. However I have always felt myself leaning towards the camp of that these design patters should be intrinsic to the language if they are so important and useful. Many notable programmers from the book divide themselves clearly on Design Patters as either a blessing from god or a curse from the devil and I find myself in the latter. I think to put it best, one of the programmers make note that the use of design patterns only display the defunct capabilities of the language in use. Definitely through my experience with C#, I enjoyed using EventHandlers nicely incorporated to the language in comparison to perhaps the way Observers are performed in Java. My only gripe with the book is how &quot;old school programmers&quot; are constantly referred to as &quot;hackers&quot; and how many of these hackers advocate that perhaps these new generations of programmers (such as myself) will never be up to par because of our lack of experience of bit twiddling and working immensely in machine code/assembly. On the internship side of things, I am finally approaching the top of the learning curve in my opinion of working with a huge code base. Perhaps the largest hurdle was just getting a mental map of the whole API and the network of dependencies. There is a fine line between discovering the implementation or interface for a specific functionality I am looking for or just asking a coworker. I think it is important to balance between doing it yourself so that I become more familiar with the code base but however do not waste too much time going in all directions. It&#39;s pretty eye opening to see how a multi platform game is being produced and the difficulties in such a task.","headline":"I want built in Design Patters","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2010-01-25-i-want-built-in-design-patters.html"},"url":"https://fzakaria.com/old_blog/2010-01-25-i-want-built-in-design-patters.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    I want built in Design Patters
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2010-01-25
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2010-01-25-i-want-built-in-design-patters.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>So I've been going through the book <a href="http://www.blog.fzakaria.com/?now_reading_author=peter-seibel&now_reading_title=coders-at-work">Coders At Work</a>  by Peter Seibel, which has been amazing so far. It's almost jaw dropping reading the stories from the programmers he's interviewed and really reading about their thoughts at the time of key development. What was most shocking of all was just how a lot of the major milestones in web development and programming as a whole were not planned. Perhaps this message is most true when someone would discuss web development and how Javascript took off to be essentially the largest programming language of the world now in terms of SLOC written.</p>
+<blockquote><p>It is comforting that everyone else seems to share a disdain for C++ and concurrency issues (no surprise in really though).</p></blockquote>
+<p>As a software Engineer, I find the talks regarding Design Patterns pretty fascinating. I mean we were introduced Design Patterns by the GoF in University as these powerful tools to help solve intricate and complex problems. However I have always felt myself leaning towards the camp of that these design patters should be intrinsic to the language if they are so important and useful. Many notable programmers from the book divide themselves clearly on Design Patters as either a blessing from god or a curse from the devil and I find myself in the latter. I think to put it best, one of the programmers make note that the use of design patterns only display the defunct capabilities of the language in use. Definitely through my experience with C#, I enjoyed using EventHandlers nicely incorporated to the language in comparison to perhaps the way Observers are performed in Java.</p>
+<p>My only gripe with the book is how "old school programmers" are constantly referred to as "hackers" and how many of these hackers advocate that perhaps these new generations of programmers (such as myself) will never be up to par because of our lack of experience of bit twiddling and working immensely in machine code/assembly.</p>
+<p><em>On the internship side of things,</em> I am finally approaching the top of the learning curve in my opinion of working with a huge code base. Perhaps the largest hurdle was just getting a mental map of the whole API and the network of dependencies. There is a fine line between discovering the implementation or interface for a specific functionality I am looking for or just asking a coworker. I think it is important to balance between doing it yourself so that I become more familiar with the code base but however do not waste too much time going in all directions.</p>
+<p><em>It's pretty eye opening to see how a multi platform game is being produced and the difficulties in such a task. </em></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2010-01-25-i-want-built-in-design-patters.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,338 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Speeding up ELF relocations for store-based systems | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Speeding up ELF relocations for store-based systems" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Since the introduction of Nix and similar store-based systems such as Guix or Spack, I have been fascinated about finding improvements that take advantage of the new paradigms they introduce. Linux distributions are traditionally dynamic in nature, with shared libraries and executables being linked at runtime. Store-based systems, however, are static in nature, with all dependencies being resolved at build time. This determinism allows for not only reproducibility but also the ability to optimize various aspects of our toolchain. Work that I’ve have written previously about shows that there are worthwhile speedups that can be gained. While previously, I focused on improving the stat storm that occurs when resolving dependencies, I have recently been looking at speeding up the ELF relocations that occur when executing a program. You can check out my publication Mapping Out the HPC Dependency Chaos about the development of shrinkwrap if you are interested in the topic. Extending the idea further, I have been looking at how we can optimize the ELF relocations that occur when executing a program. In this post, I will discuss the basics of ELF relocations and symbol resolution and how we can optimize these processes for store-based systems." />
+<meta property="og:description" content="Since the introduction of Nix and similar store-based systems such as Guix or Spack, I have been fascinated about finding improvements that take advantage of the new paradigms they introduce. Linux distributions are traditionally dynamic in nature, with shared libraries and executables being linked at runtime. Store-based systems, however, are static in nature, with all dependencies being resolved at build time. This determinism allows for not only reproducibility but also the ability to optimize various aspects of our toolchain. Work that I’ve have written previously about shows that there are worthwhile speedups that can be gained. While previously, I focused on improving the stat storm that occurs when resolving dependencies, I have recently been looking at speeding up the ELF relocations that occur when executing a program. You can check out my publication Mapping Out the HPC Dependency Chaos about the development of shrinkwrap if you are interested in the topic. Extending the idea further, I have been looking at how we can optimize the ELF relocations that occur when executing a program. In this post, I will discuss the basics of ELF relocations and symbol resolution and how we can optimize these processes for store-based systems." />
+<link rel="canonical" href="https://fzakaria.com/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-05-03T09:41:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Speeding up ELF relocations for store-based systems" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-05-03T09:41:00-07:00","datePublished":"2024-05-03T09:41:00-07:00","description":"Since the introduction of Nix and similar store-based systems such as Guix or Spack, I have been fascinated about finding improvements that take advantage of the new paradigms they introduce. Linux distributions are traditionally dynamic in nature, with shared libraries and executables being linked at runtime. Store-based systems, however, are static in nature, with all dependencies being resolved at build time. This determinism allows for not only reproducibility but also the ability to optimize various aspects of our toolchain. Work that I’ve have written previously about shows that there are worthwhile speedups that can be gained. While previously, I focused on improving the stat storm that occurs when resolving dependencies, I have recently been looking at speeding up the ELF relocations that occur when executing a program. You can check out my publication Mapping Out the HPC Dependency Chaos about the development of shrinkwrap if you are interested in the topic. Extending the idea further, I have been looking at how we can optimize the ELF relocations that occur when executing a program. In this post, I will discuss the basics of ELF relocations and symbol resolution and how we can optimize these processes for store-based systems.","headline":"Speeding up ELF relocations for store-based systems","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html"},"url":"https://fzakaria.com/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Speeding up ELF relocations for store-based systems
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-05-03
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Since the introduction of Nix and similar store-based systems such as <a href="https://guix.gnu.org/">Guix</a> or <a href="https://spack.io/">Spack</a>, I have been fascinated about finding improvements that take advantage of the new paradigms they introduce. Linux distributions are traditionally dynamic in nature, with shared libraries and executables being linked at runtime. Store-based systems, however, are static in nature, with all dependencies being resolved at build time. This determinism allows for not only reproducibility but also the ability to optimize various aspects of our toolchain.</p>
+
+<p>Work that I’ve have <a href="/2022/03/14/shrinkwrap-taming-dynamic-shared-objects.html">written previously</a> about shows that there are worthwhile speedups that can be gained. While previously, I focused on improving the <em>stat storm</em> that occurs when resolving dependencies, I have recently been looking at speeding up the ELF relocations that occur when executing a program.</p>
+
+<blockquote>
+  <p>You can check out my publication <a href="https://arxiv.org/abs/2211.05118">Mapping Out the HPC Dependency Chaos</a> about the development of <a href="https://github.com/fzakaria/shrinkwrap">shrinkwrap</a> if you are interested in the topic.</p>
+</blockquote>
+
+<p>Extending the idea further, I have been looking at how we can optimize the ELF relocations that occur when executing a program. In this post, I will discuss the basics of ELF relocations and symbol resolution and how we can optimize these processes for store-based systems.</p>
+
+<!--more-->
+
+<h2 id="elf-relocations-and-symbol-resolution">ELF Relocations and Symbol Resolution</h2>
+
+<p>ELF (Executable and Linkable Format) files are the defacto format for executables and shared libraries on Linux systems. A crucial part of this structure involves relocations.</p>
+
+<h3 id="what-are-elf-relocations">What Are ELF Relocations?</h3>
+
+<p>Relocations are actions that the dynamic linker performs to connect symbolic references or addresses in the compiled program to actual physical addresses in memory during program execution.
+These are necessary because the actual addresses where functions and data will reside in memory are not known at the time of compilation such as when code is making calls to external functions in shared libraries.</p>
+
+<p>Suppose I have the two following files: <code class="language-plaintext highlighter-rouge">main.c</code> and <code class="language-plaintext highlighter-rouge">foo.c</code>.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"Calling the foo function.</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+#include</span> <span class="cpf">&lt;dlfcn.h&gt;</span><span class="cp">
+</span>
+<span class="k">extern</span> <span class="kt">void</span> <span class="nf">foo</span><span class="p">();</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">foo</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>I setup a simple <code class="language-plaintext highlighter-rouge">Makefile</code> to create the shared-library and the executable. I additionally set <em>RPATH</em> to the current directory to ensure the dynamic linker can find the shared library.</p>
+
+<div class="language-makefile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">CC</span> <span class="o">=</span> ../build/bin/musl-gcc
+<span class="nv">CFLAGS</span> <span class="o">=</span> <span class="nt">-g</span> <span class="nt">-O0</span>
+
+<span class="nl">libfoo.so</span><span class="o">:</span> <span class="nf">foo.c</span>
+    <span class="err">$(CC)</span> <span class="err">$(CFLAGS)</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">-shared</span> <span class="err">$^</span> <span class="s1">'-Wl,--no-as-needed,--enable-new-dtags'</span>
+
+<span class="nl">main</span><span class="o">:</span> <span class="nf">main.c libfoo.so</span>
+    <span class="err">$(CC)</span> <span class="err">$(CFLAGS)</span> <span class="err">-o</span> <span class="err">$@</span> <span class="err">$^</span> <span class="err">-L.</span> <span class="err">-lfoo</span> <span class="s1">'-Wl,--no-as-needed,--enable-new-dtags,-rpath,$$ORIGIN'</span>
+</code></pre></div></div>
+
+<p>If we inspect the resulting executable file with <em>readelf</em> we can see the relocations that are present, specifically the one for the <code class="language-plaintext highlighter-rouge">foo</code> function.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ readelf -r main
+</span><span class="c">...
+</span><span class="go">Relocation section '.rela.plt' at offset 0x530 contains 5 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000004000  000600000007 R_X86_64_JUMP_SLO 0000000000000000 foo + 0
+</span></code></pre></div></div>
+
+<p>There are various types of relocation structures (REL vs. RELA) and types (R_X86_64_JUMP_SLOT, R_X86_64_GLOB_DAT, etc.) that can be present in an ELF file.
+I am concerned about JUMP_SLOT relocations, which are used to resolve function calls to shared libraries.</p>
+
+<h3 id="why-is-symbol-resolution-necessary">Why Is Symbol Resolution Necessary?</h3>
+
+<p>When a program is loaded into memory, it might be placed at a different base address than the one for which it was originally compiled, more-so now that ASLR (Address space layout randomization) is the default. Additionally, it often depends on multiple shared libraries, which are also not fixed in memory ahead of time. The relocation entries in an ELF file tell the dynamic linker how to modify the program’s code and data sections to correctly reference memory locations, whether they’re functions or variables.</p>
+
+<p>Symbol resolution is the process of finding the correct addresses for these symbolic references. For each undefined symbol in the program, the linker must search through all loaded libraries to find the correct definition. This process can be <strong>time-consuming</strong>, particularly when there are many symbols to resolve and multiple libraries to search through.</p>
+
+<p><strong>How time consuming?</strong></p>
+
+<p>Let’s look at an extreme example where we dynamically link in a shared-object with 1000 to 1 million symbols.
+Working with the <a href="https://www.musl-libc.org/">musl</a> dynamic loader, I’ve augmented it to include timing information.</p>
+
+<p><img src="/assets/images/relocation_time_graph_symbols.svg" alt="basic nix-shell" /></p>
+
+<p>🤯 Relocation can take nearly <strong>4.5 seconds</strong> for <strong>1 million</strong> symbols!</p>
+
+<p>Profiling the linker with <em>perf</em> and visualizing the results with <em>FlameGraph</em> (click the image below to explore), we can see that the majority (+60% of cycles) of the time is spent in symbol resolution in the <em>find_sym</em> function.</p>
+
+<p><a href="/assets/images/flame_graph_unoptimized_linker.svg"><img src="/assets/images/flame_graph_unoptimized_linker.svg" alt="flamegraph of unoptimized linker" /></a></p>
+
+<p>The reason is that the cost of relocations is : O(R + nr log s), where R is the number of <em>relative</em> relocations, n is the number of shared libraries, r is the number of named relocations, and s is the number of symbols.</p>
+
+<p>In fact, the cost of relocations is even worse. Each check for a symbol involves a <code class="language-plaintext highlighter-rouge">strcmp</code> which is O(m); ELF and C/C++ (GNU GCC) have no upper-limit for the length of a symbol name. This means that the cost of relocations can be O(R + n log s*m).</p>
+
+<blockquote>
+  <p>🕵️ name-mangling for C++ means that the prefix for many symbols are common which necessitates checking most of the string during the <code class="language-plaintext highlighter-rouge">strcmp</code> if the symbols reside in the same class.</p>
+</blockquote>
+
+<h3 id="traditional-methods-for-optimizing-symbol-resolution">Traditional Methods for Optimizing Symbol Resolution</h3>
+
+<p>A popular historic method for optimizing relocations involved the <a href="https://wiki.gentoo.org/wiki/Prelink">prelink</a> tool that effectively performed all relocations ahead-of-time and saved the resulting
+binary to disk. This method, however, has become obsolete with the advent of ASLR since the prelinked binary and it’s dependent shared libraries are no longer loaded at the same base address.</p>
+
+<p>The GNU toolchain includes an alternative symbol table <code class="language-plaintext highlighter-rouge">DT_GNU_HASH</code> that can be used to speedup symbol resolution. The main efficiency improvement is to include a bloom-filter in the ELF file that can be used to quickly determine if a symbol is present in the symbol table. This can reduce the number of <code class="language-plaintext highlighter-rouge">strcmp</code> calls that are made and walking the symbol table.</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">DT_GNU_HASH</code> method is helpful but fundamentally fails to take advantage of the static nature of store-based systems. The symbol table is still loaded into memory and symbols must be re-resolved at runtime. Given the deterministic set of shared-libraries, we can do something similar to that of <em>prelink</em> but with a twist. 🌀</p>
+
+<h2 id="optimizing-elf-relocations-for-store-based-systems">Optimizing ELF Relocations for Store-Based Systems</h2>
+
+<p>The major insight for store-based systems is that we can perform all symbol resolutions for relocations ahead-of-time and save the resulting binary to disk. This is similar to <em>prelink</em> but with the twist that we are not performing the actual relocations but rather saving the resolved shared-object for each relocation.</p>
+
+<p>This works on store-based systems, such as Nix, since the set of shared libraries is fixed and immutable.</p>
+
+<p>Let’s start of with the results of this optimization by looking at the <em>extreme case</em> of 1 million symbols.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">❯ hyperfine --warmup 1 --runs 3 'DEBUG=1 RELOC_READ=1 ./1_million_functions.bin &gt;</span><span class="w"> </span>/dev/null<span class="s1">'
+</span><span class="gp">Benchmark 1: DEBUG=1 RELOC_READ=1 ./1_million_functions.bin &gt;</span><span class="w"> </span><span class="s1">/dev/null
+</span><span class="go">  Time (mean ± σ):     623.4 ms ±  15.1 ms    [User: 524.7 ms, System: 98.6 ms]
+  Range (min … max):   608.1 ms … 638.3 ms    3 runs
+</span></code></pre></div></div>
+
+<p>🎆 We cutdown the time to run the program down from <strong>4.5 seconds -&gt; ~600 milliseconds</strong>.</p>
+
+<p>🏎️ That is a <strong>7.5x speedup</strong>! 🏎️</p>
+
+<p>To achieve this improvement, I have a basic implementation built atop musl’s dynamic loader.</p>
+
+<blockquote>
+  <p>You can try, play with and track my changes on my <a href="https://github.com/fzakaria/musllibc/blob/relocs/ldso/dynlink.c">fork of musl</a></p>
+</blockquote>
+
+<ol>
+  <li>
+    <p>I’ve added support for a new environment variable <code class="language-plaintext highlighter-rouge">RELOC_WRITE</code> that when set will write the resolved symbols for each relocation to disk in a file set by the variable.</p>
+
+    <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp"> ❯ RELOC_WRITE=relo.bin ./1_million_functions.bin &amp;&gt;</span>/dev/null
+</code></pre></div>    </div>
+
+    <p>The resolves symbols are serialized as the simple structure below.</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+   <span class="c1">// Type of the relocation</span>
+   <span class="kt">int</span> <span class="n">type</span><span class="p">;</span>
+   <span class="c1">// Symbol value which is typically the offset</span>
+   <span class="kt">size_t</span> <span class="n">st_value</span><span class="p">;</span>
+   <span class="c1">// Offset of the relocation</span>
+   <span class="kt">size_t</span> <span class="n">offset</span><span class="p">;</span>
+   <span class="c1">// Absolute path of the DSO where symbol was found</span>
+   <span class="kt">char</span> <span class="n">symbol_dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>
+   <span class="c1">// Name of the DSO that needs the relocation</span>
+   <span class="kt">char</span> <span class="n">dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>
+ <span class="p">}</span> <span class="n">CachedRelocInfo</span><span class="p">;</span>
+</code></pre></div>    </div>
+
+    <p>This file contains <strong>all symbol relocations</strong> for the binary and it’s dependent shared libraries.</p>
+  </li>
+  <li>
+    <p>We add this serialized file to the ELF binary as a new section using <em>objcopy</em></p>
+
+    <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go"> ❯ objcopy --add-section .reloc.cache=relo.bin \
+     --set-section-flags .reloc.cache=noload,readonly 1_million_functions.bin  \
+     1_million_functions.bin
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Run the program again, and the dynamic linker will use the cached symbol resolutions if the section <code class="language-plaintext highlighter-rouge">.reloc.cache</code> is present.</p>
+
+    <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go"> ❯ ./1_million_functions.bin
+</span></code></pre></div>    </div>
+
+    <p>The dynamic linker will load the symbol resolutions and apply them to the relocations in the binary. The DSO names for each entry
+ are needed so that the base address for the offset of the relocation and the symbol value can be calculated. This allows this
+ optimization to work despite ASLR.</p>
+  </li>
+</ol>
+
+<blockquote>
+  <p>🕵️ Further optimizations can be done by removing the name of the shared objects in the structure and replacing it with an index
+into the array of shared objects that are loaded. This is possible since the load order of shared objects must be deterministic
+to ensure reproducibility for symbol resolution.</p>
+</blockquote>
+
+<p>❗ This optimization is only possible for store-based systems since the set of shared libraries is fixed and immutable. In a traditional
+Linux distribution, each shared library could be updated at any time, which would invalidate the cached symbol resolutions and their
+offsets.</p>
+
+<p>Store-based systems allow us to revisit many of the assumptions that have been made in the past and I believe can lead to either a simpler
+or more efficient toolchain. So far, these systems have adopted the same assumptions, but hopefully with improvements such as this or
+<a href="https://github.com/fzakaria/shrinkwrap">shrinkwrap</a> we can begin to see the benefits of the new paradigms they introduce.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-05-03-speeding-up-elf-relocations-for-store-based-systems.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

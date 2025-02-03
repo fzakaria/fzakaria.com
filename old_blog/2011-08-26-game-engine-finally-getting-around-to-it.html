@@ -1,0 +1,190 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Game Engine: Finally Getting Around To it | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Game Engine: Finally Getting Around To it" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="XEngine I&#39;ve always found game development very interesting, however what interests me most is not the designing and building of an actual game but rather the development of the game engine or underlying framework. I have fond memories of myself and Hayden Theriault back in first year University talking about how one day we&#39;d like to build a physics engine even! I always put it off because the learning overhead and sheer scale of building a game engine is enourmous if you start from scratch (not using a base engine or framework such as XNA). No longer is this the case~! I&#39;ve finally picked up some books on game engine architecture and going through the textbooks in order to build my own 2D/3D simple game engine; XEngine. Game Engine Design And Implementation I went ahead and bought three textbooks on Game Engine Architecture as well as the &#39;Best of Game Programming Gems&#39;. Out of all the books, by far the best one is written by Alan Thorn aptly named &quot;Game Engine Design and Implementation&quot;. &lt;img src=&quot;http://bks4.books.google.com/books?id=Di0ID5apPI8C&amp;printsec=frontcover&amp;img=1&amp;zoom=1&amp;edge=curl&quot; alt=&quot;Great textbook on design ALIGN=&quot;center&quot;&gt; This is book is amazing, it&#39;s well written, assumes novice knowledge regarding game engine architecture and assumes you have a firm grasp on C++. Not only is the book well written, it even helps take you through the motions of building an introductory 2D/3D game engine. So far the 2D engine is written using SDL. Following the book and building the engine will help me understand the framework/groundwork needed for a game engine which I can then refine with additional design architecture improvements that I&#39;ve read else where, such as: Entity Component System Resource Handles rather than Resource Pointers (allows dynamic loading/unloading of resources Data driven design How Far I am so Far I&#39;m currently on Chapter 6 (3rd of the book), and have implemented the following basic managers: Error System Manager Resource System Manager Render System Manager (using SDL) Render Object Class Sprite Object Class The engine is being compiled as a DLL (which was a learning experience itself) and I can currently create a window application and draw sprites. For those looking for a good Linear Algebra library, I found a great one written by Markus Trenkwalder here." />
+<meta property="og:description" content="XEngine I&#39;ve always found game development very interesting, however what interests me most is not the designing and building of an actual game but rather the development of the game engine or underlying framework. I have fond memories of myself and Hayden Theriault back in first year University talking about how one day we&#39;d like to build a physics engine even! I always put it off because the learning overhead and sheer scale of building a game engine is enourmous if you start from scratch (not using a base engine or framework such as XNA). No longer is this the case~! I&#39;ve finally picked up some books on game engine architecture and going through the textbooks in order to build my own 2D/3D simple game engine; XEngine. Game Engine Design And Implementation I went ahead and bought three textbooks on Game Engine Architecture as well as the &#39;Best of Game Programming Gems&#39;. Out of all the books, by far the best one is written by Alan Thorn aptly named &quot;Game Engine Design and Implementation&quot;. &lt;img src=&quot;http://bks4.books.google.com/books?id=Di0ID5apPI8C&amp;printsec=frontcover&amp;img=1&amp;zoom=1&amp;edge=curl&quot; alt=&quot;Great textbook on design ALIGN=&quot;center&quot;&gt; This is book is amazing, it&#39;s well written, assumes novice knowledge regarding game engine architecture and assumes you have a firm grasp on C++. Not only is the book well written, it even helps take you through the motions of building an introductory 2D/3D game engine. So far the 2D engine is written using SDL. Following the book and building the engine will help me understand the framework/groundwork needed for a game engine which I can then refine with additional design architecture improvements that I&#39;ve read else where, such as: Entity Component System Resource Handles rather than Resource Pointers (allows dynamic loading/unloading of resources Data driven design How Far I am so Far I&#39;m currently on Chapter 6 (3rd of the book), and have implemented the following basic managers: Error System Manager Resource System Manager Render System Manager (using SDL) Render Object Class Sprite Object Class The engine is being compiled as a DLL (which was a learning experience itself) and I can currently create a window application and draw sprites. For those looking for a good Linear Algebra library, I found a great one written by Markus Trenkwalder here." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-08-26-game-engine-finally-getting-around-to-it.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-08-26-game-engine-finally-getting-around-to-it.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-08-26T13:40:29-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Game Engine: Finally Getting Around To it" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-08-26T13:40:29-07:00","datePublished":"2011-08-26T13:40:29-07:00","description":"XEngine I&#39;ve always found game development very interesting, however what interests me most is not the designing and building of an actual game but rather the development of the game engine or underlying framework. I have fond memories of myself and Hayden Theriault back in first year University talking about how one day we&#39;d like to build a physics engine even! I always put it off because the learning overhead and sheer scale of building a game engine is enourmous if you start from scratch (not using a base engine or framework such as XNA). No longer is this the case~! I&#39;ve finally picked up some books on game engine architecture and going through the textbooks in order to build my own 2D/3D simple game engine; XEngine. Game Engine Design And Implementation I went ahead and bought three textbooks on Game Engine Architecture as well as the &#39;Best of Game Programming Gems&#39;. Out of all the books, by far the best one is written by Alan Thorn aptly named &quot;Game Engine Design and Implementation&quot;. &lt;img src=&quot;http://bks4.books.google.com/books?id=Di0ID5apPI8C&amp;printsec=frontcover&amp;img=1&amp;zoom=1&amp;edge=curl&quot; alt=&quot;Great textbook on design ALIGN=&quot;center&quot;&gt; This is book is amazing, it&#39;s well written, assumes novice knowledge regarding game engine architecture and assumes you have a firm grasp on C++. Not only is the book well written, it even helps take you through the motions of building an introductory 2D/3D game engine. So far the 2D engine is written using SDL. Following the book and building the engine will help me understand the framework/groundwork needed for a game engine which I can then refine with additional design architecture improvements that I&#39;ve read else where, such as: Entity Component System Resource Handles rather than Resource Pointers (allows dynamic loading/unloading of resources Data driven design How Far I am so Far I&#39;m currently on Chapter 6 (3rd of the book), and have implemented the following basic managers: Error System Manager Resource System Manager Render System Manager (using SDL) Render Object Class Sprite Object Class The engine is being compiled as a DLL (which was a learning experience itself) and I can currently create a window application and draw sprites. For those looking for a good Linear Algebra library, I found a great one written by Markus Trenkwalder here.","headline":"Game Engine: Finally Getting Around To it","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-08-26-game-engine-finally-getting-around-to-it.html"},"url":"https://fzakaria.com/old_blog/2011-08-26-game-engine-finally-getting-around-to-it.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Game Engine: Finally Getting Around To it
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-08-26
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-08-26-game-engine-finally-getting-around-to-it.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2>XEngine</h2>
+<p>
+I've always found game development very interesting, however what interests me most is not the designing and building of an <em>actual</em> game but rather the development of the game engine or underlying framework.</p>
+<blockquote><p>I have fond memories of myself and <a href="https://plus.google.com/101699071179042932912/posts">Hayden Theriault</a> back in first year University talking about how one day we'd like to build a physics engine even!</p></blockquote>
+<p>I always put it off because the learning overhead and sheer scale of building a game engine is enourmous if you start from scratch (not using a base engine or framework such as <a href="http://en.wikipedia.org/wiki/Microsoft_XNA">XNA</a>).</p>
+<p>No longer is this the case~! I've finally picked up some books on game engine architecture and going through the textbooks in order to build my own 2D/3D simple game engine; <strong>XEngine</strong>.</p>
+<h2> Game Engine Design And Implementation </h2>
+<p>
+I went ahead and bought three textbooks on Game Engine Architecture as well as the 'Best of Game Programming Gems'. Out of all the books, by far the best one is written by Alan Thorn aptly named "Game Engine Design and Implementation".</p>
+<p><img src="http://bks4.books.google.com/books?id=Di0ID5apPI8C&printsec=frontcover&img=1&zoom=1&edge=curl" alt="Great textbook on design ALIGN="center"><br />
+This is book is <strong>amazing</strong>, it's well written, assumes novice knowledge regarding game engine architecture and assumes you have a firm grasp on C++. Not only is the book well written, it even helps take you through the motions of building an introductory 2D/3D game engine. <em>So far the 2D engine is written using <a href="http://www.libsdl.org/">SDL</a>.</em></p>
+<p>Following the book and building the engine will help me understand the framework/groundwork needed for a game engine which I can then refine with additional design architecture improvements that I've read else where, such as:</p>
+<ul>
+<li>Entity Component System</li>
+<li>Resource Handles rather than Resource Pointers (allows dynamic loading/unloading of resources</li>
+<li>Data driven design</li>
+</ul>
+<h2> How Far I am so Far </h2>
+<p>
+I'm currently on Chapter 6 (3rd of the book), and have implemented the following basic managers:</p>
+<ul>
+<li>Error System Manager</li>
+<li>Resource System Manager</li>
+<li>Render System Manager (using SDL)</li>
+<li>Render Object Class</li>
+<li>Sprite Object Class</li>
+</ul>
+<p>The engine is being compiled as a DLL (which was a learning experience itself) and I can currently create a window application and draw sprites.</p>
+<blockquote><p>For those looking for a good Linear Algebra library, I found a great one written by Markus Trenkwalder <a href="http://www.trenki.net/content/view/16/36/">here</a>. </p>
+</blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-08-26-game-engine-finally-getting-around-to-it.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

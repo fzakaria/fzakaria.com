@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>nix coercion trick | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="nix coercion trick" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="tl;dr; If the attrset contains outPath, it can automatically be converted to a String." />
+<meta property="og:description" content="tl;dr; If the attrset contains outPath, it can automatically be converted to a String." />
+<link rel="canonical" href="https://fzakaria.com/2020/09/02/nix-coercion-trick.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/02/nix-coercion-trick.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-02T14:36:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="nix coercion trick" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-02T14:36:00-07:00","datePublished":"2020-09-02T14:36:00-07:00","description":"tl;dr; If the attrset contains outPath, it can automatically be converted to a String.","headline":"nix coercion trick","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/02/nix-coercion-trick.html"},"url":"https://fzakaria.com/2020/09/02/nix-coercion-trick.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    nix coercion trick
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-02
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/02/nix-coercion-trick.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p><strong>tl;dr;</strong> If the <em>attrset</em> contains <strong>outPath</strong>, it can automatically be converted to a String.</p>
+</blockquote>
+
+<p>The Nix expression language is <em>somewhat</em> documented.
+I came across the following links:</p>
+<ol>
+  <li><a href="https://nixos.wiki/wiki/Nix_Expression_Language">https://nixos.wiki/wiki/Nix_Expression_Language</a></li>
+  <li><a href="https://nixery.dev/nix-1p.html">https://nixery.dev/nix-1p.html</a></li>
+  <li><a href="https://nixos.org/guides/nix-pills/basics-of-language.html">https://nixos.org/guides/nix-pills/basics-of-language.html</a></li>
+  <li><a href="https://nixos.org/manual/nix/stable/#sec-constructs">https://nixos.org/manual/nix/stable/#sec-constructs</a></li>
+  <li><a href="https://medium.com/@MrJamesFisher/nix-by-example-a0063a1a4c55">https://medium.com/@MrJamesFisher/nix-by-example-a0063a1a4c55</a></li>
+</ol>
+
+<p>Nix is a strongly typed language although it is lazily typed.
+The fact that it is strongly typed means that certain type coercion are
+not feasible.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-repl&gt; <span class="o">(</span>1 + <span class="s2">"Hello"</span><span class="o">)</span>
+error: cannot add a string to an integer, at <span class="o">(</span>string<span class="o">)</span>:1:2
+</code></pre></div></div>
+
+<p>However while playing around with <a href="https://github.com/nmattia/niv">niv</a>; I noticed that the attribute sets could automatically be converted to strings.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+nix-repl&gt; sources <span class="o">=</span> import ./nix/sources.nix
+
+nix-repl&gt; :p sources.nixpkgs
+<span class="o">{</span> branch <span class="o">=</span> <span class="s2">"nixpkgs-unstable"</span><span class="p">;</span> description <span class="o">=</span> <span class="s2">"Nix Packages collection"</span><span class="p">;</span> homepage <span class="o">=</span> null<span class="p">;</span> outPath <span class="o">=</span> <span class="s2">"/nix/store/shayf8qxmb7aqgzncvz1abnar7s2cssa-nixpkgs-src"</span><span class="p">;</span> owner <span class="o">=</span> <span class="s2">"NixOS"</span><span class="p">;</span> repo <span class="o">=</span> <span class="s2">"nixpkgs"</span><span class="p">;</span> rev <span class="o">=</span> <span class="s2">"f9567594d5af2926a9d5b96ae3bada707280bec6"</span><span class="p">;</span> sha256 <span class="o">=</span> <span class="s2">"0vr2di6z31c5ng73f0cxj7rj9vqvlvx3wpqdmzl0bx3yl3wr39y6"</span><span class="p">;</span> <span class="nb">type</span> <span class="o">=</span> <span class="s2">"tarball"</span><span class="p">;</span> url <span class="o">=</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/f9567594d5af2926a9d5b96ae3bada707280bec6.tar.gz"</span><span class="p">;</span> url_template <span class="o">=</span> <span class="s2">"https://github.com/&lt;owner&gt;/&lt;repo&gt;/archive/&lt;rev&gt;.tar.gz"</span><span class="p">;</span> <span class="o">}</span>
+
+nix-repl&gt; builtins.typeOf sources.nixpkgs
+<span class="s2">"set"</span>
+
+nix-repl&gt; <span class="s2">"</span><span class="k">${</span><span class="nv">sources</span><span class="p">.nixpkgs</span><span class="k">}</span><span class="s2">"</span>
+<span class="s2">"/nix/store/shayf8qxmb7aqgzncvz1abnar7s2cssa-nixpkgs-src"</span>
+</code></pre></div></div>
+
+<p>How is this possible?</p>
+
+<p>After a very helpful <a href="https://discourse.nixos.org/t/using-niv-to-version-home-manager-zsh-plugins/5060/5">post</a> by <a href="https://github.com/danieldk">danieldk</a>; the answer was found!</p>
+
+<blockquote>
+  <p>Please checkout https://github.com/NixOS/nix/blob/b721877b85bbf9f78fd2221d8eb540373ee1e889/src/libexpr/eval.cc#L1772 for relevant source.</p>
+</blockquote>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">v</span><span class="p">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">tAttrs</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">maybeString</span> <span class="o">=</span> <span class="n">tryAttrsToString</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">coerceMore</span><span class="p">,</span> <span class="n">copyToStore</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">maybeString</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">*</span><span class="n">maybeString</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">auto</span> <span class="n">i</span> <span class="o">=</span> <span class="n">v</span><span class="p">.</span><span class="n">attrs</span><span class="o">-&gt;</span><span class="n">find</span><span class="p">(</span><span class="n">sOutPath</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">==</span> <span class="n">v</span><span class="p">.</span><span class="n">attrs</span><span class="o">-&gt;</span><span class="n">end</span><span class="p">())</span> <span class="n">throwTypeError</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="s">"cannot coerce a set to a string"</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">coerceToString</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="o">*</span><span class="n">i</span><span class="o">-&gt;</span><span class="n">value</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">coerceMore</span><span class="p">,</span> <span class="n">copyToStore</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If the <em>set</em>  contains <em>*outPath</em>; then the set can be coerced into a string!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-repl&gt; <span class="nb">set</span> <span class="o">=</span> <span class="o">{</span> <span class="nv">outPath</span><span class="o">=</span><span class="s2">"Hello World"</span><span class="p">;</span> <span class="o">}</span>
+
+nix-repl&gt; <span class="s2">"</span><span class="k">${</span><span class="nv">set</span><span class="k">}</span><span class="s2">"</span>
+<span class="s2">"Hello World"</span>
+</code></pre></div></div>
+
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-02-nix-coercion-trick.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

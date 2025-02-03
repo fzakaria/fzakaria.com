@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>First Thoughts on XNA 4.0 Game Architecture | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="First Thoughts on XNA 4.0 Game Architecture" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="XNA 4.0 Intro Just as a quick introduction for anyone who isn&#39;t familiar with XNA, it is a set of managed libraries designed for game development for Xbox, Windows Phones, and Windows-based computers. It&#39;s not so much of a game engine as an abstraction of a few important pieces normally found in game engines. Whereas using a full game engine may be overkill for developing simple games, XNA provides at least a nice starting point and simplifying rendering and certain tasks. I have a friend who is in the process of developing an iPhone game titled, Jungle Spin. I&#39;ve tried to dip my hands before in some indie development, but I was always stuck at the artwork portion of the game. This time around, my friend allowed me to play around with his artwork for his game and with that as a great starting point and a clearly defined game (I decided to attempt to recreate the game in XNA), I set off! Mostly Overkill Having just about finished writing my simple 2D entity-component based game engine, I was pretty much looking to implement a similar methodology to the game. Upon first reading of the some of the books I had purchased for XNA Game development, it seemed as it would be an easy fit. XNA at first glance has this idea of &quot;GameComponents&quot; and &quot;DrawableGameComponents&quot; where each one must instantiate an interface including a respective Update() and Draw() method. However it seemed a bit overkill to make everything inherit from GameComponent and register it, since any GameComponent must be given the Game object and I didn&#39;t feel that every entity needed that. I opted to just re-implement the similar Manager system in my earlier engine. I simply defined a base type &quot;Entity&quot; and an &quot;EntityManager&quot; (which is a singleton) and anytime anyone would like to create or kill an Entity/Sprite/Object they would do so through the manager. The manager would then simply iterate through the list and call update and draw on each Entity. Status What I had learned while making the game is that art &amp; assets run the show. Things were going very somewhat smoothly until I started to add all the animations for my Monkey. I ran into the following problems; they are ordered from annoying to blocking. The sprites were packed into a spritesheet/atlas that had a matching XML file. XNA doesn&#39;t come natively with a way to load Spritesheets. Although I could write a custom content loader, I was just mucking around and just hard coded the values (positions within the spritesheets manually). Figuring out the speed of the animation for repetitive animations! I&#39;m not really sure how it&#39;s done in most games and whether the artist has a particular animation speed in mind, but I pretty much toyed around with the animation speeds until I got something that was aesthetically pleasing. Figuring out the speed of animations that involve displacement. Once of the actions the monkey can take is to swing from vine-to-vine with an accompanying animation. I&#39;m curious as to what other artists do. Do you explain to them the distance they&#39;d like to travel in the animation so that they can create enough frames or is the animation speed changed to always match the distance to be traveled? Figuring out the anchor of the texture. Every texture can specify an &#39;origin&#39; during the spriteBatch&#39;s draw call. This origin is normally set to the top left corner of the image. This had caused me a lot of headache because all the textures of the monkey had his feet at different locations within the texture. This meant that transitioning from one animation to another caused a minor displacement. I tried to overcompensate for this by playing around with the origin until someone pointed out that normally artists always have the sprite centered in the texture for this very reason! I&#39;m currently blocked on this issue as I need to modify all the textures Checkout the question on gamedev.stackexchange on this very question. Here is an early working video of the game (1-2 hours worth of work). Since then I had included the 3 additional vines (including dynamic random vine generation) and the extra animations (i.e. jumping from vine to vine). Design: Simplicity over Awesomeness Although the big buzz about games is to have them abstract and the best way to do that is to normally make it so that your engine is Component base driven. Although that architecture lends itself to amazing data driven design, I wanted to just try and bang something out quickly and most importantly simply. You can see from the UML design above that a lot of the Entity types could be re-factored to simply be a base entity holding different collections of Components instead. I had made a pretty decent post on gamedev.stackexchange.com regarding the question on using GameServices and GameComponent architecture that is contained within XNA and recieved some great feedback as well." />
+<meta property="og:description" content="XNA 4.0 Intro Just as a quick introduction for anyone who isn&#39;t familiar with XNA, it is a set of managed libraries designed for game development for Xbox, Windows Phones, and Windows-based computers. It&#39;s not so much of a game engine as an abstraction of a few important pieces normally found in game engines. Whereas using a full game engine may be overkill for developing simple games, XNA provides at least a nice starting point and simplifying rendering and certain tasks. I have a friend who is in the process of developing an iPhone game titled, Jungle Spin. I&#39;ve tried to dip my hands before in some indie development, but I was always stuck at the artwork portion of the game. This time around, my friend allowed me to play around with his artwork for his game and with that as a great starting point and a clearly defined game (I decided to attempt to recreate the game in XNA), I set off! Mostly Overkill Having just about finished writing my simple 2D entity-component based game engine, I was pretty much looking to implement a similar methodology to the game. Upon first reading of the some of the books I had purchased for XNA Game development, it seemed as it would be an easy fit. XNA at first glance has this idea of &quot;GameComponents&quot; and &quot;DrawableGameComponents&quot; where each one must instantiate an interface including a respective Update() and Draw() method. However it seemed a bit overkill to make everything inherit from GameComponent and register it, since any GameComponent must be given the Game object and I didn&#39;t feel that every entity needed that. I opted to just re-implement the similar Manager system in my earlier engine. I simply defined a base type &quot;Entity&quot; and an &quot;EntityManager&quot; (which is a singleton) and anytime anyone would like to create or kill an Entity/Sprite/Object they would do so through the manager. The manager would then simply iterate through the list and call update and draw on each Entity. Status What I had learned while making the game is that art &amp; assets run the show. Things were going very somewhat smoothly until I started to add all the animations for my Monkey. I ran into the following problems; they are ordered from annoying to blocking. The sprites were packed into a spritesheet/atlas that had a matching XML file. XNA doesn&#39;t come natively with a way to load Spritesheets. Although I could write a custom content loader, I was just mucking around and just hard coded the values (positions within the spritesheets manually). Figuring out the speed of the animation for repetitive animations! I&#39;m not really sure how it&#39;s done in most games and whether the artist has a particular animation speed in mind, but I pretty much toyed around with the animation speeds until I got something that was aesthetically pleasing. Figuring out the speed of animations that involve displacement. Once of the actions the monkey can take is to swing from vine-to-vine with an accompanying animation. I&#39;m curious as to what other artists do. Do you explain to them the distance they&#39;d like to travel in the animation so that they can create enough frames or is the animation speed changed to always match the distance to be traveled? Figuring out the anchor of the texture. Every texture can specify an &#39;origin&#39; during the spriteBatch&#39;s draw call. This origin is normally set to the top left corner of the image. This had caused me a lot of headache because all the textures of the monkey had his feet at different locations within the texture. This meant that transitioning from one animation to another caused a minor displacement. I tried to overcompensate for this by playing around with the origin until someone pointed out that normally artists always have the sprite centered in the texture for this very reason! I&#39;m currently blocked on this issue as I need to modify all the textures Checkout the question on gamedev.stackexchange on this very question. Here is an early working video of the game (1-2 hours worth of work). Since then I had included the 3 additional vines (including dynamic random vine generation) and the extra animations (i.e. jumping from vine to vine). Design: Simplicity over Awesomeness Although the big buzz about games is to have them abstract and the best way to do that is to normally make it so that your engine is Component base driven. Although that architecture lends itself to amazing data driven design, I wanted to just try and bang something out quickly and most importantly simply. You can see from the UML design above that a lot of the Entity types could be re-factored to simply be a base entity holding different collections of Components instead. I had made a pretty decent post on gamedev.stackexchange.com regarding the question on using GameServices and GameComponent architecture that is contained within XNA and recieved some great feedback as well." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-09-09-first-thoughts-on-xna-4-0-game-architecture.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-09-09-first-thoughts-on-xna-4-0-game-architecture.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-09-09T15:41:29-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="First Thoughts on XNA 4.0 Game Architecture" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-09-09T15:41:29-07:00","datePublished":"2011-09-09T15:41:29-07:00","description":"XNA 4.0 Intro Just as a quick introduction for anyone who isn&#39;t familiar with XNA, it is a set of managed libraries designed for game development for Xbox, Windows Phones, and Windows-based computers. It&#39;s not so much of a game engine as an abstraction of a few important pieces normally found in game engines. Whereas using a full game engine may be overkill for developing simple games, XNA provides at least a nice starting point and simplifying rendering and certain tasks. I have a friend who is in the process of developing an iPhone game titled, Jungle Spin. I&#39;ve tried to dip my hands before in some indie development, but I was always stuck at the artwork portion of the game. This time around, my friend allowed me to play around with his artwork for his game and with that as a great starting point and a clearly defined game (I decided to attempt to recreate the game in XNA), I set off! Mostly Overkill Having just about finished writing my simple 2D entity-component based game engine, I was pretty much looking to implement a similar methodology to the game. Upon first reading of the some of the books I had purchased for XNA Game development, it seemed as it would be an easy fit. XNA at first glance has this idea of &quot;GameComponents&quot; and &quot;DrawableGameComponents&quot; where each one must instantiate an interface including a respective Update() and Draw() method. However it seemed a bit overkill to make everything inherit from GameComponent and register it, since any GameComponent must be given the Game object and I didn&#39;t feel that every entity needed that. I opted to just re-implement the similar Manager system in my earlier engine. I simply defined a base type &quot;Entity&quot; and an &quot;EntityManager&quot; (which is a singleton) and anytime anyone would like to create or kill an Entity/Sprite/Object they would do so through the manager. The manager would then simply iterate through the list and call update and draw on each Entity. Status What I had learned while making the game is that art &amp; assets run the show. Things were going very somewhat smoothly until I started to add all the animations for my Monkey. I ran into the following problems; they are ordered from annoying to blocking. The sprites were packed into a spritesheet/atlas that had a matching XML file. XNA doesn&#39;t come natively with a way to load Spritesheets. Although I could write a custom content loader, I was just mucking around and just hard coded the values (positions within the spritesheets manually). Figuring out the speed of the animation for repetitive animations! I&#39;m not really sure how it&#39;s done in most games and whether the artist has a particular animation speed in mind, but I pretty much toyed around with the animation speeds until I got something that was aesthetically pleasing. Figuring out the speed of animations that involve displacement. Once of the actions the monkey can take is to swing from vine-to-vine with an accompanying animation. I&#39;m curious as to what other artists do. Do you explain to them the distance they&#39;d like to travel in the animation so that they can create enough frames or is the animation speed changed to always match the distance to be traveled? Figuring out the anchor of the texture. Every texture can specify an &#39;origin&#39; during the spriteBatch&#39;s draw call. This origin is normally set to the top left corner of the image. This had caused me a lot of headache because all the textures of the monkey had his feet at different locations within the texture. This meant that transitioning from one animation to another caused a minor displacement. I tried to overcompensate for this by playing around with the origin until someone pointed out that normally artists always have the sprite centered in the texture for this very reason! I&#39;m currently blocked on this issue as I need to modify all the textures Checkout the question on gamedev.stackexchange on this very question. Here is an early working video of the game (1-2 hours worth of work). Since then I had included the 3 additional vines (including dynamic random vine generation) and the extra animations (i.e. jumping from vine to vine). Design: Simplicity over Awesomeness Although the big buzz about games is to have them abstract and the best way to do that is to normally make it so that your engine is Component base driven. Although that architecture lends itself to amazing data driven design, I wanted to just try and bang something out quickly and most importantly simply. You can see from the UML design above that a lot of the Entity types could be re-factored to simply be a base entity holding different collections of Components instead. I had made a pretty decent post on gamedev.stackexchange.com regarding the question on using GameServices and GameComponent architecture that is contained within XNA and recieved some great feedback as well.","headline":"First Thoughts on XNA 4.0 Game Architecture","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-09-09-first-thoughts-on-xna-4-0-game-architecture.html"},"url":"https://fzakaria.com/old_blog/2011-09-09-first-thoughts-on-xna-4-0-game-architecture.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    First Thoughts on XNA 4.0 Game Architecture
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-09-09
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-09-09-first-thoughts-on-xna-4-0-game-architecture.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> XNA 4.0 </h2>
+<h3> Intro </h3>
+<p>
+Just as a quick introduction for anyone who isn't familiar with <a href="http://msdn.microsoft.com/en-us/library/bb200104.aspx">XNA</a>, it is a set of managed libraries designed for game development for Xbox, Windows Phones, and Windows-based computers. It's not so much of a game engine as an abstraction of a few important pieces normally found in game engines. Whereas using a full game engine may be <em>overkill</em> for developing simple games, XNA provides at least a nice starting point and simplifying rendering and certain tasks.</p>
+<p>
+I have a friend who is in the process of developing an iPhone game titled, <a href="http://www.facebook.com/pages/Chillzon3-Studios-presents-Jungle-Spin/211732452185995">Jungle Spin</a>.<br />
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/09/209917_215529721806268_211732452185995_861164_7712488_o.jpg"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/09/209917_215529721806268_211732452185995_861164_7712488_o.jpg" alt="" title="Jungle Spin" width="455" height="400" class="aligncenter size-full wp-image-846" /></a>I've tried to dip my hands before in some indie development, but I was always stuck at the artwork portion of the game. This time around, my friend allowed me to play around with his artwork for his game and with that as a great starting point and a clearly defined game (I decided to attempt to recreate the game in XNA),<em> I set off</em>!</p>
+<p><!--more--></p>
+<h3> Mostly Overkill </h3>
+<p>
+Having just about finished writing my simple 2D entity-component based game engine, I was pretty much looking to implement a similar methodology to the game. Upon first reading of the some of the <a href="http://www.amazon.com/XNA-Game-Studio-4-0-Programming/dp/0672333457">books</a> I had purchased for XNA Game development, it seemed as it would be an easy fit. XNA at first glance has this idea of "<a href="http://msdn.microsoft.com/en-us/library/microsoft.xna.framework.gamecomponent.aspx">GameComponents</a>" and "<a href="http://msdn.microsoft.com/en-us/library/microsoft.xna.framework.drawablegamecomponent.aspx">DrawableGameComponents</a>" where each one must instantiate an interface including a respective Update() and Draw() method. However it seemed a bit overkill to make everything inherit from GameComponent and register it, since any GameComponent must be given the Game object and I didn't feel that every entity needed that.</p>
+<p>
+I opted to just re-implement the similar Manager system in my earlier engine. I simply defined a base type "Entity" and an "EntityManager" (which is a singleton) and anytime anyone would like to create or kill an Entity/Sprite/Object they would do so through the manager. The manager would then simply iterate through the list and call update and draw on each Entity.</p>
+<h3> Status </h3>
+<p>
+What I had learned while making the game is that <strong>art & assets</strong> run the show. Things were going <del datetime="2011-09-09T18:55:10+00:00">very</del> somewhat smoothly until I started to add all the animations for my Monkey. I ran into the following problems; they are ordered from annoying to blocking.</p>
+<ol>
+<li>The sprites were packed into a spritesheet/atlas that had a matching XML file. XNA doesn't come natively with a way to load Spritesheets. Although I could write a custom content loader, I was just mucking around and just hard coded the values (positions within the spritesheets manually).</li>
+<li>Figuring out the speed of the animation for repetitive animations! I'm not really sure how it's done in most games and whether the artist has a particular animation speed in mind, but I pretty much toyed around with the animation speeds until I got something that was aesthetically pleasing.</li>
+<li>Figuring out the speed of animations that involve displacement. Once of the actions the monkey can take is to swing from vine-to-vine with an accompanying animation. I'm curious as to what other artists do. Do you explain to them the distance they'd like to travel in the animation so that they can create enough frames or is the animation speed changed to always match the distance to be traveled?</li>
+<li>Figuring out the anchor of the texture. Every texture can specify an 'origin' during the spriteBatch's draw call. This origin is normally set to the top left corner of the image. This had caused me a lot of headache because all the textures of the monkey had his feet at different locations within the texture. This meant that transitioning from one animation to another caused a minor displacement. I tried to overcompensate for this by playing around with the origin until someone <a href="http://gamedev.stackexchange.com/questions/16791/xna-4-0-trouble-aligning-an-animating-sprite-texture-origin">pointed </a>out that normally artists always have the sprite centered in the texture for this very reason! I'm currently <strong>blocked </strong>on this issue as I need to modify all the textures</li>
+<blockquote><p>Checkout the <a href="http://gamedev.stackexchange.com/questions/16791/xna-4-0-trouble-aligning-an-animating-sprite-texture-origin">question </a>on gamedev.stackexchange on this very question.</p></blockquote>
+</ol>
+<p>
+Here is an early working video of the game (1-2 hours worth of work). Since then I had included the 3 additional vines (including dynamic random vine generation) and the extra animations (i.e. jumping from vine to vine).<br />
+<iframe width="480" height="390" src="http://www.youtube.com/embed/jNQoFpMAUts?rel=0" frameborder="0" allowfullscreen></iframe></p>
+<h2> Design: Simplicity over Awesomeness </h2>
+<p><a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/09/game_uml.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/09/game_uml.png" alt="" title="UML Design" width="500" height="490" class="aligncenter size-full wp-image-866" /></a></p>
+<p>
+Although the big buzz about games is to have them abstract and the best way to do that is to normally make it so that your engine is <a href="http://lambdor.net/?p=171">Component </a>base driven. Although that architecture lends itself to amazing data driven design, I wanted to just try and <em>bang</em> something out quickly and most importantly <strong>simply</strong>. You can see from the UML design above that a lot of the Entity types could be re-factored to simply be a base entity holding different collections of Components instead.</p>
+<blockquote><p>
+I had made a pretty decent <a href="http://gamedev.stackexchange.com/questions/16748/xna-questions-regarding-games-architecture">post </a>on gamedev.stackexchange.com regarding the question on using GameServices and GameComponent architecture that is contained within XNA and recieved some great feedback as well.
+</p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-09-09-first-thoughts-on-xna-4-0-game-architecture.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

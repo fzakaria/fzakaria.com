@@ -1,0 +1,252 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>caching your nix-shell | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="caching your nix-shell" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="tl;dr; you can use the following invocation to cache your nix-shell $ nix-store --query --references $(nix-instantiate shell.nix) | \ xargs nix-store --realise | \ xargs nix-store --query --requisites | \ cachix push your_cache I have been hooked on Nix as a way to introduce reproducible development environments. However I had to introduce a shell.nix file for a project that relied on a very old version of nodejs." />
+<meta property="og:description" content="tl;dr; you can use the following invocation to cache your nix-shell $ nix-store --query --references $(nix-instantiate shell.nix) | \ xargs nix-store --realise | \ xargs nix-store --query --requisites | \ cachix push your_cache I have been hooked on Nix as a way to introduce reproducible development environments. However I had to introduce a shell.nix file for a project that relied on a very old version of nodejs." />
+<link rel="canonical" href="https://fzakaria.com/2020/08/11/caching-your-nix-shell.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/08/11/caching-your-nix-shell.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-08-11T19:12:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="caching your nix-shell" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-08-11T19:12:00-07:00","datePublished":"2020-08-11T19:12:00-07:00","description":"tl;dr; you can use the following invocation to cache your nix-shell $ nix-store --query --references $(nix-instantiate shell.nix) | \\ xargs nix-store --realise | \\ xargs nix-store --query --requisites | \\ cachix push your_cache I have been hooked on Nix as a way to introduce reproducible development environments. However I had to introduce a shell.nix file for a project that relied on a very old version of nodejs.","headline":"caching your nix-shell","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/08/11/caching-your-nix-shell.html"},"url":"https://fzakaria.com/2020/08/11/caching-your-nix-shell.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    caching your nix-shell
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-08-11
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/08/11/caching-your-nix-shell.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p><strong>tl;dr;</strong> you can use the following invocation to cache  your <em>nix-shell</em></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>nix-store <span class="nt">--query</span> <span class="nt">--references</span> <span class="si">$(</span>nix-instantiate shell.nix<span class="si">)</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--realise</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--query</span> <span class="nt">--requisites</span> | <span class="se">\</span>
+    cachix push your_cache
+</code></pre></div></div>
+
+<p>I have been <em>hooked</em> on Nix as a way to introduce <strong>reproducible</strong> development environments. However I had to introduce a <em>shell.nix</em> file for a project that relied on a very old version of <a href="https://nodejs.org/en/">nodejs</a>.</p>
+
+<!--more-->
+
+<p>Using an old-version worked – <em>which was great considering nix is promising hermetic packages</em> – however waiting to build this particular nodejs version on every machine was a big <em>time sink</em>.</p>
+
+<p>No problem! Nix offers the concept of a binary cache to avoid having to rebuild packages needlessly.</p>
+
+<blockquote>
+  <p>A binary cache builds Nix packages and caches the result for other machines.</p>
+</blockquote>
+
+<p>If you do a quick Google search for <em>“how to cache my nix-shell”</em> you quickly discover <a href="https://cachix.org/">cachix</a>.</p>
+
+<p>The prevailing wisdom at the time, outlines the following <em>incantation</em> to cache.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-store <span class="nt">-qR</span> <span class="nt">--include-outputs</span> <span class="si">$(</span>nix-instantiate shell.nix<span class="si">)</span>
+</code></pre></div></div>
+
+<p>While it’s not <em>technically wrong</em> it’s caching <strong>way more</strong> than you want. It is included not only the immediate <em>buildInputs</em> of your <em>mkShell</em> but their complete <em>build-time</em> transitive dependencies.</p>
+
+<p>Let’s break down a simple example!
+Here is a simple <em>nix-shell</em> that simply pulls in <em>Chromium</em>.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{};</span>
+<span class="kn">in</span>
+<span class="kn">with</span> <span class="nv">nixpkgs</span><span class="p">;</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="p">;</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="o">.</span><span class="nv">lib</span><span class="p">;</span>
+<span class="nv">mkShell</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"example-shell"</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span><span class="nv">chromium</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Let’s us run the prevailing wisdom command.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nix-store <span class="nt">--query</span> <span class="nt">--requisites</span> <span class="nt">--include-outputs</span> <span class="si">$(</span>nix-instantiate shell.nix<span class="si">)</span> | <span class="nb">wc</span> <span class="nt">-l</span>
+
+2102
+</code></pre></div></div>
+
+<p><strong>2102</strong> store-paths that need to be uploaded!</p>
+
+<p>The problem comes with calling <em>requisites</em> on a derivation which is the result of <em>nix-instantiate</em>. We cannot call <strong>nix-build</strong> because you cannot <em>realise</em> <strong>mkShell</strong>!</p>
+
+<blockquote>
+  <p>–requisites
+          A source deployment is obtained by distributing the closure of
+          a store derivation.</p>
+</blockquote>
+
+<p>What do we want ? We want the immediate <em>build-time</em> dependencies of our derivation but for each dependency, only include their <em>run-time</em> dependencies.</p>
+
+<p>Let’s first checkout the immediate dependencies by using <em>references</em>.</p>
+
+<blockquote>
+  <p>–references
+           Prints the set of references of the store paths paths, that is, their immediate dependencies. (For all
+           dependencies, use –requisites.)</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> nix-store <span class="nt">--query</span> <span class="nt">--references</span> <span class="si">$(</span>nix-instantiate shell.nix<span class="si">)</span>
+/nix/store/9krlzvny65gdc8s7kpb6lkx8cd02c25b-default-builder.sh
+/nix/store/72kcdqdnz8myr2s28phzi48cv2a8q5x3-bash-4.4-p23.drv
+/nix/store/04jbnjp8522lv7bpwzp2jy8nihplj9kk-chromium-84.0.4147.105.drv
+/nix/store/prnb5ax5x8xapg5xmmh8w1c7zx8f0j9c-stdenv-linux.drv
+</code></pre></div></div>
+
+<p>The <em>problem</em> is that it’s returning the <strong>.drv</strong> for chromium; if we were to call <code class="language-plaintext highlighter-rouge">--requisites</code> on it; we would get the huge dependency set as earlier.</p>
+
+<p>The <em>“trick”</em> is to <em>realise</em> it so we get an output-path.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="nv">$ </span>nix-store <span class="nt">--query</span> <span class="nt">--references</span> <span class="si">$(</span>nix-instantiate shell.nix<span class="si">)</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--realise</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--query</span> <span class="nt">--requisites</span> | <span class="se">\</span>
+    <span class="nb">wc</span> <span class="nt">-l</span>
+
+221
+</code></pre></div></div>
+
+<p><strong>221</strong> store-paths that need to uploaded!</p>
+
+<p>Hurray much smaller!</p>
+
+<p>Tying it now with <a href="https://cachix.org/">cachix</a> we get this nice one-liner.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>nix-store <span class="nt">--query</span> <span class="nt">--references</span> <span class="si">$(</span>nix-instantiate shell.nix<span class="si">)</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--realise</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--query</span> <span class="nt">--requisites</span> | <span class="se">\</span>
+    cachix push your_cache
+</code></pre></div></div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-08-11-caching-your-nix-shell.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

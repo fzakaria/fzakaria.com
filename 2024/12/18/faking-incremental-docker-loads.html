@@ -1,0 +1,391 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Faking incremental Docker loads | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Faking incremental Docker loads" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="While testcontainers have made it simple to run containers for unit &amp; system tests, they are not well suited for Bazel as they rely on docker pull to hydrate the Docker daemon. The pulls rely on tags which may be rewritten and require input from data (i.e, the images themselves) unknown to Bazel, as well as network access." />
+<meta property="og:description" content="While testcontainers have made it simple to run containers for unit &amp; system tests, they are not well suited for Bazel as they rely on docker pull to hydrate the Docker daemon. The pulls rely on tags which may be rewritten and require input from data (i.e, the images themselves) unknown to Bazel, as well as network access." />
+<link rel="canonical" href="https://fzakaria.com/2024/12/18/faking-incremental-docker-loads.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/12/18/faking-incremental-docker-loads.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-12-18T12:21:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Faking incremental Docker loads" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-12-18T12:21:00-08:00","datePublished":"2024-12-18T12:21:00-08:00","description":"While testcontainers have made it simple to run containers for unit &amp; system tests, they are not well suited for Bazel as they rely on docker pull to hydrate the Docker daemon. The pulls rely on tags which may be rewritten and require input from data (i.e, the images themselves) unknown to Bazel, as well as network access.","headline":"Faking incremental Docker loads","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/12/18/faking-incremental-docker-loads.html"},"url":"https://fzakaria.com/2024/12/18/faking-incremental-docker-loads.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Faking incremental Docker loads
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-12-18
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/12/18/faking-incremental-docker-loads.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>While <a href="https://testcontainers.com/">testcontainers</a> have made it simple to run containers for unit &amp; system tests, they are not well suited for <a href="https://bazel.build/">Bazel</a> as they rely on <code class="language-plaintext highlighter-rouge">docker pull</code> to hydrate the Docker daemon. The pulls rely on tags which may be rewritten and require input from data (i.e, the images themselves) unknown to Bazel, as well as network access.</p>
+
+<!--more-->
+
+<p><code class="language-plaintext highlighter-rouge">rules_oci</code> is a popular Bazel rules library to incorporate Docker (OCI) images into Bazel that can be used to build subsequent images or be passed as depenedencies to targets.</p>
+
+<p>I wrote a small example <a href="https://github.com/fzakaria/bazel-testcontainer-example">https://github.com/fzakaria/bazel-testcontainer-example</a> that demonstrates how you can <em>modify</em> <a href="https://java.testcontainers.org/">testcontainers-java</a> to leverage these images by passing in the <code class="language-plaintext highlighter-rouge">tar.gz</code> of the image as a <code class="language-plaintext highlighter-rouge">data</code> dependency and explicitly loading it at startup.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">java_test</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"TestContainerExampleTest"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"TestContainerExampleTest.java"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">":tarball.tar"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s">"TARBALL_RUNFILE"</span><span class="p">:</span> <span class="s">"$(rlocationpath :tarball.tar)"</span><span class="p">},</span>
+    <span class="n">runtime_deps</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"@maven//:org_slf4j_slf4j_simple"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">deps</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"@bazel_tools//tools/java/runfiles"</span><span class="p">,</span>
+        <span class="s">"@maven//:org_testcontainers_testcontainers"</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">tar</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"layer"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"PingService_deploy.jar"</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">oci_image</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"image"</span><span class="p">,</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="s">"@distroless_java"</span><span class="p">,</span>
+    <span class="n">entrypoint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"java"</span><span class="p">,</span>
+        <span class="s">"-jar"</span><span class="p">,</span>
+        <span class="s">"/src/PingService_deploy.jar"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">tars</span> <span class="o">=</span> <span class="p">[</span><span class="s">":layer"</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><em>Sounds great?</em> 🙌 … <em>Right?</em> 😕</p>
+
+<p>Turns out if your image is moderately large (&gt;2GiB), an individual upload can take a relatively long time (~30s). This can compound if you have multiple concurrent tests each tryin to upload to the Docker daemon such as in the case in Bazel.</p>
+
+<p>There is <strong>no handshaking</strong> or range-read of the compressed stream, meaning you must send the whole compressed image, which must then be uncompressed and validated for Docker to determine it already had the necessary layers present.</p>
+
+<p>We experienced this with our tests either failing or timing out as each concurrent test tried to upload multi-gigabyte images concurrently.</p>
+
+<p>Turns out, this limitation is documented and known:</p>
+<ul>
+  <li><a href="https://github.com/docker/buildx/issues/107">docker/buildx/issues/107</a></li>
+  <li><a href="https://github.com/bazel-contrib/rules_oci/issues/454">bazel-contrib/rules_oci/issues/454</a></li>
+  <li><a href="https://github.com/moby/moby/issues/44369">moby/moby/issues/44369</a></li>
+</ul>
+
+<p>❗ <em>There exists no API to query the layers the Docker engine has locally</em>.</p>
+
+<p>For a <em>quick’n’dirty</em> (but effective) workaround I relied on the following before our CI job</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> bazel query <span class="s2">"kind(oci_load, //...)"</span> <span class="se">\</span>
+    | xargs <span class="nt">-n</span> 1 <span class="nt">-P</span> 8 <span class="nt">-I</span> target bazel run target
+</code></pre></div></div>
+
+<p>It would be great if we didn’t need any invocation prior to a test; are Bazel users left <em>holding the bag</em> ? 🫂</p>
+
+<p>Don’t despair! Turns out we can <strong>fake incrementality</strong> uploads in Docker with a relatively ingenious method. 😭</p>
+
+<blockquote>
+  <p>Note: I did not invent this solution. There are other existing prior art, namely:</p>
+  <ul>
+    <li><a href="https://github.com/bazelbuild/rules_docker/blob/master/container/incremental_load.sh.tpl">bazelbuild/rules_docker/blob/master/container/incremental_load.sh.tpl</a></li>
+    <li><a href="https://github.com/aspect-build/bazel-examples/blob/main/oci_python_image/hello_world/app_test.py">aspect-build/bazel-examples/blob/main/oci_python_image/hello_world/app_test.py</a></li>
+    <li><a href="https://github.com/datahouse/bazel_buildlib/blob/oss/buildlib/private/docker/src/loadImageToDocker.ts">datahouse/bazel_buildlib/blob/oss/buildlib/private/docker/src/loadImageToDocker.ts
+</a></li>
+  </ul>
+</blockquote>
+
+<p>🪄 The trick is that we will upload Docker images with <strong>metadata but no actual layer data</strong>, and incrementally include the layer only if it’s required.</p>
+
+<p><img src="/assets/images/piccard_docker_image.jpg" alt="Piccard graphic" /></p>
+
+<p>Let’s break it down.</p>
+
+<ol>
+  <li>
+    <p>A Docker image, which is different than the OCI format, is a <em>tar</em> file (or <em>tar.gz</em>) with a file <code class="language-plaintext highlighter-rouge">manifest.json</code> that dictates the files that should be present within the archive.</p>
+
+    <p>I’ve shortened the sha256 in the below example.</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w"> </span><span class="p">[{</span><span class="w">
+ </span><span class="nl">"Config"</span><span class="p">:</span><span class="w"> </span><span class="s2">"blobs/sha256/8f73f04"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"RepoTags"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"example:0.1"</span><span class="w"> </span><span class="p">],</span><span class="w">
+ </span><span class="nl">"Layers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+   </span><span class="s2">"blobs/sha256/6dd6992"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"blobs/sha256/41e9df2"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"blobs/sha256/3ec46cfe"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"blobs/sha256/1225e888"</span><span class="p">,</span><span class="w">
+ </span><span class="p">]}]</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Although our metadata outlines <em>4 different layers</em>, we can can omit the actual layer data.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> <span class="nb">tar </span>tf testimage.tar.gz | tree <span class="nt">--fromfile</span> <span class="nb">.</span>
+ <span class="nb">.</span>
+ ├── blobs
+ │   └── sha256
+ │       └── 8f73f04
+ └── manifest.json
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>If we try to upload this image, if the local daemon has all the layers already present, the upload will succeed <strong>despite us not including any actual layers</strong>.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> docker load &lt; testimage.tar.gz
+ Loaded image: example:0.1
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>If a layer is missing locally, we detect it via the error response and subsequently include it in
+the archive and re-upload it.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> docker load &lt; testimage.tar.gz
+ open /var/lib/docker/tmp/docker-import-2494045611/blobs/sha256/6dd6992:
+ no such file or directory
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>We can perform these steps incrementally by adding each layer one-at-a-time which looks like the following
+in pseudocode.</p>
+
+<blockquote>
+  <p>⚠️ It’s important to also restrict the <code class="language-plaintext highlighter-rouge">diff_ids</code> which represent a validation of the state of the container
+when the layers are applied.</p>
+</blockquote>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="n">incremental_load</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">repo_tag</span><span class="p">,</span> <span class="n">base_path</span><span class="p">):</span>
+<span class="s">"""Incrementally loads a Docker image."""</span>
+
+<span class="c1"># Parse image index
+</span><span class="n">index_path</span> <span class="o">=</span> <span class="n">base_path</span> <span class="o">+</span> <span class="s">"/index.json"</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">(</span><span class="n">index_path</span><span class="p">)</span>
+
+<span class="c1"># Parse manifest and config
+</span><span class="n">manifest_digest</span> <span class="o">=</span> <span class="n">index</span><span class="p">.</span><span class="n">manifests</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">digest</span>
+<span class="n">manifest</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">(</span><span class="n">blob</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">manifest_digest</span><span class="p">))</span>
+<span class="n">full_config</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">(</span><span class="n">blob</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">manifest</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">digest</span><span class="p">))</span>
+<span class="n">config_blob_path</span> <span class="o">=</span> <span class="n">blob_path</span><span class="p">(</span><span class="n">manifest</span><span class="p">.</span><span class="n">config</span><span class="p">)</span>
+
+<span class="n">missing_layer</span> <span class="o">=</span> <span class="n">null</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">manifest</span><span class="p">.</span><span class="n">layers</span><span class="p">):</span>
+  <span class="c1"># Try uploading each layer one at a time
+</span>  <span class="n">layers</span> <span class="o">=</span> <span class="n">manifest</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+  <span class="c1"># Create partial config
+</span>  <span class="n">tmp_config</span> <span class="o">=</span> <span class="n">full_config</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">rootfs</span><span class="p">.</span><span class="n">diffIds</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+  <span class="c1"># Create partial image tar
+</span>  <span class="n">image</span> <span class="o">=</span> <span class="n">create_image_tar</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">config_blob_path</span><span class="p">,</span>
+                           <span class="n">tmp_config</span><span class="p">,</span> <span class="n">layers</span><span class="p">,</span> <span class="n">missing_layer</span><span class="p">)</span>
+
+  <span class="c1"># Upload partial image, and parse out if any layer is needed
+</span>  <span class="n">missing_layer</span> <span class="o">=</span> <span class="n">upload_image</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+  <span class="c1"># No missing layer, move onto the next one
+</span>  <span class="k">if</span> <span class="n">missing_layer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Missing layer found, try again but this time upload it!
+</span>    <span class="k">pass</span>
+
+<span class="c1"># Upload full image
+</span><span class="n">full_image</span> <span class="o">=</span> <span class="n">create_image_tar</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">config_blob_path</span><span class="p">,</span>
+                              <span class="n">full_config</span><span class="p">,</span> <span class="n">manifest</span><span class="p">.</span><span class="n">layers</span><span class="p">)</span>
+<span class="n">upload_image</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">full_image</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>If you are interested in the equivalent Java code let me know and I can publish it.</p>
+</blockquote>
+
+<p>With this approach you can now have <strong>incremental Docker uploads</strong>! Huzzah! 🙌🏽</p>
+
+<p>Problem solved? Sorta? Well….not actually. If the images you are uploading contain
+individual large layers, perhaps they were squashed, we are back to square one.</p>
+
+<p>Here we see an example image whose single layer is 1.28GiB.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> docker image <span class="nb">history </span>bad_example:0.1 <span class="nt">--human</span> <span class="se">\</span>
+                    <span class="nt">--format</span> <span class="s1">'table '</span> | <span class="nb">head
+</span>SIZE
+0B
+0B
+7.87kB
+0B
+1.28GB
+0B
+0B
+0B
+0B
+</code></pre></div></div>
+
+<h3 id="wheres-time-spent">Where’s time spent?</h3>
+<p>At this point you have to improve the image by seggregating the data into more multiple layers or continue to upload it outside of the Bazel context.</p>
+
+<p>🕵️ I would like to dive deeper and understand why the uploads completely stall.</p>
+
+<p>The relevant code in Docker <a href="https://github.com/moby/moby/blob/0d53725a7f8abb0b75961806da252f31155cb813/image/tarexport/load.go#L33">can be found here</a>.</p>
+
+<p>Quick benchmarks done on my M3 Pro MacBook demonstrate it takes ~35-45 seconds to gzip a 2GiB file.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">time </span>docker save bad_example:0.1 | <span class="nb">gzip</span> <span class="o">&gt;</span> test.tar.gz
+docker save bad_example:0.1  0.49s user 2.49s system 6% cpu 44.843 total
+<span class="nb">gzip</span> <span class="o">&gt;</span> test.tar.gz  36.72s user 0.48s system 82% cpu 44.842 total
+</code></pre></div></div>
+
+<p>Uploading the image seems to take ~15 seconds</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">time </span>docker load &lt; test.tar.gz
+75cc828c731c: Loading layer <span class="o">[==================================================&gt;]</span>  102.1MB/102.1MB
+20ebbf9559c4: Loading layer <span class="o">[==================================================&gt;]</span>  552.9MB/552.9MB
+1049fe83b46b: Loading layer <span class="o">[==================================================&gt;]</span>  10.14MB/10.14MB
+b4a5b99cb981: Loading layer <span class="o">[==================================================&gt;]</span>  331.8kB/331.8kB
+a9e2a3aa94a5: Loading layer <span class="o">[==================================================&gt;]</span>  39.34MB/39.34MB
+93ca7c014948: Loading layer <span class="o">[==================================================&gt;]</span>  6.144kB/6.144kB
+71d670ccc47b: Loading layer <span class="o">[==================================================&gt;]</span>  4.608kB/4.608kB
+1838b4d29208: Loading layer <span class="o">[==================================================&gt;]</span>  2.048kB/2.048kB
+0d9eb9b0c742: Loading layer <span class="o">[==================================================&gt;]</span>   2.56kB/2.56kB
+c68e52b834e4: Loading layer <span class="o">[==================================================&gt;]</span>  1.284GB/1.284GB
+749f1729f609: Loading layer <span class="o">[==================================================&gt;]</span>   16.9kB/16.9kB
+Loaded image: bad_example:0.1
+docker load &lt; test.tar.gz  0.38s user 1.62s system 13% cpu 14.565 total
+</code></pre></div></div>
+
+<p>That means creating the archive  and uploading it can take ~1 minute of test execution time. This problem seems to compound with multiple archives created and uploaded; more research is needed to know if the bottleneck is the Docker daemon itself (a global lock?) or the I/O of the disk.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-12-18-faking-incremental-docker-loads.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,1337 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="3.10.0">Jekyll</generator><link href="https://fzakaria.com/feed.xml" rel="self" type="application/atom+xml" /><link href="https://fzakaria.com/" rel="alternate" type="text/html" /><updated>2025-02-02T20:35:32-08:00</updated><id>https://fzakaria.com/feed.xml</id><title type="html">Farid Zakaria’s Blog</title><subtitle>I&apos;m a software engineer, father and wishful amateur surfer. If you&apos;ve come seeking my political views; you&apos;ve found the wrong &lt;a href=&quot;https://fareedzakaria.com/&quot;&gt;Fareed&lt;/a&gt;.</subtitle><entry><title type="html">Nix: string interpolation of directories gone awry</title><link href="https://fzakaria.com/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html" rel="alternate" type="text/html" title="Nix: string interpolation of directories gone awry" /><published>2025-02-02T20:10:00-08:00</published><updated>2025-02-02T20:10:00-08:00</updated><id>https://fzakaria.com/2025/02/02/nix-string-interpolation-of-directories-gone-awry</id><content type="html" xml:base="https://fzakaria.com/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html"><![CDATA[<p>I was sleuthing 🦥 on the <a href="https://nixos.org/">NixOS</a> Matrix channel (<a href="https://matrix.to/#/#community:nixos.org">#nix:nixos.org</a>) – trying to get some help for my own problems when myself and another user (<a href="@mjm:midna.dev">@mjm</a>) starting helping someone whom was complaining that their seemingly innocuous derivation was continously rebuilding.</p>
+
+<!--more-->
+
+<p>Here is the <em>snippet</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+    <span class="nv">scriptDir</span> <span class="o">=</span> <span class="nv">f</span><span class="p">:</span> <span class="nv">dirPath</span><span class="p">:</span> <span class="p">{</span> <span class="nv">exclude</span> <span class="o">?</span> <span class="p">[</span> <span class="p">],</span> <span class="nv">deps</span> <span class="o">?</span> <span class="p">[</span> <span class="p">],</span> <span class="nv">env</span> <span class="o">?</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}:</span>
+    <span class="nv">lib</span><span class="o">.</span><span class="nv">mapAttrsToList</span>
+        <span class="p">(</span><span class="nv">name</span><span class="p">:</span> <span class="nv">_</span><span class="p">:</span> <span class="nv">f</span> <span class="s2">"</span><span class="si">${</span><span class="nv">dirPath</span><span class="si">}</span><span class="s2">/</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">"</span> <span class="p">{</span> <span class="kn">inherit</span> <span class="nv">deps</span> <span class="nv">env</span><span class="p">;</span> <span class="p">})</span>
+        <span class="p">(</span><span class="kr">builtins</span><span class="o">.</span><span class="kr">removeAttrs</span> <span class="p">(</span><span class="kr">builtins</span><span class="o">.</span><span class="nv">readDir</span> <span class="nv">dirPath</span><span class="p">)</span> <span class="nv">exclude</span><span class="p">);</span>
+    <span class="nv">scriptBinDir</span> <span class="o">=</span> <span class="nv">scriptDir</span> <span class="nv">scriptBin</span><span class="p">;</span>
+<span class="kn">in</span>
+<span class="p">(</span><span class="nv">scriptBinDir</span> <span class="sx">./converters</span> <span class="p">{</span> <span class="p">})</span> <span class="o">++</span>
+<span class="p">(</span><span class="nv">scriptBinDir</span> <span class="sx">./other</span> <span class="p">{</span> <span class="p">})</span> <span class="o">++</span>
+<span class="p">(</span><span class="nv">scriptBinDir</span> <span class="sx">./currencies</span> <span class="p">{</span> <span class="p">})</span> <span class="o">++</span>
+<span class="p">(</span><span class="nv">scriptBinDir</span> <span class="sx">./university</span> <span class="p">{</span> <span class="p">})</span> <span class="o">++</span>
+</code></pre></div></div>
+
+<p>Do you see the bug? 🐛</p>
+
+<p>At first I thought it was that <code class="language-plaintext highlighter-rouge">scriptBinDir</code> uses <a href="https://ryantm.github.io/nixpkgs/builders/trivial-builders/#trivial-builder-writeShellApplication">writeShellApplication</a> which is a <em>trivial builder</em>. Most trivial builders set <em>runLocal</em> to be <strong>true</strong>.</p>
+
+<dl>
+  <dt><em>runLocal</em></dt>
+  <dd>If set to true this forces the derivation to be built locally, not using substitutes nor remote builds. This is intended for very cheap commands (&lt;1s execution time) which can be sped up by avoiding the network round-trip(s). Its effect is to set preferLocalBuild = true and allowSubstitutes = false.</dd>
+</dl>
+
+<p>Hmm; turns out that it if that were the case, the local <code class="language-plaintext highlighter-rouge">/nix/store</code> would still be a substitute for the build; so that can’t be the cause ❌.</p>
+
+<p>The root-cause is much more <em>innocuous</em>, and it’s the string interpolation of the directory: <code class="language-plaintext highlighter-rouge">"${dirPath}/${name}"</code></p>
+
+<p>Let’s see a small example to break this down.</p>
+
+<p>I have a simple file and subdirectory <em>directory</em> with a file <em>text</em> that has some content.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># You should always pin your nixpkgs</span>
+<span class="p">{</span><span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{}}:</span> <span class="kd">let</span>
+  <span class="nv">a</span> <span class="o">=</span> <span class="sx">./directory</span> <span class="o">+</span> <span class="s2">"/text"</span><span class="p">;</span>
+  <span class="nv">b</span> <span class="o">=</span> <span class="s2">"</span><span class="si">${</span><span class="sx">./directory</span><span class="si">}</span><span class="s2">/text"</span><span class="p">;</span>
+<span class="kn">in</span>
+  <span class="nv">pkgs</span><span class="o">.</span><span class="nv">writeText</span> <span class="s2">"silly-script"</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    </span><span class="si">${</span><span class="nv">a</span><span class="si">}</span><span class="err">
+</span><span class="s2">    </span><span class="si">${</span><span class="nv">b</span><span class="si">}</span><span class="err">
+
+</span><span class="s2">    </span><span class="si">${</span><span class="kr">builtins</span><span class="o">.</span><span class="nv">readFile</span> <span class="nv">a</span><span class="si">}</span><span class="err">
+</span><span class="s2">    </span><span class="si">${</span><span class="kr">builtins</span><span class="o">.</span><span class="nv">readFile</span> <span class="nv">b</span><span class="si">}</span><span class="err">
+</span><span class="s2">  ''</span>
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nix-build example_script.nix
+this derivation will be built:
+  /nix/store/dvb29lak8q7jq2dmh8gp04i4q48d4q5g-silly-script.drv
+building <span class="s1">'/nix/store/dvb29lak8q7jq2dmh8gp04i4q48d4q5g-silly-script.drv'</span>...
+/nix/store/nq1sf7caspc68bdwf1dyl4fnrfzvq41p-silly-script
+
+<span class="nv">$ </span>nix-build example_script.nix
+/nix/store/nq1sf7caspc68bdwf1dyl4fnrfzvq41p-silly-script
+
+<span class="nv">$ </span><span class="nb">cat </span>result
+/nix/store/f8m4h9wbpr05g4dja91xshh9l48a6ac0-text
+/nix/store/vd5g23fz1lzyvd6lmsm35hvhkm4rsf6z-directory/text
+
+Hello there!
+Hello there!
+</code></pre></div></div>
+
+<p>Interesting! Although I’m accessing the same file, it has resulted in a different store-path. 🤔</p>
+
+<p>Does this matter at all? 🤨</p>
+
+<p>Yes! It will cause rebuilds depending if the directory changes <strong>even if the file <em>text</em> does not change</strong>.</p>
+
+<p>I added a new file to <em>directory</em> and here is the result of the derivation.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cat </span>result
+/nix/store/f8m4h9wbpr05g4dja91xshh9l48a6ac0-text
+/nix/store/0m5j5lphpi2jsd6xi2fjwn1zqfmxy2hj-directory/text
+
+Hello there!
+Hello there!
+</code></pre></div></div>
+
+<p>Notice that <code class="language-plaintext highlighter-rouge">f8m4h9wbpr05g4dja91xshh9l48a6ac0</code> is still the derivation of the first way to access the file but the <code class="language-plaintext highlighter-rouge">-directory</code> store-path had changed.</p>
+
+<p>This seemingly innocuous difference of how you can access the same file can cause massive rebuilds if you are working in a directory that may contain build files that change often.</p>
+
+<p>Why is this way of “sucking in” a complete directory even available? Why not get rid of the foot-gun alltogether?</p>
+
+<p>Many derivations use the <code class="language-plaintext highlighter-rouge">src</code> attribute which is often set to a whole directory. The ability to copy the whole directory is quintessential to how this works.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">src</span> <span class="o">=</span> <span class="sx">./directory</span>
+</code></pre></div></div>
+
+<p>Watch out for this <em>papercut</em> when you are writing your derivations. If you find your builds are not memoized as muh as you think, this could be a likely culprit.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I was sleuthing 🦥 on the NixOS Matrix channel (#nix:nixos.org) – trying to get some help for my own problems when myself and another user (@mjm) starting helping someone whom was complaining that their seemingly innocuous derivation was continously rebuilding.]]></summary></entry><entry><title type="html">Bazel: Build Event Protocol Viewer</title><link href="https://fzakaria.com/2025/01/28/bazel-build-event-protocol-viewer.html" rel="alternate" type="text/html" title="Bazel: Build Event Protocol Viewer" /><published>2025-01-28T14:11:00-08:00</published><updated>2025-01-28T14:11:00-08:00</updated><id>https://fzakaria.com/2025/01/28/bazel-build-event-protocol-viewer</id><content type="html" xml:base="https://fzakaria.com/2025/01/28/bazel-build-event-protocol-viewer.html"><![CDATA[<blockquote>
+  <p>Visit <a href="https://visible.build">https://visible.build</a> to try a <em>client-side only</em> build event protocol viewer 🎉.</p>
+
+  <p>You can find the MIT licensed source code <a href="https://github.com/fzakaria/bazel-build-event-viewer/">here</a>.</p>
+</blockquote>
+
+<p>I consider myself a “backend” engineer.</p>
+
+<p>Although I have dabbled in UI frameworks professionally (.NET and the occasional JavaScript) – I rarely work on the front-end visual portion of a product.</p>
+
+<p>My knowledge of HTML/CSS has been forever cemented since I learnt the technology in my teens – culminating in the ultimate personal expression of <code class="language-plaintext highlighter-rouge">&lt;marquee&gt;</code> on GeoCities.</p>
+
+<p>Revisiting front-end development for occasional projects has always been stress-inducing. The pace of change in the ecosystem is fast from the toolset to even the language (👋 TypeScript).</p>
+
+<!--more-->
+
+<p>Nevertheless, this last weekend I was lazer focused on a single goal.</p>
+
+<p><em>To build a front-end only website to visualize the <a href="https://bazel.build/remote/bep">Build Event Protocol (BEP)</a> for Bazel</em> 🎯.</p>
+
+<blockquote>
+  <p>The Build Event Protocol (BEP) is a protocol buffer message format that describes various events during a Bazel invocation that can help provide insights or provide a beautiful UI to display build results.</p>
+</blockquote>
+
+<p>Why?</p>
+
+<p>I’m in awe &amp; admiration of all the tooling others have built in the Bazel ecosystem to do something similar however they all necessitate a server.</p>
+
+<p>Although running a server isn’t an incredibly tall-order, it’s still a step that must be taken. Providing a free &amp; open server solution is also possible – but then I would have to worry about scale and costs.</p>
+
+<p>A <em>client-only</em> solution although limited by what it might be able to display, felt like a great contribution to the ecosystem. A nice addition is that client-only solutions also put at ease security minded individuals when uploading potentially sensitive data.</p>
+
+<p>As someone without much frontend experience, I’m happy with the results. 😊</p>
+
+<p><img src="/assets/images/build_event_protocol_viewer_overview.png" alt="Build Event Protocol Viewer Overview" /></p>
+
+<p>This project is available on <a href="https://visible.build">visible.build</a>, available at <a href="https://github.com/fzakaria/build-event-protocol-viewer">https://github.com/fzakaria/build-event-protocol-viewer</a>, hosted on GitHub Pages and should be ready to explore your Bazel invocations 🤘.</p>
+
+<p>The project is built as a single-page-application (SPA) and pre-rendered so there is absolutely no server requests beyond fetching the static-content.</p>
+
+<p>I chose to use <a href="https://svelte.dev/">Svelte</a> to generate the UI – oddly seemed to <em>fit my brain</em>. It’s as if <a href="https://react.dev/">React</a> &amp; <a href="https://angular.dev/">Angular</a> had a baby. Coupled with <a href="https://getbootstrap.com/">Bootstrap</a> I was able to get a semi-decent looking CSS without much fanfare.</p>
+
+<p>I leveraged &amp; learnt TypeScript, which coupled with <a href="https://github.com/protobufjs">protobufjs</a> to build the equivalent classes for the protocol definitions, made it relatively straightforward to explore the model. The main challenge was the abundance of fields, many of which were marked as <em>deprecated</em> in the proto definition file.</p>
+
+<p>A nice cherry ontop 🍒 this project is that it has a <em>clear end state</em> that it achieved; which is rare in projects. I set out to do a <em>single thing</em> (i.e. make a simple client-side only UI for BEP), and there’s only so much you can do without a server.</p>
+
+<p>I’ve reached that end state. Visualized <em>nearly</em> at most what I could from the single protocol file and achieved <em>project nirvana</em>. 🧘🏼</p>
+
+<p><em>Give it a shot. Contribute if you see a bug. Please let me know if you are using it.</em></p>]]></content><author><name></name></author><summary type="html"><![CDATA[Visit https://visible.build to try a client-side only build event protocol viewer 🎉. You can find the MIT licensed source code here. I consider myself a “backend” engineer. Although I have dabbled in UI frameworks professionally (.NET and the occasional JavaScript) – I rarely work on the front-end visual portion of a product. My knowledge of HTML/CSS has been forever cemented since I learnt the technology in my teens – culminating in the ultimate personal expression of &lt;marquee&gt; on GeoCities. Revisiting front-end development for occasional projects has always been stress-inducing. The pace of change in the ecosystem is fast from the toolset to even the language (👋 TypeScript).]]></summary></entry><entry><title type="html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</title><link href="https://fzakaria.com/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html" rel="alternate" type="text/html" title="Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)" /><published>2025-01-12T13:14:00-08:00</published><updated>2025-01-12T13:14:00-08:00</updated><id>https://fzakaria.com/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes</id><content type="html" xml:base="https://fzakaria.com/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html"><![CDATA[<p><a href="https://bazel.build/">Bazel</a> is a pretty amazing tool but it’s definitely full of it’s warts, sharp edges and arcane knowledge.</p>
+
+<p>The appeal to most who adopt Bazel is the ability to memoize much of the build graph if nothing has changed. Furthermore, while leveraging remote caches, build results can be shared across machines making memoization even more effective.</p>
+
+<p>This was a pretty compelling reason to adopt Bazel but pretty soon many noticed, especially on their CI systems, lots of unecessary data transfers for larger codebases.</p>
+
+<p>😲 If the network is poor, the benefits of remote caching (memoization) can be outweighed by the cost to download the artifacts.</p>
+
+<!--more-->
+
+<p>Let’s take a really simple example of transfering <em>1GiB</em> of data.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Network (Mbps)</th>
+      <th>Transfer (seconds)</th>
+      <th>Transfer (minutes)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>10</td>
+      <td>858.99</td>
+      <td>14.32</td>
+    </tr>
+    <tr>
+      <td>50</td>
+      <td>171.80</td>
+      <td>2.86</td>
+    </tr>
+    <tr>
+      <td>100</td>
+      <td>85.90</td>
+      <td>1.43</td>
+    </tr>
+    <tr>
+      <td>1000</td>
+      <td>8.59</td>
+      <td>0.14</td>
+    </tr>
+    <tr>
+      <td>10000</td>
+      <td>0.86</td>
+      <td>0.01</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Bazel typically will download every output file of every action executed (or cached) to the host machine. The total size of all output files in a build can be extremely large especially if you are building OCI images.</p>
+
+<p>Large repos may create more than 1GiB of total output files, and it’s easy to see that on a limited network it may be more cost-effective to rebuild them locally.</p>
+
+<p>Most developers however, only care about a subset of the output files and even more likely the top-level binary they want to run. On CI systems, the output files are of no interest at all.</p>
+
+<p>As of Bazel 7, the feature <a href="https://blog.bazel.build/2023/10/06/bwob-in-bazel-7.html">build without the bytes</a> (bwob) was enabled by default to solve this very problem.</p>
+
+<p>The feature allows you to download only a subset of the output files, thus reducing the amount of data transferred between Bazel and the remote cache. You can enable BwoB by setting either <code class="language-plaintext highlighter-rouge">--remote_download_minimal</code> or <code class="language-plaintext highlighter-rouge">--remote_download_toplevel</code>.</p>
+
+<p>Now for the suprising part, when <em>bwob</em> is enabled, Bazel can have suprising outcomes when you expect files to be present but are no longer. 🕵️</p>
+
+<blockquote>
+  <p>This is something we stumble a few times at <code class="language-plaintext highlighter-rouge">$DAYJOB$</code> alongside my colleague <a href="https://www.linkedin.com/in/vincerose/">Vince Rose</a>.</p>
+</blockquote>
+
+<p>Let’s build a really simple executable <code class="language-plaintext highlighter-rouge">genrule</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"write_file"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"a.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"echo 'hello, world!' &gt; $@"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"echo"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">":a.txt"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"echo.sh"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+cat &gt; $@ &lt;&lt; 'EOF'
+#!/usr/bin/env bash
+set -e
+cat $(location :a.txt)
+EOF
+    """</span><span class="p">,</span>
+    <span class="n">executable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>We will enable a local <em>disk_cache</em> in our <code class="language-plaintext highlighter-rouge">.bazelrc</code> and <em>bwob</em> toplevel.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>common --disk_cache=~/.cache/bazel-disk-cache
+common --remote_download_outputs=toplevel
+</code></pre></div></div>
+
+<p>Let’s run our command!</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel run //:echo
+INFO: Invocation ID: e5b66438-9b71-4fc3-97a7-5446ecf7759d
+INFO: Analyzed target //:echo <span class="o">(</span>0 packages loaded, 3 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:echo up-to-date:
+  bazel-bin/echo.sh
+INFO: Elapsed <span class="nb">time</span>: 0.051s, Critical Path: 0.00s
+INFO: 2 processes: 1 disk cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/echo.sh
+hello, world!
+</code></pre></div></div>
+
+<p>Great that works! Let’s now <code class="language-plaintext highlighter-rouge">bazel clean</code> and re-run the target.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel clean
+INFO: Invocation ID: 84292a54-30d4-42f6-aa83-0978a3355383
+INFO: Starting clean <span class="o">(</span>this may take a <span class="k">while</span><span class="o">)</span><span class="nb">.</span> Consider using <span class="nt">--async</span> <span class="k">if </span>the clean takes more than several minutes.
+
+<span class="nv">$ </span>bazel run //:echo
+INFO: Invocation ID: 85680e76-b9c8-456b-81ca-03835023191b
+INFO: Analyzed target //:echo <span class="o">(</span>6 packages loaded, 11 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:echo up-to-date:
+  bazel-bin/echo.sh
+INFO: Elapsed <span class="nb">time</span>: 0.185s, Critical Path: 0.00s
+INFO: 3 processes: 2 disk cache hit, 1 internal.
+INFO: Build completed successfully, 3 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/echo.sh
+<span class="nb">cat</span>: bazel-out/k8-fastbuild/bin/a.txt: No such file or directory
+</code></pre></div></div>
+
+<p>Looks like our <code class="language-plaintext highlighter-rouge">genrule</code> can no longer find <em>a.txt</em> 🤦‍♂️</p>
+
+<p>Thankfully the fix is relatively simple, you can either <a href="https://bazel.build/reference/command-line-reference#flag--remote_download_outputs">–remote_download_outputs=all</a> as a quick solution or be more selective with <a href="https://bazel.build/reference/command-line-reference#flag--remote_download_regex">–remote_download_regex</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel run //:echo <span class="nt">--remote_download_regex</span><span class="o">=</span><span class="s1">'.*/a\.txt'</span>
+INFO: Invocation ID: 01911793-d17a-435d-9503-a551f56a4cc3
+INFO: Analyzed target //:echo <span class="o">(</span>0 packages loaded, 0 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:echo up-to-date:
+  bazel-bin/echo.sh
+INFO: Elapsed <span class="nb">time</span>: 0.040s, Critical Path: 0.00s
+INFO: 2 processes: 1 disk cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/echo.sh
+hello, world!
+</code></pre></div></div>
+
+<p>Looks like the issue has been raised a few times on GitHub issues (i.e, <a href="https://github.com/bazelbuild/bazel/issues/11920">#11920</a>) or on the Bazel slack but it’s unclear if it’s <em>working as intended</em> or a <em>bug</em> 🐛.</p>
+
+<p>This outcome though can be very confusing for yourself or engineers whom are using Bazel.</p>
+
+<p>My understanding is that this may be a current <em>bug</em> specifically of <code class="language-plaintext highlighter-rouge">genrule</code> at the moment.</p>
+
+<p>Consider this alternative:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+    <span class="kt">FILE</span><span class="o">*</span> <span class="n">file</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">"a.txt"</span><span class="p">,</span> <span class="s">"r"</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">file</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">"Error opening file"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">char</span> <span class="n">ch</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">ch</span> <span class="o">=</span> <span class="n">fgetc</span><span class="p">(</span><span class="n">file</span><span class="p">))</span> <span class="o">!=</span> <span class="n">EOF</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">putchar</span><span class="p">(</span><span class="n">ch</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">fclose</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cc_binary</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello_world"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"hello_world.cc"</span><span class="p">],</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">":a.txt"</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"write_file"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"a.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"echo 'hello, world!' &gt; $@"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>In this case, the output of the <code class="language-plaintext highlighter-rouge">genrule</code> <em>a.txt</em> is present as a <em>runfile</em> and correctly present during a <code class="language-plaintext highlighter-rouge">bazel run</code> invocation.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel clean <span class="nt">--expunge</span>
+
+<span class="nv">$ </span>bazel run //:hello_world <span class="nt">--remote_download_minimal</span>
+Starting <span class="nb">local </span>Bazel server and connecting to it...
+INFO: Invocation ID: ff279c3c-ed12-4395-9d15-12611ca927b5
+INFO: Analyzed target //:hello_world <span class="o">(</span>87 packages loaded, 454 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:hello_world up-to-date:
+  bazel-bin/hello_world
+INFO: Elapsed <span class="nb">time</span>: 2.646s, Critical Path: 0.03s
+INFO: 8 processes: 3 disk cache hit, 5 internal.
+INFO: Build completed successfully, 8 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/hello_world
+hello, world!
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls </span>bazel-bin/hello_world.runfiles/_main/
+a.txt  hello_world
+</code></pre></div></div>
+
+<p>I have included this additional information on an issue to Bazel; let’s see what comes of it. 🤷</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Bazel is a pretty amazing tool but it’s definitely full of it’s warts, sharp edges and arcane knowledge. The appeal to most who adopt Bazel is the ability to memoize much of the build graph if nothing has changed. Furthermore, while leveraging remote caches, build results can be shared across machines making memoization even more effective. This was a pretty compelling reason to adopt Bazel but pretty soon many noticed, especially on their CI systems, lots of unecessary data transfers for larger codebases. 😲 If the network is poor, the benefits of remote caching (memoization) can be outweighed by the cost to download the artifacts.]]></summary></entry><entry><title type="html">Faking incremental Docker loads</title><link href="https://fzakaria.com/2024/12/18/faking-incremental-docker-loads.html" rel="alternate" type="text/html" title="Faking incremental Docker loads" /><published>2024-12-18T12:21:00-08:00</published><updated>2024-12-18T12:21:00-08:00</updated><id>https://fzakaria.com/2024/12/18/faking-incremental-docker-loads</id><content type="html" xml:base="https://fzakaria.com/2024/12/18/faking-incremental-docker-loads.html"><![CDATA[<p>While <a href="https://testcontainers.com/">testcontainers</a> have made it simple to run containers for unit &amp; system tests, they are not well suited for <a href="https://bazel.build/">Bazel</a> as they rely on <code class="language-plaintext highlighter-rouge">docker pull</code> to hydrate the Docker daemon. The pulls rely on tags which may be rewritten and require input from data (i.e, the images themselves) unknown to Bazel, as well as network access.</p>
+
+<!--more-->
+
+<p><code class="language-plaintext highlighter-rouge">rules_oci</code> is a popular Bazel rules library to incorporate Docker (OCI) images into Bazel that can be used to build subsequent images or be passed as depenedencies to targets.</p>
+
+<p>I wrote a small example <a href="https://github.com/fzakaria/bazel-testcontainer-example">https://github.com/fzakaria/bazel-testcontainer-example</a> that demonstrates how you can <em>modify</em> <a href="https://java.testcontainers.org/">testcontainers-java</a> to leverage these images by passing in the <code class="language-plaintext highlighter-rouge">tar.gz</code> of the image as a <code class="language-plaintext highlighter-rouge">data</code> dependency and explicitly loading it at startup.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">java_test</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"TestContainerExampleTest"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"TestContainerExampleTest.java"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">":tarball.tar"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">env</span> <span class="o">=</span> <span class="p">{</span><span class="s">"TARBALL_RUNFILE"</span><span class="p">:</span> <span class="s">"$(rlocationpath :tarball.tar)"</span><span class="p">},</span>
+    <span class="n">runtime_deps</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"@maven//:org_slf4j_slf4j_simple"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">deps</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"@bazel_tools//tools/java/runfiles"</span><span class="p">,</span>
+        <span class="s">"@maven//:org_testcontainers_testcontainers"</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">tar</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"layer"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"PingService_deploy.jar"</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">oci_image</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"image"</span><span class="p">,</span>
+    <span class="n">base</span> <span class="o">=</span> <span class="s">"@distroless_java"</span><span class="p">,</span>
+    <span class="n">entrypoint</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"java"</span><span class="p">,</span>
+        <span class="s">"-jar"</span><span class="p">,</span>
+        <span class="s">"/src/PingService_deploy.jar"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">tars</span> <span class="o">=</span> <span class="p">[</span><span class="s">":layer"</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p><em>Sounds great?</em> 🙌 … <em>Right?</em> 😕</p>
+
+<p>Turns out if your image is moderately large (&gt;2GiB), an individual upload can take a relatively long time (~30s). This can compound if you have multiple concurrent tests each tryin to upload to the Docker daemon such as in the case in Bazel.</p>
+
+<p>There is <strong>no handshaking</strong> or range-read of the compressed stream, meaning you must send the whole compressed image, which must then be uncompressed and validated for Docker to determine it already had the necessary layers present.</p>
+
+<p>We experienced this with our tests either failing or timing out as each concurrent test tried to upload multi-gigabyte images concurrently.</p>
+
+<p>Turns out, this limitation is documented and known:</p>
+<ul>
+  <li><a href="https://github.com/docker/buildx/issues/107">docker/buildx/issues/107</a></li>
+  <li><a href="https://github.com/bazel-contrib/rules_oci/issues/454">bazel-contrib/rules_oci/issues/454</a></li>
+  <li><a href="https://github.com/moby/moby/issues/44369">moby/moby/issues/44369</a></li>
+</ul>
+
+<p>❗ <em>There exists no API to query the layers the Docker engine has locally</em>.</p>
+
+<p>For a <em>quick’n’dirty</em> (but effective) workaround I relied on the following before our CI job</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> bazel query <span class="s2">"kind(oci_load, //...)"</span> <span class="se">\</span>
+    | xargs <span class="nt">-n</span> 1 <span class="nt">-P</span> 8 <span class="nt">-I</span> target bazel run target
+</code></pre></div></div>
+
+<p>It would be great if we didn’t need any invocation prior to a test; are Bazel users left <em>holding the bag</em> ? 🫂</p>
+
+<p>Don’t despair! Turns out we can <strong>fake incrementality</strong> uploads in Docker with a relatively ingenious method. 😭</p>
+
+<blockquote>
+  <p>Note: I did not invent this solution. There are other existing prior art, namely:</p>
+  <ul>
+    <li><a href="https://github.com/bazelbuild/rules_docker/blob/master/container/incremental_load.sh.tpl">bazelbuild/rules_docker/blob/master/container/incremental_load.sh.tpl</a></li>
+    <li><a href="https://github.com/aspect-build/bazel-examples/blob/main/oci_python_image/hello_world/app_test.py">aspect-build/bazel-examples/blob/main/oci_python_image/hello_world/app_test.py</a></li>
+    <li><a href="https://github.com/datahouse/bazel_buildlib/blob/oss/buildlib/private/docker/src/loadImageToDocker.ts">datahouse/bazel_buildlib/blob/oss/buildlib/private/docker/src/loadImageToDocker.ts
+</a></li>
+  </ul>
+</blockquote>
+
+<p>🪄 The trick is that we will upload Docker images with <strong>metadata but no actual layer data</strong>, and incrementally include the layer only if it’s required.</p>
+
+<p><img src="/assets/images/piccard_docker_image.jpg" alt="Piccard graphic" /></p>
+
+<p>Let’s break it down.</p>
+
+<ol>
+  <li>
+    <p>A Docker image, which is different than the OCI format, is a <em>tar</em> file (or <em>tar.gz</em>) with a file <code class="language-plaintext highlighter-rouge">manifest.json</code> that dictates the files that should be present within the archive.</p>
+
+    <p>I’ve shortened the sha256 in the below example.</p>
+
+    <div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="w"> </span><span class="p">[{</span><span class="w">
+ </span><span class="nl">"Config"</span><span class="p">:</span><span class="w"> </span><span class="s2">"blobs/sha256/8f73f04"</span><span class="p">,</span><span class="w">
+ </span><span class="nl">"RepoTags"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w"> </span><span class="s2">"example:0.1"</span><span class="w"> </span><span class="p">],</span><span class="w">
+ </span><span class="nl">"Layers"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+   </span><span class="s2">"blobs/sha256/6dd6992"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"blobs/sha256/41e9df2"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"blobs/sha256/3ec46cfe"</span><span class="p">,</span><span class="w">
+   </span><span class="s2">"blobs/sha256/1225e888"</span><span class="p">,</span><span class="w">
+ </span><span class="p">]}]</span><span class="w">
+</span></code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Although our metadata outlines <em>4 different layers</em>, we can can omit the actual layer data.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> <span class="nb">tar </span>tf testimage.tar.gz | tree <span class="nt">--fromfile</span> <span class="nb">.</span>
+ <span class="nb">.</span>
+ ├── blobs
+ │   └── sha256
+ │       └── 8f73f04
+ └── manifest.json
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>If we try to upload this image, if the local daemon has all the layers already present, the upload will succeed <strong>despite us not including any actual layers</strong>.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> docker load &lt; testimage.tar.gz
+ Loaded image: example:0.1
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>If a layer is missing locally, we detect it via the error response and subsequently include it in
+the archive and re-upload it.</p>
+
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="o">&gt;</span> docker load &lt; testimage.tar.gz
+ open /var/lib/docker/tmp/docker-import-2494045611/blobs/sha256/6dd6992:
+ no such file or directory
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>We can perform these steps incrementally by adding each layer one-at-a-time which looks like the following
+in pseudocode.</p>
+
+<blockquote>
+  <p>⚠️ It’s important to also restrict the <code class="language-plaintext highlighter-rouge">diff_ids</code> which represent a validation of the state of the container
+when the layers are applied.</p>
+</blockquote>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">function</span> <span class="n">incremental_load</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">repo_tag</span><span class="p">,</span> <span class="n">base_path</span><span class="p">):</span>
+<span class="s">"""Incrementally loads a Docker image."""</span>
+
+<span class="c1"># Parse image index
+</span><span class="n">index_path</span> <span class="o">=</span> <span class="n">base_path</span> <span class="o">+</span> <span class="s">"/index.json"</span>
+<span class="n">index</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">(</span><span class="n">index_path</span><span class="p">)</span>
+
+<span class="c1"># Parse manifest and config
+</span><span class="n">manifest_digest</span> <span class="o">=</span> <span class="n">index</span><span class="p">.</span><span class="n">manifests</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">digest</span>
+<span class="n">manifest</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">(</span><span class="n">blob</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">manifest_digest</span><span class="p">))</span>
+<span class="n">full_config</span> <span class="o">=</span> <span class="n">from_json</span><span class="p">(</span><span class="n">blob</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">manifest</span><span class="p">.</span><span class="n">config</span><span class="p">.</span><span class="n">digest</span><span class="p">))</span>
+<span class="n">config_blob_path</span> <span class="o">=</span> <span class="n">blob_path</span><span class="p">(</span><span class="n">manifest</span><span class="p">.</span><span class="n">config</span><span class="p">)</span>
+
+<span class="n">missing_layer</span> <span class="o">=</span> <span class="n">null</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">manifest</span><span class="p">.</span><span class="n">layers</span><span class="p">):</span>
+  <span class="c1"># Try uploading each layer one at a time
+</span>  <span class="n">layers</span> <span class="o">=</span> <span class="n">manifest</span><span class="p">.</span><span class="n">layers</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+  <span class="c1"># Create partial config
+</span>  <span class="n">tmp_config</span> <span class="o">=</span> <span class="n">full_config</span><span class="p">.</span><span class="n">clone</span><span class="p">().</span><span class="n">rootfs</span><span class="p">.</span><span class="n">diffIds</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+  <span class="c1"># Create partial image tar
+</span>  <span class="n">image</span> <span class="o">=</span> <span class="n">create_image_tar</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">config_blob_path</span><span class="p">,</span>
+                           <span class="n">tmp_config</span><span class="p">,</span> <span class="n">layers</span><span class="p">,</span> <span class="n">missing_layer</span><span class="p">)</span>
+
+  <span class="c1"># Upload partial image, and parse out if any layer is needed
+</span>  <span class="n">missing_layer</span> <span class="o">=</span> <span class="n">upload_image</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+
+  <span class="c1"># No missing layer, move onto the next one
+</span>  <span class="k">if</span> <span class="n">missing_layer</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">1</span>
+  <span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Missing layer found, try again but this time upload it!
+</span>    <span class="k">pass</span>
+
+<span class="c1"># Upload full image
+</span><span class="n">full_image</span> <span class="o">=</span> <span class="n">create_image_tar</span><span class="p">(</span><span class="n">base_path</span><span class="p">,</span> <span class="n">config_blob_path</span><span class="p">,</span>
+                              <span class="n">full_config</span><span class="p">,</span> <span class="n">manifest</span><span class="p">.</span><span class="n">layers</span><span class="p">)</span>
+<span class="n">upload_image</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">full_image</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>If you are interested in the equivalent Java code let me know and I can publish it.</p>
+</blockquote>
+
+<p>With this approach you can now have <strong>incremental Docker uploads</strong>! Huzzah! 🙌🏽</p>
+
+<p>Problem solved? Sorta? Well….not actually. If the images you are uploading contain
+individual large layers, perhaps they were squashed, we are back to square one.</p>
+
+<p>Here we see an example image whose single layer is 1.28GiB.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> docker image <span class="nb">history </span>bad_example:0.1 <span class="nt">--human</span> <span class="se">\</span>
+                    <span class="nt">--format</span> <span class="s1">'table '</span> | <span class="nb">head
+</span>SIZE
+0B
+0B
+7.87kB
+0B
+1.28GB
+0B
+0B
+0B
+0B
+</code></pre></div></div>
+
+<h3 id="wheres-time-spent">Where’s time spent?</h3>
+<p>At this point you have to improve the image by seggregating the data into more multiple layers or continue to upload it outside of the Bazel context.</p>
+
+<p>🕵️ I would like to dive deeper and understand why the uploads completely stall.</p>
+
+<p>The relevant code in Docker <a href="https://github.com/moby/moby/blob/0d53725a7f8abb0b75961806da252f31155cb813/image/tarexport/load.go#L33">can be found here</a>.</p>
+
+<p>Quick benchmarks done on my M3 Pro MacBook demonstrate it takes ~35-45 seconds to gzip a 2GiB file.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">time </span>docker save bad_example:0.1 | <span class="nb">gzip</span> <span class="o">&gt;</span> test.tar.gz
+docker save bad_example:0.1  0.49s user 2.49s system 6% cpu 44.843 total
+<span class="nb">gzip</span> <span class="o">&gt;</span> test.tar.gz  36.72s user 0.48s system 82% cpu 44.842 total
+</code></pre></div></div>
+
+<p>Uploading the image seems to take ~15 seconds</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> <span class="nb">time </span>docker load &lt; test.tar.gz
+75cc828c731c: Loading layer <span class="o">[==================================================&gt;]</span>  102.1MB/102.1MB
+20ebbf9559c4: Loading layer <span class="o">[==================================================&gt;]</span>  552.9MB/552.9MB
+1049fe83b46b: Loading layer <span class="o">[==================================================&gt;]</span>  10.14MB/10.14MB
+b4a5b99cb981: Loading layer <span class="o">[==================================================&gt;]</span>  331.8kB/331.8kB
+a9e2a3aa94a5: Loading layer <span class="o">[==================================================&gt;]</span>  39.34MB/39.34MB
+93ca7c014948: Loading layer <span class="o">[==================================================&gt;]</span>  6.144kB/6.144kB
+71d670ccc47b: Loading layer <span class="o">[==================================================&gt;]</span>  4.608kB/4.608kB
+1838b4d29208: Loading layer <span class="o">[==================================================&gt;]</span>  2.048kB/2.048kB
+0d9eb9b0c742: Loading layer <span class="o">[==================================================&gt;]</span>   2.56kB/2.56kB
+c68e52b834e4: Loading layer <span class="o">[==================================================&gt;]</span>  1.284GB/1.284GB
+749f1729f609: Loading layer <span class="o">[==================================================&gt;]</span>   16.9kB/16.9kB
+Loaded image: bad_example:0.1
+docker load &lt; test.tar.gz  0.38s user 1.62s system 13% cpu 14.565 total
+</code></pre></div></div>
+
+<p>That means creating the archive  and uploading it can take ~1 minute of test execution time. This problem seems to compound with multiple archives created and uploaded; more research is needed to know if the bottleneck is the Docker daemon itself (a global lock?) or the I/O of the disk.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[While testcontainers have made it simple to run containers for unit &amp; system tests, they are not well suited for Bazel as they rely on docker pull to hydrate the Docker daemon. The pulls rely on tags which may be rewritten and require input from data (i.e, the images themselves) unknown to Bazel, as well as network access.]]></summary></entry><entry><title type="html">Bazel Knowledge: Protobuf is the worst when it should be the best</title><link href="https://fzakaria.com/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html" rel="alternate" type="text/html" title="Bazel Knowledge: Protobuf is the worst when it should be the best" /><published>2024-11-28T14:07:00-08:00</published><updated>2024-11-28T14:07:00-08:00</updated><id>https://fzakaria.com/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best</id><content type="html" xml:base="https://fzakaria.com/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html"><![CDATA[<p>Bazel has always had support for <a href="https://protobuf.dev/">protocol buffers (protobuf)</a> since the beginning.
+Both being a Google product, one would think that their integration would be seamless and the best experience.
+Unfortunately, it’s some of the worst part of the user experience with Bazel I’ve found. 😔</p>
+
+<!--more-->
+
+<p>Let’s start with the basics; <em>What rule should I adopt for protobufs?</em></p>
+
+<p>Well first I Google <em>“Bazel protobuf”</em> and land on the <a href="https://bazel.build/reference/be/protocol-buffer">protobuf reference page</a> for Bazel
+which states:</p>
+
+<blockquote>
+  <p>If using Bazel, please load the rule from https://github.com/bazelbuild/rules_proto.</p>
+</blockquote>
+
+<p>One may think the sensible <a href="https://github.com/bazelbuild/rules_proto">rules_proto</a> is a good starting
+point but the <em>README.md</em> states:</p>
+
+<blockquote>
+  <p>This repository is <strong>deprecated</strong>…we decided to move the implementation of
+the rules together with proto compiler into protobuf repository.</p>
+</blockquote>
+
+<p>OK…🤔</p>
+
+<p>Let’s go check <a href="https://github.com/protocolbuffers/protobuf">protobuf</a>.</p>
+
+<p>The <em>README.md</em> claims one can install one of two ways by inserting the following
+into your <em>MODULE.bazel</em> without much explanation as to the difference. 🤷‍♂️</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bazel_dep</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"protobuf"</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">VERSION</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="c1">#
+# or
+#
+</span><span class="n">bazel_dep</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"protobuf"</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">VERSION</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="n">repo_name</span> <span class="o">=</span> <span class="s">"com_google_protobuf"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>I decide to audit the source to see what’s going on.
+You quickly land on the <a href="https://github.com/protocolbuffers/protobuf/blob/cbecd9d2fa1d7187cca63a8c18838e87a4f613ec/bazel/private/bazel_proto_library_rule.bzl#L239">rule definition</a>
+for <em>proto_library</em> and see the following documentation for the rule. 🤦</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">proto_library</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
+    <span class="n">_proto_library_impl</span><span class="p">,</span>
+    <span class="c1"># TODO: proto_common docs are missing
+</span>    <span class="c1"># TODO: ProtoInfo link doesn't work and docs are missing
+</span>    <span class="n">doc</span> <span class="o">=</span> <span class="s">"""
+&lt;p&gt;If using Bazel, please load the rule from
+&lt;a href="https://github.com/bazelbuild/rules_proto"&gt;
+https://github.com/bazelbuild/rules_proto&lt;/a&gt;.
+</span></code></pre></div></div>
+
+<p>Where is the <strong>protoc</strong> (protobuf compiler) ultimately coming from for the rule?
+I notice these interesting snippets in the rule.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">toolchains</span><span class="p">.</span><span class="n">if_legacy_toolchain</span><span class="p">({</span>
+        <span class="s">"_proto_compiler"</span><span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label</span><span class="p">(</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="s">"exec"</span><span class="p">,</span>
+            <span class="n">executable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="n">allow_files</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="n">configuration_field</span><span class="p">(</span><span class="s">"proto"</span><span class="p">,</span> <span class="s">"proto_compiler"</span><span class="p">),</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_incompatible_toolchain_resolution</span> <span class="o">=</span>
+    <span class="nb">getattr</span><span class="p">(</span><span class="n">native_proto_common</span><span class="p">,</span>
+            <span class="s">"INCOMPATIBLE_ENABLE_PROTO_TOOLCHAIN_RESOLUTION"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_if_legacy_toolchain</span><span class="p">(</span><span class="n">legacy_attr_dict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">_incompatible_toolchain_resolution</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">legacy_attr_dict</span>
+</code></pre></div></div>
+
+<p>Turns out that <em>INCOMPATIBLE_ENABLE_PROTO_TOOLCHAIN_RESOLUTION</em> is set from the command line <a href="https://bazel.build/reference/command-line-reference#flag--incompatible_enable_proto_toolchain_resolution">ref</a>.</p>
+
+<blockquote>
+  <p>–[no]incompatible_enable_proto_toolchain_resolution default: “false”
+If true, proto lang rules define toolchains from protobuf repository.
+Tags: loading_and_analysis, incompatible_change</p>
+</blockquote>
+
+<p>I don’t have that in my <code class="language-plaintext highlighter-rouge">.bazelrc</code> so let’s ignore it.
+That means our <code class="language-plaintext highlighter-rouge">_proto_compiler</code> is coming from <code class="language-plaintext highlighter-rouge">configuration_field("proto", "proto_compiler")</code>.</p>
+
+<p>You then search the <a href="https://github.com/bazelbuild/bazel/blob/a3f0cebd35989e120d5cdaf7882b4e93df82e590/src/main/java/com/google/devtools/build/lib/rules/proto/ProtoConfiguration.java#L68">bazelbuild/bazel</a> source to find where it’s defined.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Option</span><span class="o">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"proto_compiler"</span><span class="o">,</span>
+    <span class="n">defaultValue</span> <span class="o">=</span> <span class="nc">ProtoConstants</span><span class="o">.</span><span class="na">DEFAULT_PROTOC_LABEL</span><span class="o">,</span>
+    <span class="n">converter</span> <span class="o">=</span> <span class="nc">CoreOptionConverters</span><span class="o">.</span><span class="na">LabelConverter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+    <span class="n">documentationCategory</span> <span class="o">=</span> <span class="nc">OptionDocumentationCategory</span><span class="o">.</span><span class="na">UNCATEGORIZED</span><span class="o">,</span>
+    <span class="n">effectTags</span> <span class="o">=</span> <span class="o">{</span><span class="nc">OptionEffectTag</span><span class="o">.</span><span class="na">AFFECTS_OUTPUTS</span><span class="o">,</span> <span class="nc">OptionEffectTag</span><span class="o">.</span><span class="na">LOADING_AND_ANALYSIS</span><span class="o">},</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s">"The label of the proto-compiler."</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Label</span> <span class="n">protoCompiler</span><span class="o">;</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// The flags need to point to @bazel_tools, because this is a canonical repo</span>
+<span class="c1">// name when either bzlmod or WORKSPACE mode is used.</span>
+<span class="cm">/** Default label for proto compiler.*/</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">DEFAULT_PROTOC_LABEL</span>
+        <span class="o">=</span> <span class="s">"@bazel_tools//tools/proto:protoc"</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>Chasing down the ultimate target in the defining <a href="https://github.com/bazelbuild/bazel/blob/3d528ac42cce1a71d8358b57cdbe4b3e743bd307/tools/proto/BUILD#L15">BUILD</a>
+file you discover it’s an alias to <code class="language-plaintext highlighter-rouge">"@com_google_protobuf//:protoc"</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Those aliases are needed to resolve the repository name correctly in both
+# bzlmod and WORKSPACE mode. They are resolved in the namespace of MODULE.tools
+</span>
+<span class="n">alias</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"protoc"</span><span class="p">,</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="s">"@com_google_protobuf//:protoc"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>😲 So we discovered why <code class="language-plaintext highlighter-rouge">com_google_protobuf</code> may want to be the <code class="language-plaintext highlighter-rouge">repo_name</code> in the <code class="language-plaintext highlighter-rouge">bazel_dep</code> rule.
+The repository name <code class="language-plaintext highlighter-rouge">com_google_protobuf</code> is <em>hard-coded</em> within the Bazel source code for the location
+to discover the protoc compiler.</p>
+
+<blockquote>
+  <p>You’ll have to trust me that the resolution to the compiler for the language toolchains
+such as <em>java_proto_library</em> is the same as well; just way more obfuscated.</p>
+</blockquote>
+
+<p>The rabbit hole only goes deeper if you consider <a href="https://grpc.io/">gRPC</a>, other languages and then having to manage
+various runtimes (compatibility matrix) for your language across your codebases if they leave source of truth.</p>
+
+<p>I feel like we discovered a lot but didn’t really learn or accomplish anything. 😩</p>
+
+<h3 id="brighter-future">Brighter Future?</h3>
+
+<p>Lots of interesting work is being done by the <a href="https://bazel-contrib.github.io/SIG-rules-authors/proto-grpc.html">rule-authors SIG</a> (Special Interest Group).</p>
+
+<blockquote>
+  <p>That doc has a great in-depth overview of the current <em>state of affairs</em>.</p>
+</blockquote>
+
+<p>The most notable changes on the horizon are migrating protocol buffers to Bazel’s toolchain mechanism.
+This should make binding to <code class="language-plaintext highlighter-rouge">protoc</code> look like other toolchains in Bazel and no longer special case
+<code class="language-plaintext highlighter-rouge">com_google_protobuf</code>.</p>
+
+<blockquote>
+  <p>What are toolchains? In my mind effectively the capability to late bind a label to a target.</p>
+</blockquote>
+
+<p>To me, a simple immediate improvement would be fixing the documentation around <em>rules_proto</em> and
+having a more clear path on how to adopt Bazel given some constraint (i.e. Bazel &gt;= 7.0).</p>
+
+<blockquote>
+  <p>The <a href="https://blog.bazel.build/2017/02/27/protocol-buffers.html">latest blog post</a> from Bazel on protobuf
+is from 2017!</p>
+</blockquote>
+
+<p>The work <a href="https://www.aspect.build/">Aspect Build</a> is doing to improve the protobuf ecosystem is great as well.
+Their video series on <a href="https://www.youtube.com/watch?v=s0i_Ra_mG9U"><em>“Never Compile Protoc Again”</em></a> is excellent
+and served as a great resource for my previous post on <a href="/2024/10/23/bazel-knowledge-mind-your-path.html">minding your PATH</a>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Bazel has always had support for protocol buffers (protobuf) since the beginning. Both being a Google product, one would think that their integration would be seamless and the best experience. Unfortunately, it’s some of the worst part of the user experience with Bazel I’ve found. 😔]]></summary></entry><entry><title type="html">JVM boot optimization via JavaIndex</title><link href="https://fzakaria.com/2024/11/08/jvm-boot-optimization-via-javaindex.html" rel="alternate" type="text/html" title="JVM boot optimization via JavaIndex" /><published>2024-11-08T14:01:00-08:00</published><updated>2024-11-08T14:01:00-08:00</updated><id>https://fzakaria.com/2024/11/08/jvm-boot-optimization-via-javaindex</id><content type="html" xml:base="https://fzakaria.com/2024/11/08/jvm-boot-optimization-via-javaindex.html"><![CDATA[<p><em>Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn’t. Read on to discover what it is and how it can speedup your compilation and boot time.</em> 🤓</p>
+
+<p>After having worked on <a href="https://github.com/fzakaria/shrinkwrap">Shrinkwrap</a> and publishing our results in <a href="https://arxiv.org/abs/2211.05118">Mapping Out the HPC Dependency Chaos</a>, you start
+to see the Linux environment as a bit of an oddball.</p>
+
+<p><em>Everything in Linux is structured around O(n) or O(n^2) search and lookup</em>.</p>
+
+<p>This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. <em>LD_LIBRARY_PATH</em>, <em>RUN_PATH</em>).
+This idiom however is even more pervasive and has bled into all of our language.</p>
+
+<p>The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the <em>CLASS_PATH</em>.
+<!--more--></p>
+
+<p>Everytime the JVM needs to load a class file, it must perform a linear search along all entries in the <em>CLASS_PATH</em>.
+Thanksfully, if the entries are directories or JARs, no subsequent search must be performed since the package name of a class dictates the directory structure
+that must exist.</p>
+
+<p><code class="language-plaintext highlighter-rouge">io.fzakaria.Example</code> -&gt; <code class="language-plaintext highlighter-rouge">io/fzakaria/Example.class</code></p>
+
+<p>Nevertheless, the <em>CLASS_PATH</em> size can be large. 
+At <em>$DAY_JOB$</em>, almost all of our services launch with +300 entries (JARs) on the ClassPath.</p>
+
+<p>Large enterprise codebases may feature over a thousand ClassPath entries. 😮</p>
+
+<p>A large ClassPath means that the JavaVirtualMachine (JVM) needs to search entry for the desired class.
+This not only affects startup time for your application, <em>on every startup, repeatedly</em>, but also compilation as well via <code class="language-plaintext highlighter-rouge">javac</code>.</p>
+
+<p>The authors of the JVM already knew about this problem, especially when the idea of Java Applets were dominant. Each JAR on the ClassPath
+would have been fetched via HTTP and would cause unbearable slowdown for startup.</p>
+
+<p>The JDK has support for a <em>JarIndex</em>.</p>
+
+<p>A <em>JarIndex</em>, is a JAR which has a special file <code class="language-plaintext highlighter-rouge">INDEX.LIST</code> that effectively contains an index of all JARs on the ClassPath and the packages found within.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>JarIndex-Version: 1.0
+
+libMain.jar
+Main.class
+
+lib/libA.jar
+A.class
+
+lib/libB.jar
+B.class
+</code></pre></div></div>
+
+<p>Whenever a class must be searched rather than searching through the <em>CLASS_PATH</em>, the index file is used leading to constant-time lookup for classes.</p>
+
+<p>This seemingly powerful primitive confusingly has been deprecated and ultimately removed in JDK22 (<a href="https://bugs.openjdk.org/browse/JDK-8302819">JDK-8302819</a>) 🤔 – citing challenges when having to support a broad ranges of topics such as Multi-Version JARs.</p>
+
+<p>Unsuprisingly, I think this feature would be an easy fit into Bazel, Spack or Nix – as there are a lot more constraints on the type of JARs that need be supported.</p>
+
+<p>I put together a small <a href="https://gist.github.com/fzakaria/4e98f65be96cf7f8b13081e75d7a2bf8">gist</a> on what this support might look like.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_jar_index_impl</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">java_info</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">src</span><span class="p">[</span><span class="n">JavaInfo</span><span class="p">]</span>
+    <span class="n">java_runtime</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">_java_runtime</span><span class="p">[</span><span class="n">java_common</span><span class="p">.</span><span class="n">JavaRuntimeInfo</span><span class="p">]</span>
+    <span class="n">java_home</span> <span class="o">=</span> <span class="n">java_runtime</span><span class="p">.</span><span class="n">java_home</span>
+    <span class="n">jar_bin</span> <span class="o">=</span> <span class="s">"%s/bin/jar"</span> <span class="o">%</span> <span class="n">java_home</span>
+
+    <span class="n">runtime_jars</span> <span class="o">=</span> <span class="s">" "</span>
+    <span class="k">for</span> <span class="n">jar</span> <span class="ow">in</span> <span class="n">java_info</span><span class="p">.</span><span class="n">transitive_runtime_jars</span><span class="p">.</span><span class="n">to_list</span><span class="p">():</span>
+        <span class="n">runtime_jars</span> <span class="o">+=</span> <span class="n">jar</span><span class="p">.</span><span class="n">path</span> <span class="o">+</span> <span class="s">" "</span>
+
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"%s -i %s %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">jar_bin</span><span class="p">,</span> <span class="n">java_info</span><span class="p">.</span><span class="n">java_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">class_jar</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="n">runtime_jars</span><span class="p">),</span>
+        <span class="s">"cp %s %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">java_info</span><span class="p">.</span><span class="n">java_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">class_jar</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ctx</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">path</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">run_shell</span><span class="p">(</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">java_info</span><span class="p">.</span><span class="n">java_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">class_jar</span><span class="p">]</span> <span class="o">+</span> <span class="n">java_info</span><span class="p">.</span><span class="n">transitive_runtime_jars</span><span class="p">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctx</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">index</span><span class="p">],</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="n">java_runtime</span><span class="p">.</span><span class="n">files</span><span class="p">,</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">";</span><span class="se">\n</span><span class="s">"</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmds</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">DefaultInfo</span><span class="p">(</span><span class="n">files</span> <span class="o">=</span> <span class="n">depset</span><span class="p">([</span><span class="n">ctx</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">index</span><span class="p">])),</span>
+    <span class="p">]</span>
+
+<span class="n">jar_index</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">_jar_index_impl</span><span class="p">,</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"src"</span><span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label</span><span class="p">(</span>
+            <span class="n">mandatory</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="n">providers</span> <span class="o">=</span> <span class="p">[</span><span class="n">JavaInfo</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="s">"_java_runtime"</span><span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label</span><span class="p">(</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="s">"@bazel_tools//tools/jdk:current_java_runtime"</span><span class="p">,</span>
+            <span class="n">providers</span> <span class="o">=</span> <span class="p">[</span><span class="n">java_common</span><span class="p">.</span><span class="n">JavaRuntimeInfo</span><span class="p">],</span>
+        <span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="s">"index"</span><span class="p">:</span> <span class="s">"%{name}_index.jar"</span><span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Further improvements can be made, to give this index-like support to the Java compiler itself and not only for <code class="language-plaintext highlighter-rouge">java_binary</code> targets.</p>
+
+<p>We’ve gone out of our way on these systems to define our inputs, enforce contraints and model our dependencies. Not taking advantage of
+this stability and regressing to the default search often found in our tooling is leaving easy performance improvements on the floor.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn’t. Read on to discover what it is and how it can speedup your compilation and boot time. 🤓 After having worked on Shrinkwrap and publishing our results in Mapping Out the HPC Dependency Chaos, you start to see the Linux environment as a bit of an oddball. Everything in Linux is structured around O(n) or O(n^2) search and lookup. This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. LD_LIBRARY_PATH, RUN_PATH). This idiom however is even more pervasive and has bled into all of our language. The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the CLASS_PATH.]]></summary></entry><entry><title type="html">Bazel Knowledge: What’s an Interface JAR?</title><link href="https://fzakaria.com/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html" rel="alternate" type="text/html" title="Bazel Knowledge: What’s an Interface JAR?" /><published>2024-10-29T19:34:00-07:00</published><updated>2024-10-29T19:34:00-07:00</updated><id>https://fzakaria.com/2024/10/29/bazel-knowledge-what-s-an-interface-jar</id><content type="html" xml:base="https://fzakaria.com/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html"><![CDATA[<p>I spent the day working through an upgrade of our codebase at <em>$DAYJOB$</em> to Java21 and hit Bazel <a href="https://github.com/bazelbuild/bazel/issues/24138">issue#24138</a> as a result of an incorrectly produced <code class="language-plaintext highlighter-rouge">hjar</code>.</p>
+
+<p>🤨
+<em>WTF is an <code class="language-plaintext highlighter-rouge">hjar</code> ?</em></p>
+
+<p>☝️ <em>It is the newer version of <code class="language-plaintext highlighter-rouge">ijar</code> !</em></p>
+
+<p>😠
+<em>WTF is an <code class="language-plaintext highlighter-rouge">ijar</code> ?</em></p>
+
+<p>Let’s discover what an <code class="language-plaintext highlighter-rouge">ijar</code> (Interface JAR) is and how it’s the <em>magic sauce</em> that makes Bazel so fast for Java.</p>
+
+<!--more-->
+
+<p>Let’s consider a simple Makefile</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">program</span><span class="o">:</span> <span class="nf">main.o utils.o</span>
+	<span class="nv">$(CC)</span> <span class="nt">-o</span> program main.o utils.o
+
+<span class="nl">main.o</span><span class="o">:</span> <span class="nf">main.c utils.h</span>
+	<span class="nv">$(CC)</span> <span class="nt">-c</span> main.c
+
+<span class="nl">utils.o</span><span class="o">:</span> <span class="nf">utils.c utils.h</span>
+	<span class="nv">$(CC)</span> <span class="nt">-c</span> utils.c
+</code></pre></div></div>
+
+<p>We’ve been taught to make use of <em>header files</em>, especially in C/C++ so that we can avoid recompilation as a form of <em>early cutoff optimization</em>.</p>
+
+<p>☝️ If we change <code class="language-plaintext highlighter-rouge">utils.c</code> solely, we do not have to recompile <code class="language-plaintext highlighter-rouge">main.o</code>.</p>
+
+<p>We can visualize this Makefile in the following graph.</p>
+
+<p><img src="/assets/images/makefile_as_graph.svg" alt="Makefile as a graph" /></p>
+
+<p>Ok, great! What does this have to do with Java &amp; Bazel ?</p>
+
+<p>Well, let’s remember back to my previous post on <a href="/2024/09/26/bazel-knowledge-reproducible-outputs.html">reproducible outputs</a>.</p>
+
+<p>Bazel constructs a similar graph to determine when to do <em>early cutoff optimization</em> through the “Action Key”. Bazel computes a hash for each action, that takes dependencies for instance, and if the hash hasn’t changed it can memoize the work.</p>
+
+<p><img src="/assets/images/action_graph_bazel.png" alt="Bazel Action Graph" /></p>
+
+<p>In Java-world, dependencies are expressed as JARs.</p>
+
+<p>Wouldn’t private-only changes to a dependency (i.e. renaming a private variable) cause the Action Key HASH to change (since it produced a different JAR) ?</p>
+
+<p>🤓 YES! That is why we need an <code class="language-plaintext highlighter-rouge">ijar</code> !</p>
+
+<p><code class="language-plaintext highlighter-rouge">ijar</code> is a tool found within the Bazel repository <a href="https://github.com/bazelbuild/bazel/blob/master/third_party/ijar/README.txt">bazel/third_party/ijar</a>.</p>
+
+<p>You can build and run it fairly simple with Bazel</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel run //third_party/ijar
+Usage: ijar <span class="o">[</span><span class="nt">-v</span><span class="o">]</span> <span class="o">[</span><span class="nt">--</span><span class="o">[</span>no]strip_jar] <span class="o">[</span><span class="nt">--target</span> label label] <span class="o">[</span><span class="nt">--injecting_rule_kind</span> kind] x.jar <span class="o">[</span>x_interface.j
+ar&gt;]
+Creates an interface jar from the specified jar file.
+</code></pre></div></div>
+
+<p>It’s purpose is straightforward. The tool strips all non-public information from the JAR. For example, it throws away:</p>
+<ul>
+  <li>Files whose name does not end in “.class”.</li>
+  <li>All executable method code.</li>
+  <li>All private methods and fields.</li>
+  <li>All constants and attributes except the minimal set necessary to describe the class interface.</li>
+  <li>All debugging information
+(LineNumberTable, SourceFile, LocalVariableTables attributes).</li>
+</ul>
+
+<p>The end result is something in spirit to a C/C++ header file.</p>
+
+<p>Let’s see it in practice. 🕵️</p>
+
+<p>Let’s now create an incredibly simple JAR. It will have a single class file within it.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Banana</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">peel</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Peeling the banana..."</span><span class="o">);</span>
+        <span class="n">squish</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">squish</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Squish! The banana got squashed."</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>We compile it like usual.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>javac Banana.java
+<span class="nv">$ </span>jar cf banana.jar Banana.class
+</code></pre></div></div>
+
+<p>When we run <code class="language-plaintext highlighter-rouge">ijar</code> on it we get the hash <em>e18e0ae82bdc4deb04f04aa</em></p>
+
+<p>⚠️ I shortened the hashes to make them more legible.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel-bin/third_party/ijar/ijar banana.jar
+
+<span class="nv">$ </span><span class="nb">sha256sum </span>banana.jar
+f813749013ea6aba2e00876  banana.jar
+
+<span class="nv">$ </span><span class="nb">sha256sum </span>banana-interface.jar
+e18e0ae82bdc4deb04f04aa  banana-interface.jar
+</code></pre></div></div>
+
+<p>Let’s now change the internals of the <em>Banana</em> class; let’s rename the method <code class="language-plaintext highlighter-rouge">squish()</code> -&gt; <code class="language-plaintext highlighter-rouge">squash()</code>.</p>
+
+<p>Let’s recompute the new sha256.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sha256sum </span>banana.jar
+9278282827ddb55c68eb370 banana.jar
+
+<span class="nv">$ </span><span class="nb">sha256sum </span>banana-interface.jar
+e18e0ae82bdc4deb04f04aa  banana-interface.jar
+</code></pre></div></div>
+
+<p>🤯 Although the hash of <em>banana.jar</em> had changed, we still get <em>e18e0ae82bdc4deb04f04aa</em> for the ijar.</p>
+
+<p>We now the equivalent of a header file for Java code.  🙌</p>
+
+<p>Bazel will use the <code class="language-plaintext highlighter-rouge">ijar</code> when computing the Action Key hash in lieu of the JAR for the dependencies you may depend on; thus avoiding costly rebuilds when only private information changes within your dependency.</p>
+
+<p>This is the amazing lesser known tool that makes Bazel super-powered 🦸 for JVM languages.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[I spent the day working through an upgrade of our codebase at $DAYJOB$ to Java21 and hit Bazel issue#24138 as a result of an incorrectly produced hjar. 🤨 WTF is an hjar ? ☝️ It is the newer version of ijar ! 😠 WTF is an ijar ? Let’s discover what an ijar (Interface JAR) is and how it’s the magic sauce that makes Bazel so fast for Java.]]></summary></entry><entry><title type="html">Bazel Knowledge: mind your PATH</title><link href="https://fzakaria.com/2024/10/23/bazel-knowledge-mind-your-path.html" rel="alternate" type="text/html" title="Bazel Knowledge: mind your PATH" /><published>2024-10-23T15:37:00-07:00</published><updated>2024-10-23T15:37:00-07:00</updated><id>https://fzakaria.com/2024/10/23/bazel-knowledge-mind-your-path</id><content type="html" xml:base="https://fzakaria.com/2024/10/23/bazel-knowledge-mind-your-path.html"><![CDATA[<p>Have you encountered the following?</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> bazel build
+INFO: Invocation ID: f16c3f83-0150-494e-bd34-1a9cfb6a2e67
+WARNING: Build option <span class="nt">--incompatible_strict_action_env</span> has changed, discarding analysis cache <span class="o">(</span>this can be expensive, see https://bazel.build/advanced/performance/iteration-speed<span class="o">)</span><span class="nb">.</span>
+INFO: Analyzed target @@com_google_protobuf//:protoc <span class="o">(</span>113 packages loaded, 1377 targets configured<span class="o">)</span><span class="nb">.</span>
+<span class="o">[</span>483 / 845] 13 actions, 12 running
+    Compiling src/google/protobuf/compiler/importer.cc<span class="p">;</span> 3s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/java/names.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/java/name_resolver.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/java/helpers.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/objectivec/enum.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling absl/strings/cord.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/objectivec/names.cc<span class="p">;</span> 0s disk-cache, darwin-sandbox
+    Compiling absl/time/internal/cctz/src/time_zone_lookup.cc<span class="p">;</span> 0s disk-cache, darwin-sandbox ...
+</code></pre></div></div>
+
+<p>I finally had it with Bazel <strong>recompiling protoc</strong> 😤</p>
+
+<p>The working title for this post: <em>Why the #$@! does protoc keep recompiling!</em> 🤬</p>
+
+<blockquote>
+  <p>If you are not interested in the story and just want to avoid recompiling <em>protoc</em>, try putting <code class="language-plaintext highlighter-rouge">build --incompatible_strict_action_env</code> in your <em>.bazelrc</em>.</p>
+
+  <p>Checkout Aspect’s <a href="https://docs.aspect.build/guides/bazelrc/">bazelrc guide</a> for other good tidbits.</p>
+</blockquote>
+
+<!--more-->
+
+<p>Admittedly, I’ve been using Bazel a while and I wasn’t sure why I kept having to rebuild <em>protoc</em> despite nothing seemingly changing on my system.</p>
+
+<p>Worse, my coworkers who I’ve been working hard to champion Bazel were starting to notice.</p>
+
+<p><em>“You explained that Bazel is supposed to be hermetic and have great caching. Why am I recompiling protoc?”</em></p>
+
+<p>This seems to be a bit of an issue within the Bazel community so much so, that one recommended approach is just <em>use precompiled binaries</em> via <a href="https://github.com/aspect-build/toolchains_protoc">aspect-build/toolchains_protoc</a>. 🤦</p>
+
+<blockquote>
+  <p><em>Aside</em>: Using prebuilt binaries not only hinders my own personal adoption of Bazel on <a href="https://nixos.org">NixOS</a> but devalues the value proposition of Bazel itself.</p>
+</blockquote>
+
+<p>Turns out there is a long-standing <strong>5 year old</strong> issue <a href="https://github.com/bazelbuild/bazel/issues/7095">issues#7095</a> that provided some clues; specifically changing <code class="language-plaintext highlighter-rouge">PATH</code> is busting the action key.</p>
+
+<p>I want to validate this assumption, by following the guide on <a href="https://bazel.build/remote/cache-remote">how to debug remote cache hits</a>.</p>
+
+<p>I ran Bazel twice, once with a different <code class="language-plaintext highlighter-rouge">PATH</code> and stored the compact execution log.
+I then convert it to textual form and diff them.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># build protoc normally</span>
+<span class="o">&gt;</span> bazel build @com_google_protobuf//:protoc <span class="se">\</span>
+    <span class="nt">--execution_log_compact_file</span><span class="o">=</span>/tmp/exec1.log
+
+<span class="c"># muck up the PATH</span>
+<span class="o">&gt;</span> <span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/bin4/ bazel build @com_google_protobuf//:protoc <span class="se">\</span>
+    <span class="nt">--execution_log_compact_file</span><span class="o">=</span>/tmp/exec2.log
+
+<span class="o">&gt;</span> bazel-bin/src/tools/execlog/parser <span class="se">\</span>
+  <span class="nt">--log_path</span><span class="o">=</span>/tmp/exec1.log <span class="se">\</span>
+  <span class="nt">--log_path</span><span class="o">=</span>/tmp/exec2.log <span class="se">\</span>
+  <span class="nt">--output_path</span><span class="o">=</span>/tmp/exec1.log.txt <span class="se">\</span>
+  <span class="nt">--output_path</span><span class="o">=</span>/tmp/exec2.log.txt
+
+<span class="o">&gt;</span> diff /tmp/exec1.log.txt /tmp/exec2.log.txt | <span class="nb">head</span> <span class="nt">-n</span> 30
+<span class="c"># omitted for brevity</span>
+</code></pre></div></div>
+
+<p>Sure enough; there is an <code class="language-plaintext highlighter-rouge">action_env</code> with the <code class="language-plaintext highlighter-rouge">PATH</code> variable and it’s different, causing the action digest to change.</p>
+
+<p>But, why! 🤔</p>
+
+<p>Some of the actions used in the C++ toolchain use the shell’s default environment.
+For instance, Bazel doesn’t include a C++ toolchain by default so it has to find a C++ compiler by searching
+on the <code class="language-plaintext highlighter-rouge">PATH</code> itself.</p>
+
+<p>We can test this (thanks to <a href="https://github.com/keith">keith</a> for this) with a small demo.
+We can see what envs are in actions by default passing <code class="language-plaintext highlighter-rouge">-s</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_impl</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="nb">file</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">declare_file</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">label</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">run_shell</span><span class="p">(</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">file</span><span class="p">],</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">"touch {}"</span><span class="p">.</span><span class="nb">format</span><span class="p">(</span><span class="nb">file</span><span class="p">.</span><span class="n">path</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">DefaultInfo</span><span class="p">(</span><span class="n">files</span> <span class="o">=</span> <span class="n">depset</span><span class="p">([</span><span class="nb">file</span><span class="p">]))</span>
+
+<span class="n">foo</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">_impl</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Will produce:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SUBCOMMAND: <span class="c"># //:bar [action 'Action bar', configuration: 815f76489fb61a0245ff1941974c20af0ca4e7f91caa00c80538d4493d650289, execution platform: @@platforms//host:host, mnemonic: Action]</span>
+<span class="o">(</span><span class="nb">cd</span> /home/ubuntu/.cache/bazel/_bazel_ubuntu/1275a810ad76d4d1cc60319d4aaf0d39/execroot/_main <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nb">exec env</span> - <span class="se">\</span>
+  /bin/bash <span class="nt">-c</span> <span class="s1">'touch bazel-out/aarch64-fastbuild/bin/bar'</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>If we change the <code class="language-plaintext highlighter-rouge">run_shell</code> action to use <code class="language-plaintext highlighter-rouge">use_default_shell_env=True</code> we then get.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SUBCOMMAND: <span class="c"># //:bar [action 'Action bar', configuration: 815f76489fb61a0245ff1941974c20af0ca4e7f91caa00c80538d4493d650289, execution platform: @@platforms//host:host, mnemonic: Action]</span>
+<span class="o">(</span><span class="nb">cd</span> /home/ubuntu/.cache/bazel/_bazel_ubuntu/1275a810ad76d4d1cc60319d4aaf0d39/execroot/_main <span class="o">&amp;&amp;</span> <span class="se">\</span>
+  <span class="nb">exec env</span> - <span class="se">\</span>
+    <span class="nv">PATH</span><span class="o">=</span>&lt;OMITTED FOR BREVITY&gt; <span class="se">\</span>
+  /bin/bash <span class="nt">-c</span> <span class="s1">'touch bazel-out/aarch64-fastbuild/bin/bar'</span><span class="o">)</span>
+</code></pre></div></div>
+
+<p>Okay, so how do we solve this?</p>
+
+<p>There are two ways to solve this.</p>
+
+<p>First, you can try <code class="language-plaintext highlighter-rouge">--incompatible_strict_action_env</code> in your <em>.bazerc</em> file.
+If this flag is set, Bazel will force set <code class="language-plaintext highlighter-rouge">PATH</code> to be a static value. If your C++ compiler is either a hermetic toolchain or found in the default lists set; you are good to go!</p>
+
+<p>If you tried the first option but your build is failing, you’ll have to manually force set the <code class="language-plaintext highlighter-rouge">PATH</code> via the <code class="language-plaintext highlighter-rouge">action_env</code> flag such as <code class="language-plaintext highlighter-rouge">--action_env=PATH=/usr/bin:/something/custom</code></p>
+
+<p>Hopefully these settings get you from recompiling <em>protoc</em> and reach Bazel nirvana.</p>
+
+<p>I highly recommend <a href="https://docs.aspect.build/guides/bazelrc/">Aspect’s bazelrc guide</a> for other no-nonsense settings that should likely just be the default 🙄</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Have you encountered the following? &gt; bazel build INFO: Invocation ID: f16c3f83-0150-494e-bd34-1a9cfb6a2e67 WARNING: Build option --incompatible_strict_action_env has changed, discarding analysis cache (this can be expensive, see https://bazel.build/advanced/performance/iteration-speed). INFO: Analyzed target @@com_google_protobuf//:protoc (113 packages loaded, 1377 targets configured). [483 / 845] 13 actions, 12 running Compiling src/google/protobuf/compiler/importer.cc; 3s disk-cache, darwin-sandbox Compiling src/google/protobuf/compiler/java/names.cc; 1s disk-cache, darwin-sandbox Compiling src/google/protobuf/compiler/java/name_resolver.cc; 1s disk-cache, darwin-sandbox Compiling src/google/protobuf/compiler/java/helpers.cc; 1s disk-cache, darwin-sandbox Compiling src/google/protobuf/compiler/objectivec/enum.cc; 1s disk-cache, darwin-sandbox Compiling absl/strings/cord.cc; 1s disk-cache, darwin-sandbox Compiling src/google/protobuf/compiler/objectivec/names.cc; 0s disk-cache, darwin-sandbox Compiling absl/time/internal/cctz/src/time_zone_lookup.cc; 0s disk-cache, darwin-sandbox ... I finally had it with Bazel recompiling protoc 😤 The working title for this post: Why the #$@! does protoc keep recompiling! 🤬 If you are not interested in the story and just want to avoid recompiling protoc, try putting build --incompatible_strict_action_env in your .bazelrc. Checkout Aspect’s bazelrc guide for other good tidbits.]]></summary></entry><entry><title type="html">Bazel Knowledge: Aspects to generate Java CLASSPATH</title><link href="https://fzakaria.com/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html" rel="alternate" type="text/html" title="Bazel Knowledge: Aspects to generate Java CLASSPATH" /><published>2024-10-13T11:10:00-07:00</published><updated>2024-10-13T11:10:00-07:00</updated><id>https://fzakaria.com/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath</id><content type="html" xml:base="https://fzakaria.com/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html"><![CDATA[<p>One of the more advanced features of <a href="https://bazel.build">Bazel</a> is the concept of <a href="https://bazel.build/extending/aspects">aspect</a>.</p>
+
+<p>For a very brief primer on why you may want an aspect is that Bazel let’s you audit and analyze the BUILD graph without performing any actual builds. It does this by constructing a “shadow graph” that your aspect can perform analysis on. This can be useful for a variety things such as IDE integration.</p>
+
+<p>I wanted to ask a very simple question to make integration with Visual Studio Code straightforward:</p>
+
+<p><em>“What’s the CLASSPATH I need for a particular target so that I don’t get red squigglies?”</em></p>
+
+<!--more-->
+
+<p>Sometimes simple questions involve some of the more advanced features of Bazel.
+I wanted to generate a file that I can feed into any IDE, such as Visual Studio Code, and get semi-decent language integration.</p>
+
+<p>My end goal:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel build //:generate_classpath
+<span class="go">
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat </span>bazel-bin/classpath.txt
+<span class="go">bazel-out/k8-fastbuild/bin/java/lib/liblib.jar
+bazel-out/k8-fastbuild/bin/java/lib2/liblib2.jar
+</span></code></pre></div></div>
+
+<p>First thing we want to do is generate an aspect that will collect recursively all the compile time Jars.</p>
+
+<p>We define our aspect which requires the sole <code class="language-plaintext highlighter-rouge">deps</code> attribute to be propagated.
+We then make sure we recursively merge all the results of the prior aspect invocations into the final
+<code class="language-plaintext highlighter-rouge">ClassPathInfo</code> provider object.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ClassPathInfo</span> <span class="o">=</span> <span class="n">provider</span><span class="p">(</span>
+    <span class="s">"Provider for classpath information"</span><span class="p">,</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'compile_jars'</span> <span class="p">:</span> <span class="s">'depset of compile jars'</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_classpath_aspect_impl</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># Make sure the rule has a deps attribute.
+</span>    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">rule</span><span class="p">.</span><span class="n">attr</span><span class="p">,</span> <span class="s">'deps'</span><span class="p">):</span>
+        <span class="n">target_compile_jars</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">JavaInfo</span><span class="p">].</span><span class="n">full_compile_jars</span>
+        <span class="n">dep_compile_jars</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">dep</span><span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">].</span><span class="n">compile_jars</span>
+            <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">.</span><span class="n">rule</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">deps</span>
+        <span class="p">]</span>
+        <span class="n">all_compile_jars</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_compile_jars</span><span class="p">]</span> <span class="o">+</span> <span class="n">dep_compile_jars</span>
+        <span class="n">merged_depset</span> <span class="o">=</span> <span class="n">depset</span><span class="p">(</span><span class="n">transitive</span><span class="o">=</span><span class="n">all_compile_jars</span><span class="p">)</span>
+
+        <span class="n">classpath_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">jar</span> <span class="ow">in</span> <span class="n">merged_depset</span><span class="p">.</span><span class="n">to_list</span><span class="p">():</span>
+            <span class="n">classpath_strings</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">jar</span><span class="p">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">declare_file</span><span class="p">(</span><span class="s">"classpath.txt"</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output_file</span><span class="p">,</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">classpath_strings</span><span class="p">),</span>
+            <span class="n">is_executable</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">(</span>
+            <span class="n">compile_jars</span> <span class="o">=</span> <span class="n">merged_depset</span>
+            <span class="p">),</span>
+            <span class="n">OutputGroupInfo</span><span class="p">(</span>
+                <span class="n">compile_jars</span> <span class="o">=</span> <span class="n">depset</span><span class="p">([</span><span class="n">output_file</span><span class="p">])</span>
+            <span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">(</span><span class="n">compile_jars</span> <span class="o">=</span> <span class="n">depset</span><span class="p">())]</span>
+
+<span class="n">classpath_aspect</span> <span class="o">=</span> <span class="n">aspect</span><span class="p">(</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">_classpath_aspect_impl</span><span class="p">,</span>
+    <span class="c1"># attr_aspects is a list of rule attributes along
+</span>    <span class="c1"># which the aspect propagates.
+</span>    <span class="n">attr_aspects</span> <span class="o">=</span> <span class="p">[</span><span class="s">'deps'</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>A <em>less documented</em> feature of Bazel is the “output groups” which you can see here we are
+by specifying <code class="language-plaintext highlighter-rouge">OuputGroupInfo</code>. The idea here is that we can now specify our apect for any
+label by using this command line invocation:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel build //java/app <span class="nt">--aspects</span> defs.bzl%classpath_aspect <span class="se">\</span>
+<span class="go">        --output_groups=compile_jars
+
+INFO: Analyzed target //java/app:app (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+Aspect //:defs.bzl%classpath_aspect of //java/app:app up-to-date:
+  bazel-bin/java/app/classpath.txt
+
+</span><span class="gp">&gt;</span><span class="w">  </span><span class="nb">cat </span>bazel-bin/java/app/classpath.txt
+<span class="go">bazel-out/k8-fastbuild/bin/java/lib/liblib.jar
+bazel-out/k8-fastbuild/bin/java/lib2/liblib2.jar⏎
+</span></code></pre></div></div>
+
+<p>That’s not all though! We can also create a rule that defines the labels provided must be of the type aspect.
+This let’s us encode the build targets in our <code class="language-plaintext highlighter-rouge">BUILD</code> files themselves.</p>
+
+<p>The rule itself is straightforward. For each label provided, it goes through the
+items in the <code class="language-plaintext highlighter-rouge">compile_jars</code> depset and creates an output file which is the
+concatenated new-line delimited list.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_generate_classpath_rule_impl</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">deps</span><span class="p">:</span>
+        <span class="n">classpath_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">jar</span> <span class="ow">in</span> <span class="n">dep</span><span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">].</span><span class="n">compile_jars</span><span class="p">.</span><span class="n">to_list</span><span class="p">():</span>
+            <span class="n">classpath_strings</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">jar</span><span class="p">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">declare_file</span><span class="p">(</span><span class="s">"classpath.txt"</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output_file</span><span class="p">,</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">classpath_strings</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">DefaultInfo</span><span class="p">(</span><span class="n">files</span> <span class="o">=</span> <span class="n">depset</span><span class="p">([</span><span class="n">output_file</span><span class="p">]))]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">DefaultInfo</span><span class="p">(</span><span class="n">files</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)]</span>
+
+<span class="n">generate_classpath_rule</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">_generate_classpath_rule_impl</span><span class="p">,</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'deps'</span> <span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label_list</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="p">[</span><span class="n">classpath_aspect</span><span class="p">]),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>❗ There is a bit of duplication in the rule for generating the output file. We could have also
+used the OutputGroupInfo and merged all the files together.</p>
+</blockquote>
+
+<p>In order to invoke this rule you define it in a <code class="language-plaintext highlighter-rouge">BUILD</code> file and give it the top-level
+applications that you are working on.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">generate_classpath_rule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"generate_classpath"</span><span class="p">,</span>
+    <span class="n">deps</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"//java/app:app"</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>🎉 We now have <strong>two</strong> pretty simple ways to generate the compile-time CLASSPATH for a label.
+This can make integrations with IDEs a bit more straightforward if they don’t have a working Bazel plugin.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[One of the more advanced features of Bazel is the concept of aspect. For a very brief primer on why you may want an aspect is that Bazel let’s you audit and analyze the BUILD graph without performing any actual builds. It does this by constructing a “shadow graph” that your aspect can perform analysis on. This can be useful for a variety things such as IDE integration. I wanted to ask a very simple question to make integration with Visual Studio Code straightforward: “What’s the CLASSPATH I need for a particular target so that I don’t get red squigglies?”]]></summary></entry><entry><title type="html">Bazel Knowledge: reproducible outputs</title><link href="https://fzakaria.com/2024/09/26/bazel-knowledge-reproducible-outputs.html" rel="alternate" type="text/html" title="Bazel Knowledge: reproducible outputs" /><published>2024-09-26T11:50:00-07:00</published><updated>2024-09-26T11:50:00-07:00</updated><id>https://fzakaria.com/2024/09/26/bazel-knowledge-reproducible-outputs</id><content type="html" xml:base="https://fzakaria.com/2024/09/26/bazel-knowledge-reproducible-outputs.html"><![CDATA[<p>You might hear a lot of about how Bazel is <em>“reproducible”</em> and <em>“hermetic”</em>, but what does that even mean ? 😕</p>
+
+<p>Part of what makes Bazel incredibly fast is it effectively <strong>skips work</strong> by foregoing doing portions of the graph if the inputs have not changed.</p>
+
+<p>Let’s consider this simple action graph in Bazel.</p>
+
+<p><img src="/assets/images/action_graph_bazel.png" alt="Bazel Action Graph" /></p>
+
+<!--more-->
+
+<p>Bazel constructs an <a href="https://bazel.build/reference/glossary#action-cache">action key</a> for each action which we can simplify down to constituting: the Starlark of the action itself &amp; the SHA256 of the outputs of all the dependencies (i.e. srcs or deps).</p>
+
+<p>Let’s consider a change to <em>File D</em>, which would mean that the action key for <em>Action C</em> now differs.</p>
+
+<p>At this point Bazel will decide to rerun <em>Action C</em> and will produce an output <em>SHA256-C</em>.</p>
+
+<p>If the <em>SHA256-C</em> is the exact same as before, Bazel <strong>will forgoe</strong> executing <em>Action A</em> again. 🤯</p>
+
+<blockquote>
+  <p>How often does this happen in practice? 🤔 A ton! Consider changes to comments that don’t effect the output. Bazel also considers the output hash on the target’s ABI, so in the case of C++ that might constitute the header files and in Java they strip out all private methods to create an “interface jar” (<a href="https://github.com/bazelbuild/bazel/blob/master/third_party/ijar/README.txt">ijar</a>).</p>
+</blockquote>
+
+<p>Watch out though, if you use <a href="https://bazel.build/reference/be/general#genrule">genrule</a> you can find yourself easily producing outputs that are not reproducible if nothing changes which will kill this pruning of the action graph.</p>
+
+<p>Let’s look at an example.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"output_zip"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"output.zip"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    echo 'Hello, World!' &gt; hello.txt &amp;&amp; </span><span class="se">\\</span><span class="s">
+    zip output.zip hello.txt &amp;&amp; mv output.zip $@
+    """</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello_text"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">":output_jar"</span><span class="p">],</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"hello.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    unzip $(location :output_jar) hello.txt -d $(GENDIR) </span><span class="se">\\</span><span class="s">
+    &amp;&amp; mv $(GENDIR)/hello.txt $@
+    """</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>This is a very simple setup where I’m producing a ZIP file and in in the final target unzipping it.</p>
+
+<p>ZIP files unfortunately are normally non-reproducible because they include modification timestamp information embedded in them &amp; the order the files are included are non-ordered.</p>
+
+<p>Let’s build this with Bazel. We will use the <a href="https://github.com/bazelbuild/bazel/blob/master/src/tools/execlog/README.md">execlog</a> to view all the actions that were processed.</p>
+
+<blockquote>
+  <p>The <em>execlog</em> is an output file that is generated of all the actions Bazel undertook. 
+We simply select the <em>targetLabel</em> to view the actions executed.</p>
+</blockquote>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel <span class="nt">--ignore_all_rc_files</span> build //:hello_text <span class="se">\</span>
+<span class="go">    --execution_log_json_file=/tmp/exec.log.json
+
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat</span> /tmp/exec.log.json | jq .targetLabel
+<span class="go">"//:output_zip"
+"//:hello_text"
+</span></code></pre></div></div>
+
+<p>Now let’s <strong>delete</strong> the <em>output.zip</em> file by doing <code class="language-plaintext highlighter-rouge">rm bazel-bin/output.zip</code> and
+re-run Bazel.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel <span class="nt">--ignore_all_rc_files</span> build //:hello_text <span class="se">\</span>
+<span class="go">    --execution_log_json_file=/tmp/exec.log.json
+
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat</span> /tmp/exec.log.json | jq .targetLabel
+<span class="go">"//:output_zip"
+"//:hello_text"
+</span></code></pre></div></div>
+
+<p>Both targets are still being run! 😢</p>
+
+<p>Fortunately, there are a few alternatives we can use such as <a href="https://github.com/bazelbuild/rules_pkg">rules_pkg</a> or <a href="https://github.com/bazelbuild/bazel/blob/master/tools/zip/BUILD">@bazel_tools//tools/zip:zipper</a> that has support for creating ZIP archive format in <em>a reproducible way</em>.</p>
+
+<p>Let’s modify our code now to use <code class="language-plaintext highlighter-rouge">@bazel_tools//tools/zip:zipper</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"output_zip"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"output.zip"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    echo 'Hello, World!' &gt; hello.txt &amp;&amp; </span><span class="se">\\</span><span class="s">
+    $(location @bazel_tools//tools/zip:zipper) c $@ hello.txt
+    """</span><span class="p">,</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="p">[</span><span class="s">"@bazel_tools//tools/zip:zipper"</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello_text"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">":output_zip"</span><span class="p">],</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"hello.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+    unzip $(location :output_zip) hello.txt -d $(GENDIR) </span><span class="se">\\</span><span class="s">
+    &amp;&amp; mv $(GENDIR)/hello.txt $@
+    """</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>We’ve effectively done the same thing as before, but we are being more mindful about
+creating our output to be reproducible if the inputs are the same.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span><span class="nb">rm </span>bazel-bin/output.zip
+<span class="go">override r-xr-xr-x fzakaria/wheel for bazel-bin/output.zip? y
+
+</span><span class="gp">&gt;</span><span class="w"> </span>bazel <span class="nt">--ignore_all_rc_files</span> build //:hello_text <span class="se">\</span>
+<span class="go">    --execution_log_json_file=/tmp/exec.log.json
+
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat</span> /tmp/exec.log.json | jq .targetLabel
+<span class="go">"//:output_zip"
+</span></code></pre></div></div>
+
+<p>🙌  YES! As expected we now only re-run the <em>output_zip</em> action and the final action
+can be skipped.</p>
+
+<p>We now have our graph reproducible in a way that can help Bazel give us incremental rebuilds by skipping portions of the graph. 🥳</p>
+
+<p>If reproducible builds interest you, I <em>highly</em> recommend you check out the wealth of information on the subject by the <a href="https://reproducible-builds.org/docs/">Reproducible Builds Group</a>. They’ve documented all the various intricate ways they discovered software builds introduce nondeterminism into the build.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[You might hear a lot of about how Bazel is “reproducible” and “hermetic”, but what does that even mean ? 😕 Part of what makes Bazel incredibly fast is it effectively skips work by foregoing doing portions of the graph if the inputs have not changed. Let’s consider this simple action graph in Bazel.]]></summary></entry></feed>

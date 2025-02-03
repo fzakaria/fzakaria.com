@@ -1,0 +1,205 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>my love letter to redo | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="my love letter to redo" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a public love letter to redo &amp; the joy it brings building software. I remember when I first finished The Little Schemer and wrote my first semi useful “JSON Diff” program. I was exalted. I was elated. I was ecstatic. There is something magical when you learn Lisp that is really tough to convey over a blog post or short article. One must try it, to grok it. I have not professionally used Lisp much since however it’s been immensely impactful in the way I think about &amp; construct software. Redo is this for build systems." />
+<meta property="og:description" content="This is a public love letter to redo &amp; the joy it brings building software. I remember when I first finished The Little Schemer and wrote my first semi useful “JSON Diff” program. I was exalted. I was elated. I was ecstatic. There is something magical when you learn Lisp that is really tough to convey over a blog post or short article. One must try it, to grok it. I have not professionally used Lisp much since however it’s been immensely impactful in the way I think about &amp; construct software. Redo is this for build systems." />
+<link rel="canonical" href="https://fzakaria.com/2020/06/08/my-love-letter-to-redo.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/06/08/my-love-letter-to-redo.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-06-08T16:09:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="my love letter to redo" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-06-08T16:09:00-07:00","datePublished":"2020-06-08T16:09:00-07:00","description":"This is a public love letter to redo &amp; the joy it brings building software. I remember when I first finished The Little Schemer and wrote my first semi useful “JSON Diff” program. I was exalted. I was elated. I was ecstatic. There is something magical when you learn Lisp that is really tough to convey over a blog post or short article. One must try it, to grok it. I have not professionally used Lisp much since however it’s been immensely impactful in the way I think about &amp; construct software. Redo is this for build systems.","headline":"my love letter to redo","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/06/08/my-love-letter-to-redo.html"},"url":"https://fzakaria.com/2020/06/08/my-love-letter-to-redo.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    my love letter to redo
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-06-08
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/06/08/my-love-letter-to-redo.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a <em>public love letter</em> to <strong>redo</strong> &amp; the joy it brings building
+software.</p>
+</blockquote>
+
+<p>I remember when I first finished <a href="https://amzn.to/3cJLe9T">The Little Schemer</a> and wrote my first <em>semi</em> useful “JSON Diff” program. I was exalted. I was elated. I was ecstatic.</p>
+
+<p>There is something magical when you learn Lisp that is really tough to convey over a blog post or short article. <strong>One must try it, to grok it</strong>.</p>
+
+<p>I have not professionally used Lisp much since however it’s been immensely impactful in the way I think about &amp; construct software.</p>
+
+<p><strong>Redo is this for build systems</strong>.</p>
+
+<!--more-->
+
+<p>I must have come across several articles about <em>Redo</em> or even <a href="https://en.wikipedia.org/wiki/Daniel_J._Bernstein">djb’s</a> own <a href="https://cr.yp.to/redo.html">cryptic posts</a> on it however I filed it mentally in the same mental folder I put a lot of stuff I come across on Hacker News; “Cool”.</p>
+
+<blockquote>
+  <p><a href="https://apenwarr.ca/log/20101214">apenwarr’s post</a> announcing his implementing is c.2010 !</p>
+</blockquote>
+
+<p>Redo however is <strong>eye opening</strong>. I may not use it professionally, similar to Lisp, but it’s made an impact on how I view build systems going forward.</p>
+
+<p>Many of you reading this post will do what I’ve done previously coming across Redo; however I hope that at least some fraction of you try it. <strong>Take the red pill.</strong></p>
+
+<dl>
+  <dt>My goal here is not to explain <em>how</em> to use Redo; I think Apenwarr’s <a href="https://redo.readthedocs.io/">documentation</a> does a great job of walking one through it. Here though are some standout bits of Redo that were amazing:</dt>
+  <dd>
+    <p>Redo is a simple set of primitives executed via the shell.</p>
+  </dd>
+  <dd>
+    <p>Redo primitives (build scripts) can be written in <em>any</em> language.</p>
+  </dd>
+  <dd>
+    <p>Redo is <em>tiny</em>!</p>
+  </dd>
+  <dd>
+    <p>Redo can integrate seamlessly in any build system or wrap them.</p>
+  </dd>
+  <dd>
+    <p>Redo supports checksumming of targets, not just <a href="https://apenwarr.ca/log/20181113">mtime</a>.</p>
+  </dd>
+</dl>
+
+<p>I really encourage everyone to read Apenwarr’s original blog post announcing it
+<a href="https://apenwarr.ca/log/20101214">https://apenwarr.ca/log/20101214</a>.</p>
+
+<p>If you’ve read this far and are thinking <em>“If Redo is so great, how come it hasn’t taken over?”</em></p>
+
+<p><strong>I’m asking myself the same thing.</strong></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-06-08-my-love-letter-to-redo.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

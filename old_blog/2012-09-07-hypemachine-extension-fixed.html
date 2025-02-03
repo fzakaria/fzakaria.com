@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>HypeMachine Extension Fixed | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="HypeMachine Extension Fixed" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Sorry it took so long... While I was away on vacation in Turkey (will post photos later), HypeMachine and Chrome decided to both muck up my extension. This is a short blog post to inform everyone that the code found on GitHub is now fixed and working again. Hurray! Please go to https://github.com/fzakaria/HypeMachine-Extension to get the latest Chrome Extension. Call to arms What I was not able to fix however is the nifty/spiffy look of the downward arrow button. I&#39;d love if someone can please contribute to the project and fix the arrow. I liked the original implementation of it being done in pure CSS as it blended in beautifully with the Hypem page. Please either contact me or submit a patch to the GitHub repository! The fix The fix for the problems were rather straightforward and entailed the following: Updating the manifest.json for Chrome Extension to version 2. Updating the tracks variable (that is read when injected) to the new variable name of window.displayList[&#39;tracks&#39;]" />
+<meta property="og:description" content="Sorry it took so long... While I was away on vacation in Turkey (will post photos later), HypeMachine and Chrome decided to both muck up my extension. This is a short blog post to inform everyone that the code found on GitHub is now fixed and working again. Hurray! Please go to https://github.com/fzakaria/HypeMachine-Extension to get the latest Chrome Extension. Call to arms What I was not able to fix however is the nifty/spiffy look of the downward arrow button. I&#39;d love if someone can please contribute to the project and fix the arrow. I liked the original implementation of it being done in pure CSS as it blended in beautifully with the Hypem page. Please either contact me or submit a patch to the GitHub repository! The fix The fix for the problems were rather straightforward and entailed the following: Updating the manifest.json for Chrome Extension to version 2. Updating the tracks variable (that is read when injected) to the new variable name of window.displayList[&#39;tracks&#39;]" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-09-07-hypemachine-extension-fixed.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-09-07-hypemachine-extension-fixed.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-09-07T17:00:23-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="HypeMachine Extension Fixed" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-09-07T17:00:23-07:00","datePublished":"2012-09-07T17:00:23-07:00","description":"Sorry it took so long... While I was away on vacation in Turkey (will post photos later), HypeMachine and Chrome decided to both muck up my extension. This is a short blog post to inform everyone that the code found on GitHub is now fixed and working again. Hurray! Please go to https://github.com/fzakaria/HypeMachine-Extension to get the latest Chrome Extension. Call to arms What I was not able to fix however is the nifty/spiffy look of the downward arrow button. I&#39;d love if someone can please contribute to the project and fix the arrow. I liked the original implementation of it being done in pure CSS as it blended in beautifully with the Hypem page. Please either contact me or submit a patch to the GitHub repository! The fix The fix for the problems were rather straightforward and entailed the following: Updating the manifest.json for Chrome Extension to version 2. Updating the tracks variable (that is read when injected) to the new variable name of window.displayList[&#39;tracks&#39;]","headline":"HypeMachine Extension Fixed","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-09-07-hypemachine-extension-fixed.html"},"url":"https://fzakaria.com/old_blog/2012-09-07-hypemachine-extension-fixed.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    HypeMachine Extension Fixed
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-09-07
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-09-07-hypemachine-extension-fixed.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2>Sorry it took so long...</h2>
+<p>
+While I was away on vacation in Turkey (will post photos later), HypeMachine and Chrome decided to both muck up my <a href="https://github.com/fzakaria/HypeMachine-Extension">extension</a>. This is a short blog post to inform everyone that the code found on GitHub is now fixed and working again. <em>Hurray!</em></p>
+<blockquote><p>Please go to  <a href="https://github.com/fzakaria/HypeMachine-Extension">https://github.com/fzakaria/HypeMachine-Extension</a> to get the latest Chrome Extension.</p></blockquote>
+<h2> Call to arms</h2>
+<p>
+What I was <strong>not able to fix</strong> however is the nifty/spiffy look of the downward arrow button. I'd love if someone can please contribute to the project and fix the arrow. I liked the original implementation of it being done in pure CSS as it blended in beautifully with the Hypem page. Please either contact me or submit a patch to the GitHub repository!</p>
+<p><!--more--></p>
+<h2>The fix</h2>
+<p>
+The fix for the problems were rather straightforward and entailed the following:</p>
+<ol>
+<li>Updating the manifest.json for Chrome Extension to version 2. </li>
+<li>Updating the tracks variable (that is read when injected) to the new variable name of <em>window.displayList['tracks']</em></li>
+</ol>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-09-07-hypemachine-extension-fixed.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

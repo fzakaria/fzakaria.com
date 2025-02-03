@@ -1,0 +1,280 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>JRuby and Sorbet | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="JRuby and Sorbet" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A recent tweet by the JRuby folks, let me know that the work I had done a while ago to get Sorbet working seemed to have gone under the radar. Sorbet is a fast, powerful type checker designed for Ruby. I wanted to reflect on it’s use at our current codebase, challenges still faced and where to go next. If you want to cut ahead and start using Sorbet right away, I’ve contributed some documentation." />
+<meta property="og:description" content="A recent tweet by the JRuby folks, let me know that the work I had done a while ago to get Sorbet working seemed to have gone under the radar. Sorbet is a fast, powerful type checker designed for Ruby. I wanted to reflect on it’s use at our current codebase, challenges still faced and where to go next. If you want to cut ahead and start using Sorbet right away, I’ve contributed some documentation." />
+<link rel="canonical" href="https://fzakaria.com/2021/03/13/jruby-and-sorbet.html" />
+<meta property="og:url" content="https://fzakaria.com/2021/03/13/jruby-and-sorbet.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-03-13T10:11:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="JRuby and Sorbet" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-03-13T10:11:00-08:00","datePublished":"2021-03-13T10:11:00-08:00","description":"A recent tweet by the JRuby folks, let me know that the work I had done a while ago to get Sorbet working seemed to have gone under the radar. Sorbet is a fast, powerful type checker designed for Ruby. I wanted to reflect on it’s use at our current codebase, challenges still faced and where to go next. If you want to cut ahead and start using Sorbet right away, I’ve contributed some documentation.","headline":"JRuby and Sorbet","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2021/03/13/jruby-and-sorbet.html"},"url":"https://fzakaria.com/2021/03/13/jruby-and-sorbet.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    JRuby and Sorbet
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2021-03-13
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2021/03/13/jruby-and-sorbet.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>A <a href="https://twitter.com/jruby/status/1367170867164295170">recent tweet</a> by the JRuby folks, let me know that the work I had done a while ago to get <a href="https://sorbet.org/">Sorbet</a> working seemed to have gone under the radar.</p>
+
+<blockquote>
+  <p>Sorbet is a fast, powerful type checker designed for Ruby.</p>
+</blockquote>
+
+<p>I wanted to reflect on it’s use at our current codebase, challenges still faced and where to go next.</p>
+
+<p>If you want to cut ahead and start using Sorbet right away, I’ve contributed some <a href="https://github.com/sorbet/sorbet/blob/master/docs/JRuby.md">documentation</a>.
+<!--more--></p>
+
+<p><img src="/assets/images/jruby_sorbet_tweet.png" alt="JRuby Sorbet Tweet" width="500" /></p>
+
+<h2 id="why-sorbet">Why Sorbet?</h2>
+
+<p>This was a surprisingly challenging argument to make to those only accustomed to working with Ruby. Those in the <em>thick</em> of the codebase felt unencumbered by the lack of types and imagined it would only hinder their development.</p>
+
+<p>I’ve come to appreciate that Ruby follows a simple axiom in which <strong>it favors the writer not the reader</strong>. It’s what makes Ruby such a pleasure to write however a pain to read.</p>
+
+<p>Thankfully, the tide has been turning for most languages. Python 3 has optional types, Typescript was introduced and types have been formally released in <a href="https://github.com/ruby/rbs">Ruby 3</a>.</p>
+
+<p>Sorbet, aware of these hesitations, was designed with them in mind. It offers: gradual typing, runtime validation, static validation and is extremely fast on large codebases.</p>
+
+<h2 id="jruby-integration">JRuby Integration</h2>
+
+<p>Sorbet was not designed to work with JRuby in mind initially, however I found that not much was needed to get it working.</p>
+
+<h2 id="sorbet-static">sorbet-static</h2>
+
+<p>The primary blocker, which I’ve upstreamed was the creation of a Java platform gem for <em>sorbet-static</em>. This means you can easily add it to any existing JRuby Gemfile and have the static binary available.</p>
+
+<blockquote>
+  <p>If you are curious, checkout <a href="https://github.com/sorbet/sorbet/commit/3c508a9c948a3b456cf564a5fb01279da1ffdc44">3c508a9c948a3b456cf564a5fb01279da1ffdc44</a>. We package the Darwin and Linux compiled binary within the gem.</p>
+</blockquote>
+
+<h3 id="ruby-interface-files">Ruby Interface Files</h3>
+
+<p>Sorbet performs gradual typing and can easily be incorporated into large codebase, since it can auto-generate Ruby Interface (RBI) files for gems you include.</p>
+
+<p>I found however that if your JRuby codebase calls out to Java-native code, the interpreter often-times fails to generate the RBI files.</p>
+
+<blockquote>
+  <p>The technical reason is because the Java code is never officially required so that it never ends up being triggered through TracePoint</p>
+</blockquote>
+
+<p>A pattern that worked well, was a hand-curated pattern for the creation of RBI files for the Java libraries the codebase uses.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>tree ./sorbet
+|------ config
+|------ rbi
+    |-------- java
+    |   |---------- java_lang.rbi # this is the standard library
+    |   |---------- org_eclipse_jgit.rbi
+    |   |---------- org_apache_logging_log4j.rbi
+    |-------------  org_slf4j.rbi
+</code></pre></div></div>
+
+<p>The naming convention is simple, it is the maven coordinates for a given Java package (replaced with underscores).</p>
+
+<blockquote>
+  <p>💡 There is an opportunity to include java_lang into <a href="https://github.com/sorbet/sorbet-typed">sorbet-typed</a> at the very least.</p>
+</blockquote>
+
+<p>The RBI files can be as strongly typed as you desire.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># typed: strong</span>
+<span class="k">module</span> <span class="nn">Java</span>
+  <span class="k">module</span> <span class="nn">OrgEclipseJgitApiErrors</span>
+    <span class="k">class</span> <span class="nc">JGitInternalException</span> <span class="o">&lt;</span> <span class="no">Exception</span><span class="p">;</span> <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+<h3 id="naming-convention">Naming Convention</h3>
+
+<p>Furthermore, there are a variety of ways in which to <a href="https://github.com/jruby/jruby/wiki/CallingJavaFromJRuby">call out to Java code</a> from JRuby, but not all of them work for matching to the RBI files.</p>
+
+<p>Consider these two approaches, which are <em>valid calling conventions</em> into Java.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Option 1</span>
+<span class="n">org</span><span class="p">.</span><span class="nf">foo</span><span class="p">.</span><span class="nf">department</span><span class="o">.</span><span class="no">Widget</span>
+
+<span class="c1"># Option 2</span>
+<span class="no">Java</span><span class="o">::</span><span class="no">OrgFooDepartment</span><span class="o">::</span><span class="no">Widget</span>
+</code></pre></div></div>
+
+<p>Our codebase unfortunately <strong>heavily</strong> favored the former, which to Sorbet resembles method calls as opposed to the latter being module namespacing.</p>
+
+<blockquote>
+  <p>💡 There is an opportunity to fixup the code automatically via a Rubocop rule.</p>
+</blockquote>
+
+<h3 id="disabling-runtime-verification">Disabling Runtime Verification</h3>
+
+<p>This has perhaps been the most upsetting thing, the runtime verification was disabled in the codebase. I had discovered (<a href="https://github.com/sorbet/sorbet/issues/2316">#2316</a>) there are some concurrency-bugs with it since the Sorbet team primarily works with CRuby which still has a global lock (GIL).</p>
+
+<p>We’ve had to resort to the following in our codebase.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># The Sorbet team develops strictly on MRI</span>
+<span class="c1"># Discovered issue https://github.com/sorbet/sorbet/issues/2316</span>
+<span class="c1">#</span>
+<span class="c1"># To circumvent this, at the moment the `sorbet-runtime`</span>
+<span class="c1"># is effectively changed to be T::Sig::WithoutRuntime</span>
+<span class="c1"># https://github.com/sorbet/sorbet/blob/master/gems/sorbet/lib/t.rb</span>
+<span class="c1">#</span>
+<span class="c1"># We still leverage the static checker (srb tc) &amp;</span>
+<span class="c1"># using sig's as a form of documentation.</span>
+<span class="k">module</span> <span class="nn">T::Sig</span>
+  <span class="k">def</span> <span class="nf">sig</span><span class="p">(</span><span class="n">arg</span> <span class="o">=</span> <span class="kp">nil</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">blk</span><span class="p">);</span> <span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>I am hoping with more attention and use by others in JRuby, this issue can be solved.</p>
+
+<h3 id="final-thoughts">Final Thoughts</h3>
+
+<p>Even without <em>runtime validation</em>, the <strong>sig</strong>’s use as a form of documentation far surpasses that of <a href="https://yardoc.org/">YARDOC</a> and the <em>static checking</em> continues to be helpful.</p>
+
+<p>Without the ability to auto-generate RBI files for the code-base and the incorrect calling convention, we were not able to run <strong>srb init</strong> over the whole codebase.</p>
+
+<p>Instead, we’ve taken a tactical approach of refactoring modules into their own gem and at that time raising the requirement that all new gems require Sorbet typing.</p>
+
+<p>Adoption has definitely slowed, since the cost of refactoring code into a distinct gem is as high as rewriting it natively in Java/Kotlin.</p>
+
+<p>I look forward to Ruby 3 and wider adoption of typing in the Ruby ecosystem.</p>
+
+<blockquote>
+  <p>😞 I am dismayed that Ruby 3 did not chose to allow inline type signatures.</p>
+</blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2021-03-13-jruby-and-sorbet.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

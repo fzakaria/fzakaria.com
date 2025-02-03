@@ -1,0 +1,238 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hermetic, but at what cost? | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Hermetic, but at what cost?" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="tl;dr; This is a little story about how making Bazel hermetic can lead to some unexpected consequences. In this particular case, it caused our GitHub action to slow down by 50x from 1 minute to over 60 minutes. The fix recommended was to apply the following to your .bazelrc – I needed to understand why however. # Disabling runfiles links drastically increases performance in slow disk IO situations # Do not build runfile trees by default. If an execution strategy relies on runfile # symlink tree, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/&gt; &gt; issues/6627 # and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df build --nobuild_runfile_links test --nobuild_runfile_links # https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles build --nolegacy_external_runfiles test --nolegacy_external_runfiles" />
+<meta property="og:description" content="tl;dr; This is a little story about how making Bazel hermetic can lead to some unexpected consequences. In this particular case, it caused our GitHub action to slow down by 50x from 1 minute to over 60 minutes. The fix recommended was to apply the following to your .bazelrc – I needed to understand why however. # Disabling runfiles links drastically increases performance in slow disk IO situations # Do not build runfile trees by default. If an execution strategy relies on runfile # symlink tree, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/&gt; &gt; issues/6627 # and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df build --nobuild_runfile_links test --nobuild_runfile_links # https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles build --nolegacy_external_runfiles test --nolegacy_external_runfiles" />
+<link rel="canonical" href="https://fzakaria.com/2024/02/27/hermetic-but-at-what-cost.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/02/27/hermetic-but-at-what-cost.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-02-27T14:02:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hermetic, but at what cost?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-02-27T14:02:00-08:00","datePublished":"2024-02-27T14:02:00-08:00","description":"tl;dr; This is a little story about how making Bazel hermetic can lead to some unexpected consequences. In this particular case, it caused our GitHub action to slow down by 50x from 1 minute to over 60 minutes. The fix recommended was to apply the following to your .bazelrc – I needed to understand why however. # Disabling runfiles links drastically increases performance in slow disk IO situations # Do not build runfile trees by default. If an execution strategy relies on runfile # symlink tree, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/&gt; &gt; issues/6627 # and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df build --nobuild_runfile_links test --nobuild_runfile_links # https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles build --nolegacy_external_runfiles test --nolegacy_external_runfiles","headline":"Hermetic, but at what cost?","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/02/27/hermetic-but-at-what-cost.html"},"url":"https://fzakaria.com/2024/02/27/hermetic-but-at-what-cost.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Hermetic, but at what cost?
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-02-27
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/02/27/hermetic-but-at-what-cost.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p><strong>tl;dr;</strong> This is a little story about how making Bazel <em>hermetic</em> can lead to some unexpected consequences. In this particular case, it caused our GitHub action to slow down by 50x from 1 minute to over 60 minutes.</p>
+
+  <p>The fix recommended was to apply the following to your <code class="language-plaintext highlighter-rouge">.bazelrc</code> – I <strong>needed</strong> to understand why however.</p>
+  <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Disabling runfiles links drastically increases performance in slow disk IO situations
+# Do not build runfile trees by default. If an execution strategy relies on runfile
+# symlink tree, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/&gt; &gt; issues/6627
+# and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
+build --nobuild_runfile_links
+test --nobuild_runfile_links
+
+# https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles
+build --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
+</code></pre></div>  </div>
+</blockquote>
+
+<!--more-->
+
+<p><a href="https://bazel.build/">Bazel</a> is a popular build system for those seeking to adopt Google-style build methodologies &amp; kool-aid with the hopes of achieving hermetic nirvana.
+Very quickly after adopting Bazel, you realize that although you’ve defined your build targets, ultimately the default toolchains provided by Bazel use the system provided binaries, libraries and headers.</p>
+
+<blockquote>
+  <p>📝 <a href="https://nixos.org/">NixOS</a> is a great way to bring in a reproducible environment for Bazel to use.</p>
+</blockquote>
+
+<p>Recently, I decided to “fix” our non-hermetic Python Bazel builds by adding a new reliance on <a href="https://github.com/bazelbuild/rules_python">@python_rules</a> which helps pull in a Python toolchain for Bazel to use.</p>
+
+<blockquote>
+  <p>📝 Toolchains in Bazel are often downloaded as pre-compiled binary blobs, so their reproducibility is still limited to and can vary according to the underlying system being run.</p>
+</blockquote>
+
+<p>Python is a toolchain but also a runtime file <a href="https://bazel.build/extending/rules#runfiles">“runfile”</a>, as the language is interpreted. The result of including <em>@python_rules</em> was that every Python test target (<em>py_test</em>) included a runfile tree for a complete Python installation.</p>
+
+<p>Here is a sample of the symlinks for the Python installation that are created.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ ls -l bazel-out/k8-fastbuild/mytest.test.runfiles/rules_python\~0.30.0\~python\~python_3_10_x86_64-unknown-linux-gnu/bin
+</span><span class="gp">2to3 -&gt;</span><span class="w"> </span>/home/fmzakari/.cache/bazel/_bazel_fmzakari/17bce12c4b47a4a2fc75249afee05177/external/rules_python~0.30.0~python~python_3_10_x86_64-unknown-linux-gnu/bin/2to3
+<span class="gp">2to3-3.10 -&gt;</span><span class="w"> </span>/home/fmzakari/.cache/bazel/_bazel_fmzakari/17bce12c4b47a4a2fc75249afee05177/external/rules_python~0.30.0~python~python_3_10_x86_64-unknown-linux-gnu/bin/2to3-3.10
+<span class="gp">idle3 -&gt;</span><span class="w"> </span>/home/fmzakari/.cache/bazel/_bazel_fmzakari/17bce12c4b47a4a2fc75249afee05177/external/rules_python~0.30.0~python~python_3_10_x86_64-unknown-linux-gnu/bin/idle3
+</code></pre></div></div>
+
+<p>How many files (inodes) are created for each test?</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ find bazel-out/k8-fastbuild/bin/stablehlo/tests/transform_chlo.mlir.test.runfiles/rules_python\~0.30.0\~python\~python_3_10_x86_64-unknown-linux-gnu  | wc  -l
+2458
+</span></code></pre></div></div>
+
+<p>🤯 <strong>2458</strong> 🤯</p>
+
+<p>Let that sink in. Bazel will create <strong>2458</strong> inodes (symlinks) for each test target. It will do this by default for builds even if the tests are never run or executed.</p>
+
+<p>To double down on this pain, Bazel supports two runfile trees for external repositories which is outlined in their <a href="https://github.com/bazelbuild/bazel/wiki/Updating-the-runfiles-tree-structure">wiki</a>.</p>
+
+<p>🤯 So the whole tree exists at least twice for each test target. 🤯</p>
+
+<p>This increase in symlinks caused our GitHub cache action to suddenly jump from 1 minute to over 60 minutes. This was a 50x increase in time to run the action. The <em>tar</em> and <em>untar</em> of the <code class="language-plaintext highlighter-rouge">.cache</code> directory had to process so many additional files that it was an IO bottleneck.</p>
+
+<p>The recommended approach (from Bazel Slack and other web links) is to have the following in your <code class="language-plaintext highlighter-rouge">.bazelrc</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Disabling runfiles links drastically increases performance in slow disk IO situations
+# Do not build runfile trees by default. If an execution strategy relies on runfile
+# symlink tree, the tree is created on-demand. See: https://github.com/bazelbuild/bazel/issues/6627
+# and https://github.com/bazelbuild/bazel/commit/03246077f948f2790a83520e7dccc2625650e6df
+build --nobuild_runfile_links
+test --nobuild_runfile_links
+
+# https://bazel.build/reference/command-line-reference#flag--legacy_external_runfiles
+build --nolegacy_external_runfiles
+test --nolegacy_external_runfiles
+</code></pre></div></div>
+
+<dl>
+  <dt><strong>–nobuild_runfile_links</strong></dt>
+  <dd>This causes runfiles to not be created during builds. Tests still work, because they have a feature to build the runfiles on demand if needed. The downside to this option, is you can’t run the test unless you do <code class="language-plaintext highlighter-rouge">bazel test</code> or <code class="language-plaintext highlighter-rouge">bazel run</code> which sets up the runfile tree.</dd>
+  <dt><strong>–nolegacy_external_runfiles</strong></dt>
+  <dd>Stops creating the symlinks in 2x places by no longer supported the legacy location for runfiles.</dd>
+</dl>
+
+<p>Bazel can provide some amazing guarantees but navigating the myriad of knobs can be frustrating.</p>
+
+<p>Having had experience with NixOS – I’m curious why Bazel doesn’t support template support for the shebang to point to a single location for the Python interpreter.</p>
+
+<p>Anyways, if you want to make your GitHub actions faster, consider adding the above to your <code class="language-plaintext highlighter-rouge">.bazelrc</code> file.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-02-27-hermetic-but-at-what-cost.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

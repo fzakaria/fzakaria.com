@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Beatprice Chrome Extension Edition | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Beatprice Chrome Extension Edition" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Beatprice Chrome Extension About time It&#39;s been a while since I&#39;ve been only working on my HypeMachine extension and although it was simple (although learning how to get around the isolated world was interesting). The passion to make the HypeMachine extension was largely driven by my passion for music, and that&#39;s why I&#39;m excited about the new extension I&#39;m working on! What is @REMOVED@? &lt;/h2&gt; For those unfamiliar with this site, it is an online music store specializing in electronic/dance music. What&#39;s great about the music store is that the whole spectrum of popularity range is on the store, anyone from as well known such as Tiesto to smaller local DJs in your hometown. The current catalog is made up of more than 700,000 tracks, 160,000 releases, and 24,000 artist charts from over 120,000 artists and remixers. The Catalyst The songs sold on the site are ahem pretty steep. For a user who&#39;s gotten use to either purchasing their music from larger music stores (i.e. iTunes or Amazon), any track more than 0.99$ seems a lot. Most tracks on the site are 2.49$ for instance The goal in writing this new extension was to quickly offer a way for someone browsing @REMOVED@ to see if it&#39;s available on another online music store at a cheaper price. It was while browsing the store with a friend and remembering having seen the same track offered at almost -50% the cost did the drive and idea to write this extension come about. The Extension My goal with the extension was to inject something onto the online music stores web page (as the user browsed), to notify them that a cheaper alternative had been found. The ultimate goal is to have a list of supported music stores to check against and then present the cheapest price. The current workflow model however is: Browse the site until you are ready to purchase a track Click the icon action button in the url bar The script will scrape the current page for all purchasable songs The script will then attempt to find matching songs and present them in a popup window Here is a quick video to show what I&#39;ve done so far with the extension. Please ignore the Screenflow watermark. I upgraded my version and it wanted me to purchase a new license. &gt;&lt;; Future There are a bunch of fixes and polish I&#39;d like to make, however I am pretty excited that the idea overall is plausible and somewhat functional! Things I&#39;d like to change or add to the extension are: I&#39;d like to inject the notification or link to the cheaper site directly next to the buy icon on the webpage rather than having the user click the button in the URL tray I&#39;d like to support a bunch more sites (depending on whether they offer a search API) since iTunes only really sells the more notable artists. Some of the sites I&#39;d like to include are juno.co.uk and stompy.com Figure out a way to better perform the matching/searching for each track or release. I&#39;m currently matching 100% on the track&#39;s title and artist, however it would be nice to figure out a more lenient model perhaps involving regular expressions Create a settings page where the user can insert their country of origin and other information (perhaps even how strong they&#39;d like the pattern matching to be. The country of origin is important, since some stores price the content differently and may not be available in certain countries. Contribute! I&#39;ve learnt already a great deal more about Chrome Extension development, however my Javascript skills are far from amazing. If you are a fan of the site and would like to contribute please fork my repository and contribute changes! Just like my previous extension, I&#39;ve uploaded this extension on GitHub and would love to see feedback and contribution from others. Hopefully I have made a great base to get the ball rolling! You can find the extension on my GitHub" />
+<meta property="og:description" content="Beatprice Chrome Extension About time It&#39;s been a while since I&#39;ve been only working on my HypeMachine extension and although it was simple (although learning how to get around the isolated world was interesting). The passion to make the HypeMachine extension was largely driven by my passion for music, and that&#39;s why I&#39;m excited about the new extension I&#39;m working on! What is @REMOVED@? &lt;/h2&gt; For those unfamiliar with this site, it is an online music store specializing in electronic/dance music. What&#39;s great about the music store is that the whole spectrum of popularity range is on the store, anyone from as well known such as Tiesto to smaller local DJs in your hometown. The current catalog is made up of more than 700,000 tracks, 160,000 releases, and 24,000 artist charts from over 120,000 artists and remixers. The Catalyst The songs sold on the site are ahem pretty steep. For a user who&#39;s gotten use to either purchasing their music from larger music stores (i.e. iTunes or Amazon), any track more than 0.99$ seems a lot. Most tracks on the site are 2.49$ for instance The goal in writing this new extension was to quickly offer a way for someone browsing @REMOVED@ to see if it&#39;s available on another online music store at a cheaper price. It was while browsing the store with a friend and remembering having seen the same track offered at almost -50% the cost did the drive and idea to write this extension come about. The Extension My goal with the extension was to inject something onto the online music stores web page (as the user browsed), to notify them that a cheaper alternative had been found. The ultimate goal is to have a list of supported music stores to check against and then present the cheapest price. The current workflow model however is: Browse the site until you are ready to purchase a track Click the icon action button in the url bar The script will scrape the current page for all purchasable songs The script will then attempt to find matching songs and present them in a popup window Here is a quick video to show what I&#39;ve done so far with the extension. Please ignore the Screenflow watermark. I upgraded my version and it wanted me to purchase a new license. &gt;&lt;; Future There are a bunch of fixes and polish I&#39;d like to make, however I am pretty excited that the idea overall is plausible and somewhat functional! Things I&#39;d like to change or add to the extension are: I&#39;d like to inject the notification or link to the cheaper site directly next to the buy icon on the webpage rather than having the user click the button in the URL tray I&#39;d like to support a bunch more sites (depending on whether they offer a search API) since iTunes only really sells the more notable artists. Some of the sites I&#39;d like to include are juno.co.uk and stompy.com Figure out a way to better perform the matching/searching for each track or release. I&#39;m currently matching 100% on the track&#39;s title and artist, however it would be nice to figure out a more lenient model perhaps involving regular expressions Create a settings page where the user can insert their country of origin and other information (perhaps even how strong they&#39;d like the pattern matching to be. The country of origin is important, since some stores price the content differently and may not be available in certain countries. Contribute! I&#39;ve learnt already a great deal more about Chrome Extension development, however my Javascript skills are far from amazing. If you are a fan of the site and would like to contribute please fork my repository and contribute changes! Just like my previous extension, I&#39;ve uploaded this extension on GitHub and would love to see feedback and contribution from others. Hopefully I have made a great base to get the ball rolling! You can find the extension on my GitHub" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-09-07-beatprice-chrome-extension-edition.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-09-07-beatprice-chrome-extension-edition.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-09-07T17:42:02-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Beatprice Chrome Extension Edition" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-09-07T17:42:02-07:00","datePublished":"2011-09-07T17:42:02-07:00","description":"Beatprice Chrome Extension About time It&#39;s been a while since I&#39;ve been only working on my HypeMachine extension and although it was simple (although learning how to get around the isolated world was interesting). The passion to make the HypeMachine extension was largely driven by my passion for music, and that&#39;s why I&#39;m excited about the new extension I&#39;m working on! What is @REMOVED@? &lt;/h2&gt; For those unfamiliar with this site, it is an online music store specializing in electronic/dance music. What&#39;s great about the music store is that the whole spectrum of popularity range is on the store, anyone from as well known such as Tiesto to smaller local DJs in your hometown. The current catalog is made up of more than 700,000 tracks, 160,000 releases, and 24,000 artist charts from over 120,000 artists and remixers. The Catalyst The songs sold on the site are ahem pretty steep. For a user who&#39;s gotten use to either purchasing their music from larger music stores (i.e. iTunes or Amazon), any track more than 0.99$ seems a lot. Most tracks on the site are 2.49$ for instance The goal in writing this new extension was to quickly offer a way for someone browsing @REMOVED@ to see if it&#39;s available on another online music store at a cheaper price. It was while browsing the store with a friend and remembering having seen the same track offered at almost -50% the cost did the drive and idea to write this extension come about. The Extension My goal with the extension was to inject something onto the online music stores web page (as the user browsed), to notify them that a cheaper alternative had been found. The ultimate goal is to have a list of supported music stores to check against and then present the cheapest price. The current workflow model however is: Browse the site until you are ready to purchase a track Click the icon action button in the url bar The script will scrape the current page for all purchasable songs The script will then attempt to find matching songs and present them in a popup window Here is a quick video to show what I&#39;ve done so far with the extension. Please ignore the Screenflow watermark. I upgraded my version and it wanted me to purchase a new license. &gt;&lt;; Future There are a bunch of fixes and polish I&#39;d like to make, however I am pretty excited that the idea overall is plausible and somewhat functional! Things I&#39;d like to change or add to the extension are: I&#39;d like to inject the notification or link to the cheaper site directly next to the buy icon on the webpage rather than having the user click the button in the URL tray I&#39;d like to support a bunch more sites (depending on whether they offer a search API) since iTunes only really sells the more notable artists. Some of the sites I&#39;d like to include are juno.co.uk and stompy.com Figure out a way to better perform the matching/searching for each track or release. I&#39;m currently matching 100% on the track&#39;s title and artist, however it would be nice to figure out a more lenient model perhaps involving regular expressions Create a settings page where the user can insert their country of origin and other information (perhaps even how strong they&#39;d like the pattern matching to be. The country of origin is important, since some stores price the content differently and may not be available in certain countries. Contribute! I&#39;ve learnt already a great deal more about Chrome Extension development, however my Javascript skills are far from amazing. If you are a fan of the site and would like to contribute please fork my repository and contribute changes! Just like my previous extension, I&#39;ve uploaded this extension on GitHub and would love to see feedback and contribution from others. Hopefully I have made a great base to get the ball rolling! You can find the extension on my GitHub","headline":"Beatprice Chrome Extension Edition","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-09-07-beatprice-chrome-extension-edition.html"},"url":"https://fzakaria.com/old_blog/2011-09-07-beatprice-chrome-extension-edition.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Beatprice Chrome Extension Edition
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-09-07
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-09-07-beatprice-chrome-extension-edition.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Beatprice Chrome Extension </h2>
+<h3> About time </h3>
+<p>
+It's been a while since I've been only working on my HypeMachine extension and although it was simple (although <a href="http://www.blog.fzakaria.com/2010/12/hypemachine-chrome-extension-and-hacking-the-isolated-world/">learning</a> how to get around the isolated world was interesting). The passion to make the HypeMachine extension was largely driven by my passion for music, and that's why I'm excited about the new extension I'm working on!</p>
+<h3> What is <strong>@REMOVED@</strong>? </h2>
+<p>
+For those unfamiliar with <a href="beatport.com">this site</a>, it is an online music store specializing in electronic/dance music. What's great about the music store is that the whole spectrum of popularity range is on the store, anyone from as well known such as Tiesto to smaller local DJs in your hometown.</p>
+<blockquote><p>The current catalog is made up of more than 700,000 tracks, 160,000 releases, and 24,000 artist charts from over 120,000 artists and remixers.</p></blockquote>
+<h3>The Catalyst </h3>
+<p>
+The songs sold on the site are <em>ahem</em> pretty steep. For a user who's gotten use to either purchasing their music from larger music stores (i.e. iTunes or Amazon), any track more than 0.99$ seems a lot.</p>
+<blockquote><p>Most tracks on the site are 2.49$ for instance</p></blockquote>
+<p>The goal in writing this new extension was to quickly offer a way for someone browsing <strong>@REMOVED@</strong> to see if it's available on another online music store at a cheaper price. It was while browsing the store with a friend and remembering having seen the same track offered at almost -50% the cost did the drive and idea to write this extension come about.</p>
+<h3>The Extension</h3>
+<p>
+My goal with the extension was to inject something onto the online music stores web page (as the user browsed), to notify them that a cheaper alternative had been found. The ultimate goal is to have a list of supported music stores to check against and then present the cheapest price. The current workflow model however is:</p>
+<ol>
+<li>Browse <a href="www.beatport.com">the site</a> until you are ready to purchase a track </li>
+<li>Click the icon action button in the url bar</li>
+<li>The script will scrape the current page for all <em>purchasable</em> songs</li>
+<li>The script will then attempt to find matching songs and present them in a popup window</li>
+</ol>
+<p>
+Here is a quick video to show what I've done so far with the extension. Please ignore the <em><a href="http://www.telestream.net/screen-flow/">Screenflow</a></em> watermark. I upgraded my version and it wanted me to purchase a new license. ><;<br />
+<iframe width="500" height="345" src="http://www.youtube.com/embed/AXg1K3fzOgg?hd=1" frameborder="0" allowfullscreen></iframe></p>
+<h3>Future</h3>
+<p>
+There are a bunch of fixes and polish I'd like to make, however I am pretty excited that the idea overall is plausible and <em>somewhat</em> functional! Things I'd like to change or add to the extension are:</p>
+<ul>
+<li>I'd like to inject the notification or link to the cheaper site directly next to the buy icon on the webpage rather than having the user click the button in the URL tray</li>
+<li>I'd like to support a bunch more sites (depending on whether they offer a search API) since iTunes only really sells the more notable artists. Some of the sites I'd like to include are juno.co.uk and stompy.com</li>
+<li>Figure out a way to better perform the matching/searching for each track or release. I'm currently matching 100% on the track's title and artist, however it would be nice to figure out a more lenient model perhaps involving regular expressions</li>
+<li>Create a settings page where the user can insert their country of origin and other information (perhaps even how strong they'd like the pattern matching to be. The country of origin is important, since some stores price the content differently and may not be available in certain countries.</li>
+</ul>
+<h2> Contribute! </h2>
+<p>
+I've learnt already a great deal more about <a href="http://code.google.com/chrome/extensions/getstarted.html">Chrome Extension development</a>, however my Javascript skills are <em>far</em> from amazing. If <strong>you</strong> are a fan of the site and would like to contribute please fork my repository and contribute changes! Just like my previous extension, I've uploaded this extension on GitHub and would love to see feedback and contribution from others. Hopefully I have made a great base to get the ball rolling!</p>
+<blockquote><p>You can find the extension on my <a href="https://github.com/fzakaria/beatprice">GitHub</a></p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-09-07-beatprice-chrome-extension-edition.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

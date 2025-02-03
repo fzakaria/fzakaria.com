@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>How to install Elasticsearch on EC2 with Amazon Linux | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="How to install Elasticsearch on EC2 with Amazon Linux" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is largely a brain dump since I spent some time trying to get elasticsearch working for EC2. Steps Creating the Instance Create an IAM role with the needed credentials for the elasticsearch aws plugin. For now, I didn&#39;t mess with setting up the fine grained policy and just opted for &#39;power-user&#39;. A good follow up would be to share a default policy that we can send as a pull-request to the plugin Github. Create a security group which has at least port 22, 80, 2003 and 2004 open. I&#39;m not sure the complete difference between 2003 and 2004. Launch the instance! Installing Elasticsearch I opt-ed to install Elasticsearch via the RPM because it includes a chkconfig script to start Elasticsearch as a service. You can download the rpm here. Do not turn it on yet! In the installed directory (/usr/share/elasticsearch for RPM) run the following command: bin/plugin -install elasticsearch/elasticsearch-cloud-aws/2.1.0 Configuring Elasticsaerch Within the configuration file (/etc/elasticsearch/elasticsearch.yml) perform the following modifications: cluster.name: pick-a-cluster-name discovery.type: ec2 discovery.ec2.host_type: public_ip discovery.ec2.groups: &lt;/li&gt; discovery.ec2.ping_timeout: 5m cloud.aws.region: &lt;/li&gt; &lt;/ol&gt; The security group option is important otherwise the plugin will cause Elasticsearch to try and discover all hosts within that region and fail if they do not have elasticsearch. Limiting the search to only instances with the specified security group will fix that! Run! sudo service elasticsearch start" />
+<meta property="og:description" content="This is largely a brain dump since I spent some time trying to get elasticsearch working for EC2. Steps Creating the Instance Create an IAM role with the needed credentials for the elasticsearch aws plugin. For now, I didn&#39;t mess with setting up the fine grained policy and just opted for &#39;power-user&#39;. A good follow up would be to share a default policy that we can send as a pull-request to the plugin Github. Create a security group which has at least port 22, 80, 2003 and 2004 open. I&#39;m not sure the complete difference between 2003 and 2004. Launch the instance! Installing Elasticsearch I opt-ed to install Elasticsearch via the RPM because it includes a chkconfig script to start Elasticsearch as a service. You can download the rpm here. Do not turn it on yet! In the installed directory (/usr/share/elasticsearch for RPM) run the following command: bin/plugin -install elasticsearch/elasticsearch-cloud-aws/2.1.0 Configuring Elasticsaerch Within the configuration file (/etc/elasticsearch/elasticsearch.yml) perform the following modifications: cluster.name: pick-a-cluster-name discovery.type: ec2 discovery.ec2.host_type: public_ip discovery.ec2.groups: &lt;/li&gt; discovery.ec2.ping_timeout: 5m cloud.aws.region: &lt;/li&gt; &lt;/ol&gt; The security group option is important otherwise the plugin will cause Elasticsearch to try and discover all hosts within that region and fail if they do not have elasticsearch. Limiting the search to only instances with the specified security group will fix that! Run! sudo service elasticsearch start" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2014-04-16-how-to-install-elasticsearch-on-ec2-with-amazon-linux.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2014-04-16-how-to-install-elasticsearch-on-ec2-with-amazon-linux.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-04-16T04:01:20-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="How to install Elasticsearch on EC2 with Amazon Linux" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2014-04-16T04:01:20-07:00","datePublished":"2014-04-16T04:01:20-07:00","description":"This is largely a brain dump since I spent some time trying to get elasticsearch working for EC2. Steps Creating the Instance Create an IAM role with the needed credentials for the elasticsearch aws plugin. For now, I didn&#39;t mess with setting up the fine grained policy and just opted for &#39;power-user&#39;. A good follow up would be to share a default policy that we can send as a pull-request to the plugin Github. Create a security group which has at least port 22, 80, 2003 and 2004 open. I&#39;m not sure the complete difference between 2003 and 2004. Launch the instance! Installing Elasticsearch I opt-ed to install Elasticsearch via the RPM because it includes a chkconfig script to start Elasticsearch as a service. You can download the rpm here. Do not turn it on yet! In the installed directory (/usr/share/elasticsearch for RPM) run the following command: bin/plugin -install elasticsearch/elasticsearch-cloud-aws/2.1.0 Configuring Elasticsaerch Within the configuration file (/etc/elasticsearch/elasticsearch.yml) perform the following modifications: cluster.name: pick-a-cluster-name discovery.type: ec2 discovery.ec2.host_type: public_ip discovery.ec2.groups: &lt;/li&gt; discovery.ec2.ping_timeout: 5m cloud.aws.region: &lt;/li&gt; &lt;/ol&gt; The security group option is important otherwise the plugin will cause Elasticsearch to try and discover all hosts within that region and fail if they do not have elasticsearch. Limiting the search to only instances with the specified security group will fix that! Run! sudo service elasticsearch start","headline":"How to install Elasticsearch on EC2 with Amazon Linux","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2014-04-16-how-to-install-elasticsearch-on-ec2-with-amazon-linux.html"},"url":"https://fzakaria.com/old_blog/2014-04-16-how-to-install-elasticsearch-on-ec2-with-amazon-linux.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    How to install Elasticsearch on EC2 with Amazon Linux
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2014-04-16
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2014-04-16-how-to-install-elasticsearch-on-ec2-with-amazon-linux.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>This is largely a brain dump since I spent some time trying to get elasticsearch working for EC2.</p>
+<h2>Steps</h2>
+<h3>Creating the Instance</h3>
+<ol>
+<li>Create an IAM role with the needed credentials for the <a href="https://github.com/elasticsearch/elasticsearch-cloud-aws">elasticsearch aws plugin</a>. For now, I didn't mess with setting up the fine grained policy and just opted for 'power-user'. A good follow up would be to share a default policy that we can send as a pull-request to the plugin Github.</li>
+<li>Create a security group which has at least port 22, 80, 2003 and 2004 open. I'm not sure the complete difference between 2003 and 2004.</li>
+<li>Launch the instance!</li>
+</ol>
+<h3>Installing Elasticsearch</h3>
+<ol>
+<li>I opt-ed to install Elasticsearch via the RPM because it includes a chkconfig script to start Elasticsearch as a service. You can download the rpm <a href="http://www.elasticsearch.org/download/">here</a>. Do not turn it on yet!</li>
+<li>In the installed directory (/usr/share/elasticsearch for RPM) run the following command: <em>bin/plugin -install elasticsearch/elasticsearch-cloud-aws/2.1.0</em></li>
+</ol>
+<h3>Configuring Elasticsaerch</h3>
+<p> Within the configuration file (/etc/elasticsearch/elasticsearch.yml) perform the following modifications: </p>
+<ol>
+<li>cluster.name: pick-a-cluster-name</li>
+<li>discovery.type: ec2</li>
+<li>discovery.ec2.host_type: public_ip</li>
+<li>discovery.ec2.groups: <your-security-group></li>
+<li>discovery.ec2.ping_timeout: 5m</li>
+<li>cloud.aws.region: <your-region></li>
+</ol>
+<p> The security group option is important otherwise the plugin will cause Elasticsearch to try and discover all hosts within that region and fail if they do not have elasticsearch. Limiting the search to only instances with the specified security group will fix that! </p>
+<h3> Run! </h3>
+<p> sudo service elasticsearch start </p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2014-04-16-how-to-install-elasticsearch-on-ec2-with-amazon-linux.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

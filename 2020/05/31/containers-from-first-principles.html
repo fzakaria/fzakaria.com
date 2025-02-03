@@ -1,0 +1,404 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Containers from first principles | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Containers from first principles" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="You’ve likely heard everyone at the office or online proclaim that “K8s has eaten everyone’s lunch!” or that “everything should be in a docker container!”. While there are advantages to the above methodologies; it’s very easy to have cargo-culted their adoption; especially for Kubernetes (K8s). I find the biggest problem however that there is a fundamental lacking of what is a *container. There s a 1000 other posts online explaining containers and I’m adding my own to the pool. Perhaps this 1001th explanation will do so in such a way that it groks." />
+<meta property="og:description" content="You’ve likely heard everyone at the office or online proclaim that “K8s has eaten everyone’s lunch!” or that “everything should be in a docker container!”. While there are advantages to the above methodologies; it’s very easy to have cargo-culted their adoption; especially for Kubernetes (K8s). I find the biggest problem however that there is a fundamental lacking of what is a *container. There s a 1000 other posts online explaining containers and I’m adding my own to the pool. Perhaps this 1001th explanation will do so in such a way that it groks." />
+<link rel="canonical" href="https://fzakaria.com/2020/05/31/containers-from-first-principles.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/05/31/containers-from-first-principles.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-31T12:38:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Containers from first principles" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-05-31T12:38:00-07:00","datePublished":"2020-05-31T12:38:00-07:00","description":"You’ve likely heard everyone at the office or online proclaim that “K8s has eaten everyone’s lunch!” or that “everything should be in a docker container!”. While there are advantages to the above methodologies; it’s very easy to have cargo-culted their adoption; especially for Kubernetes (K8s). I find the biggest problem however that there is a fundamental lacking of what is a *container. There s a 1000 other posts online explaining containers and I’m adding my own to the pool. Perhaps this 1001th explanation will do so in such a way that it groks.","headline":"Containers from first principles","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/05/31/containers-from-first-principles.html"},"url":"https://fzakaria.com/2020/05/31/containers-from-first-principles.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Containers from first principles
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-05-31
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/05/31/containers-from-first-principles.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>You’ve likely heard everyone at the office or online proclaim that “K8s has eaten everyone’s lunch!” or that “everything should be in a docker container!”.</p>
+
+<p>While there are advantages to the above methodologies; it’s very easy to have cargo-culted their adoption; especially for Kubernetes (K8s). I find the biggest problem however that there is a fundamental lacking of what is a <em>*container</em>.</p>
+
+<p>There s a 1000 other posts online explaining containers and I’m adding my own to the pool. Perhaps this 1001th explanation will do so in such a way that it groks.</p>
+
+<!--more-->
+
+<blockquote>
+  <p>Any commands written were done in a Linux environment; if you try to follow along in OSX; it may be more challenging since Docker is running within a hypervisor or virtual machine.</p>
+</blockquote>
+
+<h2 id="whats-a-docker-image-">What’s a Docker Image ?</h2>
+<p>Let’s start by first grabbing one of the simplest Docker images around, <a href="https://hub.docker.com/_/alpine">Alpine Linux</a>.</p>
+
+<blockquote>
+  <p>Alpine Linux is a Linux distribution based on musl and BusyBox, designed for security, simplicity, and resource efficiency.</p>
+</blockquote>
+
+<p>Let’s grab the image &amp; save it</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># download the image locally</span>
+docker pull alpine:3.12.0
+3.12.0: Pulling from library/alpine
+Digest: sha256:185518070891758909c9f839cf4ca393ee977ac378609f700f60a771a2dfe321
+Status: Downloaded newer image <span class="k">for </span>alpine:3.12.0
+
+<span class="c"># save the image</span>
+docker save alpine:3.12.0 <span class="o">&gt;</span> alpine-3.12.0.tar
+</code></pre></div></div>
+
+<p>If we inspect the image; we can see a few interesting files</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tar</span> <span class="nt">--list</span> <span class="nt">--file</span><span class="o">=</span>alpine-3.12.0.tar
+a24bb4013296f61e89ba57005a7b3e52274d8edd3ae2077d04395f806b63d83e.json
+fa27ccac46e9a5b7ff1d188e99763db1a5fb45adb34a917c1c482dfde99ad432/
+fa27ccac46e9a5b7ff1d188e99763db1a5fb45adb34a917c1c482dfde99ad432/VERSION
+fa27ccac46e9a5b7ff1d188e99763db1a5fb45adb34a917c1c482dfde99ad432/json
+fa27ccac46e9a5b7ff1d188e99763db1a5fb45adb34a917c1c482dfde99ad432/layer.tar
+manifest.json
+repositories
+</code></pre></div></div>
+
+<p><em>manifest.json</em>
+    : Describes Container properties</p>
+
+<p><em>…faec1b8045e42.json</em>
+    : The SHA256 of the image.</p>
+
+<p><em>…4395f806b63d83e/</em>
+    : One of the “layers” that comprise the image</p>
+
+<p>In fact, when we see what’s inside that <em>layer.tar</em>; it’s a full Linux filesystem layout.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">tar</span> <span class="nt">-xOf</span> alpine-3.12.0.tar fa27ccac46e9a5b7ff1d188e99763db1a5fb45adb34a917c1c482dfde99ad432/layer.tar | <span class="nb">tar</span> <span class="nt">-tf</span> - | <span class="nb">shuf</span> | <span class="nb">head
+</span>var/lib/apk/
+usr/bin/getent
+bin/lzop
+usr/bin/openvt
+dev/
+bin/tar
+sbin/rmmod
+usr/lib/libtls-standalone.so.1.0.0
+usr/bin/[[
+sbin/ifconfig
+</code></pre></div></div>
+
+<p>Feel free to dig into the concept of an <a href="https://www.kernel.org/doc/Documentation/filesystems/overlayfs.txt">overlay filesystem</a>; however at a minimum these layers represent individual steps made during the <em>Dockerfile</em>.</p>
+
+<blockquote>
+  <p>If an image that more than <em>1</em> image; they contents are superimposed to create the final filesystem view.</p>
+</blockquote>
+
+<h2 id="whats-a-container">What’s a container?</h2>
+
+<p>Many people might think the word “container” has a specific meaning within the Linux kernel; however the kernel has no notion of a “container”. The word has been synonymous with a variety of Linux tooling which when applied give the resemblance of what we expect a container to be.</p>
+
+<p>To be put it simply; a container should resemble somewhat as a <em>separate</em> machine (or virtual machine) although many of them run with a single kernel.</p>
+
+<p>Each container should have <em>at least</em> the following isolated:</p>
+<ol>
+  <li>network stack</li>
+  <li>filesystem</li>
+  <li>processes</li>
+</ol>
+
+<p>Linux achieves these isolations via, <strong>Namespaces</strong>. Let’s rebuild together the isolation using simple bash commands.</p>
+
+<h2 id="virtual-machine-setup">Virtual Machine Setup</h2>
+<p>The following commands were executed on a Debian machine running in GCP</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute instances create containers-demystified <span class="nt">--image-family</span> debian-10 <span class="nt">--image-project</span> debian-cloud <span class="nt">--zone</span> us-west1-a
+gcloud compute ssh containers-demystified
+
+<span class="c"># kernel version</span>
+<span class="nb">uname</span> <span class="nt">-r</span>
+4.19.0-9-cloud-amd64
+
+<span class="c"># install docker</span>
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>apt-transport-https ca-certificates curl gnupg2 software-properties-common
+curl <span class="nt">-fsSL</span> https://download.docker.com/linux/debian/gpg | <span class="nb">sudo </span>apt-key add
+<span class="nb">sudo </span>add-apt-repository <span class="s2">"deb [arch=amd64] https://download.docker.com/linux/debian buster stable"</span>
+<span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install </span>docker-ce docker-ce-cli containerd.io
+<span class="nb">sudo </span>groupadd docker
+<span class="nb">sudo </span>usermod <span class="nt">-aG</span> docker <span class="nv">$USER</span>
+</code></pre></div></div>
+
+<h2 id="containers-from-scratch">Containers from scratch</h2>
+
+<p>First lets grab the Alpine Linux filesystem and place it in a <em>container/</em> directory.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir </span>container
+<span class="nb">tar</span> <span class="nt">-xOf</span> alpine-3.12.0.tar fa27ccac46e9a5b7ff1d188e99763db1a5fb45adb34a917c1c482dfde99ad432/layer.tar | <span class="nb">tar</span> <span class="nt">-C</span> container/ <span class="nt">-xf</span> -
+
+<span class="nb">ls </span>container/ | <span class="nb">head
+</span>bin
+dev
+etc
+home
+root
+tmp
+usr
+var
+
+</code></pre></div></div>
+<p>Great! Now let’s try creating a new mount namespace using <strong>unshare</strong></p>
+
+<blockquote>
+  <p>unshare - run program with some namespaces unshared from parent</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>unshare <span class="nt">--fork</span> <span class="nt">--mount</span> bash
+
+<span class="c"># we need to bind mount itself --</span>
+<span class="c"># this is just a pre-requisite for pivot_root which is the next step</span>
+mount <span class="nt">--bind</span> container/ container/
+<span class="c"># create a location to store the pivot of the filesystem</span>
+pivot_root container/ container/_old
+<span class="c"># check that we have pivoted</span>
+<span class="nb">ls</span> <span class="nt">-l</span> /_old/ | <span class="nb">head
+</span>total 128
+drwxr-xr-x    1 root     root          4096 May 28 01:21 bin
+drwxr-xr-x    2 root     root          4096 Feb  1 17:09 boot
+drwxr-xr-x   10 root     root          1400 Jun  1 00:31 dev
+drwxr-xr-x    1 root     root          4096 Jun  1 00:31 etc
+drwxr-xr-x    1 root     root          4096 May 28 00:11 google
+drwxr-xr-x    4 root     root          4096 Jun  1 00:31 home
+
+<span class="c"># great now un mount it; for security reasons so the process can't escape the jail</span>
+<span class="nb">cd</span> /
+umount <span class="nt">-l</span> /_old
+</code></pre></div></div>
+<blockquote>
+  <p>pivot_root moves the root file system of the calling process to the directory of the second argument and makes first argument the new root file system of the calling process.</p>
+</blockquote>
+
+<p>Great! It looks like we are in a separate filesystem environment.
+Let’s re-add the <em>proc</em> filesystem</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mount -t proc /proc /proc
+
+ps aux  | head
+PID   USER     TIME  COMMAND
+    1 root      0:00 /bin/bash /google/scripts/onrun.sh sleep infinity
+    8 root      0:00 /usr/sbin/rsyslogd
+  573 root      0:00 /usr/sbin/sshd -p 22 -o AuthorizedKeysFile=/etc/ssh/keys/authorized_keys
+  647 root      0:20 /usr/bin/dockerd -p /var/run/docker.pid --mtu=1460 --registry-mirror=https://us-mirror.gcr.io
+  675 root      0:16 containerd --config /var/run/docker/containerd/containerd.toml --log-level info
+</code></pre></div></div>
+
+<p>Hmmmm.. that’s not isolated from the outside. Let’s fix it!</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># add a `--pid` now
+sudo unshare --fork --pid --mount bash
+# do all the same commands as above
+
+mount --bind container/ container/
+pivot_root container/ container/_old
+umount -l /_old
+
+mount -t proc /proc /proc
+
+ps aux
+PID   USER     TIME  COMMAND
+    1 root      0:00 bash
+  104 root      0:00 ps aux
+</code></pre></div></div>
+
+<p>Much better! 
+Let’s checkout the network configuration</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ip <span class="nb">link </span>list
+
+1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue qlen 1000
+    <span class="nb">link</span>/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+2: docker0: &lt;NO-CARRIER,BROADCAST,MULTICAST,UP&gt; mtu 1500 qdisc noqueue
+    <span class="nb">link</span>/ether 02:42:c2:8a:54:22 brd ff:ff:ff:ff:ff:ff
+12: eth0@if13: &lt;BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN&gt; mtu 1500 qdisc noqueue
+    <span class="nb">link</span>/ether 02:42:ac:11:00:04 brd ff:ff:ff:ff:ff:ff
+</code></pre></div></div>
+
+<p>Looks like we still have access to the physical ethernet device; that’s not isolated… let’s fix that!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># we run the following command in the background</span>
+<span class="nb">sudo </span>unshare <span class="nt">--fork</span> <span class="nt">--pid</span> <span class="nt">--mount</span> <span class="nt">--uts</span> <span class="nt">--net</span> bash
+
+<span class="c"># in a separate window (host namespace)</span>
+<span class="c"># grab the PID of unshare</span>
+<span class="nv">CPID</span><span class="o">=</span><span class="si">$(</span>pidof unshare<span class="si">)</span>
+<span class="c"># This will use the PID of the process to pick the correct netns</span>
+<span class="nb">sudo </span>ip <span class="nb">link </span>add h<span class="nv">$CPID</span> <span class="nb">type </span>veth peer name c<span class="nv">$CPID</span> netns <span class="nv">$CPID</span>
+<span class="c"># turn on the device &amp; attach it to the docker0 bridge</span>
+<span class="nb">sudo </span>ip <span class="nb">link set </span>h<span class="nv">$CPID</span> up master docker0
+
+
+<span class="c"># in the original window (new namespace)</span>
+<span class="c"># filesystem</span>
+mount <span class="nt">--bind</span> container/ container/
+pivot_root container/ container/_old
+umount <span class="nt">-l</span> /_old
+mount <span class="nt">-t</span> proc /proc /proc
+
+<span class="c"># network</span>
+<span class="c"># let's change hostname</span>
+<span class="nb">hostname </span>container
+<span class="c"># bring up the loopback address</span>
+ip <span class="nb">link set </span>lo up
+<span class="c"># bring the veth device up</span>
+ip <span class="nb">link set </span>c<span class="nv">$CPID</span> up
+<span class="c"># lets give the veth a IP address</span>
+ip addr add 172.17.42.3/16 dev c<span class="nv">$CPID</span>
+<span class="c"># set the veth as the default gateway</span>
+ip route add default via 172.17.0.1
+
+<span class="c"># This should work!</span>
+<span class="c"># note: DNS don't work due to /etc/resolv.conf being missing</span>
+ping 8.8.8.8
+</code></pre></div></div>
+
+<p>The above kind of <em>cheats</em> by using the Docker bridge setup. This was done because setting up a bridge on a cloud instance is non-trivial; moving the physical ethernet device temporarily makes the instance unroutable.
+Docker uses a myriad of <em>iptables</em> rules to setup a NAT.</p>
+
+<h2 id="what-next">What next?</h2>
+
+<p>The above is <em>pretty close</em>; to what something like Docker does.
+The big missing piece is starting the “container” on an <em>overlay</em> filesystem such that changes within the new <em>pivot_root</em> don’t affect the base image.</p>
+
+<h2 id="useful-links">Useful links</h2>
+<ol>
+  <li><a href="http://ifeanyi.co/posts/linux-namespaces-part-3/">http://ifeanyi.co/posts/linux-namespaces-part-3/</a></li>
+  <li><a href="https://blog.nicolasmesa.co/posts/2018/08/container-creation-using-namespaces-and-bash/">https://blog.nicolasmesa.co/posts/2018/08/container-creation-using-namespaces-and-bash/</a></li>
+  <li><a href="https://wvi.cz/diyC/">https://wvi.cz/diyC/</a></li>
+  <li><a href="https://linux-blog.anracom.com/2017/11/14/fun-with-veth-devices-linux-bridges-and-vlans-in-unnamed-linux-network-namespaces-iii/">https://linux-blog.anracom.com/2017/11/14/fun-with-veth-devices-linux-bridges-and-vlans-in-unnamed-linux-network-namespaces-iii/</a></li>
+</ol>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-05-31-containers-from-first-principles.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

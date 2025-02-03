@@ -1,0 +1,554 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>VPNs from first principles | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="VPNs from first principles" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="If you enjoy the from first principles theme, consider reading the one on containers. Networking can seem like voodoo; many of us take for granted how data transmits from one computer to the next. Recently, wireguard, has attracted a lot of publicity for it’s inclusion into the Linux kernel &amp; for it’s stated goal of making setting up VPNs simpler. Behind all the magic, is a very simple premise. Let’s shed some of the complexity and break it down to first principles." />
+<meta property="og:description" content="If you enjoy the from first principles theme, consider reading the one on containers. Networking can seem like voodoo; many of us take for granted how data transmits from one computer to the next. Recently, wireguard, has attracted a lot of publicity for it’s inclusion into the Linux kernel &amp; for it’s stated goal of making setting up VPNs simpler. Behind all the magic, is a very simple premise. Let’s shed some of the complexity and break it down to first principles." />
+<link rel="canonical" href="https://fzakaria.com/2020/09/20/vpns-from-first-principles.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/20/vpns-from-first-principles.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-20T10:17:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="VPNs from first principles" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-20T10:17:00-07:00","datePublished":"2020-09-20T10:17:00-07:00","description":"If you enjoy the from first principles theme, consider reading the one on containers. Networking can seem like voodoo; many of us take for granted how data transmits from one computer to the next. Recently, wireguard, has attracted a lot of publicity for it’s inclusion into the Linux kernel &amp; for it’s stated goal of making setting up VPNs simpler. Behind all the magic, is a very simple premise. Let’s shed some of the complexity and break it down to first principles.","headline":"VPNs from first principles","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/20/vpns-from-first-principles.html"},"url":"https://fzakaria.com/2020/09/20/vpns-from-first-principles.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    VPNs from first principles
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-20
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/20/vpns-from-first-principles.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>If you enjoy the <em>from first principles</em> theme, consider reading the one
+on <a href="/2020/05/31/containers-from-first-principles.html">containers</a>.</p>
+</blockquote>
+
+<p>Networking can seem like <em>voodoo</em>; many of us take for granted how data transmits from one computer to the next. Recently, <a href="https://www.wireguard.com/">wireguard</a>, has attracted a lot of publicity for it’s inclusion into the Linux kernel &amp; for it’s stated goal of making setting up VPNs simpler.</p>
+
+<p>Behind all the magic, is a very simple premise. Let’s shed some of the complexity and break it down to <em>first principles</em>.</p>
+
+<!--more-->
+
+<blockquote>
+  <p>A virtual private network extends a private network across a public network and enables users to send and receive data across shared or public networks as if their computing devices were directly connected to the private network. <sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> <sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup></p>
+</blockquote>
+
+<p><img src="/assets/images/VPN_overview-en.svg" alt="VPN graphic" /></p>
+
+<p>The definition seems <em>simple</em> enough. Bridge two discrete private networks &amp; make them look like they are <strong>one</strong>.</p>
+
+<p>We will accomplish this task with a <em>tunnel</em>.</p>
+
+<!--more-->
+
+<h3 id="network-reachability">Network Reachability</h3>
+
+<p>Let’s consider a very simple example with two distinct private networks: <em>home</em> &amp; <em>office</em>.</p>
+
+<p><strong>Home Network</strong>: A 192.168.1.0/24 subnet and has a laptop with the <em>private IP address</em> of 192.168.1.192.</p>
+
+<p><strong>Office Network</strong>: A 172.31.0.1/20 subnet and has a server with <em>private IP address</em> of 172.31.9.116 &amp; a <em>public IP address</em> of 54.219.126.112.</p>
+
+<p><img src="/assets/images/vpn_simple_drawing.png" alt="VPN graphic" /></p>
+
+<blockquote>
+  <p>I did not include the routers or gateways in the figure.</p>
+</blockquote>
+
+<p>This is pretty common to what most people might experience with their home setup.</p>
+
+<p><em>private</em> IP addresses are those that can only be reached from other machines within the subnet.</p>
+
+<p><em>public</em> IP addresses are those that are broadcasted to neighboring routers and exchanged via the BGP protocol.</p>
+
+<p>The goal of the tunnel will be to join these two <em>distinct</em> subnets into a <em>virtual</em> one; a <em>virtual private network</em> (VPN).</p>
+
+<p><img src="/assets/images/vpn_simple_drawing_merge.png" alt="VPN graphic" /></p>
+
+<p>Let’s choose a VPN CIDR range of 172.31.255.0/24. I don’t need a subnet so large, so let’s set a mask of /24 which gives us ~254 hosts.</p>
+
+<p>We will then assign two IP addresses within that subnet to the two hosts.</p>
+
+<p><strong>Server</strong>: 172.31.255.13</p>
+
+<p><strong>Laptop</strong>: 172.31.255.7</p>
+
+<blockquote>
+  <p>The private network address range is 172.16.0.0/12 according to <a href="https://www.arin.net/reference/research/statistics/address_filters/">https://www.arin.net/reference/research/statistics/address_filters/</a></p>
+</blockquote>
+
+<h3 id="tun-network-interface-device">TUN network interface device</h3>
+
+<p>The first step in setting up our tunnel will be to create a <em>tun</em> network interface device<sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup>. A <em>tun</em> device is a kernel virtual network device, they are not backed by a physical device.</p>
+
+<p>Packets sent by the operating system via the <em>tun</em> device are delivered to a user space program which attaches itself to the device. A userspace program may also pass packets into a <em>tun</em> device. In this case the device delivers these packets to the operating-system network stack thus emulating as if it has arrived from an external source.<sup id="fnref:4" role="doc-noteref"><a href="#fn:4" class="footnote" rel="footnote">4</a></sup></p>
+
+<blockquote>
+  <p><em>tun</em> devices operate at the L3 layer (IP). There is an analogous <em>tap</em> device that operates at the L2 layer (Ethernet).</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># on server &amp; laptop run the following</span>
+<span class="c"># adding the user will allow userspace programs running as that user</span>
+<span class="c"># to attach to it without needing `sudo`</span>
+<span class="o">&gt;</span> <span class="nb">sudo </span>ip tuntap add dev tun0 mode tun user <span class="nv">$USER</span>
+<span class="o">&gt;</span> <span class="nb">sudo </span>ip <span class="nb">link set </span>dev tun0 up
+
+<span class="o">&gt;</span> ip <span class="nt">-d</span> <span class="nb">link </span>show tun0
+9: tun0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu 1500 qdisc pfifo_fast state UP mode DEFAULT group default qlen 500
+    <span class="nb">link</span>/none  promiscuity 0 minmtu 68 maxmtu 65535
+    tun <span class="nb">type </span>tun pi on vnet_hdr off persist on user youruser addrgenmode random numtxqueues 1 numrxqueues 1 gso_max_size 65536 gso_max_segs 65535
+</code></pre></div></div>
+
+<p>We then need to assign the new <em>private IP addresses</em> for our new subnet.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># on the laptop run the following</span>
+<span class="o">&gt;</span> <span class="nb">sudo </span>ip addr add 172.31.255.7/24 dev tun0
+<span class="c"># on the server run the following</span>
+<span class="o">&gt;</span> <span class="nb">sudo </span>ip addr add 172.31.255.13/24 dev tun0
+</code></pre></div></div>
+
+<p>Now let’s create a general routing rule so that anything destined for that subnet routes to the desired <em>tun</em> device.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># run the following on both laptop &amp; server</span>
+<span class="o">&gt;</span> <span class="nb">sudo </span>ip route add 172.16.0.0/12 dev tun0
+
+<span class="c"># Let's validate our route. Pick a machine and</span>
+<span class="c"># test the route for the other one.</span>
+<span class="o">&gt;</span> ip route get 172.31.255.8
+172.31.255.8 dev tun0 src 172.31.255.7 uid 780412
+    cache
+</code></pre></div></div>
+
+<blockquote>
+  <p>We make sure to test the route with an IP address not present on either machine, otherwise it will match to the <em>lo</em> (loopback) device.</p>
+</blockquote>
+
+<p>Great! We have setup some network interfaces and routing rules, but what is actually transmitting the packets to give the <em>illusion</em> of a single network?</p>
+
+<p>Our <strong>tunneling</strong> software.</p>
+
+<h3 id="lametun">lametun</h3>
+
+<p>The <em>heart</em> to setting up VPN is the software bridging the packets across the two networks. In our case, we will be using a userspace program and the <em>tun</em> device; however <a href="https://www.wireguard.com/">wireguard</a> has included this capability within the kernel itself.</p>
+
+<p>Since this will be a <em>toy</em> example, I’ve named the program <strong>lametun</strong>. It will be a single <em>golang</em> file with minimal dependencies to demonstrate how simple it is.</p>
+
+<p><img src="/assets/images/vpn_lametun_simple.png" alt="VPN graphic" /></p>
+
+<p><strong>lametun</strong> will read all incoming packets at a particular UDP port (i.e. <em>1234</em>) and write it to the <em>tun</em> device.</p>
+
+<p><strong>lametun</strong> will read all outgoing packets from the <em>tun</em> device and write it back out the physical network device.</p>
+
+<p>Both the <em>server</em> &amp; <em>laptop</em> will run <strong>lametun</strong> on UDP port <em>1234</em>, listening on the physical network device.</p>
+
+<blockquote>
+  <p>Make sure your firewall allows whatever port we are using for <strong>lametun</strong>.
+I was using an EC2 host and had to also allow the UDP port through the SecurityGroup as well.</p>
+</blockquote>
+
+<p>The TUN device however emits raw L3 packets (IP packets), and the IP address of the device is not-routable. Simply copying the packet to the physical device is not enough; it must be routable.</p>
+
+<p>We will <em>encapsulate</em> the packet with a routable IP &amp; UDP header destined for the VPN peer.</p>
+
+<blockquote>
+  <p>UDP is chosen since there is a lot of literature how TCP over TCP is a bad idea; TCP Meltdown.<sup id="fnref:6" role="doc-noteref"><a href="#fn:6" class="footnote" rel="footnote">5</a></sup></p>
+</blockquote>
+
+<h3 id="encapsulation">Encapsulation</h3>
+
+<p>Encapsulation as a concept is straightforward. It is the act of embedding a protocol within the data/payload of another. Here we see an example of embedding TCP-IP within the payload of a UDP packet.<sup id="fnref:5" role="doc-noteref"><a href="#fn:5" class="footnote" rel="footnote">6</a></sup></p>
+
+<p><img src="/assets/images/foo-encap.png" alt="VPN graphic" /></p>
+
+<p>Using encapsulation, we can now have non-routable packets traverse the Internet. Once they arrive at the <strong>lametun</strong> destination, the inner packet is forwarded onto the <em>tun</em> device to continue routing.</p>
+
+<h3 id="mtu">MTU</h3>
+
+<p>Typically, in order to guarantee delivery across the Internet, network devices restrict the <em>maximum transmission unit</em> (MTU), which is the size of the Ethernet frame, to <em>1500</em> bytes.</p>
+
+<blockquote>
+  <p>Although IP protocol supports fragmentation, there is no guarantee that every link along the way does. It’s best to stay within the 1500 byte limit.</p>
+</blockquote>
+
+<p>Given that we are embedding our transmission protocol within a IP-UDP datagram, we must account for this reserved headroom accordingly or risk breaking the 1500 byte boundary.</p>
+
+<p>Given that the IP header is 20 bytes (minimum) and the UDP header is 8 bytes, our new MTU is <em>1472</em> bytes.</p>
+
+<p>A simple demonstration will help.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Upper limit MTU is 1500 safely across the Internet</span>
+<span class="c"># IPv4 header is 20 bytes (minimum)</span>
+<span class="c"># UDP header is 8 bytes</span>
+<span class="c"># ICMP header is 8 bytes</span>
+<span class="c">#</span>
+<span class="c"># 1500 - 20 (IP) - 8 (UDP) =  1472 new maximum MTU</span>
+<span class="c">#</span>
+<span class="c"># 1472 - 20 (IP) - 8 (ICMP) = 1444 maximum payload for ICMP payload</span>
+<span class="c"># (We actually remove another 4 bytes due to metadata the TUN device includes)</span>
+<span class="c"># = 1440 maximum payload</span>
+
+<span class="c"># We will run the following on the laptop</span>
+<span class="o">&gt;</span> ping <span class="nt">-M</span> <span class="k">do</span> <span class="nt">-s</span> 1440 172.31.255.13
+
+<span class="c"># Use wireshark to check the packet</span>
+<span class="o">&gt;</span> tshark udp port 1234
+1 0.000000000 76.242.91.200 → 172.31.9.116 UDP 1514 1234 → 1234 <span class="nv">Len</span><span class="o">=</span>1472
+
+<span class="c"># If we bump the ICMP payload by a single byte, it will fragment</span>
+<span class="o">&gt;</span> ping <span class="nt">-M</span> <span class="k">do</span> <span class="nt">-s</span> 1441 172.31.255.13
+
+<span class="o">&gt;</span> <span class="nb">sudo </span>tshark udp port 1234
+1 0.000000000 76.242.91.200 → 172.31.9.116 IPv4 1514 Fragmented IP protocol <span class="o">(</span><span class="nv">proto</span><span class="o">=</span>UDP 17, <span class="nv">off</span><span class="o">=</span>0, <span class="nv">ID</span><span class="o">=</span>3136<span class="o">)</span>
+</code></pre></div></div>
+
+<p>So we simply need to adjust the MTU on our TUN device accordingly.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># run the following on both laptop and server</span>
+<span class="o">&gt;</span> <span class="nb">sudo </span>ip <span class="nb">link set </span>dev tun0 mtu 1472
+</code></pre></div></div>
+
+<h3 id="code">Code</h3>
+
+<p>Sweet! Enough theory, show me the code!</p>
+
+<p>I’ve kept the code to a single-file for demonstration purposes but you can also find it on GitHub <a href="https://github.com/fzakaria/lametun">https://github.com/fzakaria/lametun</a>. It is heavily commented for learning purposes.</p>
+
+<blockquote>
+  <p>I tried to make the code somewhat Go-idiomatic without being too pedantic as a learning exercise. If you feel the code can be improved, please <a href="mailto:farid.m.zakaria@gmail.com">reach out</a> or open a pull-request.</p>
+</blockquote>
+
+<div class="language-go highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">package</span> <span class="n">main</span>
+
+<span class="k">import</span> <span class="p">(</span>
+    <span class="s">"flag"</span>
+    <span class="s">"fmt"</span>
+    <span class="s">"golang.org/x/sys/unix"</span>
+    <span class="s">"net"</span>
+    <span class="s">"os"</span>
+    <span class="s">"unsafe"</span>
+<span class="p">)</span>
+
+<span class="k">const</span> <span class="p">(</span>
+    <span class="c">// sizeof(struct ifreq)</span>
+    <span class="n">IfReqSize</span> <span class="o">=</span> <span class="m">40</span>
+<span class="p">)</span>
+
+<span class="c">// let's open the TUN device</span>
+<span class="c">// A tun device is a bit wonky in that you have to first open "/dev/net/tun"</span>
+<span class="c">// then run a IOCTL syscall to turn the fd returned for the desired network tun device.</span>
+<span class="c">// This code makes use of some unsafe golang code, this is merely to avoid pulling in</span>
+<span class="c">// dependencies since this is for demonstration</span>
+<span class="k">func</span> <span class="n">openTunDevice</span><span class="p">(</span><span class="n">dev</span> <span class="kt">string</span><span class="p">)</span> <span class="p">(</span><span class="o">*</span><span class="n">os</span><span class="o">.</span><span class="n">File</span><span class="p">,</span> <span class="kt">error</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">fd</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">unix</span><span class="o">.</span><span class="n">Open</span><span class="p">(</span><span class="s">"/dev/net/tun"</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDWR</span><span class="p">,</span> <span class="m">0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">err</span>
+    <span class="p">}</span>
+
+    <span class="c">// IOCTL for TUN requires the ifreq struct</span>
+    <span class="c">// https://elixir.bootlin.com/linux/v5.8.10/source/include/uapi/linux/if.h#L234</span>
+    <span class="c">// we fill in the required struct members such as the device name &amp; that it is a TUN</span>
+    <span class="k">var</span> <span class="n">ifr</span> <span class="p">[</span><span class="n">IfReqSize</span><span class="p">]</span><span class="kt">byte</span>
+    <span class="nb">copy</span><span class="p">(</span><span class="n">ifr</span><span class="p">[</span><span class="o">:</span><span class="p">],</span> <span class="n">dev</span><span class="p">)</span>
+    <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="kt">uint16</span><span class="p">)(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ifr</span><span class="p">[</span><span class="n">unix</span><span class="o">.</span><span class="n">IFNAMSIZ</span><span class="p">]))</span> <span class="o">=</span> <span class="n">unix</span><span class="o">.</span><span class="n">IFF_TUN</span>
+
+    <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">errno</span> <span class="o">:=</span> <span class="n">unix</span><span class="o">.</span><span class="n">Syscall</span><span class="p">(</span>
+        <span class="n">unix</span><span class="o">.</span><span class="n">SYS_IOCTL</span><span class="p">,</span>
+        <span class="kt">uintptr</span><span class="p">(</span><span class="n">fd</span><span class="p">),</span>
+        <span class="kt">uintptr</span><span class="p">(</span><span class="n">unix</span><span class="o">.</span><span class="n">TUNSETIFF</span><span class="p">),</span>
+        <span class="kt">uintptr</span><span class="p">(</span><span class="n">unsafe</span><span class="o">.</span><span class="n">Pointer</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ifr</span><span class="p">[</span><span class="m">0</span><span class="p">])),</span>
+    <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">errno</span> <span class="o">!=</span> <span class="m">0</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="no">nil</span><span class="p">,</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Errorf</span><span class="p">(</span><span class="s">"error syscall.Ioctl(): %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">errno</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">unix</span><span class="o">.</span><span class="n">SetNonblock</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="no">true</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">NewFile</span><span class="p">(</span><span class="kt">uintptr</span><span class="p">(</span><span class="n">fd</span><span class="p">),</span> <span class="s">"/dev/net/tun"</span><span class="p">),</span> <span class="no">nil</span>
+<span class="p">}</span>
+
+<span class="k">func</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">port</span> <span class="o">:=</span> <span class="n">flag</span><span class="o">.</span><span class="n">Int</span><span class="p">(</span><span class="s">"port"</span><span class="p">,</span> <span class="m">1234</span><span class="p">,</span> <span class="s">"The protocol port for lametun"</span><span class="p">)</span>
+    <span class="n">dev</span> <span class="o">:=</span> <span class="n">flag</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"device"</span><span class="p">,</span> <span class="s">"tun0"</span><span class="p">,</span> <span class="s">"The TUN device name"</span><span class="p">)</span>
+    <span class="n">listen</span> <span class="o">:=</span> <span class="n">flag</span><span class="o">.</span><span class="n">Bool</span><span class="p">(</span><span class="s">"listen"</span><span class="p">,</span> <span class="no">false</span><span class="p">,</span> <span class="s">"Whether to designate this machine as the server"</span><span class="p">)</span>
+    <span class="n">server</span> <span class="o">:=</span> <span class="n">flag</span><span class="o">.</span><span class="n">String</span><span class="p">(</span><span class="s">"server"</span><span class="p">,</span> <span class="s">""</span><span class="p">,</span> <span class="s">"The server to connect to"</span><span class="p">)</span>
+    <span class="n">flag</span><span class="o">.</span><span class="n">Parse</span><span class="p">()</span>
+
+    <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"listen:%v server:%v dev:%v port:%v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="o">*</span><span class="n">listen</span><span class="p">,</span> <span class="o">*</span><span class="n">server</span><span class="p">,</span> <span class="o">*</span><span class="n">dev</span><span class="p">,</span> <span class="o">*</span><span class="n">port</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="o">*</span><span class="n">listen</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="n">server</span> <span class="o">!=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"Cannot listen and set server flag</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="o">!*</span><span class="n">listen</span> <span class="o">&amp;&amp;</span> <span class="o">*</span><span class="n">server</span> <span class="o">==</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"You must specify the server or mark this host to listen</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">Exit</span><span class="p">(</span><span class="m">1</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">tun</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">openTunDevice</span><span class="p">(</span><span class="o">*</span><span class="n">dev</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">conn</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">net</span><span class="o">.</span><span class="n">ListenUDP</span><span class="p">(</span><span class="s">"udp4"</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">net</span><span class="o">.</span><span class="n">UDPAddr</span><span class="p">{</span><span class="n">Port</span><span class="o">:</span> <span class="o">*</span><span class="n">port</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+        <span class="nb">panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="k">defer</span> <span class="n">conn</span><span class="o">.</span><span class="n">Close</span><span class="p">()</span>
+
+    <span class="k">var</span> <span class="n">raddr</span> <span class="n">net</span><span class="o">.</span><span class="n">Addr</span>
+    <span class="n">quit</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">(</span><span class="k">chan</span> <span class="k">struct</span><span class="p">{})</span>
+
+    <span class="k">if</span> <span class="o">*</span><span class="n">server</span> <span class="o">!=</span> <span class="s">""</span> <span class="p">{</span>
+        <span class="n">raddr</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">net</span><span class="o">.</span><span class="n">ResolveUDPAddr</span><span class="p">(</span><span class="s">"udp"</span><span class="p">,</span> <span class="n">fmt</span><span class="o">.</span><span class="n">Sprintf</span><span class="p">(</span><span class="s">"%s:%d"</span><span class="p">,</span> <span class="o">*</span><span class="n">server</span><span class="p">,</span> <span class="o">*</span><span class="n">port</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+            <span class="nb">panic</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c">// we make sure to pick a buffer size at least greater than our MTU</span>
+        <span class="c">// 2048 is much larger :)</span>
+        <span class="n">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">2048</span><span class="p">)</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="n">bytes</span><span class="p">,</span> <span class="n">addr</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">conn</span><span class="o">.</span><span class="n">ReadFromUDP</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"error reading from UDP connection: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+
+            <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Writing %d bytes to the tun device.</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">bytes</span><span class="p">)</span>
+            <span class="n">raddr</span> <span class="o">=</span> <span class="n">addr</span>
+
+            <span class="c">// write to the tun device</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">tun</span><span class="o">.</span><span class="n">Write</span><span class="p">(</span><span class="n">buffer</span><span class="p">[</span><span class="o">:</span><span class="n">bytes</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"error writing to tun: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c">// signal to terminate</span>
+        <span class="n">quit</span> <span class="o">&lt;-</span> <span class="k">struct</span><span class="p">{}{}</span>
+    <span class="p">}()</span>
+
+    <span class="k">go</span> <span class="k">func</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">{</span>
+            <span class="c">// we make sure to pick a buffer size at least greater than our MTU</span>
+            <span class="c">// 2048 is much larger :)</span>
+            <span class="n">buffer</span> <span class="o">:=</span> <span class="nb">make</span><span class="p">([]</span><span class="kt">byte</span><span class="p">,</span> <span class="m">2048</span><span class="p">)</span>
+
+            <span class="n">bytes</span><span class="p">,</span> <span class="n">err</span> <span class="o">:=</span> <span class="n">tun</span><span class="o">.</span><span class="n">Read</span><span class="p">(</span><span class="n">buffer</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"error reading from tun: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+
+            <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"Read %d bytes from the tun device.</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">bytes</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">raddr</span> <span class="o">==</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="n">fmt</span><span class="o">.</span><span class="n">Printf</span><span class="p">(</span><span class="s">"UDP connection to server has not been established yet.</span><span class="se">\n</span><span class="s">"</span><span class="p">)</span>
+                <span class="k">continue</span>
+            <span class="p">}</span>
+
+            <span class="c">// at this point the buffer is a complete UDP packet; let's forward it to our UDP peer</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">WriteTo</span><span class="p">(</span><span class="n">buffer</span><span class="p">[</span><span class="o">:</span><span class="n">bytes</span><span class="p">],</span> <span class="n">raddr</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">err</span> <span class="o">!=</span> <span class="no">nil</span> <span class="p">{</span>
+                <span class="n">fmt</span><span class="o">.</span><span class="n">Fprintf</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">Stderr</span><span class="p">,</span> <span class="s">"error writing to UDP connection: %v</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="n">err</span><span class="p">)</span>
+                <span class="k">break</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+
+        <span class="c">// signal to terminate</span>
+        <span class="n">quit</span> <span class="o">&lt;-</span> <span class="k">struct</span><span class="p">{}{}</span>
+    <span class="p">}()</span>
+
+    <span class="c">// wait until an error is given</span>
+    <span class="o">&lt;-</span><span class="n">quit</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Running the code is quite simple.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># the server runs it in listen mode</span>
+<span class="o">&gt;</span> ./lametun <span class="nt">-listen</span>
+
+<span class="c"># the client needs to provide the server's IP</span>
+<span class="o">&gt;</span> ./lametun <span class="nt">-server</span> 54.219.126.112
+
+<span class="c"># We can now ping the server from our laptop through the private IP!</span>
+<span class="o">&gt;</span> ping 172.31.255.13
+PING 172.31.255.13 <span class="o">(</span>172.31.255.13<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+64 bytes from 172.31.255.13: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>6.42 ms
+64 bytes from 172.31.255.13: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>6.33 ms
+
+</code></pre></div></div>
+
+<h3 id="encryption--nat">Encryption &amp; NAT</h3>
+
+<p>In order to simplify the tunneling code &amp; avoid having to solve cases where both machines are behind a NAT, <strong>lametun</strong> requires that one peer acts as the “server”; it must have a publicly accessible IP.</p>
+
+<p>When a UDP packet arrives to the “server”, it will store the remote address which it will use when sending back encapsulated responses. This is how the server can <em>learn</em> about the NAT address of the <em>laptop</em>.</p>
+
+<p>There are solutions to where both machines are behind a NAT such as using <a href="https://en.wikipedia.org/wiki/STUN">STUN</a>; however it adds quite a bit of complexity.</p>
+
+<p>The inner protocol is unencrypted, which can be a problem if it’s also in cleartext like <em>HTTP</em>. More robust solutions like <em>wireguard</em>, encrypt the encapsulated packet. The equivalent would be to extend <strong>lametun</strong> such that the UDP payloads are encrypted. That part is straightforward, key management is difficult :)</p>
+
+<p>Consider these remaining gaps <em>homework assignment</em> or now you can use the mature product offerings with a better conceptual understanding and appreciation.</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="https://en.wikipedia.org/wiki/Virtual_private_network">https://en.wikipedia.org/wiki/Virtual_private_network</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p>By Michel Bakni - Derived from files [1], [2] and [3].Dulaney, Emmett (2009) CompTIA Security+ Deluxe Study Guide, Wiley Publishing, Inc., p. 124 ISBN: 9780470372968., CC BY-SA 4.0 <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p><a href="https://www.kernel.org/doc/Documentation/networking/tuntap.txt">https://www.kernel.org/doc/Documentation/networking/tuntap.txt</a> <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:4" role="doc-endnote">
+      <p><a href="https://en.wikipedia.org/wiki/TUN/TAP">https://en.wikipedia.org/wiki/TUN/TAP</a> <a href="#fnref:4" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:6" role="doc-endnote">
+      <p>Why TCP Over TCP Is A Bad Idea <a href="http://sites.inka.de/bigred/devel/tcp-tcp.html">http://sites.inka.de/bigred/devel/tcp-tcp.html</a> <a href="#fnref:6" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:5" role="doc-endnote">
+      <p>Foo over UDP <a href="https://lwn.net/Articles/614348/">https://lwn.net/Articles/614348/</a> <a href="#fnref:5" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-20-vpns-from-first-principles.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

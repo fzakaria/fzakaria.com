@@ -1,0 +1,330 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Learn Nix the Fun Way | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Learn Nix the Fun Way" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a post inspired by many talks I’ve given to engineering groups about Nix. You can see an example of one such talk Why I love Nix, and you should too I’ve given a lot of Nix talks. I’ve given Nix talks internally at companies where I’ve introduced it, at local meetups and even at NixCon. Giving a talk about Nix is hard. As engineers I find often we try to explain why or how Nix works but never show the end result. Many of the talks I’ve given start explaining “Nix developed as part of Eelco’s PhD thesis in 2003” and immediately eyes roll. Let’s do it different this time. Let’s learn Nix the fun way." />
+<meta property="og:description" content="This is a post inspired by many talks I’ve given to engineering groups about Nix. You can see an example of one such talk Why I love Nix, and you should too I’ve given a lot of Nix talks. I’ve given Nix talks internally at companies where I’ve introduced it, at local meetups and even at NixCon. Giving a talk about Nix is hard. As engineers I find often we try to explain why or how Nix works but never show the end result. Many of the talks I’ve given start explaining “Nix developed as part of Eelco’s PhD thesis in 2003” and immediately eyes roll. Let’s do it different this time. Let’s learn Nix the fun way." />
+<link rel="canonical" href="https://fzakaria.com/2024/07/05/learn-nix-the-fun-way.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/07/05/learn-nix-the-fun-way.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-05T17:37:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Learn Nix the Fun Way" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-05T17:37:00-07:00","datePublished":"2024-07-05T17:37:00-07:00","description":"This is a post inspired by many talks I’ve given to engineering groups about Nix. You can see an example of one such talk Why I love Nix, and you should too I’ve given a lot of Nix talks. I’ve given Nix talks internally at companies where I’ve introduced it, at local meetups and even at NixCon. Giving a talk about Nix is hard. As engineers I find often we try to explain why or how Nix works but never show the end result. Many of the talks I’ve given start explaining “Nix developed as part of Eelco’s PhD thesis in 2003” and immediately eyes roll. Let’s do it different this time. Let’s learn Nix the fun way.","headline":"Learn Nix the Fun Way","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/07/05/learn-nix-the-fun-way.html"},"url":"https://fzakaria.com/2024/07/05/learn-nix-the-fun-way.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Learn Nix the Fun Way
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-07-05
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/07/05/learn-nix-the-fun-way.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a post inspired by many talks I’ve given to engineering groups about Nix. You can see an example of one such talk <a href="https://docs.google.com/presentation/d/e/2PACX-1vT1xW7f8xFwg1g5LYMxumQ-XnFsg96_Vh6eTcb7gh31JBS2PsJpDR-fnUUCKF_IDFi-qNkceUIGjtze/pub?start=false&amp;loop=false&amp;delayms=5000">Why I love Nix, and you should too</a></p>
+</blockquote>
+
+<p>I’ve given <em>a lot</em> of Nix talks. I’ve given Nix talks internally at companies where I’ve introduced it, at local meetups and even at NixCon.</p>
+
+<p>Giving a talk about Nix is hard. As engineers I find often we try to explain <strong>why</strong> or <strong>how</strong> Nix works but never show the end result.</p>
+
+<p>Many of the talks I’ve given start explaining <em>“Nix developed as part of Eelco’s PhD thesis in 2003”</em> and immediately eyes roll.</p>
+
+<p><img src="/assets/images/picard_nix_hash_meme_50p.jpg" alt="A meme photo of Picard hearing Nix terminology" /></p>
+
+<p>Let’s do it different this time. Let’s learn <em>Nix the fun way</em>.</p>
+
+<!--more-->
+
+<h2 id="what-is-my-ip">what-is-my-ip</h2>
+
+<p>Let’s walk through a single example of a shell script one may write: <em>what-is-my-ip</em></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#! /usr/bin/env bash</span>
+curl <span class="nt">-s</span> http://httpbin.org/get | <span class="se">\</span>
+    jq <span class="nt">--raw-output</span> .origin
+</code></pre></div></div>
+
+<p>Sure, it’s <em>sort of portable</em>, if you tell the person running it to have <em>curl</em> and <em>jq</em>. What if you relied on a specific version of either though?</p>
+
+<p>Nix <strong>guarantees</strong> portability.</p>
+
+<p>We might leverage <em><a href="https://ryantm.github.io/nixpkgs/builders/trivial-builders/">Nixpkgs’ trivial builders</a></em> to turn this into a Nix derivation (i.e. build recipe).</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">)</span> <span class="p">{</span> <span class="p">},</span>
+<span class="p">}:</span>
+<span class="nv">pkgs</span><span class="o">.</span><span class="nv">writeShellScriptBin</span> <span class="s2">"what-is-my-ip"</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">  </span><span class="si">${</span><span class="nv">pkgs</span><span class="o">.</span><span class="nv">curl</span><span class="si">}</span><span class="s2">/bin/curl -s http://httpbin.org/get | \</span><span class="err">
+</span><span class="s2">    </span><span class="si">${</span><span class="nv">pkgs</span><span class="o">.</span><span class="nv">jq</span><span class="si">}</span><span class="s2">/bin/jq --raw-output .origin</span><span class="err">
+</span><span class="s2">''</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>😬 Avoid over-focusing on the fact I just introduced a new language. Just come along for the ride.</p>
+</blockquote>
+
+<p>Here we are pinning our package to dependencies which come from NixOS/Nixpkgs release branch 24.05.</p>
+
+<p>If we build this, we get the the result:</p>
+
+<p><strong>/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ /nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip 
+24.5.113.148
+</code></pre></div></div>
+
+<p>Now that this is in Nix and we’ve modeled our dependencies, we can do <em>fun</em> things like generate graph diagrams to view them (click the image to view larger).</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-store <span class="nt">--query</span> <span class="nt">--graph</span> <span class="si">$(</span>nix-build what-is-my-ip.nix<span class="si">)</span> | <span class="se">\</span>
+dot <span class="nt">-Tpng</span> <span class="nt">-o</span> what-is-my-ip-deps.png
+</code></pre></div></div>
+
+<p><a href="/assets/images/what-is-my-ip-deps.png"><img src="/assets/images/what-is-my-ip-deps.png" alt="Image of what-is-my-ip dependencies as a graph" /></a></p>
+
+<p>Let’s create a <em>developer environment</em> and bring in our new tool.
+This is a great way to create developer environment with reproducible tools</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">pkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">)</span> <span class="p">{};</span>
+  <span class="nv">what-is-my-ip</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./what-is-my-ip.nix</span> <span class="p">{</span><span class="kn">inherit</span> <span class="nv">pkgs</span><span class="p">;};</span>
+<span class="kn">in</span>
+  <span class="nv">pkgs</span><span class="o">.</span><span class="nv">mkShell</span> <span class="p">{</span>
+    <span class="nv">packages</span> <span class="o">=</span> <span class="p">[</span><span class="nv">what-is-my-ip</span><span class="p">];</span>
+    <span class="nv">shellHook</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">      echo "Hello, Nix!"</span><span class="err">
+</span><span class="s2">    ''</span><span class="p">;</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-shell what-is-my-ip-shell.nix
+Hello, Nix!
+
+[nix-shell:~/tutorial]$ which what-is-my-ip
+/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip
+</code></pre></div></div>
+
+<p>🕵️ Notice that the hash <strong>lr6wlz2652r35rwzc79samg77l6iqmii</strong> is <em>exactly</em> the same which we built earlier.</p>
+
+<p>We can now do binary or source deployments 🚀🛠️📦 since we know the full dependency closure of our tool. We simply copy the necessary <em>/nix/store</em> paths to another machine with Nix installed.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix copy <span class="nt">--to</span> ssh://nixie.tail9f4b5.ts.net <span class="se">\</span>
+    <span class="si">$(</span>nix-build what-is-my-ip.nix<span class="si">)</span> <span class="nt">--no-check-sigs</span>
+
+❯ ssh nixie.tail9f4b5.ts.net
+
+<span class="o">[</span>fmzakari@nixie:~]<span class="nv">$ </span>/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip
+98.147.178.19
+</code></pre></div></div>
+
+<p>Maybe though you are stuck with Kubernetes or Docker. Let’s use Nix to create an OCI compatible image.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">pkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">)</span> <span class="p">{};</span>
+  <span class="nv">what-is-my-ip</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./what-is-my-ip.nix</span> <span class="p">{</span><span class="kn">inherit</span> <span class="nv">pkgs</span><span class="p">;};</span>
+<span class="kn">in</span>
+  <span class="nv">pkgs</span><span class="o">.</span><span class="nv">dockerTools</span><span class="o">.</span><span class="nv">buildImage</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"what-is-my-ip-docker"</span><span class="p">;</span>
+    <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">Cmd</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"</span><span class="si">${</span><span class="nv">what-is-my-ip</span><span class="si">}</span><span class="s2">/bin/what-is-my-ip"</span><span class="p">];</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ docker load &lt; <span class="si">$(</span>nix-build what-is-my-ip-docker.nix<span class="si">)</span>
+Loaded image: what-is-my-ip-docker:c9g6x30invdq1bjfah3w1aw5w52vkdfn
+
+❯ docker run <span class="nt">-it</span> what-is-my-ip-docker:c9g6x30invdq1bjfah3w1aw5w52vkdfn
+24.5.113.148
+</code></pre></div></div>
+
+<p>Cool! Nix + Docker integration perfectly. The image produced has only the files exactly necessary to run the tool provided, effectively <strong>distroless</strong>.</p>
+
+<p>Finally, let’s take the last step and create a reproducible operating system using NixOS to contain only the programs we want.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">fetchTarball</span> <span class="s2">"https://github.com/NixOS/nixpkgs/archive/nixos-24.05.tar.gz"</span><span class="p">;</span>
+  <span class="nv">pkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="nv">nixpkgs</span> <span class="p">{};</span>
+  <span class="nv">what-is-my-ip</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./what-is-my-ip.nix</span> <span class="p">{</span><span class="kn">inherit</span> <span class="nv">pkgs</span><span class="p">;};</span>
+  <span class="nv">nixos</span> <span class="o">=</span> <span class="kr">import</span> <span class="s2">"</span><span class="si">${</span><span class="nv">nixpkgs</span><span class="si">}</span><span class="s2">/nixos"</span> <span class="p">{</span>
+    <span class="nv">configuration</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">users</span><span class="o">.</span><span class="nv">users</span><span class="o">.</span><span class="nv">alice</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nv">isNormalUser</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="c"># enable sudo</span>
+        <span class="nv">extraGroups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"wheel"</span><span class="p">];</span>
+        <span class="nv">packages</span> <span class="o">=</span> <span class="p">[</span>
+          <span class="nv">what-is-my-ip</span>
+        <span class="p">];</span>
+        <span class="nv">initialPassword</span> <span class="o">=</span> <span class="s2">"swordfish"</span><span class="p">;</span>
+      <span class="p">};</span>
+
+      <span class="nv">system</span><span class="o">.</span><span class="nv">stateVersion</span> <span class="o">=</span> <span class="s2">"24.05"</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="kn">in</span>
+  <span class="nv">nixos</span><span class="o">.</span><span class="nv">vm</span>
+</code></pre></div></div>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-build what-is-my-ip-vm.nix
+
+</span><span class="gp">❯ QEMU_KERNEL_PARAMS=console=ttyS0 ./result/bin/run-nixos-vm -nographic;</span><span class="w"> </span>reset
+<span class="go">
+</span><span class="gp">&lt;&lt;&lt; Welcome to NixOS 24.05pre-git (x86_64) - ttyS0 &gt;</span><span class="o">&gt;&gt;</span>
+<span class="go">
+Run 'nixos-help' for the NixOS manual.
+
+nixos login: alice
+Password: 
+
+</span><span class="gp">[alice@nixos:~]$</span><span class="w"> </span>which what-is-my-ip
+<span class="go">/etc/profiles/per-user/alice/bin/what-is-my-ip
+
+</span><span class="gp">[alice@nixos:~]$</span><span class="w"> </span><span class="nb">readlink</span> <span class="si">$(</span>which what-is-my-ip<span class="si">)</span>
+<span class="go">/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip
+
+</span><span class="gp">[alice@nixos:~]$</span><span class="w"> </span>what-is-my-ip
+<span class="go">24.5.113.148
+</span></code></pre></div></div>
+
+<p>💥 Hash <strong>lr6wlz2652r35rwzc79samg77l6iqmii</strong> present again!</p>
+
+<p>We took a relatively simple script through a variety of applications in the Nix ecosystem: build recipe, shell, docker image and finally NixOS VM.</p>
+
+<p>Hopefully, seeing the <em>fun things</em> you can do with Nix might inspire you to push through the hard parts.</p>
+
+<p>There is a golden pot 💰 at the end of this rainbow 🌈 awaiting you.</p>
+
+<p><strong>Learn Nix the fun way.</strong></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-07-05-learn-nix-the-fun-way.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

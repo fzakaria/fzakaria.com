@@ -1,0 +1,276 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bazel Overlay Pattern | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Bazel Overlay Pattern" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Do you have an internal fork of a codebase you’ve added Bazel BUILD files to? Do you want to open-source the BUILD files (+ additional files) but doing so into the upstream project might be a bit too onerous to start? 🤔 Continuing with my dive 🤿 into Bazel for $DAYJOB$, I wanted to touch on a pattern I’ve only ever seen employed by Google for LLVM but I’m finding very powerful: Bazel Overlay Pattern." />
+<meta property="og:description" content="Do you have an internal fork of a codebase you’ve added Bazel BUILD files to? Do you want to open-source the BUILD files (+ additional files) but doing so into the upstream project might be a bit too onerous to start? 🤔 Continuing with my dive 🤿 into Bazel for $DAYJOB$, I wanted to touch on a pattern I’ve only ever seen employed by Google for LLVM but I’m finding very powerful: Bazel Overlay Pattern." />
+<link rel="canonical" href="https://fzakaria.com/2024/08/29/bazel-overlay-pattern.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/08/29/bazel-overlay-pattern.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-08-29T20:06:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bazel Overlay Pattern" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-29T20:06:00-07:00","datePublished":"2024-08-29T20:06:00-07:00","description":"Do you have an internal fork of a codebase you’ve added Bazel BUILD files to? Do you want to open-source the BUILD files (+ additional files) but doing so into the upstream project might be a bit too onerous to start? 🤔 Continuing with my dive 🤿 into Bazel for $DAYJOB$, I wanted to touch on a pattern I’ve only ever seen employed by Google for LLVM but I’m finding very powerful: Bazel Overlay Pattern.","headline":"Bazel Overlay Pattern","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/08/29/bazel-overlay-pattern.html"},"url":"https://fzakaria.com/2024/08/29/bazel-overlay-pattern.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Bazel Overlay Pattern
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-08-29
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/08/29/bazel-overlay-pattern.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Do you have an internal fork of a codebase you’ve added Bazel <code class="language-plaintext highlighter-rouge">BUILD</code> files to?</p>
+
+<p>Do you want to open-source the BUILD files (+ additional files) but doing so into the upstream project might be a bit too onerous to start? 🤔</p>
+
+<p>Continuing with my dive 🤿 into <a href="https://bazel.build/">Bazel</a> for <code class="language-plaintext highlighter-rouge">$DAYJOB$</code>, I wanted to touch on a pattern I’ve only ever seen employed by Google for <a href="https://github.com/llvm/llvm-project">LLVM</a> but I’m finding very powerful: <em>Bazel Overlay Pattern</em>.</p>
+
+<!--more-->
+
+<blockquote>
+  <p>I have first encountered this pattern employed by Google in their <a href="https://github.com/google/llvm-bazel">llvm-bazel</a> repository.</p>
+</blockquote>
+
+<p>With the <em>Bazel Overlay Pattern</em>, you can open-source the Bazel build system for a <strong>separate</strong> project &amp; repository.</p>
+
+<p>This is useful if the upstream project does not want to accept the <code class="language-plaintext highlighter-rouge">BUILD</code> files themselves or if you want to validate it working in the open first before proposing the change itself.</p>
+
+<p>🤨 Wait… I thought Bazel has the <em>“Bazel Registry”</em> which already has a bunch of external projects building with Bazel.</p>
+
+<p><em>Sort of</em>. The <code class="language-plaintext highlighter-rouge">BUILD</code> files introduced into the registry either wrap the existing build-system using something <a href="https://github.com/bazelbuild/rules_foreign_cc">rules_foreign_cc</a> or bring in the minimal Bazel BUILD files needed to build the final target. The BUILD files offered in the registry are not suited for daily development for that project, they are missing granular build targets, test targets &amp; other developer producitivity targets (i.e. lint, format etc..).</p>
+
+<p>🤌🏼 We want to upstream BUILD files that are meant to be the “real” build system for the project.</p>
+
+<h2 id="bazel-overlay-pattern">Bazel Overlay Pattern</h2>
+
+<blockquote>
+  <p>I have created the project <a href="https://github.com/fzakaria/bazel-overlay-example">bazel-overlay-example</a> that you can checkout on GitHub for reference.</p>
+</blockquote>
+
+<p>Let’s run through a very minimal example to understand how this work.
+We have a C project, “hello_world”, with a single file.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hello_world/
+└── cmd
+    └── hello.c
+</code></pre></div></div>
+
+<p>In a separate project, “hello_world-overlay”, we create a directory with a directory structure <strong>matching</strong> that of the target project.
+In this repository within a folder called <em>bazel-overlay</em>, include all the files we <strong>only</strong> need to build our project using Bazel.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>hello_world-overlay/
+├── bazel-overlay
+│   └── cmd
+│       └── BUILD.bazel
+├── BUILD.bazel
+├── configure.bzl
+├── overlay_directories.py
+├── third_party
+│   └── hello_world-&gt; /tmp/hello_world
+└── WORKSPACE
+</code></pre></div></div>
+
+<p>Additionally, create a reference to the original project in a directory <em>third_party</em>. This can likely a git-submodule but it can even be a symlink or http_archive in the <code class="language-plaintext highlighter-rouge">WORKSPACE.bazel</code> file.</p>
+
+<p>The 💡 awesome idea for the <em>overlay pattern</em> leverages Bazel’s <a href="https://bazel.build/extending/repo">repository rules</a>.</p>
+
+<p>We’ve added two extra files: <a href="https://github.com/fzakaria/bazel-overlay-example/blob/main/configure.bzl">configure.bzl</a> and <a href="https://github.com/fzakaria/bazel-overlay-example/blob/main/overlay_directories.py">overlay_directories.py</a>.</p>
+
+<blockquote>
+  <p>These two files were simplified copies, nearly verbatim, from Google’s <a href="https://github.com/google/llvm-bazel">llvm-bazel</a> repository.</p>
+</blockquote>
+
+<p>These two files do the “magic” 🪄.</p>
+
+<blockquote>
+  <p>Feel free to read the files to see how they work. They are a bit too long to include verbatim on this post. They simply iterate over the files and setup symlinks.</p>
+</blockquote>
+
+<p>We set it up in our <code class="language-plaintext highlighter-rouge">WORKSPACE</code> like so:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">":configure.bzl"</span><span class="p">,</span> <span class="s">"overlay_configure"</span><span class="p">)</span>
+
+<span class="n">overlay_configure</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello-world"</span><span class="p">,</span>
+    <span class="n">overlay_path</span> <span class="o">=</span> <span class="s">"bazel-overlay"</span><span class="p">,</span>
+    <span class="n">src_path</span> <span class="o">=</span> <span class="s">"./third_party/hello_world"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>When you try to build the external repository <code class="language-plaintext highlighter-rouge">@hello-world//</code>, the repository rule will symlink all the files in the <em>overlay_path</em> &amp; the <em>src_path</em> together.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>tree <span class="si">$(</span>bazel info output_base<span class="si">)</span>/external/hello-world
+
+/home/fmzakari/.cache/bazel/_bazel_fmzakari/738ca8ce4d1d8ce828e952fe7b9fdd95/external/hello-world
+├── cmd
+│   ├── BUILD.bazel -&gt; /tmp/hello_world-overlay/bazel-overlay/cmd/BUILD.bazel
+│   └── hello.c -&gt; /tmp/hello_world-overlay/third_party/hello_world/cmd/hello.c
+└── WORKSPACE
+</code></pre></div></div>
+
+<p>It’s as if the two repositories were merged! 😎</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ bazel run @hello-world//cmd:hello
+INFO: Analyzed target @hello-world//cmd:hello (24 pack ages loaded, 90 targets configured).
+INFO: Found 1 target...
+Target @hello-world//cmd:hello up-to-date:
+  bazel-bin/external/hello-world/cmd/hello
+INFO: Elapsed time: 0.068s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+INFO: Running command line: bazel-bin/external/hello-world/cmd/hello
+Hello, World!
+</code></pre></div></div>
+
+<p>This is a surprising powerful pattern that lets you explore adding the Bazel build system for a separate repository. The benefit to doing in a separate repository vs. a branch is that it’s easy to track <code class="language-plaintext highlighter-rouge">HEAD</code>. If your <code class="language-plaintext highlighter-rouge">third_party</code> is a git-submodule, you can keep moving the submodule forward and validating the build succeeds.</p>
+
+<p>I’m moving forward with this pattern to explore upstreaming <code class="language-plaintext highlighter-rouge">$DAYJOB$</code> Bazel build system to the open source repository. 🙌</p>
+
+<p>❗ I recently contributed <a href="https://github.com/bazelbuild/bazel/pull/22349">PR#22349</a> to Bazel which does add an <em>overlay</em> concept to <code class="language-plaintext highlighter-rouge">http_archive</code> which almost looks like it could do this as well <strong>but</strong> if you had a lot BUILD files it would be tedious to manually list them out.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">http_archive</span><span class="p">(</span>
+  <span class="n">name</span><span class="o">=</span><span class="s">"hello_world"</span><span class="p">,</span>
+  <span class="n">strip_prefix</span><span class="o">=</span><span class="s">"hello_world-0.1.2"</span><span class="p">,</span>
+  <span class="n">urls</span><span class="o">=</span><span class="p">[</span><span class="s">"https://fake.com/hello_world.zip"</span><span class="p">],</span>
+  <span class="n">remote_file_urls</span><span class="o">=</span><span class="p">{</span>
+    <span class="s">"WORKSPACE"</span><span class="p">:</span> <span class="p">[</span><span class="s">"https://fake.com/WORKSPACE"</span><span class="p">],</span>
+    <span class="s">"cmd/BUILD.bazel"</span><span class="p">:</span> <span class="p">[</span><span class="s">"https://fake.com/cmd/BUILD.bazel"</span><span class="p">],</span>
+  <span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>For now, I’m sticking with the <em>Bazel Overlay Pattern</em>.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-08-29-bazel-overlay-pattern.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

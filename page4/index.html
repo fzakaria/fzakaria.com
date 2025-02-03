@@ -1,0 +1,466 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Page 4 of 7 for Farid Zakaria’s Blog | I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Farid Zakaria’s Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<meta property="og:description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<link rel="canonical" href="https://fzakaria.com/page4/" />
+<meta property="og:url" content="https://fzakaria.com/page4/" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="website" />
+<link rel="prev" href="https://fzakaria.com/page3" />
+<link rel="next" href="https://fzakaria.com/page5" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Farid Zakaria’s Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.","headline":"Farid Zakaria’s Blog","url":"https://fzakaria.com/page4/"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Farid Zakaria's Blog
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/page4/">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <div class="media">
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2023-03-19
+      </span>
+      <span class="title">
+        
+        <a href="/2023/03/19/sqlelf-and-20-years-of-nix.html">sqlelf and 20 years of Nix</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>If you want to skip ahead, please checkout the <a href="https://github.com/fzakaria/sqlelf">sqlelf</a> repository and give me your feedback.</p>
+</blockquote>
+
+<p>🎉 We are celebrating 20 years of <a href="https://nixos.org">Nix</a> 🎉</p>
+
+<p>Within that 20 years Nix has ushered in a new paradigm of how to build software reliably that is becoming more ubiquitous in the software industry.
+It has inspired imitators such as <a href="https://spack.io/">Spack</a> &amp; <a href="https://guix.gnu.org/">Guix</a>.</p>
+
+<p>Given the concepts introduced by Nix and it’s willingnes to eschew some fundamental Linux concepts such as the Filesystem Hierarchy Standard.</p>
+
+<p>I can’t help but think <em>has Nix gone far enough within the 20 years?</em></p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2022-09-12
+      </span>
+      <span class="title">
+        
+        <a href="/2022/09/12/making-runpath-redundant-for-nix.html">Making RUNPATH redundant for Nix</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This post is a direct translation of Harmen Stoppel’s <a href="https://stoppels.ch/2022/08/04/stop-searching-for-shared-libraries.html">blog</a> on the same subject for Nix. He has also contributed a fix to <a href="http://spack.io/">Spack</a>.</p>
+
+  <p>Please check out <a href="https://github.com/fzakaria/nix-harden-needed">https://github.com/fzakaria/nix-harden-needed</a> for my solution for the Nix ecosystem.</p>
+</blockquote>
+
+<p>Nix and other store-like systems (i.e. Guix or Spack), resolve all their dependencies within their store (<em>/nix/store</em>) to enforce hermiticity. They leverage for the most part <em>RUNPATH</em> which is a field on the ELF executable to instruct the
+dynamic linker where to discover the libraries – as opposed to searching default search paths like <em>/lib</em>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ which ruby
+/nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/bin/ruby
+
+</span><span class="gp">❯ patchelf --print-rpath $</span><span class="o">(</span>which ruby<span class="o">)</span>
+<span class="go">/nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/lib:/nix/store/r90cncsaa519pwqpijg7ii4rkcmwjn6h-zlib-1.2.12/lib:/nix/store/bvy2z17rzlvkx2sj7fy99ajm853yv898-glibc-2.34-210/lib
+</span></code></pre></div></div>
+
+<p>I have a paper about to published for <a href="https://sc22.supercomputing.org/">SuperComputing 2022</a> (please reach out if you’d like early copy) that demonstrates there is a non-trivial cost to continuously searching needlessly through
+the <em>RUNPATH</em>. In fact, I have <a href="/2022/03/14/shrinkwrap-taming-dynamic-shared-objects.html">written previously</a> about the specific costs and our tool <a href="https://github.com/fzakaria/shrinkwrap">Shrinkwrap</a> that can avoid it.</p>
+
+<p>Although Shrinkwrap is one approach for a solution, it is merely a bandaid over the existing problem.</p>
+
+<p>Can systems like Nix do more to solve this problem?</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2022-03-14
+      </span>
+      <span class="title">
+        
+        <a href="/2022/03/14/shrinkwrap-taming-dynamic-shared-objects.html">Shrinkwrap: Taming dynamic shared objects</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a blog post of a paper I have submitted for a <a href="https://catalog.ucsc.edu/en/Current/General-Catalog/Courses/CSE-Computer-Science-and-Engineering/Graduate/CSE-215">UCSC course</a> project.</p>
+
+  <p>If you are interested in the code check out <a href="https://github.com/fzakaria/shrinkwrap">https://github.com/fzakaria/shrinkwrap</a></p>
+</blockquote>
+
+<p>One of the fundamental data management units within a Linux system are the shared object files that are loaded into memory by dynamically linked
+processes at startup. The mechanism and approach to which dynamic linking is done has <strong>not changed</strong> since it’s inception however software has become
+increasingly complex.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2022-01-05
+      </span>
+      <span class="title">
+        
+        <a href="/2022/01/05/computing-all-output-paths-for-every-attribute-in-nixpkgs.html">Computing all output paths for every attribute in Nixpkgs</a>
+        
+      </span>
+    </h2>
+    
+    <p>Nix is an amazing tool, unfortunately doing <em>simple</em> things can be quite challenging.</p>
+
+<p>This is a little write-up of my attempt to try and accomplish what I would have thought to be a <em>simple</em> thing; computing all store paths for every attribute in <a href="https://github.com/NixOS/nixpkgs/">nixpkgs</a>.</p>
+
+<p>Why would I want to do such a thing?</p>
+
+<p>I had some <em>/nix/store</em> entries on my system and I wanted to revisit the <strong>exact</strong> nixpkgs commit with which it was built to debug something.
+Without this <a href="https://en.wikipedia.org/wiki/Reverse_index">reverse index</a> you are pretty much out of luck for figuring it out.</p>
+
+<blockquote>
+  <p>I want to give early <em>shoutout</em> to other similar tools in this space that let you do meta searches over nixpkgs such as <a href="https://lazamar.co.uk/nix-versions/">Nix Package Versions</a> and <a href="https://pkgs.on-nix.com/">Pkgs on Nix</a>.</p>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-09-10
+      </span>
+      <span class="title">
+        
+        <a href="/2021/09/10/using-an-overlay-filesystem-to-improve-nix-ci-builds.html">Using an overlay filesystem to improve Nix CI builds</a>
+        
+      </span>
+    </h2>
+    
+    <p>Using Nix in our CI system has been a huge <em>boon</em>. Through Nix we have a level of guarantee of reproducibility between our local development environment and our CI platform. 🙌</p>
+
+<p>Our CI infrastructure leverages containers (don’t they all now?) for each job and we explored different solutions to reduce the cost of constantly downloading the <em>/nix/store</em> necessary for the build.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-09-02
+      </span>
+      <span class="title">
+        
+        <a href="/2021/09/02/the-yak-shave-for-reproducibility.html">The yak shave for reproducibility</a>
+        
+      </span>
+    </h2>
+    
+    <p>I have been on a mission to bring reproducibility through the use of <a href="http://nixos.org/">Nix</a> into my workplace as we envision the next version of our development environment.</p>
+
+<p>Similar to the movies I watch that take place in space, it only takes a small hole to destroy your hermetic environment. 🧑‍🚀</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-08-12
+      </span>
+      <span class="title">
+        
+        <a href="/2021/08/12/a-nix-binary-cache-specification.html">A Nix Binary Cache Specification</a>
+        
+      </span>
+    </h2>
+    
+    <p>I wanted to better understand how to work with Nix binary caches. Interestingly the Nix manual which usually is a great source of knowledge, has <a href="https://nixos.org/manual/nix/unstable/package-management/binary-cache-substituter.html">a very limited section</a> on the Binary Cache.</p>
+
+<blockquote>
+  <p>It basically just points you to <a href="https://github.com/edolstra/nix-serve/">nix-serve</a>, a Perl CGI script in <a href="https://github.com/edolstra">Eelco’s</a> (original author of Nix) personal repository.</p>
+</blockquote>
+
+<p>This guide will serve to be a <em>loose</em> Nix Binary Cache specification.
+If you are interested in browsing the end result, please checkout my <a href="https://fzakaria.github.io/nix-http-binary-cache-api-spec">OpenAPI Nix HTTP Binary Cache Specification</a> 🎆</p>
+
+<blockquote>
+  <p>You can also visit the GitHub repository <a href="https://github.com/fzakaria/nix-http-binary-cache-api-spec">https://github.com/fzakaria/nix-http-binary-cache-api-spec</a> to contribute.</p>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-08-10
+      </span>
+      <span class="title">
+        
+        <a href="/2021/08/10/investigating-hydration-times-with-nix.html">Investigating hydration times with Nix</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>📣 I want a give a huge shoutout to my colleague <a href="https://www.linkedin.com/in/micah-catlin-0718991">Micah Catlin</a>, whose been constantly challenging me on questions on Nix – his analytical skills are 11/10. 🤓</p>
+</blockquote>
+
+<p>We are working on a new build system using Nix as the underpinning framework. In order to smooth out the developer experience, we wanted to tackle a very simple question:</p>
+
+<p><em>“Can we force developers only to pull from the Nix binary cache?”</em></p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-08-05
+      </span>
+      <span class="title">
+        
+        <a href="/2021/08/05/the-search-for-a-minimal-nix-shell-continued-mkshellminimal.html">The search for a minimal nix-shell continued; mkShellMinimal</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>“The simplest things are often the truest.” - Richard Bach, 1936.</p>
+</blockquote>
+
+<p>Earlier <a href="/2021/08/02/a-minimal-nix-shell.html">I wrote about</a> trying to get a minimal nix-shell. The goal and challenge of the post was about reducing the dependency closure size of the shell.</p>
+
+<blockquote>
+  <p>I was asked what’s the point in trying to minimize the closure size ?</p>
+
+  <p>We are using <em>nix-shell</em> in our CI infrastructure and every CI job hydrates it’s own
+<em>/nix/store</em> from scratch. Reducing the dependency closure size would mean faster CI runs. 🏎️</p>
+</blockquote>
+
+<p>The post finished with a question, <em>“Can we do better ?”</em>, to which I answered <em>“No, not at this time.”</em>.</p>
+
+<p>I’d like to introduce <a href="https://github.com/NixOS/nixpkgs/pull/132617">mkShellMinimal</a> that does better 🎊</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2021-08-02
+      </span>
+      <span class="title">
+        
+        <a href="/2021/08/02/a-minimal-nix-shell.html">A minimal nix-shell</a>
+        
+      </span>
+    </h2>
+    
+    <p>We are currently using <em>nix-shell</em> to create a reproducible environment for our developers and CI infrastructure. Can we minimize the dependency closure to make our CI jobs faster?</p>
+
+
+    
+</div>
+
+		<hr>
+	
+
+	
+	    <div class="pull-left">
+	        <a href="/page3" class="btn btn-primary">
+	            <span class="icon">
+	              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M192 127.338v257.324c0 17.818-21.543 26.741-34.142 14.142L29.196 270.142c-7.81-7.81-7.81-20.474 0-28.284l128.662-128.662c12.599-12.6 34.142-3.676 34.142 14.142z"/></svg>
+	            </span>
+	            Page 3
+	        </a>
+	    </div>
+	
+
+	
+    <div class="pull-right">
+        <a href="/page5" class="btn btn-primary">
+            Page 5
+            <span class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"/></svg>
+            </span>
+        </a>
+    </div>
+    
+</div>
+<div class="clearfix"></div>
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/page4/index.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

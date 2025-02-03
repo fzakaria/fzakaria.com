@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Downloading Songs from Soundcloud | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Downloading Songs from Soundcloud" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The next task I&#39;ve been fiddling around with HypeMachine for quite a while now even though my personal music taste has taken me elsewhere in search of music. Lately, I&#39;ve been enjoying subscribing to individual artists on Soundcloud as a way of finding more niche electronica. My experience so far with Soundcloud has been great. They even let you download some songs based on settings set by the artist! I however want the music while I&#39;m on the go; especially on my jogs. I&#39;ve now moved onto the task of seeing how I can liberate much of my beloved music from Soundcloud similarly to what I&#39;ve accomplished with HypeMachine. Investigation Once again most of the information gleamed was from saving the raw HTML of a request to SoundCloud outside the browser (i.e. via python or perl). They look to be doing something similar to HypeMachine in removing certain HTML elements because I cannot find them when I view source through my browser. &lt;script type=&quot;text/javascript&quot;&gt; window.SC.bufferTracks.push({&quot;id&quot;:64568412,&quot;uid&quot;:&quot;WtquUHiysWgk&quot;, &quot;user&quot;:{&quot;username&quot;:&quot;diplo&quot;,&quot;permalink&quot;:&quot;diplo&quot;}, &quot;uri&quot;:&quot;/diplo/got-stoned-and-mixed-really&quot;, &quot;duration&quot;:2162227, &quot;token&quot;:&quot;H7TPl&quot;, &quot;name&quot;:&quot;got-stoned-and-mixed-really&quot;, &quot;title&quot;:&quot;got stoned and mixed really old records for half an hour&quot;, &quot;commentable&quot;:true, &quot;revealComments&quot;:true, &quot;commentUri&quot;:&quot;/diplo/got-stoned-and-mixed-really/comments/&quot;, &quot;streamUrl&quot;:&quot;http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl&quot;, &quot;waveformUrl&quot;:&quot;http://w1.sndcdn.com/WtquUHiysWgk_m.png&quot;, &quot;propertiesUri&quot;:&quot;/diplo/got-stoned-and-mixed-really/properties/&quot;,&quot;statusUri&quot;:&quot;/transcodings/WtquUHiysWgk&quot;, &quot;replacingUid&quot;:null,&quot;preprocessingReady&quot;:true, &quot;renderingFailed&quot;:false,&quot;isPublic&quot;:true, &quot;geo&quot;:[], &quot;commentableByUser&quot;:true, &quot;favorite&quot;:false, &quot;followingTrackOwner&quot;:false}); &lt;/script&gt; We can see one of the track elements is the streamURL: &quot;streamUrl&quot;:&quot;http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl&quot; Node.JS Style Grabbing the bufferTracks variable can easily be accomplished in Node.JS with the help of the jsdom. I&#39;d simply need to build the DOM according to the HTML file and access the JavaScript variable! I&#39;m curious if there is even an easier way.... Drop a comment if you know of one!" />
+<meta property="og:description" content="The next task I&#39;ve been fiddling around with HypeMachine for quite a while now even though my personal music taste has taken me elsewhere in search of music. Lately, I&#39;ve been enjoying subscribing to individual artists on Soundcloud as a way of finding more niche electronica. My experience so far with Soundcloud has been great. They even let you download some songs based on settings set by the artist! I however want the music while I&#39;m on the go; especially on my jogs. I&#39;ve now moved onto the task of seeing how I can liberate much of my beloved music from Soundcloud similarly to what I&#39;ve accomplished with HypeMachine. Investigation Once again most of the information gleamed was from saving the raw HTML of a request to SoundCloud outside the browser (i.e. via python or perl). They look to be doing something similar to HypeMachine in removing certain HTML elements because I cannot find them when I view source through my browser. &lt;script type=&quot;text/javascript&quot;&gt; window.SC.bufferTracks.push({&quot;id&quot;:64568412,&quot;uid&quot;:&quot;WtquUHiysWgk&quot;, &quot;user&quot;:{&quot;username&quot;:&quot;diplo&quot;,&quot;permalink&quot;:&quot;diplo&quot;}, &quot;uri&quot;:&quot;/diplo/got-stoned-and-mixed-really&quot;, &quot;duration&quot;:2162227, &quot;token&quot;:&quot;H7TPl&quot;, &quot;name&quot;:&quot;got-stoned-and-mixed-really&quot;, &quot;title&quot;:&quot;got stoned and mixed really old records for half an hour&quot;, &quot;commentable&quot;:true, &quot;revealComments&quot;:true, &quot;commentUri&quot;:&quot;/diplo/got-stoned-and-mixed-really/comments/&quot;, &quot;streamUrl&quot;:&quot;http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl&quot;, &quot;waveformUrl&quot;:&quot;http://w1.sndcdn.com/WtquUHiysWgk_m.png&quot;, &quot;propertiesUri&quot;:&quot;/diplo/got-stoned-and-mixed-really/properties/&quot;,&quot;statusUri&quot;:&quot;/transcodings/WtquUHiysWgk&quot;, &quot;replacingUid&quot;:null,&quot;preprocessingReady&quot;:true, &quot;renderingFailed&quot;:false,&quot;isPublic&quot;:true, &quot;geo&quot;:[], &quot;commentableByUser&quot;:true, &quot;favorite&quot;:false, &quot;followingTrackOwner&quot;:false}); &lt;/script&gt; We can see one of the track elements is the streamURL: &quot;streamUrl&quot;:&quot;http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl&quot; Node.JS Style Grabbing the bufferTracks variable can easily be accomplished in Node.JS with the help of the jsdom. I&#39;d simply need to build the DOM according to the HTML file and access the JavaScript variable! I&#39;m curious if there is even an easier way.... Drop a comment if you know of one!" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-11-20-downloading-songs-from-soundcloud.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-11-20-downloading-songs-from-soundcloud.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-11-20T16:01:14-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Downloading Songs from Soundcloud" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-11-20T16:01:14-08:00","datePublished":"2012-11-20T16:01:14-08:00","description":"The next task I&#39;ve been fiddling around with HypeMachine for quite a while now even though my personal music taste has taken me elsewhere in search of music. Lately, I&#39;ve been enjoying subscribing to individual artists on Soundcloud as a way of finding more niche electronica. My experience so far with Soundcloud has been great. They even let you download some songs based on settings set by the artist! I however want the music while I&#39;m on the go; especially on my jogs. I&#39;ve now moved onto the task of seeing how I can liberate much of my beloved music from Soundcloud similarly to what I&#39;ve accomplished with HypeMachine. Investigation Once again most of the information gleamed was from saving the raw HTML of a request to SoundCloud outside the browser (i.e. via python or perl). They look to be doing something similar to HypeMachine in removing certain HTML elements because I cannot find them when I view source through my browser. &lt;script type=&quot;text/javascript&quot;&gt; window.SC.bufferTracks.push({&quot;id&quot;:64568412,&quot;uid&quot;:&quot;WtquUHiysWgk&quot;, &quot;user&quot;:{&quot;username&quot;:&quot;diplo&quot;,&quot;permalink&quot;:&quot;diplo&quot;}, &quot;uri&quot;:&quot;/diplo/got-stoned-and-mixed-really&quot;, &quot;duration&quot;:2162227, &quot;token&quot;:&quot;H7TPl&quot;, &quot;name&quot;:&quot;got-stoned-and-mixed-really&quot;, &quot;title&quot;:&quot;got stoned and mixed really old records for half an hour&quot;, &quot;commentable&quot;:true, &quot;revealComments&quot;:true, &quot;commentUri&quot;:&quot;/diplo/got-stoned-and-mixed-really/comments/&quot;, &quot;streamUrl&quot;:&quot;http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl&quot;, &quot;waveformUrl&quot;:&quot;http://w1.sndcdn.com/WtquUHiysWgk_m.png&quot;, &quot;propertiesUri&quot;:&quot;/diplo/got-stoned-and-mixed-really/properties/&quot;,&quot;statusUri&quot;:&quot;/transcodings/WtquUHiysWgk&quot;, &quot;replacingUid&quot;:null,&quot;preprocessingReady&quot;:true, &quot;renderingFailed&quot;:false,&quot;isPublic&quot;:true, &quot;geo&quot;:[], &quot;commentableByUser&quot;:true, &quot;favorite&quot;:false, &quot;followingTrackOwner&quot;:false}); &lt;/script&gt; We can see one of the track elements is the streamURL: &quot;streamUrl&quot;:&quot;http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl&quot; Node.JS Style Grabbing the bufferTracks variable can easily be accomplished in Node.JS with the help of the jsdom. I&#39;d simply need to build the DOM according to the HTML file and access the JavaScript variable! I&#39;m curious if there is even an easier way.... Drop a comment if you know of one!","headline":"Downloading Songs from Soundcloud","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-11-20-downloading-songs-from-soundcloud.html"},"url":"https://fzakaria.com/old_blog/2012-11-20-downloading-songs-from-soundcloud.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Downloading Songs from Soundcloud
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-11-20
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-11-20-downloading-songs-from-soundcloud.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> The next task </h2>
+<p>
+I've been fiddling around with <a href="http://hypem.com">HypeMachine</a> for quite a while now even though my personal music taste has taken me elsewhere in search of music. Lately, I've been enjoying subscribing to individual artists on <a href="http://soundcloud.com">Soundcloud</a> as a way of finding more niche electronica.</p>
+<p>
+My experience so far with Soundcloud has been great. They even let you download <em>some</em> songs based on settings set by the artist! I however want the music while I'm on the go; especially on my jogs. I've now moved onto the task of seeing how I can liberate much of my beloved music from Soundcloud similarly to what I've accomplished with HypeMachine.</p>
+<h2> Investigation </h2>
+<p>
+Once again most of the information gleamed was from saving the raw HTML of a request to SoundCloud outside the browser (i.e. via python or perl). They look to be doing something similar to HypeMachine in removing certain HTML elements because I cannot find them when I view source through my browser.</p>
+<pre>
+<code>
+&lt;script type="text/javascript"&gt;
+window.SC.bufferTracks.push({"id":64568412,"uid":"WtquUHiysWgk",
+                              "user":{"username":"diplo","permalink":"diplo"},
+                              "uri":"/diplo/got-stoned-and-mixed-really",
+                              "duration":2162227,
+                              "token":"H7TPl",
+                              "name":"got-stoned-and-mixed-really",
+                              "title":"got stoned and mixed really old records for half an hour",
+                              "commentable":true,
+                              "revealComments":true,
+                              "commentUri":"/diplo/got-stoned-and-mixed-really/comments/",
+                              "streamUrl":"http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl",
+                              "waveformUrl":"http://w1.sndcdn.com/WtquUHiysWgk_m.png",
+                              "propertiesUri":"/diplo/got-stoned-and-mixed-really/properties/","statusUri":"/transcodings/WtquUHiysWgk",
+                              "replacingUid":null,"preprocessingReady":true,
+                              "renderingFailed":false,"isPublic":true,
+                              "geo":[],
+                              "commentableByUser":true,
+                              "favorite":false,
+                              "followingTrackOwner":false});
+&lt;/script&gt;
+</code>
+</pre>
+<p>We can see one of the track elements is the streamURL:<br />
+<code><br />
+"streamUrl":"http://media.soundcloud.com/stream/WtquUHiysWgk?stream_token=H7TPl"<br />
+</code></p>
+<h2> Node.JS Style </h2>
+<p>
+Grabbing the bufferTracks variable can easily be accomplished in Node.JS with the help of the <a href="https://github.com/tmpvar/jsdom">jsdom</a>. I'd simply need to build the DOM according to the HTML file and access the JavaScript variable! I'm curious if there is even an easier way.... Drop a comment if you know of one!</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-11-20-downloading-songs-from-soundcloud.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

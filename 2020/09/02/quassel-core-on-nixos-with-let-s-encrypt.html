@@ -1,0 +1,257 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>quassel core on NixOS with Let’s Encrypt | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="quassel core on NixOS with Let’s Encrypt" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I have been wanting to take part of the NixOS community more; specifically the IRC channels. I have been heavily using the Discord server but I found many other contributors are only on the IRC network. ✊ #nixos #nix-community" />
+<meta property="og:description" content="I have been wanting to take part of the NixOS community more; specifically the IRC channels. I have been heavily using the Discord server but I found many other contributors are only on the IRC network. ✊ #nixos #nix-community" />
+<link rel="canonical" href="https://fzakaria.com/2020/09/02/quassel-core-on-nixos-with-let-s-encrypt.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/02/quassel-core-on-nixos-with-let-s-encrypt.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-02T21:35:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="quassel core on NixOS with Let’s Encrypt" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-02T21:35:00-07:00","datePublished":"2020-09-02T21:35:00-07:00","description":"I have been wanting to take part of the NixOS community more; specifically the IRC channels. I have been heavily using the Discord server but I found many other contributors are only on the IRC network. ✊ #nixos #nix-community","headline":"quassel core on NixOS with Let’s Encrypt","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/02/quassel-core-on-nixos-with-let-s-encrypt.html"},"url":"https://fzakaria.com/2020/09/02/quassel-core-on-nixos-with-let-s-encrypt.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    quassel core on NixOS with Let's Encrypt
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-02
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/02/quassel-core-on-nixos-with-let-s-encrypt.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I have been wanting to take part of the NixOS community more; specifically the IRC channels. I have been heavily using the <a href="https://discord.gg/RbvHtGa">Discord</a> server but I found many other contributors are only on the IRC network. ✊</p>
+
+<p><a href="irc://irc.freenode.net/#nixos">#nixos</a>
+<a href="irc://irc.freenode.net/#nix-community">#nix-community</a></p>
+
+<!--more-->
+
+<p>I am however an <em>admitted</em> IRC n00b; and one of the biggest pain-points of IRC are that due to the decentralized nature of it, you don’t get to see any log messages when you are offline. <em>How frustrating!</em></p>
+
+<p>I tried <a href="https://matrix.org/">https://matrix.org/</a> however the IRC bridge is not really great as it will not send large messages.</p>
+
+<blockquote>
+  <p>If I wasn’t enthusiastic about setting up a NixOS server I might just have used <a href="https://www.irccloud.com/">https://www.irccloud.com/</a>.</p>
+</blockquote>
+
+<p>A colleague however introduced me to <a href="https://quassel-irc.org/">Quassel</a>.</p>
+
+<blockquote>
+  <p>Quassel IRC is a modern, cross-platform, distributed IRC client, meaning that one (or multiple) client(s) can attach to and detach from a central core.</p>
+</blockquote>
+
+<p>Great! Let’s set that up on NixOS.</p>
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<p>I have a <em>laptop</em> which I will be running the <em>Quassel client</em>.</p>
+
+<p>I have a NixOS <em>server</em> which I will be running the <em>Quassel core server</em>.</p>
+
+<p>I have a registered sub-domain <a href="https://quassel.example.com">https://quassel.example.com</a> which I’ve pointed to my <em>server</em>.</p>
+
+<h3 id="requirements">Requirements</h3>
+
+<p>I would like to run Quassel with TLS using <em>Let’s Encrypt</em>; a free TLS certificate provider.</p>
+
+<h3 id="nixos-setup">NixOS Setup</h3>
+
+<h4 id="tls--acme">TLS / ACME</h4>
+
+<p>First I create a module <em>acme.nix</em>; that will take care of fetching a TLS certificate from <em>Let’s Encrypt</em> using the ACME protocol.</p>
+
+<p>I’ve <em>heavily</em> commented the below example to explain what’s going-on.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">config</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+
+  <span class="c"># We will setup HTTP challenge to receive our ACME (Let's encrypt) certificate</span>
+  <span class="c"># https://nixos.org/manual/nixos/stable/#module-security-acme-nginx</span>
+  <span class="nv">security</span><span class="o">.</span><span class="nv">acme</span><span class="o">.</span><span class="nv">acceptTerms</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nv">security</span><span class="o">.</span><span class="nv">acme</span><span class="o">.</span><span class="nv">email</span> <span class="o">=</span> <span class="s2">"acme+example@gmail.com"</span><span class="p">;</span>
+  <span class="nv">services</span><span class="o">.</span><span class="nv">nginx</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">virtualHosts</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="s2">"quassel.example.com"</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nv">forceSSL</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="nv">enableACME</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="nv">locations</span><span class="o">.</span><span class="s2">"/"</span> <span class="o">=</span> <span class="p">{</span> <span class="nv">root</span> <span class="o">=</span> <span class="s2">"/var/www"</span><span class="p">;</span> <span class="p">};</span>
+      <span class="p">};</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="c"># open the ports for HTTP &amp; HTTPS</span>
+  <span class="nv">networking</span><span class="o">.</span><span class="nv">firewall</span><span class="o">.</span><span class="nv">allowedTCPPorts</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">80</span> <span class="mi">443</span> <span class="p">];</span>
+
+  <span class="c"># Create a new group `acme` and set the group of the ACME daemon to run as it.</span>
+  <span class="c"># We also allow any user in the `acme` group to access the certificate &amp; key</span>
+  <span class="nv">users</span><span class="o">.</span><span class="nv">groups</span> <span class="o">=</span> <span class="p">{</span> <span class="nv">acme</span> <span class="o">=</span> <span class="p">{</span> <span class="p">};</span> <span class="p">};</span>
+  <span class="nv">security</span><span class="o">.</span><span class="nv">acme</span><span class="o">.</span><span class="nv">certs</span><span class="o">.</span><span class="s2">"quassel.example.com"</span><span class="o">.</span><span class="nv">allowKeysForGroup</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nv">security</span><span class="o">.</span><span class="nv">acme</span><span class="o">.</span><span class="nv">certs</span><span class="o">.</span><span class="s2">"quassel.example.com"</span><span class="o">.</span><span class="nv">group</span> <span class="o">=</span> <span class="s2">"acme"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>With the above module imported; the ACME daemon will perform the <a href="https://letsencrypt.org/docs/challenge-types/#http-01-challenge">HTTP challenge</a> to prove ownership of the FQDN <em>quassel.example.com</em> and receive a TLS certificate &amp; key.</p>
+
+<h4 id="quassel-core">Quassel Core</h4>
+
+<p>Luckily there’s already a <a href="https://github.com/NixOS/nixpkgs-channels/blob/nixos-unstable/nixos/modules/services/networking/quassel.nix">Quassel NixOS module</a> that does most of the heavy lifting.</p>
+
+<p>I simply configure it by forcing <em>SSL</em> and setting the certificate material to the one downloaded by the ACME daemon above.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">config</span><span class="p">,</span> <span class="nv">pkgs</span><span class="p">,</span> <span class="o">...</span> <span class="p">}:</span> <span class="p">{</span>
+
+  <span class="c"># The quassel module will create a default user `quassel`</span>
+  <span class="c"># Add quassel to the acme group so that it can access the certificate</span>
+  <span class="nv">users</span><span class="o">.</span><span class="nv">groups</span><span class="o">.</span><span class="nv">acme</span><span class="o">.</span><span class="nv">members</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">"quassel"</span> <span class="p">];</span>
+
+  <span class="nv">services</span><span class="o">.</span><span class="nv">quassel</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">requireSSL</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="c"># set the certificate material to that downloaded by the HTTP challenge above</span>
+    <span class="nv">certificateFile</span> <span class="o">=</span>
+      <span class="s2">"</span><span class="si">${</span><span class="nv">config</span><span class="o">.</span><span class="nv">security</span><span class="o">.</span><span class="nv">acme</span><span class="o">.</span><span class="nv">certs</span><span class="o">.</span><span class="s2">"quassel.example.com"</span><span class="o">.</span><span class="nv">directory</span><span class="si">}</span><span class="s2">/full.pem"</span><span class="p">;</span>
+    <span class="c"># Listen on the public interface</span>
+    <span class="nv">interfaces</span> <span class="o">=</span> <span class="p">[</span> <span class="s2">"0.0.0.0"</span> <span class="p">];</span>
+  <span class="p">};</span>
+
+  <span class="c"># make sure the quassel default port is open on the firewall</span>
+  <span class="nv">networking</span><span class="o">.</span><span class="nv">firewall</span><span class="o">.</span><span class="nv">allowedTCPPorts</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">4242</span> <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><em>Voila!</em></p>
+
+<p>Now I just need to figure out a nice view setup for my Quassel client to <em>look pretty</em>. Hopefully you find this guide informational and it helps you also join the IRC NixOS community.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-02-quassel-core-on-nixos-with-let-s-encrypt.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

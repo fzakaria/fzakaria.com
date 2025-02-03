@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Return by Reference to a Pointer, Huh? | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Return by Reference to a Pointer, Huh?" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Recap Quick recap, for those who may be hazy on what a reference is in C++: When a variable is returned by reference, a reference to the variable is passed back to the caller. The caller can then use this reference to continue modifying the variable, which can be useful at times. Return by reference is also fast, which can be useful when returning structs and classes. In even plainer words, the compiler is not creating a copy of the variable onto the stack of the function but simply passing the reference (i.e. sort of similar to a pointer). Here is the kicker and what is important to remember; in C++ everything is passed by value (copied) onto the function stack unless it has the &#39;&amp;&#39; symbol denoting a reference. Reference to Pointer When is a reference to a pointer useful? Consider the example below. void reassign(int * myInt){ myInt = new int(7); } int main(){ int * myInt = new int(5); reassign(myInt); std::cout &lt;&lt; *myInt &lt;&lt; std::endl; return 0; } What would you expect to be the output of the program? If you guessed 5 you&#39;d be correct. The reason why it is 5 and not 7, is because even the pointer itself is copied onto the function stack and the reassignment only modifies that copy of the pointer&#39;s value and not the pointer from main&#39;s scope! How to solve this dilemma? Traditionally the way to solve this problem (most commonly seen for link list problems for instance), is to pass a Pointer to a Pointer. This way we are passing an extra level of indirection to the pointer and therefore any modification to the pointer would continue passed the function&#39;s scope. This works because now we are creating a copy of the address of the second level indirection. The example would change to become: void reassign(int ** myIntPP){ *myIntPP = new int(7); } &lt;/p&gt; Another way that solve this problem however is by simply passing a reference to a pointer like so: void reassign(int* &amp; myIntP){ myIntP = new int(7); } &lt;/p&gt; In the return! Up until this point, a lot of this should be common place in most code bases. What I found interesting however in the code I&#39;m currently working on at my current job, are functions that return a reference to a pointer. Consider the example below: class MyIntClass { public: MyIntClass(int value){ myIntP = new int(value); } MyIntClass(){ myIntP = new int(0); } int * &amp; getMyInt() { return myIntP; } private: int * myIntP;" />
+<meta property="og:description" content="Recap Quick recap, for those who may be hazy on what a reference is in C++: When a variable is returned by reference, a reference to the variable is passed back to the caller. The caller can then use this reference to continue modifying the variable, which can be useful at times. Return by reference is also fast, which can be useful when returning structs and classes. In even plainer words, the compiler is not creating a copy of the variable onto the stack of the function but simply passing the reference (i.e. sort of similar to a pointer). Here is the kicker and what is important to remember; in C++ everything is passed by value (copied) onto the function stack unless it has the &#39;&amp;&#39; symbol denoting a reference. Reference to Pointer When is a reference to a pointer useful? Consider the example below. void reassign(int * myInt){ myInt = new int(7); } int main(){ int * myInt = new int(5); reassign(myInt); std::cout &lt;&lt; *myInt &lt;&lt; std::endl; return 0; } What would you expect to be the output of the program? If you guessed 5 you&#39;d be correct. The reason why it is 5 and not 7, is because even the pointer itself is copied onto the function stack and the reassignment only modifies that copy of the pointer&#39;s value and not the pointer from main&#39;s scope! How to solve this dilemma? Traditionally the way to solve this problem (most commonly seen for link list problems for instance), is to pass a Pointer to a Pointer. This way we are passing an extra level of indirection to the pointer and therefore any modification to the pointer would continue passed the function&#39;s scope. This works because now we are creating a copy of the address of the second level indirection. The example would change to become: void reassign(int ** myIntPP){ *myIntPP = new int(7); } &lt;/p&gt; Another way that solve this problem however is by simply passing a reference to a pointer like so: void reassign(int* &amp; myIntP){ myIntP = new int(7); } &lt;/p&gt; In the return! Up until this point, a lot of this should be common place in most code bases. What I found interesting however in the code I&#39;m currently working on at my current job, are functions that return a reference to a pointer. Consider the example below: class MyIntClass { public: MyIntClass(int value){ myIntP = new int(value); } MyIntClass(){ myIntP = new int(0); } int * &amp; getMyInt() { return myIntP; } private: int * myIntP;" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-09-26-return-by-reference-to-a-pointer-huh.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-09-26-return-by-reference-to-a-pointer-huh.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-09-26T18:21:01-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Return by Reference to a Pointer, Huh?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-09-26T18:21:01-07:00","datePublished":"2012-09-26T18:21:01-07:00","description":"Recap Quick recap, for those who may be hazy on what a reference is in C++: When a variable is returned by reference, a reference to the variable is passed back to the caller. The caller can then use this reference to continue modifying the variable, which can be useful at times. Return by reference is also fast, which can be useful when returning structs and classes. In even plainer words, the compiler is not creating a copy of the variable onto the stack of the function but simply passing the reference (i.e. sort of similar to a pointer). Here is the kicker and what is important to remember; in C++ everything is passed by value (copied) onto the function stack unless it has the &#39;&amp;&#39; symbol denoting a reference. Reference to Pointer When is a reference to a pointer useful? Consider the example below. void reassign(int * myInt){ myInt = new int(7); } int main(){ int * myInt = new int(5); reassign(myInt); std::cout &lt;&lt; *myInt &lt;&lt; std::endl; return 0; } What would you expect to be the output of the program? If you guessed 5 you&#39;d be correct. The reason why it is 5 and not 7, is because even the pointer itself is copied onto the function stack and the reassignment only modifies that copy of the pointer&#39;s value and not the pointer from main&#39;s scope! How to solve this dilemma? Traditionally the way to solve this problem (most commonly seen for link list problems for instance), is to pass a Pointer to a Pointer. This way we are passing an extra level of indirection to the pointer and therefore any modification to the pointer would continue passed the function&#39;s scope. This works because now we are creating a copy of the address of the second level indirection. The example would change to become: void reassign(int ** myIntPP){ *myIntPP = new int(7); } &lt;/p&gt; Another way that solve this problem however is by simply passing a reference to a pointer like so: void reassign(int* &amp; myIntP){ myIntP = new int(7); } &lt;/p&gt; In the return! Up until this point, a lot of this should be common place in most code bases. What I found interesting however in the code I&#39;m currently working on at my current job, are functions that return a reference to a pointer. Consider the example below: class MyIntClass { public: MyIntClass(int value){ myIntP = new int(value); } MyIntClass(){ myIntP = new int(0); } int * &amp; getMyInt() { return myIntP; } private: int * myIntP;","headline":"Return by Reference to a Pointer, Huh?","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-09-26-return-by-reference-to-a-pointer-huh.html"},"url":"https://fzakaria.com/old_blog/2012-09-26-return-by-reference-to-a-pointer-huh.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Return by Reference to a Pointer, Huh?
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-09-26
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-09-26-return-by-reference-to-a-pointer-huh.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2>Recap</h2>
+<p>
+Quick recap, for those who may be hazy on what a <a href="http://www.learncpp.com/cpp-tutorial/74a-returning-values-by-value-reference-and-address/">reference</a> is in C++:</p>
+<blockquote><p>When a variable is returned by reference, a reference to the variable is passed back to the caller. The caller can then use this reference to continue modifying the variable, which can be useful at times. Return by reference is also fast, which can be useful when returning structs and classes.</p></blockquote>
+<p>In even plainer words, the compiler is not creating a copy of the variable onto the stack of the function but simply passing the reference (i.e. sort of similar to a pointer).</p>
+<p>
+Here is the kicker and what is important to remember; in C++ everything is passed by value (copied) onto the function stack unless it has the '&' symbol denoting a reference.</p>
+<h2>Reference to Pointer </h2>
+<p>
+When is a reference to a pointer useful?  Consider the example below.</p>
+<pre>
+<code>
+void reassign(int * myInt){
+    myInt = new int(7);
+}
+int main(){
+    int * myInt = new int(5);
+    reassign(myInt);
+    std::cout << *myInt << std::endl;
+    return 0;
+}
+</code>
+</pre>
+<p>What would you expect to be the output of the program? If you guessed <strong>5</strong> you'd be correct. The reason why it is 5 and not 7, is because even the pointer itself <strong>is copied</strong> onto the function stack and the reassignment only modifies that copy of the pointer's value and not the pointer from main's scope!</p>
+<h3> How to solve this dilemma? </h3>
+<p>
+Traditionally the way to solve this problem (most commonly seen for link list problems for instance), is to pass a <em>Pointer to a Pointer</em>. This way we are passing an extra level of indirection to the pointer and therefore any modification to the pointer would continue passed the function's scope. This works because now we are creating a copy of the address of the second level indirection. The example would change to become:</p>
+<pre>
+<code>
+void reassign(int ** myIntPP){
+    *myIntPP = new int(7);
+}
+</code>
+</pre></p>
+<p>
+Another way that solve this problem however is by simply passing a reference to a pointer like so:</p>
+<pre>
+<code>
+void reassign(int* & myIntP){
+    myIntP = new int(7);
+}
+</code>
+</pre></p>
+<h3>In the return!</h3>
+<p>
+Up until this point, a lot of this should be common place in most code bases. What I found interesting however in the code I'm currently working on at my current job, are functions that <strong>return a reference to a pointer</strong>. Consider the example below:</p>
+<pre>
+<code>
+class MyIntClass { 
+public:
+    MyIntClass(int value){
+        myIntP = new int(value);
+    }
+    MyIntClass(){
+        myIntP = new int(0);
+    }
+    int * & getMyInt() { 
+        return myIntP;
+    }      
+private:
+    int * myIntP;
+
+};
+int main(){
+    MyIntClass myObject(5);
+    int *& theInt = myObject.getMyInt();
+    theInt = new int(10);
+    std::cout << "theInt:" << *theInt << std::endl;
+    std::cout << "myObject:" << *myObject.getMyInt() << std::endl;
+    return 0;
+}
+</code>
+</pre>
+<p>The output of <em>theInt</em> and <em>myObject</em> would both be 10. The ability to do this seems odd as it is a good source of memory leaks and un-intuitive to me.</p>
+<p>
+Can someone point me to some good use cases of how this can be useful?</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-09-26-return-by-reference-to-a-pointer-huh.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

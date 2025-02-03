@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>autopatchelf - what it can look like | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="autopatchelf - what it can look like" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a follow up post to my previous one to on-demand linked libraries for NixOS. I previously wrote about the work into a new NixOS tool nix-ld, which will allow the possibility of hot-patching the linking of dynamic libraries. At the moment the goal of the tool is modest in allowing modification of the library search path via a custom environment variable NIX_LD_LIBRARY_PATH. I’m minimizing the task as there’s a ton of complexity, such as not loading in a different glibc and other subtleties – ask Mic92 about it on #nixos! I finished with a bit of a teaser on what a full-fledged tool may look like…" />
+<meta property="og:description" content="This is a follow up post to my previous one to on-demand linked libraries for NixOS. I previously wrote about the work into a new NixOS tool nix-ld, which will allow the possibility of hot-patching the linking of dynamic libraries. At the moment the goal of the tool is modest in allowing modification of the library search path via a custom environment variable NIX_LD_LIBRARY_PATH. I’m minimizing the task as there’s a ton of complexity, such as not loading in a different glibc and other subtleties – ask Mic92 about it on #nixos! I finished with a bit of a teaser on what a full-fledged tool may look like…" />
+<link rel="canonical" href="https://fzakaria.com/2020/12/01/autopatchelf-what-it-can-look-like.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/12/01/autopatchelf-what-it-can-look-like.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-12-01T21:18:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="autopatchelf - what it can look like" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-12-01T21:18:00-08:00","datePublished":"2020-12-01T21:18:00-08:00","description":"This is a follow up post to my previous one to on-demand linked libraries for NixOS. I previously wrote about the work into a new NixOS tool nix-ld, which will allow the possibility of hot-patching the linking of dynamic libraries. At the moment the goal of the tool is modest in allowing modification of the library search path via a custom environment variable NIX_LD_LIBRARY_PATH. I’m minimizing the task as there’s a ton of complexity, such as not loading in a different glibc and other subtleties – ask Mic92 about it on #nixos! I finished with a bit of a teaser on what a full-fledged tool may look like…","headline":"autopatchelf - what it can look like","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/12/01/autopatchelf-what-it-can-look-like.html"},"url":"https://fzakaria.com/2020/12/01/autopatchelf-what-it-can-look-like.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    autopatchelf - what it can look like
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-12-01
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/12/01/autopatchelf-what-it-can-look-like.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a follow up post to my previous one to <a href="/2020/11/17/on-demand-linked-libraries-for-nix.html">on-demand linked libraries for NixOS</a>.</p>
+</blockquote>
+
+<p>I previously wrote about the work into a new NixOS tool <a href="https://github.com/Mic92/nix-ld">nix-ld</a>, which will allow the possibility of hot-patching the linking of dynamic libraries.</p>
+
+<p>At the moment the goal of the tool is modest in allowing modification of the library search path via a custom environment variable <em>NIX_LD_LIBRARY_PATH</em>.</p>
+
+<blockquote>
+  <p>I’m minimizing the task as there’s a ton of complexity, such as not loading in a different glibc and other subtleties – ask <a href="https://github.com/Mic92">Mic92</a> about it on <a href="irc://irc.freenode.net/#nixos">#nixos</a>!</p>
+</blockquote>
+
+<p>I finished with a bit of a <em>teaser</em> on what a full-fledged tool may look like…</p>
+
+<!--more-->
+
+<h3 id="autopatchelf">autopatchelf</h3>
+
+<p><a href="https://github.com/fzakaria/autopatchelf">autopatchelf</a> is my <em>work in progress</em> in what the other half of on-demand linked libraries may look &amp; feel like.</p>
+
+<blockquote>
+  <p>Don’t judge me on the code, it’s still in exploratory phase. 👨‍⚖️</p>
+</blockquote>
+
+<p>It’s goal is quite simple and works in tandem with <a href="https://github.com/Mic92/nix-ld">nix-ld</a>. <em>autopatchelf</em> attempts to locate a valid <em>/nix/store</em> entry for every required library required by the binary.</p>
+
+<p>An <em>asciinema</em> is worth a thousand words.</p>
+
+<blockquote>
+  <p>Here is a small example of how running <em>autopatchelf</em> will prompt the user to select the most appropriate matching library for the Ruby binary. It’s pretty quick..</p>
+</blockquote>
+
+<script id="asciicast-376182" src="https://asciinema.org/a/376182.js" async="" data-speed="0.5"></script>
+
+<p>Once the libraries are chosen, it’s <em>mostly</em> a straightforward invocation to <a href="https://github.com/Mic92/nix-ld">nix-ld</a> with the set <em>NIX_LD_LIBRARY_PATH</em> environment variable.</p>
+
+<h4 id="challenges">Challenges</h4>
+
+<p>I already foresee a few challenges (all solvable!) that need to be addressed for a thorough solution which I want to articulate here for others that might want to pursue this idea.</p>
+
+<ol>
+  <li>
+    <p>A garbage-collection root must be created for all realised <em>/nix/store</em> entries. This is to avoid the chosen libraries from being garbage-collected during process run.</p>
+  </li>
+  <li>
+    <p><a href="https://github.com/fzakaria/autopatchelf">autopatchelf</a> will try to normalize or find closest matching libraries if a non-exact match can be found. The ELF binary itself then must be patched to set the selected names.</p>
+  </li>
+  <li>
+    <p>Solving for diamond dependencies must be performed. For instance, the selected glibc version must match the same one used in all the selected <em>/nix/store</em> paths. It may be necessary to build a depth-first graph of selected libraries.</p>
+  </li>
+  <li>
+    <p>A cache file “fingerprint” of the selected libraries can be saved for the binary so that subsequent startups are faster.</p>
+  </li>
+  <li>
+    <p>An option to directly edit the ELF binary rather than supply the <em>NIX_LD_LIBRARY_PATH</em> variable should be possible.</p>
+  </li>
+</ol>
+
+<p>The long-term vision is anyone can either start any non-NixOS binary if this functionality is directly embedded within the <em>ld</em> interpreter, patch the ELF binary interactively for the required libraries or even ship the “fingerprint” file alongside the binary for others to consume.</p>
+
+<p>There’s a lot of promise in the idea especially for unlocking cases where users may lean on <a href="https://nixos.org/manual/nixpkgs/stable/#sec-fhs-environments">buildFHSUserEnv</a>.</p>
+
+<p>If you’d like to work on this together reach out to me or contribute at <a href="https://github.com/fzakaria/autopatchelf">https://github.com/fzakaria/autopatchelf</a></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-12-01-autopatchelf-what-it-can-look-like.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

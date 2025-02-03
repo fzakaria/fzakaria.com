@@ -1,0 +1,277 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>nix-copy-closure your nix-shell | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="nix-copy-closure your nix-shell" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a synopsis of https://github.com/NixOS/nix/issues/1985. I recommend reading it for additional detail. Many thanks to contributors on the issue like Infinisil for adding context. Someone reached out to me over e-mail to discuss my previous post on caching your nix-shell. “What I wish to do is to copy a particular development environment (nix-shell) from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and does not have Internet access.”" />
+<meta property="og:description" content="This is a synopsis of https://github.com/NixOS/nix/issues/1985. I recommend reading it for additional detail. Many thanks to contributors on the issue like Infinisil for adding context. Someone reached out to me over e-mail to discuss my previous post on caching your nix-shell. “What I wish to do is to copy a particular development environment (nix-shell) from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and does not have Internet access.”" />
+<link rel="canonical" href="https://fzakaria.com/2020/09/28/nix-copy-closure-your-nix-shell.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/28/nix-copy-closure-your-nix-shell.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-28T22:01:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="nix-copy-closure your nix-shell" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-28T22:01:00-07:00","datePublished":"2020-09-28T22:01:00-07:00","description":"This is a synopsis of https://github.com/NixOS/nix/issues/1985. I recommend reading it for additional detail. Many thanks to contributors on the issue like Infinisil for adding context. Someone reached out to me over e-mail to discuss my previous post on caching your nix-shell. “What I wish to do is to copy a particular development environment (nix-shell) from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and does not have Internet access.”","headline":"nix-copy-closure your nix-shell","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/28/nix-copy-closure-your-nix-shell.html"},"url":"https://fzakaria.com/2020/09/28/nix-copy-closure-your-nix-shell.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    nix-copy-closure your nix-shell
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-28
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/28/nix-copy-closure-your-nix-shell.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a synopsis of <a href="https://github.com/NixOS/nix/issues/1985">https://github.com/NixOS/nix/issues/1985</a>. I recommend reading it for additional detail. Many thanks to contributors on the issue like <a href="https://github.com/Infinisil">Infinisil</a> for adding context.</p>
+</blockquote>
+
+<p>Someone reached out to me over e-mail to discuss my previous post on <a href="/2020/08/11/caching-your-nix-shell.html">caching your nix-shell</a>.</p>
+
+<p><em>“What I wish to do is to copy a particular development environment (nix-shell)
+from A to B, so that I could run nix-shell on server B. Server B is only accessible through SSH and <strong>does not</strong> have Internet access.”</em></p>
+
+<!--more-->
+
+<p>Seems straightforward, so let’s investigate. Let’s use a very basic <em>shell.nix</em> file.</p>
+
+<blockquote>
+  <p>Very important we make sure to pin <em>nixpkgs</em>. In the example below I do it inline in the Nix expression but you can also use <a href="https://github.com/nmattia/niv">niv</a> or pin the channel to a particular commit.</p>
+</blockquote>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">builtins</span><span class="o">.</span><span class="kr">fetchTarball</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"nixos-unstable-2020-09-24"</span><span class="p">;</span>
+    <span class="nv">url</span> <span class="o">=</span>
+      <span class="s2">"https://github.com/nixos/nixpkgs/archive/5aba0fe9766a7201a336249fd6cb76e0d7ba2faf.tar.gz"</span><span class="p">;</span>
+    <span class="nv">sha256</span> <span class="o">=</span> <span class="s2">"05gawlhizp85agdpw3kpjn41vggdiywbabsbmk76r2dr513188jz"</span><span class="p">;</span>
+  <span class="p">})</span> <span class="p">{</span> <span class="p">};</span>
+<span class="kn">in</span> <span class="kn">with</span> <span class="nv">nixpkgs</span><span class="p">;</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="p">;</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="o">.</span><span class="nv">lib</span><span class="p">;</span>
+<span class="nv">mkShell</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"example-shell"</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">hello</span> <span class="p">];</span>
+  <span class="nv">shellHook</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    export MESSAGE="$(hello)";</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Let’s see it in action:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-shell shell.nix
+
+<span class="o">[</span>nix-shell:~/code/nix/playground]<span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$MESSAGE</span>
+Hello, world!
+</code></pre></div></div>
+
+<p>Recently an improvement <a href="https://github.com/NixOS/nixpkgs/pull/95536">#95536</a> by <a href="https://github.com/Infinisil">Infinisil</a> made the workflow to discover the <em>transitive runtime closure</em> much simpler than what I had <a href="/2020/08/11/caching-your-nix-shell.html">blogged about</a>.</p>
+
+<p>✨ A new attribute for derivations <em>inputDerivation</em> is introduced that is <em>always buildable</em> and whose runtime dependences are it’s build dependencies; exactly what we need for nix-shell!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-build <span class="nt">--no-out-link</span> shell.nix <span class="nt">-A</span> inputDerivation
+these derivations will be built:
+  /nix/store/bjn4imm9dw7xnxpjrwyrpk0wsy0j7xwh-example-shell.drv
+building <span class="s1">'/nix/store/bjn4imm9dw7xnxpjrwyrpk0wsy0j7xwh-example-shell.drv'</span>...
+/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+</code></pre></div></div>
+
+<p>We now have a store path <em>/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell</em> which we can check the immediate dependencies.</p>
+
+<blockquote>
+  <p>The below is simply the <em>immediate</em> dependencies and not the full transitive closure for brevity.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-store <span class="nt">--query</span> <span class="nt">--references</span> <span class="se">\</span>
+    /nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+
+/nix/store/2jysm3dfsgby5sw5jgj43qjrb5v79ms9-bash-4.4-p23
+/nix/store/333six1faw9bhccsx9qw5718k6b1wiq2-stdenv-linux
+/nix/store/9krlzvny65gdc8s7kpb6lkx8cd02c25b-default-builder.sh
+/nix/store/w9yy7v61ipb5rx6i35zq1mvc2iqfmps1-hello-2.10
+/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+</code></pre></div></div>
+
+<p>I will now copy the <em>shell.nix</em> file to my other machine &amp; copy the transitive closure to it.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ scp shell.nix machine-b:~
+
+❯ nix-copy-closure <span class="nt">--to</span> machine-b <span class="se">\</span>
+    /nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
+copying 36 paths...
+</code></pre></div></div>
+
+<p>Let’s hop on <em>machine B</em> and create a network namespace to pretend we do not have Internet access.</p>
+
+<blockquote>
+  <p>A network namespace is logically another copy of the network stack,
+with its own routes, firewall rules, and network devices.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ ssh machine-b
+
+<span class="c"># since we won't have any Internet access, hydrate the cache</span>
+<span class="c"># with our nixpkgs version</span>
+❯ nix-prefetch-url <span class="nt">--unpack</span> <span class="se">\</span>
+https://github.com/nixos/nixpkgs/archive/5aba0fe9766a7201a336249fd6cb76e0d7ba2faf.tar.gz <span class="se">\</span>
+<span class="nt">--name</span> <span class="s2">"nixos-unstable-2020-09-24"</span>
+
+❯ <span class="nb">sudo </span>ip netns add nixshell
+<span class="c"># enter the namespace</span>
+❯ <span class="nb">sudo </span>ip netns <span class="nb">exec </span>nixshell su <span class="nv">$USER</span> <span class="nt">-c</span> zsh
+
+<span class="c"># let's confirm we do not have Internet access</span>
+❯ ping google.com
+ping: google.com: Temporary failure <span class="k">in </span>name resolution
+</code></pre></div></div>
+
+<p>Let’s fire up our <em>nix-shell</em> and see if it works.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># don't forget we are within our network namespace</span>
+<span class="c"># without access to the Internet</span>
+❯ nix-shell shell.nix
+bash: cannot <span class="nb">set </span>terminal process group <span class="o">(</span><span class="nt">-1</span><span class="o">)</span>: Inappropriate ioctl <span class="k">for </span>device
+bash: no job control <span class="k">in </span>this shell
+
+<span class="o">[</span>nix-shell:~]<span class="nv">$ </span><span class="nb">echo</span> <span class="nv">$MESSAGE</span>
+Hello, world!
+</code></pre></div></div>
+
+<p>🎆 Huzzah!
+We have now copied over our development environment <em>hermetically</em> with the help of Nix. This is a great demonstration of the power of Nix &amp; reproducibility.</p>
+
+<blockquote>
+  <p>An important take-away though is that it’s important to make sure <em>we pin</em> the exact version of <em>nixpkgs</em> otherwise the <em>nix-shell</em> may calculate different hashes.</p>
+</blockquote>
+
+<p>Do you have an interesting workflow or innovative use of Nix with development environments? <a href="mailto:farid.m.zakaria@gmail.com">Let me know about it.</a></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-28-nix-copy-closure-your-nix-shell.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

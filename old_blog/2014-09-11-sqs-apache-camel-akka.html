@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>SQS , Apache Camel &amp; Akka | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="SQS , Apache Camel &amp; Akka" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Akka Apache-Camel Via SQS This is an example project of how to setup a sample project using Akka, Apache-Camel and SQS together. Never heard of them or curious how they interact with each other? Apache-Camel Apache Camel is a rule-based routing and mediation engine. What that basically means is that Apache Camel provides a common API for exchanging messages across a variety of platforms/protocols such as: HTTP, SQS, AMQP Akka Akka is a toolkit and runtime for building highly concurrent, distributed, and fault tolerant event-driven applications on the JVM. What that basically means is that Akka is a framework for writing code (known as actors) that lend to code to be easily distributed. SQS Amazon Simple Queue Service (SQS) is a fast, reliable, scalable &amp; affordable message queuing service. Why should you care!? I&#39;ve recently had the pleasure of releasing some code on heroku using the PlayFramework. Although deployment and initial setup was a breeze, I was bummed out to find that using Akka&#39;s protocol was not doable as only standard ports on heroku are allowed (80,443). This leads to being unable to use Akka actors in a proper distributed model (i.e. they can&#39;t talk to each other!) Heroku has made a post where they outline using RabbitMq instead of the default Akka protocol however I did not find simple / ideal. This brings us to this sample project! Leveraging Apache-Camel &amp; SQS it was very straightforward to send messages to distributed actors. Please check out the project on my Github page: https://github.com/fzakaria/Akka-Camel-SQS" />
+<meta property="og:description" content="Akka Apache-Camel Via SQS This is an example project of how to setup a sample project using Akka, Apache-Camel and SQS together. Never heard of them or curious how they interact with each other? Apache-Camel Apache Camel is a rule-based routing and mediation engine. What that basically means is that Apache Camel provides a common API for exchanging messages across a variety of platforms/protocols such as: HTTP, SQS, AMQP Akka Akka is a toolkit and runtime for building highly concurrent, distributed, and fault tolerant event-driven applications on the JVM. What that basically means is that Akka is a framework for writing code (known as actors) that lend to code to be easily distributed. SQS Amazon Simple Queue Service (SQS) is a fast, reliable, scalable &amp; affordable message queuing service. Why should you care!? I&#39;ve recently had the pleasure of releasing some code on heroku using the PlayFramework. Although deployment and initial setup was a breeze, I was bummed out to find that using Akka&#39;s protocol was not doable as only standard ports on heroku are allowed (80,443). This leads to being unable to use Akka actors in a proper distributed model (i.e. they can&#39;t talk to each other!) Heroku has made a post where they outline using RabbitMq instead of the default Akka protocol however I did not find simple / ideal. This brings us to this sample project! Leveraging Apache-Camel &amp; SQS it was very straightforward to send messages to distributed actors. Please check out the project on my Github page: https://github.com/fzakaria/Akka-Camel-SQS" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2014-09-11-sqs-apache-camel-akka.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2014-09-11-sqs-apache-camel-akka.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-09-11T03:39:13-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="SQS , Apache Camel &amp; Akka" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2014-09-11T03:39:13-07:00","datePublished":"2014-09-11T03:39:13-07:00","description":"Akka Apache-Camel Via SQS This is an example project of how to setup a sample project using Akka, Apache-Camel and SQS together. Never heard of them or curious how they interact with each other? Apache-Camel Apache Camel is a rule-based routing and mediation engine. What that basically means is that Apache Camel provides a common API for exchanging messages across a variety of platforms/protocols such as: HTTP, SQS, AMQP Akka Akka is a toolkit and runtime for building highly concurrent, distributed, and fault tolerant event-driven applications on the JVM. What that basically means is that Akka is a framework for writing code (known as actors) that lend to code to be easily distributed. SQS Amazon Simple Queue Service (SQS) is a fast, reliable, scalable &amp; affordable message queuing service. Why should you care!? I&#39;ve recently had the pleasure of releasing some code on heroku using the PlayFramework. Although deployment and initial setup was a breeze, I was bummed out to find that using Akka&#39;s protocol was not doable as only standard ports on heroku are allowed (80,443). This leads to being unable to use Akka actors in a proper distributed model (i.e. they can&#39;t talk to each other!) Heroku has made a post where they outline using RabbitMq instead of the default Akka protocol however I did not find simple / ideal. This brings us to this sample project! Leveraging Apache-Camel &amp; SQS it was very straightforward to send messages to distributed actors. Please check out the project on my Github page: https://github.com/fzakaria/Akka-Camel-SQS","headline":"SQS , Apache Camel &amp; Akka","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2014-09-11-sqs-apache-camel-akka.html"},"url":"https://fzakaria.com/old_blog/2014-09-11-sqs-apache-camel-akka.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    SQS , Apache Camel & Akka
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2014-09-11
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2014-09-11-sqs-apache-camel-akka.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Akka Apache-Camel Via SQS </h2>
+<p>
+This is an example project of how to setup a sample project using <a href="http://akka.io">Akka</a>, <a href="http://camel.apache.org/">Apache-Camel</a> and <a href="http://aws.amazon.com/sqs/">SQS</a> together. Never heard of them or curious how they interact with each other?</p>
+<h4>Apache-Camel</h4>
+<blockquote><p>
+Apache Camel is a rule-based routing and mediation engine.
+</p></blockquote>
+<p>
+What that basically means is that Apache Camel provides a common API for exchanging messages across a variety of platforms/protocols such as: HTTP, SQS, AMQP</p>
+<h4>Akka</h4>
+<blockquote><p>
+Akka is a toolkit and runtime for building highly concurrent, distributed, and fault tolerant event-driven applications on the JVM.</p></blockquote>
+<p>
+What that basically means is that Akka is a framework for writing code (known as actors) that lend to code to be easily distributed.</p>
+<h4>SQS</h4>
+<blockquote><p>
+Amazon Simple Queue Service (SQS) is a fast, reliable, scalable & affordable message queuing service.
+</p></blockquote>
+<h4>Why should you care!?</h4>
+<p>
+I've recently had the pleasure of releasing some code on heroku using the <a href="https://www.playframework.com/">PlayFramework</a>. Although deployment and initial setup was a breeze, I was bummed out to find that using Akka's protocol was not doable as only standard ports on heroku are allowed (80,443). This leads to being unable to use Akka actors in a proper distributed model (i.e. they can't talk to each other!)</p>
+<p>
+Heroku has made a <a href="https://devcenter.heroku.com/articles/scaling-out-with-scala-and-akka">post</a> where they outline using RabbitMq instead of the default Akka protocol however I did not find simple / ideal.</p>
+<p>
+This brings us to this sample project! Leveraging Apache-Camel & SQS it was very straightforward to send messages to distributed actors.</p>
+<blockquote><p>Please check out the project on my Github page: <a href="https://github.com/fzakaria/Akka-Camel-SQS">https://github.com/fzakaria/Akka-Camel-SQS</a></p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2014-09-11-sqs-apache-camel-akka.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

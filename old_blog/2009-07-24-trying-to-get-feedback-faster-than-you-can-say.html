@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Trying to get feedback faster than you can say… | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Trying to get feedback faster than you can say…" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I must be tired trying to work on the RGB sliders because I don&rsquo;t seem to be thinking straight. I&rsquo;m beginning to think that with only one background thread it may be very difficult to get quick response even with the upgrade to the code using unsafe even with my little test images (forget it for sure working with large ones). I&rsquo;m spawning a background thread (don&rsquo;t mention the overhead :( ) everytime the slider changes which begings the method to alter the red value of each pixel rather than &ldquo;reset&rdquo; the single thread which didn&rsquo;t seem any better. I have to get some actual times down to see if this is even better than just using one single background thread and cancelling the operation everytime the slider changes. Anyway here&rsquo;s some of the code so far of my sort of weak attempt to get fast feedback: private void trackBar_RED_ValueChanged(object sender, EventArgs e) { BackgroundWorker colorChangerWorker = new BackgroundWorker(); colorChangerWorker.DoWork += new DoWorkEventHandler(colorChangerBackGroundWorker_DoWorkRed); colorChangerWorker.RunWorkerAsync (new ColorChangingObject(trackBar_RED.Value, trackBar_RED.Maximum, colorChangerWorker, originalImage.Width, originalImage.Height, originalImage)); } private void colorChangerBackGroundWorker_DoWorkRed(object sender, DoWorkEventArgs e) { ColorChangingObject paramObject = (ColorChangingObject)e.Argument; double sliderValue = (double)paramObject.SliderValue; double maxValue = (double)paramObject.MaxSliderValue; double addRedPercent = sliderValue / maxValue; FastBitMapProcessor processImage = new FastBitMapProcessor(paramObject.Image); processImage.LockImage(); for (int i = 0; i &lt; paramObject.Width; i++) { for (int j = 0; j &lt; paramObject.Height; j++) { Color currPixelColor = processImage.GetPixel(i, j); double red = (addRedPercent * (255 - currPixelColor.R)) + currPixelColor.R; processImage.SetPixel(i, j, Color.FromArgb((int)red, currPixelColor.G, currPixelColor.B)); } } processImage.UnlockImage(); changedImage = (Bitmap)processImage.Image.Clone(); if (pictureBox2.InvokeRequired) { var UpdateImage = new UpdatePictureBoxImage(SetPictureBox2Image); Invoke(UpdateImage, changedImage); } processImage.Dispose(); paramObject.backgroundThread.Dispose(); } &lt;/code&gt; Post any help if you have some. Side Stuff I guess I&rsquo;ve made a lot of posts which are really really software oriented versus rather than some other stuff I&rsquo;ve been doing lately (squash, ice hockey) I just found this project to be really interesting and on my mind. Part of what is so interesting is noticing how a project envisoined initially so small can just explode if not checked. I seem to be working just as hard to fight thoughts to add the application than I do actually working on it. I guess that is what the benefit of programming something for an assigment versus than for you is. You tend to not go beyond the scope of the assignment, whereas for yourself you let your thoughts run free. I feel this is something it is good to get a grip on. It seems to be a big problem some people lack in the software industry especially evidently from my current and previous jobs. People never want to freeze the software and label it feature complete; but rather seem to happy tacking on feature after feature." />
+<meta property="og:description" content="I must be tired trying to work on the RGB sliders because I don&rsquo;t seem to be thinking straight. I&rsquo;m beginning to think that with only one background thread it may be very difficult to get quick response even with the upgrade to the code using unsafe even with my little test images (forget it for sure working with large ones). I&rsquo;m spawning a background thread (don&rsquo;t mention the overhead :( ) everytime the slider changes which begings the method to alter the red value of each pixel rather than &ldquo;reset&rdquo; the single thread which didn&rsquo;t seem any better. I have to get some actual times down to see if this is even better than just using one single background thread and cancelling the operation everytime the slider changes. Anyway here&rsquo;s some of the code so far of my sort of weak attempt to get fast feedback: private void trackBar_RED_ValueChanged(object sender, EventArgs e) { BackgroundWorker colorChangerWorker = new BackgroundWorker(); colorChangerWorker.DoWork += new DoWorkEventHandler(colorChangerBackGroundWorker_DoWorkRed); colorChangerWorker.RunWorkerAsync (new ColorChangingObject(trackBar_RED.Value, trackBar_RED.Maximum, colorChangerWorker, originalImage.Width, originalImage.Height, originalImage)); } private void colorChangerBackGroundWorker_DoWorkRed(object sender, DoWorkEventArgs e) { ColorChangingObject paramObject = (ColorChangingObject)e.Argument; double sliderValue = (double)paramObject.SliderValue; double maxValue = (double)paramObject.MaxSliderValue; double addRedPercent = sliderValue / maxValue; FastBitMapProcessor processImage = new FastBitMapProcessor(paramObject.Image); processImage.LockImage(); for (int i = 0; i &lt; paramObject.Width; i++) { for (int j = 0; j &lt; paramObject.Height; j++) { Color currPixelColor = processImage.GetPixel(i, j); double red = (addRedPercent * (255 - currPixelColor.R)) + currPixelColor.R; processImage.SetPixel(i, j, Color.FromArgb((int)red, currPixelColor.G, currPixelColor.B)); } } processImage.UnlockImage(); changedImage = (Bitmap)processImage.Image.Clone(); if (pictureBox2.InvokeRequired) { var UpdateImage = new UpdatePictureBoxImage(SetPictureBox2Image); Invoke(UpdateImage, changedImage); } processImage.Dispose(); paramObject.backgroundThread.Dispose(); } &lt;/code&gt; Post any help if you have some. Side Stuff I guess I&rsquo;ve made a lot of posts which are really really software oriented versus rather than some other stuff I&rsquo;ve been doing lately (squash, ice hockey) I just found this project to be really interesting and on my mind. Part of what is so interesting is noticing how a project envisoined initially so small can just explode if not checked. I seem to be working just as hard to fight thoughts to add the application than I do actually working on it. I guess that is what the benefit of programming something for an assigment versus than for you is. You tend to not go beyond the scope of the assignment, whereas for yourself you let your thoughts run free. I feel this is something it is good to get a grip on. It seems to be a big problem some people lack in the software industry especially evidently from my current and previous jobs. People never want to freeze the software and label it feature complete; but rather seem to happy tacking on feature after feature." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2009-07-24-trying-to-get-feedback-faster-than-you-can-say.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2009-07-24-trying-to-get-feedback-faster-than-you-can-say.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2009-07-24T16:16:53-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Trying to get feedback faster than you can say…" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2009-07-24T16:16:53-07:00","datePublished":"2009-07-24T16:16:53-07:00","description":"I must be tired trying to work on the RGB sliders because I don&rsquo;t seem to be thinking straight. I&rsquo;m beginning to think that with only one background thread it may be very difficult to get quick response even with the upgrade to the code using unsafe even with my little test images (forget it for sure working with large ones). I&rsquo;m spawning a background thread (don&rsquo;t mention the overhead :( ) everytime the slider changes which begings the method to alter the red value of each pixel rather than &ldquo;reset&rdquo; the single thread which didn&rsquo;t seem any better. I have to get some actual times down to see if this is even better than just using one single background thread and cancelling the operation everytime the slider changes. Anyway here&rsquo;s some of the code so far of my sort of weak attempt to get fast feedback: private void trackBar_RED_ValueChanged(object sender, EventArgs e) { BackgroundWorker colorChangerWorker = new BackgroundWorker(); colorChangerWorker.DoWork += new DoWorkEventHandler(colorChangerBackGroundWorker_DoWorkRed); colorChangerWorker.RunWorkerAsync (new ColorChangingObject(trackBar_RED.Value, trackBar_RED.Maximum, colorChangerWorker, originalImage.Width, originalImage.Height, originalImage)); } private void colorChangerBackGroundWorker_DoWorkRed(object sender, DoWorkEventArgs e) { ColorChangingObject paramObject = (ColorChangingObject)e.Argument; double sliderValue = (double)paramObject.SliderValue; double maxValue = (double)paramObject.MaxSliderValue; double addRedPercent = sliderValue / maxValue; FastBitMapProcessor processImage = new FastBitMapProcessor(paramObject.Image); processImage.LockImage(); for (int i = 0; i &lt; paramObject.Width; i++) { for (int j = 0; j &lt; paramObject.Height; j++) { Color currPixelColor = processImage.GetPixel(i, j); double red = (addRedPercent * (255 - currPixelColor.R)) + currPixelColor.R; processImage.SetPixel(i, j, Color.FromArgb((int)red, currPixelColor.G, currPixelColor.B)); } } processImage.UnlockImage(); changedImage = (Bitmap)processImage.Image.Clone(); if (pictureBox2.InvokeRequired) { var UpdateImage = new UpdatePictureBoxImage(SetPictureBox2Image); Invoke(UpdateImage, changedImage); } processImage.Dispose(); paramObject.backgroundThread.Dispose(); } &lt;/code&gt; Post any help if you have some. Side Stuff I guess I&rsquo;ve made a lot of posts which are really really software oriented versus rather than some other stuff I&rsquo;ve been doing lately (squash, ice hockey) I just found this project to be really interesting and on my mind. Part of what is so interesting is noticing how a project envisoined initially so small can just explode if not checked. I seem to be working just as hard to fight thoughts to add the application than I do actually working on it. I guess that is what the benefit of programming something for an assigment versus than for you is. You tend to not go beyond the scope of the assignment, whereas for yourself you let your thoughts run free. I feel this is something it is good to get a grip on. It seems to be a big problem some people lack in the software industry especially evidently from my current and previous jobs. People never want to freeze the software and label it feature complete; but rather seem to happy tacking on feature after feature.","headline":"Trying to get feedback faster than you can say…","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2009-07-24-trying-to-get-feedback-faster-than-you-can-say.html"},"url":"https://fzakaria.com/old_blog/2009-07-24-trying-to-get-feedback-faster-than-you-can-say.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Trying to get feedback faster than you can say...
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2009-07-24
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2009-07-24-trying-to-get-feedback-faster-than-you-can-say.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p align="left">
+I must be tired trying to work on the RGB sliders because I don&rsquo;t seem to be thinking straight. I&rsquo;m beginning to think that with only one background thread it may be very difficult to get quick response even with the upgrade to the code using unsafe even with my little test images (forget it for sure working with large ones).</p>
+<p align="left">
+I&rsquo;m spawning a background thread (don&rsquo;t mention the overhead :( ) everytime the slider changes which begings the method to alter the red value of each pixel  rather than &ldquo;reset&rdquo; the single thread which didn&rsquo;t seem any better.</p>
+<p align="left">
+I have to get some actual times down to see if this is even better than just using one single background thread and cancelling the operation everytime the slider changes.</p>
+<p>Anyway here&rsquo;s some of the code so far of my sort of weak attempt to get fast feedback:</p>
+<code>
+<pre>
+private void trackBar_RED_ValueChanged(object sender, EventArgs e)
+{
+  BackgroundWorker colorChangerWorker = new BackgroundWorker();
+  colorChangerWorker.DoWork += new 
+DoWorkEventHandler(colorChangerBackGroundWorker_DoWorkRed);
+  colorChangerWorker.RunWorkerAsync
+(new ColorChangingObject(trackBar_RED.Value, trackBar_RED.Maximum, colorChangerWorker,
+ originalImage.Width, originalImage.Height, originalImage));
+}
+private void colorChangerBackGroundWorker_DoWorkRed(object sender, DoWorkEventArgs e)
+{
+  ColorChangingObject paramObject = (ColorChangingObject)e.Argument;
+  double sliderValue = (double)paramObject.SliderValue;
+  double maxValue = (double)paramObject.MaxSliderValue;
+  double addRedPercent = sliderValue / maxValue;
+  FastBitMapProcessor processImage = new FastBitMapProcessor(paramObject.Image);
+  processImage.LockImage();
+  for (int i = 0; i < paramObject.Width; i++)
+  {
+   for (int j = 0; j < paramObject.Height; j++)
+    {
+     Color currPixelColor = processImage.GetPixel(i, j);
+     double red = (addRedPercent * (255 - currPixelColor.R)) + currPixelColor.R;
+     processImage.SetPixel(i, j, Color.FromArgb((int)red, currPixelColor.G, currPixelColor.B));
+    }
+  }
+  processImage.UnlockImage();
+  changedImage = (Bitmap)processImage.Image.Clone();
+  if (pictureBox2.InvokeRequired)
+  {
+   var UpdateImage = new   UpdatePictureBoxImage(SetPictureBox2Image);
+   Invoke(UpdateImage, changedImage);
+  }
+  processImage.Dispose();
+  paramObject.backgroundThread.Dispose();
+}
+</code>
+</pre>
+<p><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2009/07/JPEG_SLIDER_RED.jpg" alt="Let there be red" title="Let there be red" width="293" height="247" class="size-full wp-image-119" /><br />
+Post any help if you have some.</p>
+<h4> Side Stuff </h4>
+<p align = "left">
+I guess I&rsquo;ve made a lot of posts which are really really software oriented versus rather than some other stuff I&rsquo;ve been doing lately (squash, ice hockey) I just found this project to be really interesting and on my mind.</p>
+<p align = "left">
+Part of what is so interesting is noticing how a project envisoined initially so small can just explode if not checked. I seem to be working just as hard to fight thoughts to add the application than I do actually working on it. I guess that is what the benefit of programming something for an assigment versus than for you is. You tend to not go beyond the scope of the assignment, whereas for yourself you let your thoughts run free.</p>
+<p align = "left">
+I feel this is something it is good to get a grip on. It seems to be a big problem some people lack in the software industry especially evidently from my current and previous jobs.  People never want to freeze the software and label it feature complete; but rather seem to happy tacking on feature after feature.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2009-07-24-trying-to-get-feedback-faster-than-you-can-say.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

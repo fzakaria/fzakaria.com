@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>HypeMachine Chrome Extension HotFix | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="HypeMachine Chrome Extension HotFix" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Ninja Update I haven&#39;t been using my HypeMachine Extension lately, which has caused me to fall behind in maintaining the extension. Someone had just e-mailed me recently regarding how the extension is no longer working. I should really integrate a settings option for the extension that points people to the GitHub EPR system. I&#39;ve updated the Extension on my GitHub and you can follow these steps for installing the extension: Download the extension. Unzip the extension. Go to your Chrome&#39;s Extension page: chrome://extensions, and make sure the page is in Developer mode. If Developer mode has a + by it, click the + to add developer information to the page. The + changes to a -, and more buttons and information appear. Click the Load unpacked extension button. A file dialog appears In the file dialog, navigate to your extension&#39;s folder and click OK. Enjoy! For the curious For those that are curious what had caused the extension to break, HypeMachine had changed from using Prototype and started using jQuery instead. This change had caused all the instances of referring to Prototype&#39;s selector $$ to no longer work. The hook into Prototype&#39;s Ajax responder was also rendered useless. I had decided to change the code to support Prototype rather than other options available, such as including myself the prototype.js file. This was done because I&#39;m not sure if Prototype can still hook into Ajax requests done via jQuery. Once all the selector&#39;s and event handlers had been moved to jQuery, the extension worked again! As an aside: Sometimes Very rarely the download arrows are not fully renered and I&#39;m unsure why. If you know the reason and/or fix, please let me know. Here is an example:" />
+<meta property="og:description" content="Ninja Update I haven&#39;t been using my HypeMachine Extension lately, which has caused me to fall behind in maintaining the extension. Someone had just e-mailed me recently regarding how the extension is no longer working. I should really integrate a settings option for the extension that points people to the GitHub EPR system. I&#39;ve updated the Extension on my GitHub and you can follow these steps for installing the extension: Download the extension. Unzip the extension. Go to your Chrome&#39;s Extension page: chrome://extensions, and make sure the page is in Developer mode. If Developer mode has a + by it, click the + to add developer information to the page. The + changes to a -, and more buttons and information appear. Click the Load unpacked extension button. A file dialog appears In the file dialog, navigate to your extension&#39;s folder and click OK. Enjoy! For the curious For those that are curious what had caused the extension to break, HypeMachine had changed from using Prototype and started using jQuery instead. This change had caused all the instances of referring to Prototype&#39;s selector $$ to no longer work. The hook into Prototype&#39;s Ajax responder was also rendered useless. I had decided to change the code to support Prototype rather than other options available, such as including myself the prototype.js file. This was done because I&#39;m not sure if Prototype can still hook into Ajax requests done via jQuery. Once all the selector&#39;s and event handlers had been moved to jQuery, the extension worked again! As an aside: Sometimes Very rarely the download arrows are not fully renered and I&#39;m unsure why. If you know the reason and/or fix, please let me know. Here is an example:" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-08-18-hypemachine-chrome-extension-hotfix.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-08-18-hypemachine-chrome-extension-hotfix.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-08-18T15:19:22-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="HypeMachine Chrome Extension HotFix" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-08-18T15:19:22-07:00","datePublished":"2011-08-18T15:19:22-07:00","description":"Ninja Update I haven&#39;t been using my HypeMachine Extension lately, which has caused me to fall behind in maintaining the extension. Someone had just e-mailed me recently regarding how the extension is no longer working. I should really integrate a settings option for the extension that points people to the GitHub EPR system. I&#39;ve updated the Extension on my GitHub and you can follow these steps for installing the extension: Download the extension. Unzip the extension. Go to your Chrome&#39;s Extension page: chrome://extensions, and make sure the page is in Developer mode. If Developer mode has a + by it, click the + to add developer information to the page. The + changes to a -, and more buttons and information appear. Click the Load unpacked extension button. A file dialog appears In the file dialog, navigate to your extension&#39;s folder and click OK. Enjoy! For the curious For those that are curious what had caused the extension to break, HypeMachine had changed from using Prototype and started using jQuery instead. This change had caused all the instances of referring to Prototype&#39;s selector $$ to no longer work. The hook into Prototype&#39;s Ajax responder was also rendered useless. I had decided to change the code to support Prototype rather than other options available, such as including myself the prototype.js file. This was done because I&#39;m not sure if Prototype can still hook into Ajax requests done via jQuery. Once all the selector&#39;s and event handlers had been moved to jQuery, the extension worked again! As an aside: Sometimes Very rarely the download arrows are not fully renered and I&#39;m unsure why. If you know the reason and/or fix, please let me know. Here is an example:","headline":"HypeMachine Chrome Extension HotFix","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-08-18-hypemachine-chrome-extension-hotfix.html"},"url":"https://fzakaria.com/old_blog/2011-08-18-hypemachine-chrome-extension-hotfix.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    HypeMachine Chrome Extension HotFix
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-08-18
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-08-18-hypemachine-chrome-extension-hotfix.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2>Ninja Update</h2>
+<p>
+I haven't been using my <a href="https://github.com/fzakaria/HypeMachine-Extension">HypeMachine Extension</a> lately, which has caused me to fall behind in maintaining the extension. Someone had just e-mailed me recently regarding how the extension is no longer working.</p>
+<blockquote><p>I should really integrate a settings option for the extension that points people to the GitHub EPR system.</p></blockquote>
+<p>I've updated the Extension on my GitHub and you can follow these steps for installing the extension:</p>
+<ol>
+<li><a href="https://github.com/fzakaria/HypeMachine-Extension/archives/master">Download</a> the extension.</li>
+<li>Unzip the extension.</li>
+<li>Go to your Chrome's Extension page: <a href="chrome://extensions">chrome://extensions</a>, and make sure the page is in Developer mode.</li>
+<ul>
+<li>If Developer mode has a + by it, click the + to add developer information to the page. The + changes to a -, and more buttons and information appear.</li>
+</ul>
+<li>Click the Load unpacked extension button. A file dialog appears</li>
+<li>In the file dialog, navigate to your extension's folder and click OK.</li>
+<li>Enjoy!</li>
+</ol>
+<p><!--more--></p>
+<h2> For the curious </h2>
+<p>
+For those that are curious what had caused the extension to break, <a href="http://hypem.com/">HypeMachine</a> had changed from using <a href="http://www.prototypejs.org/">Prototype</a> and started using <a href="http://jquery.com/">jQuery </a>instead.</p>
+<p>
+This change had caused all the instances of referring to Prototype's selector <strong><em>$$</em></strong> to no longer work. The hook into Prototype's Ajax responder was also rendered useless.</p>
+<p>
+I had decided to change the code to support Prototype rather than other options available, such as including myself the prototype.js file. This was done because I'm not sure if Prototype can still hook into Ajax requests done via jQuery. Once all the selector's and event handlers had been moved to jQuery, the extension worked again!</p>
+<p><em>As an aside: <del datetime="2011-08-18T19:20:38+00:00">Sometimes</del> Very rarely the download arrows are not fully renered and I'm unsure why. If you know the reason and/or fix, please let me know. Here is an example:</em><br />
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/08/Capture1.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/08/Capture1.png" alt="" title="Capture" width="500" height="250" class="aligncenter size-full wp-image-807" /></a></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-08-18-hypemachine-chrome-extension-hotfix.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

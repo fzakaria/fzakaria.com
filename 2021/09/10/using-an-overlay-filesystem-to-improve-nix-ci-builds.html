@@ -1,0 +1,287 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Using an overlay filesystem to improve Nix CI builds | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Using an overlay filesystem to improve Nix CI builds" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Using Nix in our CI system has been a huge boon. Through Nix we have a level of guarantee of reproducibility between our local development environment and our CI platform. 🙌 Our CI infrastructure leverages containers (don’t they all now?) for each job and we explored different solutions to reduce the cost of constantly downloading the /nix/store necessary for the build." />
+<meta property="og:description" content="Using Nix in our CI system has been a huge boon. Through Nix we have a level of guarantee of reproducibility between our local development environment and our CI platform. 🙌 Our CI infrastructure leverages containers (don’t they all now?) for each job and we explored different solutions to reduce the cost of constantly downloading the /nix/store necessary for the build." />
+<link rel="canonical" href="https://fzakaria.com/2021/09/10/using-an-overlay-filesystem-to-improve-nix-ci-builds.html" />
+<meta property="og:url" content="https://fzakaria.com/2021/09/10/using-an-overlay-filesystem-to-improve-nix-ci-builds.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-09-10T08:58:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Using an overlay filesystem to improve Nix CI builds" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-09-10T08:58:00-07:00","datePublished":"2021-09-10T08:58:00-07:00","description":"Using Nix in our CI system has been a huge boon. Through Nix we have a level of guarantee of reproducibility between our local development environment and our CI platform. 🙌 Our CI infrastructure leverages containers (don’t they all now?) for each job and we explored different solutions to reduce the cost of constantly downloading the /nix/store necessary for the build.","headline":"Using an overlay filesystem to improve Nix CI builds","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2021/09/10/using-an-overlay-filesystem-to-improve-nix-ci-builds.html"},"url":"https://fzakaria.com/2021/09/10/using-an-overlay-filesystem-to-improve-nix-ci-builds.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Using an overlay filesystem to improve Nix CI builds
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2021-09-10
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2021/09/10/using-an-overlay-filesystem-to-improve-nix-ci-builds.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Using Nix in our CI system has been a huge <em>boon</em>. Through Nix we have a level of guarantee of reproducibility between our local development environment and our CI platform. 🙌</p>
+
+<p>Our CI infrastructure leverages containers (don’t they all now?) for each job and we explored different solutions to reduce the cost of constantly downloading the <em>/nix/store</em> necessary for the build.</p>
+
+<!--more-->
+
+<h2 id="fat-docker-image">Fat Docker image</h2>
+
+<p>At first, we implemented a solution where the <em>/nix/store</em> was embedded within the Docker image itself.</p>
+
+<p>This was an interesting choice for a few reasons:</p>
+<ol>
+  <li>We could disable building from source or any substituters in the build and guarantee the image itself had the complete necessary dependency closure.</li>
+  <li>The images themselves are cached locally on the underlying host, meaning subsequent CI jobs don’t pay the cost of downloading <em>/nix/store</em> contents</li>
+  <li>Changes to our dependency closure were annoying since it required rebuilding a new Docker image</li>
+  <li>The docker image was very large and minor changes resulted in a complete new large layer – it wasn’t incremental at all.</li>
+</ol>
+
+<h2 id="overlay-filesystem">Overlay Filesystem</h2>
+
+<p>We decided to seek out alternatives where we can remove the prebuild <em>/nix/store</em> from the container but still reduce the cold-boot cost for CI jobs.</p>
+
+<p>The <strong>caveat</strong> to the solution we sought is that the Docker image still <strong>installed</strong> Nix which meant it created a <em>/nix/store</em> entry and the necessary <em>~/.nix_profile</em> symlinks.</p>
+
+<blockquote>
+  <p><a href="https://github.com/torvalds/linux/commit/e9be9d5e76e34872f0c37d72e25bc27fe9e2c54c">Overlayfs</a> allows one, usually read-write, directory tree to be
+overlaid onto another, read-only directory tree.  All modifications
+go to the upper, writable layer.</p>
+</blockquote>
+
+<p>Let’s explore how we might go about setting this up! Let’s use a <em>dummy example</em>.</p>
+
+<div class="language-dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">FROM</span><span class="s"> ubuntu</span>
+
+<span class="c"># Let's make a dummy nix-store</span>
+<span class="k">RUN </span><span class="nb">mkdir</span> <span class="nt">-p</span> /nix/store
+
+<span class="c"># let's put a dummy derivation</span>
+<span class="k">RUN </span><span class="nb">echo</span> <span class="s2">"hello"</span> <span class="o">&gt;</span> /nix/store/hello
+
+<span class="c"># a dummy command</span>
+<span class="k">CMD</span><span class="s"> ["/bin/bash"]</span>
+</code></pre></div></div>
+
+<p>I will also create some <em>dummy directories</em> on my <strong>host</strong>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">mkdir</span> <span class="nt">-p</span> /tmp/fake-nix/<span class="o">{</span>upper,workdir<span class="o">}</span>
+
+<span class="nb">echo</span> <span class="s2">"ping"</span> <span class="o">&gt;</span> /tmp/fake-nix/upper/pong
+</code></pre></div></div>
+
+<p>Let’s spin up a docker container.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># lets run a docker and bind-mount of host /nix/store</span>
+<span class="c"># in this case we called it /tmp/fake-nix</span>
+<span class="c"># In reality this will be your host's /nix/store</span>
+docker run <span class="nt">--privileged</span> <span class="nt">-v</span> /tmp/fake-nix:/nix/store-host <span class="se">\</span>
+           <span class="nt">-it</span> <span class="si">$(</span>docker build <span class="nb">.</span> <span class="nt">--quiet</span><span class="si">)</span> /bin/bash
+</code></pre></div></div>
+
+<p>Let’s check the contents of the <em>/nix/store</em> originally.
+We see that it only has out <em>hello</em> file.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@c32024e56f25:/# <span class="nb">ls</span> /nix/store
+hello
+</code></pre></div></div>
+
+<p>Now let’s mount our overlay filesystem.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@c32024e56f25:/# mount <span class="nt">-t</span> overlay overlay <span class="nt">-o</span> <span class="se">\ </span>
+        <span class="nv">lowerdir</span><span class="o">=</span>/nix/store,upperdir<span class="o">=</span>/nix/store-host/upper,workdir<span class="o">=</span>/nix/store-host/workdir <span class="se">\</span>
+        /nix/store
+</code></pre></div></div>
+
+<p>Let’s check the contents of our <em>/nix/store</em> now.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@c32024e56f25:/# <span class="nb">ls</span> <span class="nt">-l</span> /nix/store
+total 8
+<span class="nt">-rw-r--r--</span> 1 root   root  6 Sep  9 17:15 hello
+<span class="nt">-rw-r--r--</span> 1 780412 89939 5 Sep 10 16:22 pong
+</code></pre></div></div>
+
+<p>Great! Our <em>/nix/store</em> now has the contents of the host overlaid ontop of the one within the container.</p>
+
+<p>What if we write a new file?</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@c32024e56f25:/# <span class="nb">echo</span> <span class="s2">"test"</span> <span class="o">&gt;</span> /nix/store/test
+
+root@c32024e56f25:/# <span class="nb">ls</span> /nix/store
+hello  pong  <span class="nb">test
+
+</span>root@c32024e56f25:/# <span class="nb">ls</span> /nix/store-host/upper/
+pong  <span class="nb">test</span>
+</code></pre></div></div>
+
+<p>We see that it created the file in the <em>upper</em> directory.</p>
+
+<p>What if we update a file in the <em>lower</em> directory?</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@c32024e56f25:/# <span class="nb">echo</span> <span class="s2">"world"</span> <span class="o">&gt;</span> /nix/store/hello
+
+root@c32024e56f25:/# <span class="nb">ls</span> /nix/store-host/upper/
+hello  pong  <span class="nb">test</span>
+</code></pre></div></div>
+
+<p>Ok cool – it moved it to our <em>upper</em> directory.</p>
+
+<p>What if we delete the file?</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>root@c32024e56f25:/# <span class="nb">rm</span> /nix/store/hello
+
+root@c32024e56f25:/# <span class="nb">ls</span> /nix/store            
+pong  <span class="nb">test
+
+</span>root@c32024e56f25:/# <span class="nb">ls</span> <span class="nt">-l</span> /nix/store-host/upper      
+total 8
+c--------- 2 root   root  0, 0 Sep 11 02:22 hello
+<span class="nt">-rw-r--r--</span> 1 780412 89939    5 Sep 10 16:22 pong
+<span class="nt">-rw-r--r--</span> 1 root   root     5 Sep 11 02:19 <span class="nb">test</span>
+</code></pre></div></div>
+
+<p>The <em>hello</em> file still exists in the <em>upper</em> directory but it’s a tombstone file now.
+This is to distinguish it from the fact it’s been deleted while still existing in the <em>lower</em> directory.</p>
+
+<p>Awesome – what’s great too is that the overlay filesystem that’s supported natively in Linux gives you near native performance.</p>
+
+<blockquote>
+  <p>The implementation differs from other “union filesystem”
+implementations in that after a file is opened all operations go
+directly to the underlying, lower or upper, filesystems.  This
+simplifies the implementation and allows native performance in these
+cases.</p>
+</blockquote>
+
+<p>Hope that helps others in trying to speedup their builds. 🤓</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2021-09-10-using-an-overlay-filesystem-to-improve-nix-ci-builds.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

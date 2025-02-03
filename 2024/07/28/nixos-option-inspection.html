@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>NixOS Option Inspection | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="NixOS Option Inspection" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="NixOS modules are great; and it’s one of the superpowers of NixOS. They’re so great, there was a working group to look into how to apply the concept to Nixpkgs itself. For those uninitiated, there are plenty of guides online describing it’s value and purpose such as this one or on nix.dev. My largest complaint thus far with it was that it’s hard to go backwards. ⏪ “Who and what defined a particular option?” 🕵️" />
+<meta property="og:description" content="NixOS modules are great; and it’s one of the superpowers of NixOS. They’re so great, there was a working group to look into how to apply the concept to Nixpkgs itself. For those uninitiated, there are plenty of guides online describing it’s value and purpose such as this one or on nix.dev. My largest complaint thus far with it was that it’s hard to go backwards. ⏪ “Who and what defined a particular option?” 🕵️" />
+<link rel="canonical" href="https://fzakaria.com/2024/07/28/nixos-option-inspection.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/07/28/nixos-option-inspection.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-28T14:51:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="NixOS Option Inspection" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-28T14:51:00-07:00","datePublished":"2024-07-28T14:51:00-07:00","description":"NixOS modules are great; and it’s one of the superpowers of NixOS. They’re so great, there was a working group to look into how to apply the concept to Nixpkgs itself. For those uninitiated, there are plenty of guides online describing it’s value and purpose such as this one or on nix.dev. My largest complaint thus far with it was that it’s hard to go backwards. ⏪ “Who and what defined a particular option?” 🕵️","headline":"NixOS Option Inspection","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/07/28/nixos-option-inspection.html"},"url":"https://fzakaria.com/2024/07/28/nixos-option-inspection.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    NixOS Option Inspection
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-07-28
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/07/28/nixos-option-inspection.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p><a href="https://nixos.org">NixOS</a> modules are great; and it’s one of the <em>superpowers</em> of NixOS.
+They’re so great, there was a <a href="https://discourse.nixos.org/t/working-group-member-search-module-system-for-packages/26574">working group</a> to look into how to apply the concept to Nixpkgs itself.</p>
+
+<blockquote>
+  <p>For those uninitiated, there are plenty of guides online describing it’s value and purpose such as
+<a href="https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/module-system">this one</a> or on <a href="https://nix.dev/tutorials/module-system/deep-dive.html">nix.dev</a>.</p>
+</blockquote>
+
+<p>My <em>largest complaint</em> thus far with it was that it’s hard to go backwards. ⏪</p>
+
+<p><em>“Who and what defined a particular option?”</em> 🕵️</p>
+
+<!--more-->
+
+<p>The problem I often want to solve is where did a particular NixOS module option get set.</p>
+
+<p>Imagine we have 3 modules: A, B &amp; C</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Module A</span>
+<span class="c"># moduleA.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkOption</span> <span class="p">{</span>
+      <span class="nv">type</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">types</span><span class="o">.</span><span class="nv">bool</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>The common way people find out that a particular option is being set by multiple modules are when their values conflict.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Module B</span>
+<span class="c"># moduleB.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="c"># Module C</span>
+<span class="c"># moduleC.nix</span>
+<span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">a</span><span class="o">.</span><span class="nv">value</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If <code class="language-plaintext highlighter-rouge">Module B</code> and <code class="language-plaintext highlighter-rouge">Module C</code> were to conflict with how they set <code class="language-plaintext highlighter-rouge">a.value</code>, you are presented with a friendly error telling you to decide on a priority.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-instantiate --eval default.nix -A config.a.value
+error: The option `a.value' has conflicting definition values:
+- In `moduleC.nix': false
+- In `moduleB.nix': true
+Use `lib.mkForce value` or `lib.mkDefault value` to change
+the priority on any of these definitions.
+</span></code></pre></div></div>
+
+<p><em>This only works if you are using non-mergeable values. What if the values do merge?</em></p>
+
+<p>How can I discover all the locations where a particular option is set. 🤔</p>
+
+<blockquote>
+  <p>Note: This is a real problem I often face. A recent example was I noticed my fingerprint reader <code class="language-plaintext highlighter-rouge">services.fprintd</code> was enabled.
+I could not figure out where the option was being toggled however.</p>
+</blockquote>
+
+<p>When the majority of NixOS modules resided in Nixpkgs, I rarely had the problem of attributing where a particular option was set.
+I had the not great, but usable, workflow of searching (<a href="https://github.com/BurntSushi/ripgrep"><code class="language-plaintext highlighter-rouge">rg</code></a>) through the whole codebase to find all the likely spots
+that might have set it.</p>
+
+<p>With the <em>proliferation</em> of Nix Flakes, this problem has gotten increasingly worse. There is no longer a <em>single source of truth</em> for all your NixOS modules. The Nix Flakes system, encourages decentralized configurations and bringing in individual NixOS modules from many “registries” (<em>sic: GitHub repositories</em>).</p>
+
+<blockquote>
+  <p>Note: One could have pulled in NixOS modules from multiple repositories in the legacy mechanism, but it was hard to manage versioning even with tools like <a href="https://github.com/nmattia/niv">niv</a> or <a href="https://github.com/andir/npins">npins</a> so most people upstreamed their module to Nixpkgs itself.</p>
+</blockquote>
+
+<p>Turns out, the solution to my woes has been in Nixpkgs for over 2 years (circa 2022) via <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code>. 🎉</p>
+
+<p>You can load up the <code class="language-plaintext highlighter-rouge">nix repl</code> for a given Nix Flake and find all the locations (only file sadly 😔 no line number) along with their values.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl --extra-experimental-features 'flakes repl-flake' .
+warning: unknown experimental feature 'repl-flake'
+Nix 2.23.2
+Type :? for help.
+warning: Git tree '/home/fmzakari/code/github.com/fzakaria/nix-home' is dirty
+</span><span class="gp">Loading installable 'git+file:///home/fmzakari/code/github.com/fzakaria/nix-home#</span><span class="s1">'...
+</span><span class="go">Added 7 variables.
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>options <span class="o">=</span> nixosConfigurations.nyx.options  
+<span class="gp">nix-repl&gt;</span><span class="w"> </span>pkgs <span class="o">=</span> nixosConfigurations.nyx.pkgs                                                
+<span class="go">
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p <span class="o">(</span>pkgs.lib.take 2 options.environment.pathsToLink.definitionsWithLocations<span class="o">)</span>      
+<span class="go">[
+  {
+</span><span class="gp">    file = "/nix/store/hxhym8c5xz6dxkl3d9yppiwlnzk3khn7-source/nixos/common.nix";</span><span class="w">
+</span><span class="gp">    value = [ "/etc/profile.d" ];</span><span class="w">
+</span><span class="go">  }
+  {
+</span><span class="gp">    file = "/nix/store/ncinwsh2j3197rp8pl4yw7amri5yf9zw-source/users";</span><span class="w">
+</span><span class="go">    value = [
+      "/share/zsh"
+      "/share/fish"
+      "/share/bash"
+</span><span class="gp">    ];</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>If you only care to see the files, you can use <code class="language-plaintext highlighter-rouge">files</code> instead.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p <span class="o">(</span>pkgs.lib.take 2 options.environment.pathsToLink.files<span class="o">)</span>
+<span class="go">[
+  "/nix/store/hxhym8c5xz6dxkl3d9yppiwlnzk3khn7-source/nixos/common.nix"
+  "/nix/store/ncinwsh2j3197rp8pl4yw7amri5yf9zw-source/users"
+]
+</span></code></pre></div></div>
+
+<p>❗ Anywhere you see <code class="language-plaintext highlighter-rouge">XXXXXX-source</code> is the current Flake (your repository) but you can likely tell
+from the path and filenames as well.</p>
+
+<p><strong>Awesome</strong>; we now have a gesture to find where a particular option is being set along with their values.
+Now we can have our cake 🍰 and eat it too; we can have the magic of NixOS modules 🪄 while still having a workflow to
+uncover where options may be set.</p>
+
+<p>❗This works great for the most part but doesn’t seem to give the correct location for modules imported via Flakes (<em>I see the humor in this</em>).
+I filed <a href="https://github.com/NixOS/nix/issues/11210">Issue #11210</a> to track the bug 🐛 and document the behavior.</p>
+
+<p><strong>UPDATE(2024-07-29)</strong> I wrote a follow-up post on <a href="/2024/07/29/import-but-don-t-import-your-nixos-modules.html">pitfalls importing modules</a> which articulates what the problem was with <a href="https://github.com/NixOS/nix/issues/11210">Issue #11210</a> and how to fix it.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-07-28-nixos-option-inspection.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

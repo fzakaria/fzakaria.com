@@ -1,0 +1,235 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Nix remote building with Yubikey | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Nix remote building with Yubikey" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="There isn’t that much Nix documentation for remote building with Nix. I’m leaving my tiny module that I’m using to enable my Framework Laptop running NixOS to perform remote builds using the Nix Community builders, specifically that I use a Yubikey key as my SSH private key. Actually some of the best documentation is courtesy of nixbuild." />
+<meta property="og:description" content="There isn’t that much Nix documentation for remote building with Nix. I’m leaving my tiny module that I’m using to enable my Framework Laptop running NixOS to perform remote builds using the Nix Community builders, specifically that I use a Yubikey key as my SSH private key. Actually some of the best documentation is courtesy of nixbuild." />
+<link rel="canonical" href="https://fzakaria.com/2024/07/10/nix-remote-building-with-yubikey.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/07/10/nix-remote-building-with-yubikey.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-10T18:46:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Nix remote building with Yubikey" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-10T18:46:00-07:00","datePublished":"2024-07-10T18:46:00-07:00","description":"There isn’t that much Nix documentation for remote building with Nix. I’m leaving my tiny module that I’m using to enable my Framework Laptop running NixOS to perform remote builds using the Nix Community builders, specifically that I use a Yubikey key as my SSH private key. Actually some of the best documentation is courtesy of nixbuild.","headline":"Nix remote building with Yubikey","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/07/10/nix-remote-building-with-yubikey.html"},"url":"https://fzakaria.com/2024/07/10/nix-remote-building-with-yubikey.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Nix remote building with Yubikey
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-07-10
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/07/10/nix-remote-building-with-yubikey.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>There isn’t that much Nix documentation for remote building with Nix.</p>
+
+<p>I’m leaving my tiny module that I’m using to enable my Framework Laptop running NixOS to perform remote builds using the <a href="https://nix-community.org/community-builder/">Nix Community builders</a>, specifically that I use a Yubikey key as my SSH private key.</p>
+
+<blockquote>
+  <p>Actually some of the best documentation is courtesy of <a href="https://docs.nixbuild.net/remote-builds/">nixbuild</a>.</p>
+</blockquote>
+
+<!--more-->
+
+<h3 id="prerequisites">Prerequisites</h3>
+
+<ol>
+  <li>
+    <p>Using a Yubikey for SSH access</p>
+
+    <p>You can get your public key using <em>ssh-add -L</em></p>
+
+    <div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go"> ❯ ssh-add -L
+</span><span class="gp"> ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDruWlzuyOXV0Ltjv0vVoCSkf4/ic4ET4of6NTqLWfvw/wpNFDr3SXRDAftOFcyoKp0ls0z6xy3CH99pUNmVnU19nwPdPfY93FJHaVDmS3VUzhco+e+bd1Azds5bltg06H+2vuHFcFMA28Y1o5h6ISlVY45bUzhKnW6+9whwECGBQo5KSvSW0D50eP557DD1KZlWUuJrcno65iQUz6dZ+R5cwfoTRhCvh4ltzJ6Fel6RuHPzG3u56lHM+upsF1REljHsNGI6XF3bcRuIoSssvaT0ZzVJQz/YnI1+wGZDNSKJI7WE+xmhfhcGLDzVaxNkLuJLMv/goTcDsDBb1BVw0YF YubiKey #</span>8531869 PIV Slot 9a
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Use <a href="https://filippo.io">Filippo Valsorda</a> excellent <a href="https://github.com/FiloSottile/yubikey-agent">Yubikey SSH agent</a></p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">yubikey-agent</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="nix-module">Nix Module</h3>
+
+<p>The <em>surprising</em> (and a bit ugly unfortunately) part is to include a default <em>ssh_config</em> for the root user; this is necessary because on NixOS the nix builds are done by the daemon which is running as <em>root</em>.</p>
+
+<p>In order to give the <em>root</em> user access to the Yubikey we pass in the <code class="language-plaintext highlighter-rouge">SSH_AUTH_SOCK</code> value which is <em>/run/user/1000/yubikey-agent/yubikey-agent.sock</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="nv">config</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">programs</span><span class="o">.</span><span class="nv">ssh</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># Community builder for Linux</span>
+    <span class="nv">knownHosts</span><span class="o">.</span><span class="s2">"build-box.nix-community.org"</span><span class="o">.</span><span class="nv">publicKey</span> <span class="o">=</span> <span class="s2">"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIElIQ54qAy7Dh63rBudYKdbzJHrrbrrMXLYl7Pkmk88H"</span><span class="p">;</span>
+
+    <span class="c"># nix remote builders don't work with Yubikey and on NixOS the builder runs as root</span>
+    <span class="c"># so what we do is tell it the user to login as but give it the identity agent to connect</span>
+    <span class="c"># to for my (fmzakari) user. A bit of a hack but....not sure a better alternative.</span>
+    <span class="nv">extraConfig</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">      Host build-box.nix-community.org</span><span class="err">
+</span><span class="s2">        IdentityAgent /run/user/1000/yubikey-agent/yubikey-agent.sock</span><span class="err">
+</span><span class="s2">    ''</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nv">nix</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">distributedBuilds</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="c"># Nix will instruct remote build machines to use their own binary substitutes if available.</span>
+    <span class="c"># In practical terms, this means that remote hosts will fetch as many build dependencies as</span>
+    <span class="c"># possible from their own substitutes (e.g, from cache.nixos.org), instead of waiting for this</span>
+    <span class="c"># host to upload them all. This can drastically reduce build times if the network connection</span>
+    <span class="c"># between this computer and the remote build host is slow.</span>
+    <span class="nv">settings</span><span class="o">.</span><span class="nv">builders-use-substitutes</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+    <span class="nv">buildMachines</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="p">{</span>
+        <span class="nv">protocol</span> <span class="o">=</span> <span class="s2">"ssh-ng"</span><span class="p">;</span>
+        <span class="nv">hostName</span> <span class="o">=</span> <span class="s2">"build-box.nix-community.org"</span><span class="p">;</span>
+        <span class="nv">maxJobs</span> <span class="o">=</span> <span class="mi">12</span><span class="p">;</span>
+        <span class="nv">systems</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"x86_64-linux"</span><span class="p">];</span>
+        <span class="nv">supportedFeatures</span> <span class="o">=</span> <span class="p">[</span>
+          <span class="s2">"benchmark"</span>
+          <span class="s2">"big-parallel"</span>
+          <span class="s2">"kvm"</span>
+          <span class="s2">"nixos-test"</span>
+        <span class="p">];</span>
+        <span class="nv">sshUser</span> <span class="o">=</span> <span class="s2">"fmzakari"</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">];</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If you think this Nix code can be improved, <strong>please let me know</strong>.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-07-10-nix-remote-building-with-yubikey.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

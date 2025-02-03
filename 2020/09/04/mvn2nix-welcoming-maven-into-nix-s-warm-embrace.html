@@ -1,0 +1,301 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>mvn2nix; welcoming Maven into Nix’s warm embrace | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="mvn2nix; welcoming Maven into Nix’s warm embrace" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I wrote previously about the current state of affairs for Java packaging in the Nix ecosystem; including a little blurb at the end about a little project I have been working on. I would like to announce a beta release for mvn2nix. You find find the similar announcement on https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751 Easily package your Maven Java application with the Nix package manager. mvn2nix is my attempt &amp; re-imagining of what a lock file type Nix Java ecosystem should look like." />
+<meta property="og:description" content="I wrote previously about the current state of affairs for Java packaging in the Nix ecosystem; including a little blurb at the end about a little project I have been working on. I would like to announce a beta release for mvn2nix. You find find the similar announcement on https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751 Easily package your Maven Java application with the Nix package manager. mvn2nix is my attempt &amp; re-imagining of what a lock file type Nix Java ecosystem should look like." />
+<link rel="canonical" href="https://fzakaria.com/2020/09/04/mvn2nix-welcoming-maven-into-nix-s-warm-embrace.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/04/mvn2nix-welcoming-maven-into-nix-s-warm-embrace.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-04T09:09:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="mvn2nix; welcoming Maven into Nix’s warm embrace" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-04T09:09:00-07:00","datePublished":"2020-09-04T09:09:00-07:00","description":"I wrote previously about the current state of affairs for Java packaging in the Nix ecosystem; including a little blurb at the end about a little project I have been working on. I would like to announce a beta release for mvn2nix. You find find the similar announcement on https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751 Easily package your Maven Java application with the Nix package manager. mvn2nix is my attempt &amp; re-imagining of what a lock file type Nix Java ecosystem should look like.","headline":"mvn2nix; welcoming Maven into Nix’s warm embrace","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/04/mvn2nix-welcoming-maven-into-nix-s-warm-embrace.html"},"url":"https://fzakaria.com/2020/09/04/mvn2nix-welcoming-maven-into-nix-s-warm-embrace.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    mvn2nix; welcoming Maven into Nix's warm embrace
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-04
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/04/mvn2nix-welcoming-maven-into-nix-s-warm-embrace.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I wrote <a href="/2020/07/20/packaging-a-maven-application-with-nix.html">previously</a> about the current state of affairs for Java packaging in the Nix ecosystem; including a little blurb at the end about a little project I have been working on.</p>
+
+<p>I would like to announce a <em>beta release</em> for <a href="https://github.com/fzakaria/mvn2nix">mvn2nix</a>.</p>
+
+<p>You find find the similar announcement on <a href="https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751">https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751</a></p>
+
+<blockquote>
+  <p>Easily package your Maven Java application with the Nix package manager.</p>
+</blockquote>
+
+<p><strong>mvn2nix</strong> is my attempt &amp; re-imagining of what a lock file type Nix Java ecosystem should look like.</p>
+
+<!--more-->
+
+<p>⚠️ <strong>mvn2nix</strong> is seeing active development. Please pin the commit to avoid any breaking changes.</p>
+
+<h3 id="philosophical-goals">Philosophical Goals</h3>
+
+<ol>
+  <li>is written in Java itself;</li>
+  <li>is self-bootstrapped; it builds itself!</li>
+  <li>very easy to understand derivations</li>
+  <li>lots of documentation</li>
+  <li>examples on how to produce a runnable JAR</li>
+</ol>
+
+<h3 id="demo">Demo</h3>
+
+<p>You can easily run <strong>mvn2nix</strong> using <em>nix run</em>.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nix run <span class="nt">-f</span> https://github.com/fzakaria/mvn2nix/archive/master.tar.gz <span class="se">\</span>
+<span class="nt">--command</span> mvn2nix
+</code></pre></div></div>
+
+<p>Doing so on a Maven project with a <em>pom.xml</em> will produce lock file contents.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>nix run <span class="nt">-f</span> https://github.com/fzakaria/mvn2nix/archive/master.tar.gz <span class="se">\</span>
+        <span class="nt">--command</span> mvn2nix <span class="o">&gt;</span> mvn2nix-lock.json
+
+<span class="nv">$ </span><span class="nb">head </span>mvn2nix-lock.json
+<span class="o">{</span>
+  <span class="s2">"dependencies"</span>: <span class="o">{</span>
+    <span class="s2">"org.junit.jupiter:junit-jupiter:jar:5.6.2"</span>: <span class="o">{</span>
+      <span class="s2">"layout"</span>: <span class="s2">"org/junit/jupiter/junit-jupiter/5.6.2/junit-jupiter-5.6.2.jar"</span>,
+      <span class="s2">"sha256"</span>: <span class="s2">"dfc0d870dec4c5428a126ddaaa987bdaf8026cc27270929c9f26d52f3030ac61"</span>,
+      <span class="s2">"url"</span>: <span class="s2">"https://repo.maven.apache.org/maven2/org/junit/jupiter/junit-jupiter/5.6.2/junit-jupiter-5.6.2.jar"</span>
+    <span class="o">}</span>,
+    <span class="s2">"org.codehaus.plexus:plexus-utils:pom:3.0.15"</span>: <span class="o">{</span>
+      <span class="s2">"layout"</span>: <span class="s2">"org/codehaus/plexus/plexus-utils/3.0.15/plexus-utils-3.0.15.pom"</span>,
+      <span class="s2">"sha256"</span>: <span class="s2">"b4fe0bed469e2e973c661b4b7647db374afee7bda513560e96cd780132308f0b"</span>,
+      <span class="s2">"url"</span>: <span class="s2">"https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-utils/3.0.15/plexus-utils-3.0.15.pom"</span>
+    <span class="o">}</span>,
+</code></pre></div></div>
+
+<p>The contents of this file are the full <strong>transitive</strong> dependency closure for your Maven; including every dependency needed to get to the desired <a href="https://maven.apache.org/guides/introduction/introduction-to-the-lifecycle.html">lifecycle</a> (defaults to <em>package</em>).</p>
+
+<p>You can then use this to download all the necessary dependencies to re-run the same lifecycle with Maven offline!</p>
+
+<h4 id="building-a-maven-repository">Building a Maven Repository</h4>
+
+<p><strong>mvn2nix</strong> includes a simple derivation that creates a symlink join of every dependency found in the lock file.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nv">mvn2nix</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">fetchTarball</span> <span class="sx">https://github.com/fzakaria/mvn2nix/archive/master.tar.gz</span><span class="p">)</span> <span class="p">{</span> <span class="p">};</span>
+<span class="kn">in</span>
+<span class="nv">mvn2nix</span><span class="o">.</span><span class="nv">buildMavenRepositoryFromLockFile</span> <span class="p">{</span> <span class="nv">file</span> <span class="o">=</span> <span class="sx">./mvn2nix-lock.json</span><span class="p">;</span> <span class="p">}</span>
+</code></pre></div></div>
+
+<p>This creates a <em>/nix/store</em> path which is a Maven repository that can be used, such as in <code class="language-plaintext highlighter-rouge">mvn package --offline -Dmaven.repo.local=${mavenRepository}</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ tree /nix/store/0ylsqi62jqz5gqf0dqrz5a3hj3jrzrwx-mvn2nix-repository | head
+
+/nix/store/0ylsqi62jqz5gqf0dqrz5a3hj3jrzrwx-mvn2nix-repository
+├── com
+│   └── google
+│       ├── code
+│       │   └── findbugs
+│       │       └── jsr305
+│       │           └── 3.0.2
+│       │               └── jsr305-3.0.2.jar -&gt; /nix/store/w20lb1dk730v77qis8l6sjqpljwkyql7-jsr305-3.0.2.jar
+│       ├── errorprone
+│       │   └── error_prone_annotations
+</code></pre></div></div>
+
+<p>A simple derivation to invoke Maven now becomes</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">mkDerivation</span> <span class="kr">rec</span> <span class="p">{</span>
+  <span class="nv">pname</span> <span class="o">=</span> <span class="s2">"my-artifact"</span><span class="p">;</span>
+  <span class="nv">version</span> <span class="o">=</span> <span class="s2">"0.01"</span><span class="p">;</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"</span><span class="si">${</span><span class="nv">pname</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">version</span><span class="si">}</span><span class="s2">"</span><span class="p">;</span>
+  <span class="nv">src</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">cleanSource</span> <span class="sx">./.</span><span class="p">;</span>
+
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">jdk11_headless</span> <span class="nv">maven</span> <span class="nv">makeWrapper</span> <span class="p">];</span>
+  <span class="nv">buildPhase</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    echo "Building with maven repository </span><span class="si">${</span><span class="nv">mavenRepository</span><span class="si">}</span><span class="s2">"</span><span class="err">
+</span><span class="s2">    mvn package --offline -Dmaven.repo.local=</span><span class="si">${</span><span class="nv">mavenRepository</span><span class="si">}</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="runnable-jar">Runnable JAR</h4>
+
+<p>Executing maven is pretty simple now; but ultimately it would be great to get a runnable target.</p>
+
+<p>If you’ve used Maven in the past you might look to re-using <a href="http://maven.apache.org/plugins/maven-assembly-plugin/">Maven Assembly Plugin</a>, <a href="https://maven.apache.org/plugins/maven-shade-plugin/">Maven Shade Plugin</a> or <a href="https://github.com/chrisdchristo/capsule-maven-plugin">Capsule Maven Plugin</a>; the problem however is these solutions don’t take advantage of the fact that the dependencies are already <em>in the store!</em></p>
+
+<p>Setup your <em>maven-jar-plugin</em> to create a manifest which expects the Maven repository layout.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;plugin&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>maven-jar-plugin<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>3.2.0<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;archive&gt;</span>
+            <span class="nt">&lt;manifest&gt;</span>
+                <span class="nt">&lt;addClasspath&gt;</span>true<span class="nt">&lt;/addClasspath&gt;</span>
+                <span class="nt">&lt;classpathPrefix&gt;</span>lib/<span class="nt">&lt;/classpathPrefix&gt;</span>
+                <span class="nt">&lt;classpathLayoutType&gt;</span>repository<span class="nt">&lt;/classpathLayoutType&gt;</span>
+                <span class="nt">&lt;mainClass&gt;</span>com.fzakaria.mvn2nix.Main<span class="nt">&lt;/mainClass&gt;</span>
+            <span class="nt">&lt;/manifest&gt;</span>
+            <span class="nt">&lt;manifestEntries&gt;</span>
+                <span class="nt">&lt;Class-Path&gt;</span>.<span class="nt">&lt;/Class-Path&gt;</span>
+            <span class="nt">&lt;/manifestEntries&gt;</span>
+        <span class="nt">&lt;/archive&gt;</span>
+    <span class="nt">&lt;/configuration&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</code></pre></div></div>
+
+<p>The <em>installPhase</em> of our derivation now merely needs to link the <strong>lib</strong> directory to our <strong>mavenRepository</strong> built with <em>mvn2nix</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">installPhase</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    # create the bin directory</span><span class="err">
+</span><span class="s2">    mkdir -p $out/bin</span><span class="err">
+
+</span><span class="s2">    # create a symbolic link for the lib directory</span><span class="err">
+</span><span class="s2">    ln -s </span><span class="si">${</span><span class="nv">repository</span><span class="si">}</span><span class="s2"> $out/lib</span><span class="err">
+
+</span><span class="s2">    # copy out the JAR</span><span class="err">
+</span><span class="s2">    # Maven already setup the classpath to use m2 repository layout</span><span class="err">
+</span><span class="s2">    # with the prefix of lib/</span><span class="err">
+</span><span class="s2">    cp target/</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.jar $out/</span><span class="err">
+
+</span><span class="s2">    # create a wrapper that will automatically set the classpath</span><span class="err">
+</span><span class="s2">    # this should be the paths from the dependency derivation</span><span class="err">
+</span><span class="s2">    makeWrapper </span><span class="si">${</span><span class="nv">jdk</span><span class="si">}</span><span class="s2">/bin/java $out/bin/</span><span class="si">${</span><span class="nv">pname</span><span class="si">}</span><span class="s2"> \</span><span class="err">
+</span><span class="s2">          --add-flags "-jar $out/</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.jar" \</span><span class="err">
+</span><span class="s2">          --set M2_HOME </span><span class="si">${</span><span class="nv">maven</span><span class="si">}</span><span class="s2"> \</span><span class="err">
+</span><span class="s2">          --set JAVA_HOME </span><span class="si">${</span><span class="nv">jdk</span><span class="si">}</span><span class="err">
+</span><span class="s2">''</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>🎆 We now have a runnable JAR! Using the dependencies from the <em>/nix/store</em>! 🎆</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-04-mvn2nix-welcoming-maven-into-nix-s-warm-embrace.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

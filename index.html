@@ -1,0 +1,417 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Farid Zakaria’s Blog | I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Farid Zakaria’s Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<meta property="og:description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<link rel="canonical" href="https://fzakaria.com/" />
+<meta property="og:url" content="https://fzakaria.com/" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="website" />
+<link rel="next" href="https://fzakaria.com/page2" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Farid Zakaria’s Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebSite","description":"I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.","headline":"Farid Zakaria’s Blog","name":"Farid Zakaria’s Blog","url":"https://fzakaria.com/"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Farid Zakaria's Blog
+</h1>
+
+<div class="content">
+    
+    <article>
+      <div class="media">
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2025-02-02
+      </span>
+      <span class="title">
+        
+        <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+        
+      </span>
+    </h2>
+    
+    <p>I was sleuthing 🦥 on the <a href="https://nixos.org/">NixOS</a> Matrix channel (<a href="https://matrix.to/#/#community:nixos.org">#nix:nixos.org</a>) – trying to get some help for my own problems when myself and another user (<a href="@mjm:midna.dev">@mjm</a>) starting helping someone whom was complaining that their seemingly innocuous derivation was continously rebuilding.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2025-01-28
+      </span>
+      <span class="title">
+        
+        <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>Visit <a href="https://visible.build">https://visible.build</a> to try a <em>client-side only</em> build event protocol viewer 🎉.</p>
+
+  <p>You can find the MIT licensed source code <a href="https://github.com/fzakaria/bazel-build-event-viewer/">here</a>.</p>
+</blockquote>
+
+<p>I consider myself a “backend” engineer.</p>
+
+<p>Although I have dabbled in UI frameworks professionally (.NET and the occasional JavaScript) – I rarely work on the front-end visual portion of a product.</p>
+
+<p>My knowledge of HTML/CSS has been forever cemented since I learnt the technology in my teens – culminating in the ultimate personal expression of <code class="language-plaintext highlighter-rouge">&lt;marquee&gt;</code> on GeoCities.</p>
+
+<p>Revisiting front-end development for occasional projects has always been stress-inducing. The pace of change in the ecosystem is fast from the toolset to even the language (👋 TypeScript).</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2025-01-12
+      </span>
+      <span class="title">
+        
+        <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+        
+      </span>
+    </h2>
+    
+    <p><a href="https://bazel.build/">Bazel</a> is a pretty amazing tool but it’s definitely full of it’s warts, sharp edges and arcane knowledge.</p>
+
+<p>The appeal to most who adopt Bazel is the ability to memoize much of the build graph if nothing has changed. Furthermore, while leveraging remote caches, build results can be shared across machines making memoization even more effective.</p>
+
+<p>This was a pretty compelling reason to adopt Bazel but pretty soon many noticed, especially on their CI systems, lots of unecessary data transfers for larger codebases.</p>
+
+<p>😲 If the network is poor, the benefits of remote caching (memoization) can be outweighed by the cost to download the artifacts.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-12-18
+      </span>
+      <span class="title">
+        
+        <a href="/2024/12/18/faking-incremental-docker-loads.html">Faking incremental Docker loads</a>
+        
+      </span>
+    </h2>
+    
+    <p>While <a href="https://testcontainers.com/">testcontainers</a> have made it simple to run containers for unit &amp; system tests, they are not well suited for <a href="https://bazel.build/">Bazel</a> as they rely on <code class="language-plaintext highlighter-rouge">docker pull</code> to hydrate the Docker daemon. The pulls rely on tags which may be rewritten and require input from data (i.e, the images themselves) unknown to Bazel, as well as network access.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-11-28
+      </span>
+      <span class="title">
+        
+        <a href="/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html">Bazel Knowledge: Protobuf is the worst when it should be the best</a>
+        
+      </span>
+    </h2>
+    
+    <p>Bazel has always had support for <a href="https://protobuf.dev/">protocol buffers (protobuf)</a> since the beginning.
+Both being a Google product, one would think that their integration would be seamless and the best experience.
+Unfortunately, it’s some of the worst part of the user experience with Bazel I’ve found. 😔</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-11-08
+      </span>
+      <span class="title">
+        
+        <a href="/2024/11/08/jvm-boot-optimization-via-javaindex.html">JVM boot optimization via JavaIndex</a>
+        
+      </span>
+    </h2>
+    
+    <p><em>Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn’t. Read on to discover what it is and how it can speedup your compilation and boot time.</em> 🤓</p>
+
+<p>After having worked on <a href="https://github.com/fzakaria/shrinkwrap">Shrinkwrap</a> and publishing our results in <a href="https://arxiv.org/abs/2211.05118">Mapping Out the HPC Dependency Chaos</a>, you start
+to see the Linux environment as a bit of an oddball.</p>
+
+<p><em>Everything in Linux is structured around O(n) or O(n^2) search and lookup</em>.</p>
+
+<p>This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. <em>LD_LIBRARY_PATH</em>, <em>RUN_PATH</em>).
+This idiom however is even more pervasive and has bled into all of our language.</p>
+
+<p>The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the <em>CLASS_PATH</em>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-10-29
+      </span>
+      <span class="title">
+        
+        <a href="/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html">Bazel Knowledge: What's an Interface JAR?</a>
+        
+      </span>
+    </h2>
+    
+    <p>I spent the day working through an upgrade of our codebase at <em>$DAYJOB$</em> to Java21 and hit Bazel <a href="https://github.com/bazelbuild/bazel/issues/24138">issue#24138</a> as a result of an incorrectly produced <code class="language-plaintext highlighter-rouge">hjar</code>.</p>
+
+<p>🤨
+<em>WTF is an <code class="language-plaintext highlighter-rouge">hjar</code> ?</em></p>
+
+<p>☝️ <em>It is the newer version of <code class="language-plaintext highlighter-rouge">ijar</code> !</em></p>
+
+<p>😠
+<em>WTF is an <code class="language-plaintext highlighter-rouge">ijar</code> ?</em></p>
+
+<p>Let’s discover what an <code class="language-plaintext highlighter-rouge">ijar</code> (Interface JAR) is and how it’s the <em>magic sauce</em> that makes Bazel so fast for Java.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-10-23
+      </span>
+      <span class="title">
+        
+        <a href="/2024/10/23/bazel-knowledge-mind-your-path.html">Bazel Knowledge: mind your PATH</a>
+        
+      </span>
+    </h2>
+    
+    <p>Have you encountered the following?</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="o">&gt;</span> bazel build
+INFO: Invocation ID: f16c3f83-0150-494e-bd34-1a9cfb6a2e67
+WARNING: Build option <span class="nt">--incompatible_strict_action_env</span> has changed, discarding analysis cache <span class="o">(</span>this can be expensive, see https://bazel.build/advanced/performance/iteration-speed<span class="o">)</span><span class="nb">.</span>
+INFO: Analyzed target @@com_google_protobuf//:protoc <span class="o">(</span>113 packages loaded, 1377 targets configured<span class="o">)</span><span class="nb">.</span>
+<span class="o">[</span>483 / 845] 13 actions, 12 running
+    Compiling src/google/protobuf/compiler/importer.cc<span class="p">;</span> 3s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/java/names.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/java/name_resolver.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/java/helpers.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/objectivec/enum.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling absl/strings/cord.cc<span class="p">;</span> 1s disk-cache, darwin-sandbox
+    Compiling src/google/protobuf/compiler/objectivec/names.cc<span class="p">;</span> 0s disk-cache, darwin-sandbox
+    Compiling absl/time/internal/cctz/src/time_zone_lookup.cc<span class="p">;</span> 0s disk-cache, darwin-sandbox ...
+</code></pre></div></div>
+
+<p>I finally had it with Bazel <strong>recompiling protoc</strong> 😤</p>
+
+<p>The working title for this post: <em>Why the #$@! does protoc keep recompiling!</em> 🤬</p>
+
+<blockquote>
+  <p>If you are not interested in the story and just want to avoid recompiling <em>protoc</em>, try putting <code class="language-plaintext highlighter-rouge">build --incompatible_strict_action_env</code> in your <em>.bazelrc</em>.</p>
+
+  <p>Checkout Aspect’s <a href="https://docs.aspect.build/guides/bazelrc/">bazelrc guide</a> for other good tidbits.</p>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-10-13
+      </span>
+      <span class="title">
+        
+        <a href="/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html">Bazel Knowledge: Aspects to generate Java CLASSPATH</a>
+        
+      </span>
+    </h2>
+    
+    <p>One of the more advanced features of <a href="https://bazel.build">Bazel</a> is the concept of <a href="https://bazel.build/extending/aspects">aspect</a>.</p>
+
+<p>For a very brief primer on why you may want an aspect is that Bazel let’s you audit and analyze the BUILD graph without performing any actual builds. It does this by constructing a “shadow graph” that your aspect can perform analysis on. This can be useful for a variety things such as IDE integration.</p>
+
+<p>I wanted to ask a very simple question to make integration with Visual Studio Code straightforward:</p>
+
+<p><em>“What’s the CLASSPATH I need for a particular target so that I don’t get red squigglies?”</em></p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-09-26
+      </span>
+      <span class="title">
+        
+        <a href="/2024/09/26/bazel-knowledge-reproducible-outputs.html">Bazel Knowledge: reproducible outputs</a>
+        
+      </span>
+    </h2>
+    
+    <p>You might hear a lot of about how Bazel is <em>“reproducible”</em> and <em>“hermetic”</em>, but what does that even mean ? 😕</p>
+
+<p>Part of what makes Bazel incredibly fast is it effectively <strong>skips work</strong> by foregoing doing portions of the graph if the inputs have not changed.</p>
+
+<p>Let’s consider this simple action graph in Bazel.</p>
+
+<p><img src="/assets/images/action_graph_bazel.png" alt="Bazel Action Graph" /></p>
+
+
+    
+</div>
+
+		<hr>
+	
+
+	
+
+	
+    <div class="pull-right">
+        <a href="/page2" class="btn btn-primary">
+            Page 2
+            <span class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"/></svg>
+            </span>
+        </a>
+    </div>
+    
+</div>
+<div class="clearfix"></div>
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/index.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

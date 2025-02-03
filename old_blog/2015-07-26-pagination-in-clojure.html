@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Pagination in Clojure | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Pagination in Clojure" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Luminus - Pagination I&#39;ve recently been working on a fun side project using the Luminus web framework as my first foray into Clojure (which I&#39;m absolutely falling in love with) One thing however I find missing from the documentation and in general online is an idiomatic way to paginate in Clojure. I&#39;m sure there is some sexy pagination strategy that uses lazy-seqs, macros, protocols and records however I was not able to come up with anything (myself or via google). I&#39;m dumping my small helper functions that I ended up writing in hopes that perhaps someone finds use for it: (ns sample.paginate) (defn parse-number &quot;Reads a number from a string. Returns nil if not a number.&quot; [s] (println (type s)) (cond (isa? (type s) java.lang.Number) s (isa? (type s) java.lang.String) (if (re-find #&quot;^-?\d+\.?\d*$&quot; s) (read-string s)) :else (parse-number (str s)))) (defn map-kv [m f] &quot;Aply a map to a key value map&quot; (reduce-kv #(assoc %1 %2 (f %3)) {} m)) (def default-page 1) (def default-size 20) (def min-size 1) (def min-page 1) (def page-key :page) (def size-key :size) (def next-page-key :next-page) (def prev-page-key :prev-page) (def offset-key :offset) (def default-paginate-params {page-key default-page size-key default-size}) (defn extract [request] &quot;Given a request extracts the page and size from the request object. If none is found it returns sensible defaults. It makes sure the returned paginate values are integers&quot; (let [params (:params request) params (merge default-paginate-params params) paginate (select-keys params [page-key size-key])] (map-kv paginate parse-number))) (defn current-page [request] (let [paginate-params (extract request)] (max (page-key paginate-params) min-page))) (defn next-page [request] (let [page (current-page request)] (inc page))) (defn prev-page [request] (let [page (current-page request)] (max min-page (dec page)))) (defn size [request] (let [paginate-params (extract request)] (max (size-key paginate-params) min-size))) (defn offset [request] &quot;Determines the offset for the page. The offset is calculated based on (page - 1) * size&quot; (* (dec (current-page request)) (size request))) (defn create [request] &quot;Creates a paginate map which contains additional keys such as next-page, prev-page ontop of the page and size keys&quot; (let [page (current-page request) size (size request) offset (offset request) next-page (next-page request) prev-page (prev-page request)] {page-key page size-key size next-page-key next-page prev-page-key prev-page offset-key offset})) Ultimately one would use the create function to include in their context/response a structured Pagination map. If you have anything better please share!" />
+<meta property="og:description" content="Luminus - Pagination I&#39;ve recently been working on a fun side project using the Luminus web framework as my first foray into Clojure (which I&#39;m absolutely falling in love with) One thing however I find missing from the documentation and in general online is an idiomatic way to paginate in Clojure. I&#39;m sure there is some sexy pagination strategy that uses lazy-seqs, macros, protocols and records however I was not able to come up with anything (myself or via google). I&#39;m dumping my small helper functions that I ended up writing in hopes that perhaps someone finds use for it: (ns sample.paginate) (defn parse-number &quot;Reads a number from a string. Returns nil if not a number.&quot; [s] (println (type s)) (cond (isa? (type s) java.lang.Number) s (isa? (type s) java.lang.String) (if (re-find #&quot;^-?\d+\.?\d*$&quot; s) (read-string s)) :else (parse-number (str s)))) (defn map-kv [m f] &quot;Aply a map to a key value map&quot; (reduce-kv #(assoc %1 %2 (f %3)) {} m)) (def default-page 1) (def default-size 20) (def min-size 1) (def min-page 1) (def page-key :page) (def size-key :size) (def next-page-key :next-page) (def prev-page-key :prev-page) (def offset-key :offset) (def default-paginate-params {page-key default-page size-key default-size}) (defn extract [request] &quot;Given a request extracts the page and size from the request object. If none is found it returns sensible defaults. It makes sure the returned paginate values are integers&quot; (let [params (:params request) params (merge default-paginate-params params) paginate (select-keys params [page-key size-key])] (map-kv paginate parse-number))) (defn current-page [request] (let [paginate-params (extract request)] (max (page-key paginate-params) min-page))) (defn next-page [request] (let [page (current-page request)] (inc page))) (defn prev-page [request] (let [page (current-page request)] (max min-page (dec page)))) (defn size [request] (let [paginate-params (extract request)] (max (size-key paginate-params) min-size))) (defn offset [request] &quot;Determines the offset for the page. The offset is calculated based on (page - 1) * size&quot; (* (dec (current-page request)) (size request))) (defn create [request] &quot;Creates a paginate map which contains additional keys such as next-page, prev-page ontop of the page and size keys&quot; (let [page (current-page request) size (size request) offset (offset request) next-page (next-page request) prev-page (prev-page request)] {page-key page size-key size next-page-key next-page prev-page-key prev-page offset-key offset})) Ultimately one would use the create function to include in their context/response a structured Pagination map. If you have anything better please share!" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2015-07-26-pagination-in-clojure.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2015-07-26-pagination-in-clojure.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2015-07-26T10:33:02-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Pagination in Clojure" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2015-07-26T10:33:02-07:00","datePublished":"2015-07-26T10:33:02-07:00","description":"Luminus - Pagination I&#39;ve recently been working on a fun side project using the Luminus web framework as my first foray into Clojure (which I&#39;m absolutely falling in love with) One thing however I find missing from the documentation and in general online is an idiomatic way to paginate in Clojure. I&#39;m sure there is some sexy pagination strategy that uses lazy-seqs, macros, protocols and records however I was not able to come up with anything (myself or via google). I&#39;m dumping my small helper functions that I ended up writing in hopes that perhaps someone finds use for it: (ns sample.paginate) (defn parse-number &quot;Reads a number from a string. Returns nil if not a number.&quot; [s] (println (type s)) (cond (isa? (type s) java.lang.Number) s (isa? (type s) java.lang.String) (if (re-find #&quot;^-?\\d+\\.?\\d*$&quot; s) (read-string s)) :else (parse-number (str s)))) (defn map-kv [m f] &quot;Aply a map to a key value map&quot; (reduce-kv #(assoc %1 %2 (f %3)) {} m)) (def default-page 1) (def default-size 20) (def min-size 1) (def min-page 1) (def page-key :page) (def size-key :size) (def next-page-key :next-page) (def prev-page-key :prev-page) (def offset-key :offset) (def default-paginate-params {page-key default-page size-key default-size}) (defn extract [request] &quot;Given a request extracts the page and size from the request object. If none is found it returns sensible defaults. It makes sure the returned paginate values are integers&quot; (let [params (:params request) params (merge default-paginate-params params) paginate (select-keys params [page-key size-key])] (map-kv paginate parse-number))) (defn current-page [request] (let [paginate-params (extract request)] (max (page-key paginate-params) min-page))) (defn next-page [request] (let [page (current-page request)] (inc page))) (defn prev-page [request] (let [page (current-page request)] (max min-page (dec page)))) (defn size [request] (let [paginate-params (extract request)] (max (size-key paginate-params) min-size))) (defn offset [request] &quot;Determines the offset for the page. The offset is calculated based on (page - 1) * size&quot; (* (dec (current-page request)) (size request))) (defn create [request] &quot;Creates a paginate map which contains additional keys such as next-page, prev-page ontop of the page and size keys&quot; (let [page (current-page request) size (size request) offset (offset request) next-page (next-page request) prev-page (prev-page request)] {page-key page size-key size next-page-key next-page prev-page-key prev-page offset-key offset})) Ultimately one would use the create function to include in their context/response a structured Pagination map. If you have anything better please share!","headline":"Pagination in Clojure","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2015-07-26-pagination-in-clojure.html"},"url":"https://fzakaria.com/old_blog/2015-07-26-pagination-in-clojure.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Pagination in Clojure
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2015-07-26
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2015-07-26-pagination-in-clojure.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Luminus - Pagination </h2>
+<p>I've recently been working on a fun side project using the <a href="http://www.luminusweb.net/">Luminus web framework</a> as my first foray into <a href="http://clojure.org/">Clojure</a> (which I'm absolutely falling in love with)</p>
+<p>One thing however I find missing from the documentation and in general online is an <strong><em>idiomatic</em></strong> way to paginate in Clojure. I'm sure there is some <em>sexy</em> pagination strategy that uses lazy-seqs, macros, protocols and records however I was not able to come up with anything (myself or via google).</p>
+<p>I'm dumping my small helper functions that I ended up writing in hopes that perhaps someone finds use for it:</p>
+<pre class="lang:clojure decode:true " title="Pagination in Clojure" >
+(ns sample.paginate)
+
+(defn parse-number
+  "Reads a number from a string. Returns nil if not a number."
+  [s]
+  (println (type s))
+  (cond
+   (isa? (type s) java.lang.Number) s
+   (isa? (type s) java.lang.String)
+     (if (re-find #"^-?\d+\.?\d*$" s)
+       (read-string s))
+   :else (parse-number (str s))))
+
+(defn map-kv [m f]
+  "Aply a map to a key value map"
+  (reduce-kv #(assoc %1 %2 (f %3)) {} m))
+
+(def default-page 1)
+
+(def default-size 20)
+
+(def min-size 1)
+
+(def min-page 1)
+
+(def page-key :page)
+
+(def size-key :size)
+
+(def next-page-key :next-page)
+
+(def prev-page-key :prev-page)
+
+(def offset-key :offset)
+
+(def default-paginate-params
+  {page-key default-page size-key default-size})
+
+(defn extract [request]
+  "Given a request extracts the page and size from the request object.
+   If none is found it returns sensible defaults. It makes sure the returned
+   paginate values are integers"
+  (let [params (:params request)
+        params (merge default-paginate-params params)
+        paginate (select-keys params [page-key size-key])]
+    (map-kv paginate parse-number)))
+
+(defn current-page [request]
+  (let [paginate-params (extract request)]
+    (max (page-key paginate-params) min-page)))
+
+(defn next-page [request]
+  (let [page (current-page request)]
+    (inc page)))
+
+(defn prev-page [request]
+  (let [page (current-page request)]
+    (max min-page (dec page))))
+
+(defn size [request]
+  (let [paginate-params (extract request)]
+    (max (size-key paginate-params) min-size)))
+
+(defn offset [request]
+  "Determines the offset for the page. The offset is calculated based on
+   (page - 1) * size"
+  (* (dec (current-page request)) (size request)))
+        
+       
+(defn create [request]
+  "Creates a paginate map which contains additional keys such as next-page, prev-page
+   ontop of the page and size keys"
+  (let [page (current-page request)
+        size (size request)
+        offset (offset request)
+        next-page (next-page request)
+        prev-page (prev-page request)]
+    {page-key page size-key size next-page-key next-page prev-page-key prev-page offset-key offset}))</pre>
+<p>Ultimately one would use the <strong>create</strong> function to include in their context/response a structured Pagination map. </p>
+<p>If you have anything better please share! </p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2015-07-26-pagination-in-clojure.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,253 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Getting things to play nice | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Getting things to play nice" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The move to Nginx It&#39;s been only one month on my new Linode machine and I&#39;ve only ever known of Apache as a front end HTTP server. Apache sadly had to get the boot as I was preparing in deploying me and Alex Hortin&#39;s new Node.JS version of the site to facilitate downloading songs from HypeMachine. Node.JS comes with a complete event-driven web server however I needed a front-end server so that I can host multiple sites on my single instance (such as this blog!). Having a blocking HTTP front-end such as Apache proxy requests to Node? Sounds retarded. The whole appeal of Node.JS is that it&#39;s event-driven and non-blocking which hopefully results in really speedy responses. Luckily Nginx (pronounced EngineX) is also an event-driven web server and is a perfect match as a proxy server for a Node.JS application. Apache is like Microsoft Word, it has a million options but you only need six. Nginx does those six things, and it does five of them 50 times faster than Apache. -- Chris Lea Virtual Host Config Here are the virtual host configs I&#39;ve used for my blog. Setting up PHP fastCGI and wordpress was probably the most difficult aspect of Nginx but hopefully I&#39;ve done it all correctly. If you have any suggestions or fixes please let me know! Wordpress File /etc/nginx/sites-available/blog.domain.com server { #listen 80; ## listen for ipv4; this line is default and implied #listen [::]:80 default ipv6only=on; ## listen for ipv6&lt;/p&gt; root /home/user/public/blog.domain.com/public; index index.html index.htm index.php; access_log /home/user/public/blog.domain.com/log/access.log; error_log /home/user/public/blog.domain.com/log/error.log; # Make site accessible from http://localhost/ server_name blog.domain.com www.blog.domain.com; include global/wordpress.conf; include global/restrictions.conf; } &lt;/code&gt; File /etc/nginx/global/restrictions.conf # Global restrictions configuration file. # Designed to be included in any server {} block.&lt;/p&gt; location = /favicon.ico { log_not_found off; access_log off; } location = /robots.txt { allow all; log_not_found off; access_log off; } # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac). # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban) location ~ /. { deny all; } # Deny access to any files with a .php extension in the uploads directory # Works in sub-directory installs and also in multisite network # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban) location ~* /(?:uploads|files)/.*.php$ { deny all; } &lt;/code&gt; File /etc/nginx/global/wordpress.conf # WordPress single blog rules. # Designed to be included in any server {} block.&lt;/p&gt; # This order might seem weird - this is attempted to match last if rules below fail. # http://wiki.nginx.org/HttpCoreModule location / { try_files $uri $uri/ /index.php?$args; } # Add trailing slash to */wp-admin requests. rewrite /wp-admin$ $scheme://$host$uri/ permanent; # Directives to send expires headers and turn off 404 error logging. location ~* ^.+.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|rss|atom|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ { access_log off; log_not_found off; expires max; } # Uncomment one of the lines below for the appropriate caching plugin (if used). #include global/wordpress-wp-super-cache.conf; #include global/wordpress-w3-total-cache.conf; # Pass all .php files onto a php-fpm/php-fcgi server. location ~ .php$ { # Zero-day exploit defense. # http://forum.nginx.org/read.php?2,88845,page=3 # Won&#39;t work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi. # Comment the &#39;try_files&#39; line out if you set up php-fpm/php-fcgi on another machine. And then cross your fingers that you won&#39;t get hacked. try_files $uri =404; fastcgi_split_path_info ^(.+.php)(/.+)$; #NOTE: You should have &quot;cgi.fix_pathinfo = 0;&quot; in php.ini include fastcgi_params; fastcgi_index index.php; fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; # fastcgi_intercept_errors on; fastcgi_pass php5-fpm-sock; } &lt;/code&gt; Special shoutout I recently received a very nice donation from someone (you know who you are), and I just wanted to give a special shout out and say thanks. Getting donations such as yours is very heart warming and makes me feel like my time spent on some of these projects are well spent and appreciated. &lt;3" />
+<meta property="og:description" content="The move to Nginx It&#39;s been only one month on my new Linode machine and I&#39;ve only ever known of Apache as a front end HTTP server. Apache sadly had to get the boot as I was preparing in deploying me and Alex Hortin&#39;s new Node.JS version of the site to facilitate downloading songs from HypeMachine. Node.JS comes with a complete event-driven web server however I needed a front-end server so that I can host multiple sites on my single instance (such as this blog!). Having a blocking HTTP front-end such as Apache proxy requests to Node? Sounds retarded. The whole appeal of Node.JS is that it&#39;s event-driven and non-blocking which hopefully results in really speedy responses. Luckily Nginx (pronounced EngineX) is also an event-driven web server and is a perfect match as a proxy server for a Node.JS application. Apache is like Microsoft Word, it has a million options but you only need six. Nginx does those six things, and it does five of them 50 times faster than Apache. -- Chris Lea Virtual Host Config Here are the virtual host configs I&#39;ve used for my blog. Setting up PHP fastCGI and wordpress was probably the most difficult aspect of Nginx but hopefully I&#39;ve done it all correctly. If you have any suggestions or fixes please let me know! Wordpress File /etc/nginx/sites-available/blog.domain.com server { #listen 80; ## listen for ipv4; this line is default and implied #listen [::]:80 default ipv6only=on; ## listen for ipv6&lt;/p&gt; root /home/user/public/blog.domain.com/public; index index.html index.htm index.php; access_log /home/user/public/blog.domain.com/log/access.log; error_log /home/user/public/blog.domain.com/log/error.log; # Make site accessible from http://localhost/ server_name blog.domain.com www.blog.domain.com; include global/wordpress.conf; include global/restrictions.conf; } &lt;/code&gt; File /etc/nginx/global/restrictions.conf # Global restrictions configuration file. # Designed to be included in any server {} block.&lt;/p&gt; location = /favicon.ico { log_not_found off; access_log off; } location = /robots.txt { allow all; log_not_found off; access_log off; } # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac). # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban) location ~ /. { deny all; } # Deny access to any files with a .php extension in the uploads directory # Works in sub-directory installs and also in multisite network # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban) location ~* /(?:uploads|files)/.*.php$ { deny all; } &lt;/code&gt; File /etc/nginx/global/wordpress.conf # WordPress single blog rules. # Designed to be included in any server {} block.&lt;/p&gt; # This order might seem weird - this is attempted to match last if rules below fail. # http://wiki.nginx.org/HttpCoreModule location / { try_files $uri $uri/ /index.php?$args; } # Add trailing slash to */wp-admin requests. rewrite /wp-admin$ $scheme://$host$uri/ permanent; # Directives to send expires headers and turn off 404 error logging. location ~* ^.+.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|rss|atom|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ { access_log off; log_not_found off; expires max; } # Uncomment one of the lines below for the appropriate caching plugin (if used). #include global/wordpress-wp-super-cache.conf; #include global/wordpress-w3-total-cache.conf; # Pass all .php files onto a php-fpm/php-fcgi server. location ~ .php$ { # Zero-day exploit defense. # http://forum.nginx.org/read.php?2,88845,page=3 # Won&#39;t work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi. # Comment the &#39;try_files&#39; line out if you set up php-fpm/php-fcgi on another machine. And then cross your fingers that you won&#39;t get hacked. try_files $uri =404; fastcgi_split_path_info ^(.+.php)(/.+)$; #NOTE: You should have &quot;cgi.fix_pathinfo = 0;&quot; in php.ini include fastcgi_params; fastcgi_index index.php; fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; # fastcgi_intercept_errors on; fastcgi_pass php5-fpm-sock; } &lt;/code&gt; Special shoutout I recently received a very nice donation from someone (you know who you are), and I just wanted to give a special shout out and say thanks. Getting donations such as yours is very heart warming and makes me feel like my time spent on some of these projects are well spent and appreciated. &lt;3" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-11-06-getting-things-to-play-nice.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-11-06-getting-things-to-play-nice.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-11-06T13:31:14-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Getting things to play nice" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-11-06T13:31:14-08:00","datePublished":"2012-11-06T13:31:14-08:00","description":"The move to Nginx It&#39;s been only one month on my new Linode machine and I&#39;ve only ever known of Apache as a front end HTTP server. Apache sadly had to get the boot as I was preparing in deploying me and Alex Hortin&#39;s new Node.JS version of the site to facilitate downloading songs from HypeMachine. Node.JS comes with a complete event-driven web server however I needed a front-end server so that I can host multiple sites on my single instance (such as this blog!). Having a blocking HTTP front-end such as Apache proxy requests to Node? Sounds retarded. The whole appeal of Node.JS is that it&#39;s event-driven and non-blocking which hopefully results in really speedy responses. Luckily Nginx (pronounced EngineX) is also an event-driven web server and is a perfect match as a proxy server for a Node.JS application. Apache is like Microsoft Word, it has a million options but you only need six. Nginx does those six things, and it does five of them 50 times faster than Apache. -- Chris Lea Virtual Host Config Here are the virtual host configs I&#39;ve used for my blog. Setting up PHP fastCGI and wordpress was probably the most difficult aspect of Nginx but hopefully I&#39;ve done it all correctly. If you have any suggestions or fixes please let me know! Wordpress File /etc/nginx/sites-available/blog.domain.com server { #listen 80; ## listen for ipv4; this line is default and implied #listen [::]:80 default ipv6only=on; ## listen for ipv6&lt;/p&gt; root /home/user/public/blog.domain.com/public; index index.html index.htm index.php; access_log /home/user/public/blog.domain.com/log/access.log; error_log /home/user/public/blog.domain.com/log/error.log; # Make site accessible from http://localhost/ server_name blog.domain.com www.blog.domain.com; include global/wordpress.conf; include global/restrictions.conf; } &lt;/code&gt; File /etc/nginx/global/restrictions.conf # Global restrictions configuration file. # Designed to be included in any server {} block.&lt;/p&gt; location = /favicon.ico { log_not_found off; access_log off; } location = /robots.txt { allow all; log_not_found off; access_log off; } # Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac). # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban) location ~ /. { deny all; } # Deny access to any files with a .php extension in the uploads directory # Works in sub-directory installs and also in multisite network # Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban) location ~* /(?:uploads|files)/.*.php$ { deny all; } &lt;/code&gt; File /etc/nginx/global/wordpress.conf # WordPress single blog rules. # Designed to be included in any server {} block.&lt;/p&gt; # This order might seem weird - this is attempted to match last if rules below fail. # http://wiki.nginx.org/HttpCoreModule location / { try_files $uri $uri/ /index.php?$args; } # Add trailing slash to */wp-admin requests. rewrite /wp-admin$ $scheme://$host$uri/ permanent; # Directives to send expires headers and turn off 404 error logging. location ~* ^.+.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|rss|atom|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ { access_log off; log_not_found off; expires max; } # Uncomment one of the lines below for the appropriate caching plugin (if used). #include global/wordpress-wp-super-cache.conf; #include global/wordpress-w3-total-cache.conf; # Pass all .php files onto a php-fpm/php-fcgi server. location ~ .php$ { # Zero-day exploit defense. # http://forum.nginx.org/read.php?2,88845,page=3 # Won&#39;t work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi. # Comment the &#39;try_files&#39; line out if you set up php-fpm/php-fcgi on another machine. And then cross your fingers that you won&#39;t get hacked. try_files $uri =404; fastcgi_split_path_info ^(.+.php)(/.+)$; #NOTE: You should have &quot;cgi.fix_pathinfo = 0;&quot; in php.ini include fastcgi_params; fastcgi_index index.php; fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; # fastcgi_intercept_errors on; fastcgi_pass php5-fpm-sock; } &lt;/code&gt; Special shoutout I recently received a very nice donation from someone (you know who you are), and I just wanted to give a special shout out and say thanks. Getting donations such as yours is very heart warming and makes me feel like my time spent on some of these projects are well spent and appreciated. &lt;3","headline":"Getting things to play nice","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-11-06-getting-things-to-play-nice.html"},"url":"https://fzakaria.com/old_blog/2012-11-06-getting-things-to-play-nice.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Getting things to play nice
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-11-06
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-11-06-getting-things-to-play-nice.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> The move to Nginx </h2>
+<p>
+It's been only one month on my new <a href="http://www.linode.com/?r=7527daf02578dcef070f8b8cbea9291a7bbdc553">Linode</a> machine and I've only ever known of Apache as a front end HTTP server. Apache sadly had to get the boot as I was preparing in deploying me and <a href="https://github.com/hortinstein">Alex Hortin's</a> new <a href="http://nodejs.org/">Node.JS</a> version of the site to facilitate downloading songs from <a href="http://hypem.com">HypeMachine</a>.</p>
+<p>
+Node.JS comes with a complete event-driven web server however I needed a front-end server so that I can host multiple sites on my single instance (such as this blog!). Having a blocking HTTP front-end such as Apache proxy requests to Node? <em>Sounds retarded.</em></p>
+<p>
+The whole appeal of Node.JS is that it's event-driven and non-blocking which hopefully results in really speedy responses. Luckily Nginx (pronounced EngineX) is also an event-driven web server and is a perfect match as a proxy server for a Node.JS application.</p>
+<blockquote><p>
+Apache is like Microsoft Word, it has a million options but you only need six. Nginx does those six things, and it does five of them 50 times faster than Apache. -- <em><a href="http://maisonbisson.com/blog/post/12249/chris-lea-on-nginx-and-wordpress/">Chris Lea</a></em>
+</p></blockquote>
+<p><!--more--></p>
+<h3> Virtual Host Config </h3>
+<p>
+Here are the virtual host configs I've used for my blog. Setting up PHP fastCGI and wordpress was probably the most difficult aspect of Nginx but hopefully I've done it all correctly.<br />
+If you have any suggestions or fixes please let me know!</p>
+<h4> Wordpress </h4>
+<p><strong>File /etc/nginx/sites-available/blog.domain.com</strong><br />
+<code><br />
+server {<br />
+        #listen   80; ## listen for ipv4; this line is default and implied<br />
+        #listen   [::]:80 default ipv6only=on; ## listen for ipv6</p>
+<p>        root /home/user/public/blog.domain.com/public;<br />
+        index index.html index.htm index.php;</p>
+<p>        access_log /home/user/public/blog.domain.com/log/access.log;<br />
+        error_log /home/user/public/blog.domain.com/log/error.log;<br />
+        # Make site accessible from http://localhost/<br />
+        server_name blog.domain.com www.blog.domain.com;</p>
+<p>        include global/wordpress.conf;<br />
+        include global/restrictions.conf;<br />
+}<br />
+</code><br />
+<strong>File /etc/nginx/global/restrictions.conf</strong><br />
+<code><br />
+# Global restrictions configuration file.<br />
+# Designed to be included in any server {} block.</p>
+<p>location = /favicon.ico {<br />
+        log_not_found off;<br />
+        access_log off;<br />
+}</p>
+<p>location = /robots.txt {<br />
+        allow all;<br />
+        log_not_found off;<br />
+        access_log off;<br />
+}</p>
+<p># Deny all attempts to access hidden files such as .htaccess, .htpasswd, .DS_Store (Mac).<br />
+# Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)<br />
+location ~ /. {<br />
+        deny all;<br />
+}</p>
+<p># Deny access to any files with a .php extension in the uploads directory<br />
+# Works in sub-directory installs and also in multisite network<br />
+# Keep logging the requests to parse later (or to pass to firewall utilities such as fail2ban)<br />
+location ~* /(?:uploads|files)/.*.php$ {<br />
+        deny all;<br />
+}<br />
+</code><br />
+<strong>File /etc/nginx/global/wordpress.conf</strong><br />
+<code><br />
+# WordPress single blog rules.<br />
+# Designed to be included in any server {} block.</p>
+<p># This order might seem weird - this is attempted to match last if rules below fail.<br />
+# http://wiki.nginx.org/HttpCoreModule<br />
+location / {<br />
+        try_files $uri $uri/ /index.php?$args;<br />
+}</p>
+<p># Add trailing slash to */wp-admin requests.<br />
+rewrite /wp-admin$ $scheme://$host$uri/ permanent;</p>
+<p># Directives to send expires headers and turn off 404 error logging.<br />
+location ~* ^.+.(ogg|ogv|svg|svgz|eot|otf|woff|mp4|ttf|rss|atom|jpg|jpeg|gif|png|ico|zip|tgz|gz|rar|bz2|doc|xls|exe|ppt|tar|mid|midi|wav|bmp|rtf)$ {<br />
+       access_log off; log_not_found off; expires max;<br />
+}</p>
+<p># Uncomment one of the lines below for the appropriate caching plugin (if used).<br />
+#include global/wordpress-wp-super-cache.conf;<br />
+#include global/wordpress-w3-total-cache.conf;</p>
+<p># Pass all .php files onto a php-fpm/php-fcgi server.<br />
+location ~ .php$ {<br />
+        # Zero-day exploit defense.<br />
+        # http://forum.nginx.org/read.php?2,88845,page=3<br />
+        # Won't work properly (404 error) if the file is not stored on this server, which is entirely possible with php-fpm/php-fcgi.<br />
+        # Comment the 'try_files' line out if you set up php-fpm/php-fcgi on another machine.  And then cross your fingers that you won't get hacked.<br />
+        try_files $uri =404;</p>
+<p>        fastcgi_split_path_info ^(.+.php)(/.+)$;<br />
+        #NOTE: You should have "cgi.fix_pathinfo = 0;" in php.ini</p>
+<p>        include fastcgi_params;<br />
+        fastcgi_index index.php;<br />
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;<br />
+#       fastcgi_intercept_errors on;<br />
+        fastcgi_pass php5-fpm-sock;<br />
+}<br />
+</code></p>
+<h3> Special shoutout </h3>
+<p>
+I recently received a very nice donation from someone (you know who you are), and I just wanted to give a special shout out and say <strong>thanks</strong>. Getting donations such as yours is very heart warming and makes me feel like my time spent on some of these projects are well spent and appreciated. <3</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-11-06-getting-things-to-play-nice.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

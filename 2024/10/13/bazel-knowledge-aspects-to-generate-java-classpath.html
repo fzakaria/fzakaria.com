@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bazel Knowledge: Aspects to generate Java CLASSPATH | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Bazel Knowledge: Aspects to generate Java CLASSPATH" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="One of the more advanced features of Bazel is the concept of aspect. For a very brief primer on why you may want an aspect is that Bazel let’s you audit and analyze the BUILD graph without performing any actual builds. It does this by constructing a “shadow graph” that your aspect can perform analysis on. This can be useful for a variety things such as IDE integration. I wanted to ask a very simple question to make integration with Visual Studio Code straightforward: “What’s the CLASSPATH I need for a particular target so that I don’t get red squigglies?”" />
+<meta property="og:description" content="One of the more advanced features of Bazel is the concept of aspect. For a very brief primer on why you may want an aspect is that Bazel let’s you audit and analyze the BUILD graph without performing any actual builds. It does this by constructing a “shadow graph” that your aspect can perform analysis on. This can be useful for a variety things such as IDE integration. I wanted to ask a very simple question to make integration with Visual Studio Code straightforward: “What’s the CLASSPATH I need for a particular target so that I don’t get red squigglies?”" />
+<link rel="canonical" href="https://fzakaria.com/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-10-13T11:10:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bazel Knowledge: Aspects to generate Java CLASSPATH" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-10-13T11:10:00-07:00","datePublished":"2024-10-13T11:10:00-07:00","description":"One of the more advanced features of Bazel is the concept of aspect. For a very brief primer on why you may want an aspect is that Bazel let’s you audit and analyze the BUILD graph without performing any actual builds. It does this by constructing a “shadow graph” that your aspect can perform analysis on. This can be useful for a variety things such as IDE integration. I wanted to ask a very simple question to make integration with Visual Studio Code straightforward: “What’s the CLASSPATH I need for a particular target so that I don’t get red squigglies?”","headline":"Bazel Knowledge: Aspects to generate Java CLASSPATH","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html"},"url":"https://fzakaria.com/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Bazel Knowledge: Aspects to generate Java CLASSPATH
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-10-13
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/10/13/bazel-knowledge-aspects-to-generate-java-classpath.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>One of the more advanced features of <a href="https://bazel.build">Bazel</a> is the concept of <a href="https://bazel.build/extending/aspects">aspect</a>.</p>
+
+<p>For a very brief primer on why you may want an aspect is that Bazel let’s you audit and analyze the BUILD graph without performing any actual builds. It does this by constructing a “shadow graph” that your aspect can perform analysis on. This can be useful for a variety things such as IDE integration.</p>
+
+<p>I wanted to ask a very simple question to make integration with Visual Studio Code straightforward:</p>
+
+<p><em>“What’s the CLASSPATH I need for a particular target so that I don’t get red squigglies?”</em></p>
+
+<!--more-->
+
+<p>Sometimes simple questions involve some of the more advanced features of Bazel.
+I wanted to generate a file that I can feed into any IDE, such as Visual Studio Code, and get semi-decent language integration.</p>
+
+<p>My end goal:</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel build //:generate_classpath
+<span class="go">
+</span><span class="gp">&gt;</span><span class="w"> </span><span class="nb">cat </span>bazel-bin/classpath.txt
+<span class="go">bazel-out/k8-fastbuild/bin/java/lib/liblib.jar
+bazel-out/k8-fastbuild/bin/java/lib2/liblib2.jar
+</span></code></pre></div></div>
+
+<p>First thing we want to do is generate an aspect that will collect recursively all the compile time Jars.</p>
+
+<p>We define our aspect which requires the sole <code class="language-plaintext highlighter-rouge">deps</code> attribute to be propagated.
+We then make sure we recursively merge all the results of the prior aspect invocations into the final
+<code class="language-plaintext highlighter-rouge">ClassPathInfo</code> provider object.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ClassPathInfo</span> <span class="o">=</span> <span class="n">provider</span><span class="p">(</span>
+    <span class="s">"Provider for classpath information"</span><span class="p">,</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'compile_jars'</span> <span class="p">:</span> <span class="s">'depset of compile jars'</span>
+    <span class="p">}</span>
+<span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_classpath_aspect_impl</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">ctx</span><span class="p">):</span>
+    <span class="c1"># Make sure the rule has a deps attribute.
+</span>    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">rule</span><span class="p">.</span><span class="n">attr</span><span class="p">,</span> <span class="s">'deps'</span><span class="p">):</span>
+        <span class="n">target_compile_jars</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="n">JavaInfo</span><span class="p">].</span><span class="n">full_compile_jars</span>
+        <span class="n">dep_compile_jars</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">dep</span><span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">].</span><span class="n">compile_jars</span>
+            <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">.</span><span class="n">rule</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">deps</span>
+        <span class="p">]</span>
+        <span class="n">all_compile_jars</span> <span class="o">=</span> <span class="p">[</span><span class="n">target_compile_jars</span><span class="p">]</span> <span class="o">+</span> <span class="n">dep_compile_jars</span>
+        <span class="n">merged_depset</span> <span class="o">=</span> <span class="n">depset</span><span class="p">(</span><span class="n">transitive</span><span class="o">=</span><span class="n">all_compile_jars</span><span class="p">)</span>
+
+        <span class="n">classpath_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">jar</span> <span class="ow">in</span> <span class="n">merged_depset</span><span class="p">.</span><span class="n">to_list</span><span class="p">():</span>
+            <span class="n">classpath_strings</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">jar</span><span class="p">.</span><span class="n">path</span><span class="p">)</span>
+
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">declare_file</span><span class="p">(</span><span class="s">"classpath.txt"</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output_file</span><span class="p">,</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">classpath_strings</span><span class="p">),</span>
+            <span class="n">is_executable</span> <span class="o">=</span> <span class="bp">False</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">(</span>
+            <span class="n">compile_jars</span> <span class="o">=</span> <span class="n">merged_depset</span>
+            <span class="p">),</span>
+            <span class="n">OutputGroupInfo</span><span class="p">(</span>
+                <span class="n">compile_jars</span> <span class="o">=</span> <span class="n">depset</span><span class="p">([</span><span class="n">output_file</span><span class="p">])</span>
+            <span class="p">)]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">(</span><span class="n">compile_jars</span> <span class="o">=</span> <span class="n">depset</span><span class="p">())]</span>
+
+<span class="n">classpath_aspect</span> <span class="o">=</span> <span class="n">aspect</span><span class="p">(</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">_classpath_aspect_impl</span><span class="p">,</span>
+    <span class="c1"># attr_aspects is a list of rule attributes along
+</span>    <span class="c1"># which the aspect propagates.
+</span>    <span class="n">attr_aspects</span> <span class="o">=</span> <span class="p">[</span><span class="s">'deps'</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>A <em>less documented</em> feature of Bazel is the “output groups” which you can see here we are
+by specifying <code class="language-plaintext highlighter-rouge">OuputGroupInfo</code>. The idea here is that we can now specify our apect for any
+label by using this command line invocation:</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="w"> </span>bazel build //java/app <span class="nt">--aspects</span> defs.bzl%classpath_aspect <span class="se">\</span>
+<span class="go">        --output_groups=compile_jars
+
+INFO: Analyzed target //java/app:app (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+Aspect //:defs.bzl%classpath_aspect of //java/app:app up-to-date:
+  bazel-bin/java/app/classpath.txt
+
+</span><span class="gp">&gt;</span><span class="w">  </span><span class="nb">cat </span>bazel-bin/java/app/classpath.txt
+<span class="go">bazel-out/k8-fastbuild/bin/java/lib/liblib.jar
+bazel-out/k8-fastbuild/bin/java/lib2/liblib2.jar⏎
+</span></code></pre></div></div>
+
+<p>That’s not all though! We can also create a rule that defines the labels provided must be of the type aspect.
+This let’s us encode the build targets in our <code class="language-plaintext highlighter-rouge">BUILD</code> files themselves.</p>
+
+<p>The rule itself is straightforward. For each label provided, it goes through the
+items in the <code class="language-plaintext highlighter-rouge">compile_jars</code> depset and creates an output file which is the
+concatenated new-line delimited list.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_generate_classpath_rule_impl</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">dep</span> <span class="ow">in</span> <span class="n">ctx</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">deps</span><span class="p">:</span>
+        <span class="n">classpath_strings</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">jar</span> <span class="ow">in</span> <span class="n">dep</span><span class="p">[</span><span class="n">ClassPathInfo</span><span class="p">].</span><span class="n">compile_jars</span><span class="p">.</span><span class="n">to_list</span><span class="p">():</span>
+            <span class="n">classpath_strings</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">jar</span><span class="p">.</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">declare_file</span><span class="p">(</span><span class="s">"classpath.txt"</span><span class="p">)</span>
+        <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">write</span><span class="p">(</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">output_file</span><span class="p">,</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="s">"</span><span class="se">\n</span><span class="s">"</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">classpath_strings</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">DefaultInfo</span><span class="p">(</span><span class="n">files</span> <span class="o">=</span> <span class="n">depset</span><span class="p">([</span><span class="n">output_file</span><span class="p">]))]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">DefaultInfo</span><span class="p">(</span><span class="n">files</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)]</span>
+
+<span class="n">generate_classpath_rule</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">_generate_classpath_rule_impl</span><span class="p">,</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">'deps'</span> <span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label_list</span><span class="p">(</span><span class="n">aspects</span> <span class="o">=</span> <span class="p">[</span><span class="n">classpath_aspect</span><span class="p">]),</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>❗ There is a bit of duplication in the rule for generating the output file. We could have also
+used the OutputGroupInfo and merged all the files together.</p>
+</blockquote>
+
+<p>In order to invoke this rule you define it in a <code class="language-plaintext highlighter-rouge">BUILD</code> file and give it the top-level
+applications that you are working on.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">generate_classpath_rule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"generate_classpath"</span><span class="p">,</span>
+    <span class="n">deps</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"//java/app:app"</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>🎉 We now have <strong>two</strong> pretty simple ways to generate the compile-time CLASSPATH for a label.
+This can make integrations with IDEs a bit more straightforward if they don’t have a working Bazel plugin.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-10-13-bazel-knowledge-aspects-to-generate-java-classpath.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

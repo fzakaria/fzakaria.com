@@ -1,0 +1,263 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Tailscale is magic; even more so with NixOS | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Tailscale is magic; even more so with NixOS" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Our adventure into NixOS continues; this time let’s look into how we can harden our NixOS machines by putting them within a VPN. We will be using tailscale to setup our VPN. Restricting your machines; especially SSH for servers; behind a VPN is a great way to add a layer of security without having to mess with various checklists like making sure password based logins are disabled." />
+<meta property="og:description" content="Our adventure into NixOS continues; this time let’s look into how we can harden our NixOS machines by putting them within a VPN. We will be using tailscale to setup our VPN. Restricting your machines; especially SSH for servers; behind a VPN is a great way to add a layer of security without having to mess with various checklists like making sure password based logins are disabled." />
+<link rel="canonical" href="https://fzakaria.com/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-17T16:01:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Tailscale is magic; even more so with NixOS" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-17T16:01:00-07:00","datePublished":"2020-09-17T16:01:00-07:00","description":"Our adventure into NixOS continues; this time let’s look into how we can harden our NixOS machines by putting them within a VPN. We will be using tailscale to setup our VPN. Restricting your machines; especially SSH for servers; behind a VPN is a great way to add a layer of security without having to mess with various checklists like making sure password based logins are disabled.","headline":"Tailscale is magic; even more so with NixOS","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html"},"url":"https://fzakaria.com/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Tailscale is magic; even more so with NixOS
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-17
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Our adventure into NixOS continues; this time let’s look into how we can <strong>harden</strong> our NixOS machines by putting them within a VPN. We will be using <a href="https://tailscale.com/">tailscale</a> to setup our VPN.</p>
+
+<p>Restricting your machines; especially SSH for servers; behind a VPN is a great way to add a layer of security without having to mess with various checklists like making sure <em>password based logins</em> are disabled.</p>
+
+<!--more-->
+
+<p>First off, <a href="https://tailscale.com/">tailscale</a> delivers on it’s promise of <em>“VPN made easy”</em>; it’s <strong>magic</strong>. Few often do I get to use a product that delivers on the ease of use so wonderfully that it comes off as magic. It has turned the act of setting up a VPN into a <em>brain dead</em> process; made even easier when coupled with NixOS.</p>
+
+<p>For the purpose of following along; we will be using my NixOS AWS EC2 machine.
+It had a SecurityGroup with <strong>SSH 22</strong> open previously so that I could access it.</p>
+
+<p>Simply create a new module <strong>vpn.nix</strong> with the following contents and perform a <code class="language-plaintext highlighter-rouge">nixos-rebuild switch</code></p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">config</span><span class="p">,</span> <span class="nv">pkgs</span><span class="p">,</span> <span class="o">...</span> <span class="p">}:</span> <span class="p">{</span>
+
+  <span class="c"># enable the tailscale daemon; this will do a variety of tasks:</span>
+  <span class="c"># 1. create the TUN network device</span>
+  <span class="c"># 2. setup some IP routes to route through the TUN</span>
+  <span class="nv">services</span><span class="o">.</span><span class="nv">tailscale</span> <span class="o">=</span> <span class="p">{</span> <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span> <span class="p">};</span>
+
+  <span class="c"># Let's open the UDP port with which the network is tunneled through</span>
+  <span class="nv">networking</span><span class="o">.</span><span class="nv">firewall</span><span class="o">.</span><span class="nv">allowedUDPPorts</span> <span class="o">=</span> <span class="p">[</span> <span class="mi">41641</span> <span class="p">];</span>
+
+  <span class="c"># Disable SSH access through the firewall</span>
+  <span class="c"># Only way into the machine will be through</span>
+  <span class="c"># This may cause a chicken &amp; egg problem since you need to register a machine</span>
+  <span class="c"># first using `tailscale up`</span>
+  <span class="c"># Better to rely on EC2 SecurityGroups</span>
+  <span class="c"># services.openssh.openFirewall = false;</span>
+
+  <span class="c"># Let's make the tailscale binary available to all users</span>
+  <span class="nv">environment</span><span class="o">.</span><span class="nv">systemPackages</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">pkgs</span><span class="o">.</span><span class="nv">tailscale</span> <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>Specifically for EC2, I had to also add <strong>41641</strong> as an ingress rule to my SecurityGroup.</p>
+</blockquote>
+
+<p>After the rebuild, let’s register the machine. Let’s now register the machine &amp; connect to the VPN network.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>tailscale up
+</code></pre></div></div>
+
+<p>The above will provide a HTTPS link for you to login through your registered identity provider (i.e. Google); and register the machine.</p>
+
+<p>After running this, you checkout the changes that were done.</p>
+
+<ol>
+  <li>Confirm that <em>tailscaled</em> is running properly
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ❯ systemctl is-active tailscaled
+ active
+</code></pre></div>    </div>
+  </li>
+  <li>Checkout the new network device created.
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ❯ ip <span class="nb">link </span>show dev tailscale0
+ 6: tailscale0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu 1280 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 500
+ <span class="nb">link</span>/none
+</code></pre></div>    </div>
+    <blockquote>
+      <p>Interestingly, the MTU is set to 1280 which is very conservative for the necessary encapsulation headers to tunnel traffic. <a href="https://github.com/tailscale/tailscale/issues/246">#246</a></p>
+    </blockquote>
+  </li>
+  <li>Checkout the route table created
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> ❯ ip route show table 52
+ 100.87.7.89 dev tailscale0 scope <span class="nb">link
+ </span>100.100.100.100 dev tailscale0 scope <span class="nb">link
+ </span>100.101.102.103 dev tailscale0 scope <span class="nb">link</span>
+</code></pre></div>    </div>
+
+    <p><code class="language-plaintext highlighter-rouge">100.100.100.100</code> is the DNS server you can use.</p>
+
+    <p><code class="language-plaintext highlighter-rouge">100.101.102.103</code> is the default IRC server they make available when you create an account.</p>
+
+    <p><code class="language-plaintext highlighter-rouge">100.87.7.89</code> is another machine in my VPN.</p>
+  </li>
+</ol>
+
+<p>Now remove the ability to SSH through the default network interface. If you have access to the server directly, go ahead and uncomment the line above.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>services.openssh.openFirewall = false;
+</code></pre></div></div>
+
+<p>If you are on a cloud provider (i.e. AWS), simply remove the SSH ingress rule.</p>
+
+<blockquote>
+  <p>Unfortunately, I could not think through a way to disable the firewall for a clouded server. On a fresh NixOS rebuild, tailscale will not have been registered but it will disable SSH. Have an idea ? Reach out to <a href="mailto:farid.m.zakaria@gmail.com">me</a>.</p>
+</blockquote>
+
+<p><strong>Wow!</strong> That’s it, we’re done! We’ve setup a full VPN between any machines with the help of tailscale.</p>
+
+<p>Now the strength of our SSH is directly related to our identity provider. For instance, I’ve setup MFA for my Google account.</p>
+
+<p><em>tailscale</em> &amp; <em>NixOS</em> are a great match.</p>
+
+<h3 id="extra-credit">Extra credit</h3>
+
+<blockquote>
+  <p>The following is only really useful for those running home-networks; please don’t use it in any production setting.</p>
+</blockquote>
+
+<p>Now that access via <em>ssh</em> is only allowed through the VPN; which requires it’s own authentication – we can make further simplifications.</p>
+
+<p>If we wanted to, we could now make <em>sshd</em> accept <em>password based logins</em> &amp; have our user have an <em>empty password</em> for a real simple login experience.</p>
+
+<p>At first this would have the drawback that any user with access to the VPN could access any host &amp; as any user. We can however make use of tailscale’s <a href="https://tailscale.com/kb/1018/acls">ACL feature</a> to restrict access only to the correct users.</p>
+
+<p><em>I leave the implementation as an exercise.</em></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-17-tailscale-is-magic-even-more-so-with-nixos.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

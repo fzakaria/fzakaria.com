@@ -1,0 +1,280 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Management Time | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Management Time" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Note This is the third (part1 &amp; part2) installment on my series of improving ELF symbol relocation processing. Consider reading them if this post interests you. 📖 I have written previously about improvements to the dynamic linking process, specifically processing relocations for entries with symbols. The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to 22x speedup compared to the traditional methadology, is memoizing the relocation entries. This memoization is possible since the linking order of the loader is deterministic and in store-based systems such as NixOS the libraries to be loaded are fixed &amp; static." />
+<meta property="og:description" content="Note This is the third (part1 &amp; part2) installment on my series of improving ELF symbol relocation processing. Consider reading them if this post interests you. 📖 I have written previously about improvements to the dynamic linking process, specifically processing relocations for entries with symbols. The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to 22x speedup compared to the traditional methadology, is memoizing the relocation entries. This memoization is possible since the linking order of the loader is deterministic and in store-based systems such as NixOS the libraries to be loaded are fixed &amp; static." />
+<link rel="canonical" href="https://fzakaria.com/2024/07/24/management-time.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/07/24/management-time.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-24T07:48:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Management Time" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-24T07:48:00-07:00","datePublished":"2024-07-24T07:48:00-07:00","description":"Note This is the third (part1 &amp; part2) installment on my series of improving ELF symbol relocation processing. Consider reading them if this post interests you. 📖 I have written previously about improvements to the dynamic linking process, specifically processing relocations for entries with symbols. The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to 22x speedup compared to the traditional methadology, is memoizing the relocation entries. This memoization is possible since the linking order of the loader is deterministic and in store-based systems such as NixOS the libraries to be loaded are fixed &amp; static.","headline":"Management Time","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/07/24/management-time.html"},"url":"https://fzakaria.com/2024/07/24/management-time.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Management Time
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-07-24
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/07/24/management-time.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p><strong>Note</strong><br />
+This is the third (<a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">part1</a> &amp; <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">part2</a>) installment on my series of improving ELF symbol relocation processing.
+Consider reading them if this post interests you. 📖</p>
+</blockquote>
+
+<p>I have written <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">previously</a> about <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">improvements</a> to the dynamic linking process, specifically processing relocations for entries with symbols.</p>
+
+<p>The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to <strong>22x</strong> speedup compared to the traditional methadology, is memoizing the relocation entries.</p>
+
+<p>This memoization is possible since the linking order of the loader is <em>deterministic</em> and in store-based systems such as <a href="https://nixos.org/">NixOS</a> the libraries to be loaded are <em>fixed &amp; static</em>.</p>
+
+<!--more-->
+
+<p>The key datastructure used to freeze the relocations is a relatively simple struct.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">typedef</span> <span class="k">struct</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">type</span><span class="p">;</span>                   <span class="c1">// Type of the relocation</span>
+    <span class="kt">size_t</span> <span class="n">addend</span><span class="p">;</span>              <span class="c1">// Addend of the relocation</span>
+    <span class="kt">size_t</span> <span class="n">st_value</span><span class="p">;</span>            <span class="c1">// Symbol value</span>
+    <span class="kt">size_t</span> <span class="n">st_size</span><span class="p">;</span>             <span class="c1">// Symbol size</span>
+    <span class="kt">size_t</span> <span class="n">offset</span><span class="p">;</span>              <span class="c1">// Offset of the relocation</span>
+    <span class="c1">// 0-based index starting from the head of the DSO list</span>
+    <span class="kt">size_t</span> <span class="n">symbol_dso_index</span><span class="p">;</span>
+    <span class="c1">// 0-based index starting from the head of the DSO list</span>
+    <span class="kt">size_t</span> <span class="n">dso_index</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="n">symbol_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>       <span class="c1">// Name of the symbol</span>
+    <span class="kt">char</span> <span class="n">symbol_dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>   <span class="c1">// Name of the DSO</span>
+    <span class="kt">char</span> <span class="n">dso_name</span><span class="p">[</span><span class="mi">255</span><span class="p">];</span>          <span class="c1">// Name of the DSO</span>
+<span class="p">}</span> <span class="n">CachedRelocInfo</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>These <em>fixed-width</em> entries are serialized to a separate file that is told to the loader to be loaded through the use of an environment variable <code class="language-plaintext highlighter-rouge">RELOC_READ</code></p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ RELOC_READ='hello_world_relo.bin' hello_world
+</span></code></pre></div></div>
+
+<p>In practice, the binaries are <em>wrapped</em> when deployed through NixOS so that this is all transparent to the user via a simple gesture in Nix.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">optimized_hello_world</span> <span class="o">=</span>
+     <span class="nv">optimizeRelocationLinking</span> <span class="p">{</span>
+        <span class="c"># You can pass any nixpkgs attribute here</span>
+        <span class="nv">executable</span> <span class="o">=</span> <span class="nv">hello_world</span><span class="p">;</span>
+    <span class="p">};</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Wrapped file hello_world-optimized</span>
+<span class="c">#! /nix/store/xxx-bash-5.2-p15/bin/bash -e</span>
+<span class="nb">export </span><span class="nv">RELOC_READ</span><span class="o">=</span><span class="s1">'/nix/store/xxx-patched_hello_world/bin/hello_world_relo.bin'</span>
+<span class="nb">exec</span> <span class="s2">"/nix/store/xxx-patched_hello_world/bin/hello_world"</span>  <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span> 
+</code></pre></div></div>
+
+<p>ℹ️ I’ve chosen to encode the cached relocation infos as a separate file since NixOS has solved the <em>multi-file update problem</em>; and I find having a separate file simpler to work with. The cached relocations could also be placed within a segment/section on the ELF file itself as well.</p>
+
+<p>🕵️ Turns out though that having this information <em>frozen</em> is not only useful to optimize the process itself but can be used for workflows relating to <strong>auditing</strong>, <strong>validation</strong> and <strong>modification</strong>.</p>
+
+<p>Some of these workflows may occur today during <em>compile time</em> or <em>runtime</em>.
+Performing them in between, has led us (coined by my advisor <a href="https://arquinn.github.io/">Prof. Andrew Quinn</a>) to label it <strong>management time</strong>.</p>
+
+<p>To demonstrate <em>management time</em>, I wrote a small Python utility <a href="https://github.com/fzakaria/musllibc/blob/management-time/examples/swiss-army-knife/sak.py">sak</a> (swiss army knife).</p>
+
+<h2 id="converting-to-jsonsqlite-and-back">Converting to JSON/SQLite and back</h2>
+
+<p>The current file format is a binary protocol and not suitable for auditing. We can easily transform it to JSON or a SQLite database, to perform audits.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ sak file-to-sqlite ./hello_world_relo.bin \
+                     --db hello_world.sqlite
+
+❯ sqlite3 hello_world.sqlite
+</span><span class="gp">sqlite&gt;</span><span class="w"> </span>.mode json
+<span class="gp">sqlite&gt;</span><span class="w"> </span><span class="k">select</span> <span class="k">*</span> from CachedRelocInfo LIMIT 1<span class="p">;</span>
+<span class="go">[
+  {
+    "id": 1,
+    "type": 7,
+    "addend": 0,
+    "st_value": 562266,
+    "st_size": 193,
+    "offset": 16336,
+    "symbol_dso_index": 2,
+    "dso_index": 1,
+    "symbol_name": "puts",
+    "symbol_dso_name": "/nix/store/xxx-musl/lib/libc.so",
+    "dso_name": "/nix/store/xxx-libfoo/lib/libfoo.so"
+  }
+]
+</span></code></pre></div></div>
+<p>This file is a <em>frozen snapshot</em> of the exact symbol bindings that will occur during process startup. If you’ve ever wanted to easily audit whether a particular CVE may have affected you, you can either construct a <code class="language-plaintext highlighter-rouge">jq</code> or <code class="language-plaintext highlighter-rouge">SQL</code> query to demonstrably prove it.</p>
+
+<p>😮 You can even modify the JSON file or SQLite perform serializing it back to the binary format. You could change the binding of symbols effectively customizing the interposition (shadow) order. Effectively akin to Solaris’s <a href="https://en.wikipedia.org/wiki/Direct_binding">direct binding</a> but done during <em>management time</em>, as opposed to compile time.</p>
+
+<blockquote>
+  <p>A workflow I am developing is supporting new libraries injected into the format so that you can do extremely targeted <code class="language-plaintext highlighter-rouge">LD_PRELOAD</code> equivalent workflows.</p>
+</blockquote>
+
+<h2 id="upgrades-made-easy">Upgrades Made Easy</h2>
+
+<p>Knowing the surface area the transitive closure (<em>not just the application</em>) uses for a given library gives us a <em>fingerprint</em> with which to test new libraries against whether they can be upgraded.</p>
+
+<p>We can validate that we could replace a library with a different version, or even a different library that may offer the same symbols, without needing to run our application.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ sak has-necessary-symbols hello_world_relo.bin \
+        --new-library /nix/store/xxx-libfoo-1.1/lib/libfoo.so \
+        --symbol-dso-name "/nix/store/xxx-libfoo-1.0/lib/libfoo.so"
+The following symbols are missing:
+bar
+</span></code></pre></div></div>
+
+<p>The power of this workflow boils down to a simple <code class="language-plaintext highlighter-rouge">LEFT JOIN</code> since the data is all present.</p>
+
+<div class="language-sql highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">-- ELFSymbols is a table with the symbol entries solely</span>
+<span class="c1">-- from the new library you are hoping to supplant with</span>
+<span class="k">SELECT</span> <span class="n">cri</span><span class="p">.</span><span class="n">symbol_name</span>
+<span class="k">FROM</span> <span class="n">CachedRelocInfo</span> <span class="n">cri</span>
+<span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">ELFSymbols</span> <span class="n">es</span>
+<span class="k">ON</span> <span class="n">cri</span><span class="p">.</span><span class="n">symbol_name</span> <span class="o">=</span> <span class="n">es</span><span class="p">.</span><span class="n">symbol_name</span>
+<span class="k">WHERE</span> <span class="n">es</span><span class="p">.</span><span class="n">symbol_name</span> <span class="k">IS</span> <span class="k">NULL</span> <span class="k">AND</span>
+      <span class="n">cri</span><span class="p">.</span><span class="n">symbol_dso_name</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">SYMBOL_DSO_NAME</span><span class="o">&gt;</span>
+</code></pre></div></div>
+
+<p>ℹ️ SQL is a powerful language to introspect binaries. Check out <a href="https://github.com/fzakaria/sqlelf">sqlelf</a> for a more general utility. I have also published a paper on the benefits of using SQL to drive ELF analysis; <a href="https://arxiv.org/abs/2405.03883">sqlelf: a SQL-centric Approach to ELF Analysis</a>.</p>
+
+<p>I have only begun to scratch the surface of the possibilities of <em>management time</em>. Having memoized linking information frozen within something like the <em>/nix/store</em> for every package available within <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> opens pretty imaginative workflows that no other distribution could compete with 🤯.</p>
+
+<p>We’ve all taken the underpinnings of our toolchain for granted. It’s true we are building on the shoulders of giants, but it’s imperative to look back and rethink decisions that may have existed for decades especially in-light of newer development models (i.e. NixOS) that offer us a chance to radically deviate from pre-existing conventions.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-07-24-management-time.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

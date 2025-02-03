@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>HypeMachine Chrome Extension and Hacking the Isolated world | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="HypeMachine Chrome Extension and Hacking the Isolated world" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Chrome HypeMachine Extension UPDATE: I posted a cleaned up version of the extension on the chrome gallery. Check it out here. After finishing the hypemachine batch downloader script, I decided to see if I can leverage my investigation into their website into making an extension for a popular browser. I decided to make a Google Chrome Extenson simply because it is the browser of my choice. From what I was told, aparantly a lot of the headaches I encountered writing the script could&#39;ve been avoided writing a Firefox script instead and using greasemonkey instead. So writing this script, introduced me to the crazy notion of Javascript Injection. I was so blown away by the whole vulnerability that I am a bit worried about how vulnerable the internet and browsing is. Anyways, what I aimed to do was inject a download button next to each song so that someone can easily download the track of their choice. I know there was a version of this for greasemonkey before and possibly chrome. I couldn&#39;t find it however (saw it mentioned on some sites) and they noted that they were no longer working. Anyways, here is a picture of the final result (notice the tiny green download icon): So please download the extension and alpha test it for me. I already know of some improvements to make and will update it and throw it up on the extension gallery once its solid. Hacking the Isolated World So how does the Chrome extensions work? Well they create what they like to call a &quot;isolated world&quot; and allow you to define javascript files that will execute on different times during the loading of the page. The problem is that their isolated world does not allow you access to the variables or functions defined by the page. You can however perform crossite Http Requests which coupled with my workaround is pretty crazy. The workaround to the isolated wold is really hacky but works. You can easily append to the HTML contents of the page, so simply append a string that contains the script tag as well as the script! var script = $(&quot;&lt;script type=&#39;text/javascript&#39; charset=&#39;utf-8&#39;&gt; $$(&#39;ul.tools&#39;).each(function(index) { //set songUrl to the songUrl and chromeUrl to the picture of the donwload image index.insertAdjacentHTML(&quot;AfterBegin&quot;, &quot;&lt;li class=\&quot;cext\&quot;&gt;&lt;a href=&quot;+songUrl+&quot;&gt; &lt;img class=\&quot;cext\&quot; src=&quot;+chromeUrl+&quot;&gt;&lt;/a&gt;&lt;/li&gt;&quot;); }); &lt;/script&gt;&quot;); function waitForLoad() { $(&quot;body&quot;).append($(style)); $(&quot;div#footer&quot;).append($(script)); } setTimeout(function() {waitForLoad();}, 2000); I largely did this knowing very little jQuery as well as web programming. Most Some of it is still lost on me. For instance, I am confused about the return values from the .each() function performed on the $$(&#39;ul.tools&#39;). index returns a HTMLElement $(this) returns the DOM object I am confused about why I get back the DOM object... The hypemachine website uses javascript to automatically generate a lot of their HTML including the list of songs themselves. In order to make sure to run the script after their scripts have finished executing I had to insert the &#39;hack&#39; of setTimeout to call my script hopefully after theirs have completed. It was super annoying writing the whole script embedded within a string because it was confusing remembering whether I needed to single, double or triple escape quotes that are nested since I had strings in strings... Inception. You can download the HypeExtension here." />
+<meta property="og:description" content="Chrome HypeMachine Extension UPDATE: I posted a cleaned up version of the extension on the chrome gallery. Check it out here. After finishing the hypemachine batch downloader script, I decided to see if I can leverage my investigation into their website into making an extension for a popular browser. I decided to make a Google Chrome Extenson simply because it is the browser of my choice. From what I was told, aparantly a lot of the headaches I encountered writing the script could&#39;ve been avoided writing a Firefox script instead and using greasemonkey instead. So writing this script, introduced me to the crazy notion of Javascript Injection. I was so blown away by the whole vulnerability that I am a bit worried about how vulnerable the internet and browsing is. Anyways, what I aimed to do was inject a download button next to each song so that someone can easily download the track of their choice. I know there was a version of this for greasemonkey before and possibly chrome. I couldn&#39;t find it however (saw it mentioned on some sites) and they noted that they were no longer working. Anyways, here is a picture of the final result (notice the tiny green download icon): So please download the extension and alpha test it for me. I already know of some improvements to make and will update it and throw it up on the extension gallery once its solid. Hacking the Isolated World So how does the Chrome extensions work? Well they create what they like to call a &quot;isolated world&quot; and allow you to define javascript files that will execute on different times during the loading of the page. The problem is that their isolated world does not allow you access to the variables or functions defined by the page. You can however perform crossite Http Requests which coupled with my workaround is pretty crazy. The workaround to the isolated wold is really hacky but works. You can easily append to the HTML contents of the page, so simply append a string that contains the script tag as well as the script! var script = $(&quot;&lt;script type=&#39;text/javascript&#39; charset=&#39;utf-8&#39;&gt; $$(&#39;ul.tools&#39;).each(function(index) { //set songUrl to the songUrl and chromeUrl to the picture of the donwload image index.insertAdjacentHTML(&quot;AfterBegin&quot;, &quot;&lt;li class=\&quot;cext\&quot;&gt;&lt;a href=&quot;+songUrl+&quot;&gt; &lt;img class=\&quot;cext\&quot; src=&quot;+chromeUrl+&quot;&gt;&lt;/a&gt;&lt;/li&gt;&quot;); }); &lt;/script&gt;&quot;); function waitForLoad() { $(&quot;body&quot;).append($(style)); $(&quot;div#footer&quot;).append($(script)); } setTimeout(function() {waitForLoad();}, 2000); I largely did this knowing very little jQuery as well as web programming. Most Some of it is still lost on me. For instance, I am confused about the return values from the .each() function performed on the $$(&#39;ul.tools&#39;). index returns a HTMLElement $(this) returns the DOM object I am confused about why I get back the DOM object... The hypemachine website uses javascript to automatically generate a lot of their HTML including the list of songs themselves. In order to make sure to run the script after their scripts have finished executing I had to insert the &#39;hack&#39; of setTimeout to call my script hopefully after theirs have completed. It was super annoying writing the whole script embedded within a string because it was confusing remembering whether I needed to single, double or triple escape quotes that are nested since I had strings in strings... Inception. You can download the HypeExtension here." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2010-12-23-hypemachine-chrome-extension-and-hacking-the-isolated-world.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2010-12-23-hypemachine-chrome-extension-and-hacking-the-isolated-world.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2010-12-23T18:32:04-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="HypeMachine Chrome Extension and Hacking the Isolated world" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2010-12-23T18:32:04-08:00","datePublished":"2010-12-23T18:32:04-08:00","description":"Chrome HypeMachine Extension UPDATE: I posted a cleaned up version of the extension on the chrome gallery. Check it out here. After finishing the hypemachine batch downloader script, I decided to see if I can leverage my investigation into their website into making an extension for a popular browser. I decided to make a Google Chrome Extenson simply because it is the browser of my choice. From what I was told, aparantly a lot of the headaches I encountered writing the script could&#39;ve been avoided writing a Firefox script instead and using greasemonkey instead. So writing this script, introduced me to the crazy notion of Javascript Injection. I was so blown away by the whole vulnerability that I am a bit worried about how vulnerable the internet and browsing is. Anyways, what I aimed to do was inject a download button next to each song so that someone can easily download the track of their choice. I know there was a version of this for greasemonkey before and possibly chrome. I couldn&#39;t find it however (saw it mentioned on some sites) and they noted that they were no longer working. Anyways, here is a picture of the final result (notice the tiny green download icon): So please download the extension and alpha test it for me. I already know of some improvements to make and will update it and throw it up on the extension gallery once its solid. Hacking the Isolated World So how does the Chrome extensions work? Well they create what they like to call a &quot;isolated world&quot; and allow you to define javascript files that will execute on different times during the loading of the page. The problem is that their isolated world does not allow you access to the variables or functions defined by the page. You can however perform crossite Http Requests which coupled with my workaround is pretty crazy. The workaround to the isolated wold is really hacky but works. You can easily append to the HTML contents of the page, so simply append a string that contains the script tag as well as the script! var script = $(&quot;&lt;script type=&#39;text/javascript&#39; charset=&#39;utf-8&#39;&gt; $$(&#39;ul.tools&#39;).each(function(index) { //set songUrl to the songUrl and chromeUrl to the picture of the donwload image index.insertAdjacentHTML(&quot;AfterBegin&quot;, &quot;&lt;li class=\\&quot;cext\\&quot;&gt;&lt;a href=&quot;+songUrl+&quot;&gt; &lt;img class=\\&quot;cext\\&quot; src=&quot;+chromeUrl+&quot;&gt;&lt;/a&gt;&lt;/li&gt;&quot;); }); &lt;/script&gt;&quot;); function waitForLoad() { $(&quot;body&quot;).append($(style)); $(&quot;div#footer&quot;).append($(script)); } setTimeout(function() {waitForLoad();}, 2000); I largely did this knowing very little jQuery as well as web programming. Most Some of it is still lost on me. For instance, I am confused about the return values from the .each() function performed on the $$(&#39;ul.tools&#39;). index returns a HTMLElement $(this) returns the DOM object I am confused about why I get back the DOM object... The hypemachine website uses javascript to automatically generate a lot of their HTML including the list of songs themselves. In order to make sure to run the script after their scripts have finished executing I had to insert the &#39;hack&#39; of setTimeout to call my script hopefully after theirs have completed. It was super annoying writing the whole script embedded within a string because it was confusing remembering whether I needed to single, double or triple escape quotes that are nested since I had strings in strings... Inception. You can download the HypeExtension here.","headline":"HypeMachine Chrome Extension and Hacking the Isolated world","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2010-12-23-hypemachine-chrome-extension-and-hacking-the-isolated-world.html"},"url":"https://fzakaria.com/old_blog/2010-12-23-hypemachine-chrome-extension-and-hacking-the-isolated-world.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    HypeMachine Chrome Extension and Hacking the Isolated world
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2010-12-23
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2010-12-23-hypemachine-chrome-extension-and-hacking-the-isolated-world.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Chrome HypeMachine Extension </h2>
+<blockquote><p>UPDATE: I posted a cleaned up version of the extension on the chrome gallery. <strong>Check it out <a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">here</a></strong>.</p></blockquote>
+<p>
+After finishing the hypemachine batch downloader <a href="/Downloadable/Scripts/hype.py">script</a>, I decided to see if I can leverage my investigation into their website into making an extension for a popular browser. I decided to make a Google Chrome Extenson simply because it is the browser of my choice. From what I was told, aparantly a lot of the headaches I encountered writing the script could've been avoided writing a Firefox script instead and using <a href="https://addons.mozilla.org/en-US/firefox/addon/748/">greasemonkey</a> instead.</p>
+<p>
+So writing this script, introduced me to the crazy notion of <a href="http://en.wikipedia.org/wiki/Cross-site_scripting">Javascript Injection</a>. I was so blown away by the whole vulnerability that I am a bit worried about how vulnerable the internet and browsing is. Anyways, what I aimed to do was inject a download button next to each song so that someone can easily download the track of their choice.</p>
+<blockquote><p>I know there was a version of this for greasemonkey before and possibly chrome. I couldn't find it however (saw it mentioned on some sites) and they noted that they were no longer working.</p></blockquote>
+<p>Anyways, here is a picture of the final result (notice the tiny green download icon):<br />
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/12/hypeext.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/12/hypeext.png" alt="" title="hypeext" width="600" height="400" class="aligncenter size-full wp-image-377" /></a></p>
+<p>So please download the extension and <em>alpha</em> test it for me. I already know of some improvements to make and will update it and throw it up on the extension gallery once its solid.</p>
+<h2> Hacking the Isolated World </h2>
+<p>
+So how does the Chrome extensions work? Well they create what they like to call a "isolated world" and allow you to define javascript files that will execute on different times during the loading of the page. The problem is that their isolated world does not allow you access to the variables or functions defined by the page.</p>
+<blockquote><p>You can however perform crossite Http Requests which coupled with my workaround is pretty crazy.</p></blockquote>
+<p>The workaround to the isolated wold is really hacky but works. You can easily append to the HTML contents of the page, so simply append a string that contains the script tag as well as the script!</p>
+<pre>
+<code> 
+var script = $(&quot;&lt;script type='text/javascript' charset='utf-8'&gt;
+    $$('ul.tools').each(function(index) {
+  //set songUrl to the songUrl and chromeUrl to the picture of the donwload image
+      index.insertAdjacentHTML(&quot;AfterBegin&quot;, &quot;&lt;li class=\&quot;cext\&quot;&gt;&lt;a href=&quot;+songUrl+&quot;&gt; &lt;img class=\&quot;cext\&quot; src=&quot;+chromeUrl+&quot;&gt;&lt;/a&gt;&lt;/li&gt;&quot;);
+      });
+  &lt;/script&gt;&quot;);
+function waitForLoad()
+{
+  $(&quot;body&quot;).append($(style));
+  $(&quot;div#footer&quot;).append($(script));
+}
+setTimeout(function() {waitForLoad();}, 2000);
+</code>
+</pre>
+<p>I largely did this knowing very little jQuery as well as web programming. <del datetime="2010-12-23T23:01:04+00:00">Most</del> Some of it is still lost on me. For instance, I am confused about the return values from the .each() function performed on the $$('ul.tools'). </p>
+<ol>
+<li>index returns a HTMLElement</li>
+<li>$(this) returns the DOM object</li>
+</ol>
+<p>I am confused about why I get back the DOM object...</p>
+<p>The hypemachine website uses javascript to automatically generate a lot of their HTML including the list of songs themselves. In order to make sure to run the script after their scripts have finished executing I had to insert the 'hack' of setTimeout to call my script hopefully after theirs have completed.</p>
+<p>It was super annoying writing the whole script embedded within a string because it was confusing remembering whether I needed to single, double or triple escape quotes that are nested since I had strings in strings...<br />
+<strong>Inception.</strong></p>
+<p>You can download the HypeExtension <a href="/Downloadable/Scripts/HypeExtension.crx">here</a>.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2010-12-23-hypemachine-chrome-extension-and-hacking-the-isolated-world.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

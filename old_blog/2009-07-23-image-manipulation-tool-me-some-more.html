@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Image Manipulation Tool Me Some More | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Image Manipulation Tool Me Some More" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tackled more on Images, Threads and C#" />
+<meta property="og:description" content="Tackled more on Images, Threads and C#" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2009-07-23-image-manipulation-tool-me-some-more.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2009-07-23-image-manipulation-tool-me-some-more.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2009-07-23T15:03:37-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Image Manipulation Tool Me Some More" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2009-07-23T15:03:37-07:00","datePublished":"2009-07-23T15:03:37-07:00","description":"Tackled more on Images, Threads and C#","headline":"Image Manipulation Tool Me Some More","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2009-07-23-image-manipulation-tool-me-some-more.html"},"url":"https://fzakaria.com/old_blog/2009-07-23-image-manipulation-tool-me-some-more.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Image Manipulation Tool Me Some More
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2009-07-23
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2009-07-23-image-manipulation-tool-me-some-more.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p align="left">
+So I had pretty much took on this interesting task of seeing what functionality can I implement (and somewhat well) for the sole purpose of really learning to master C# & .NET Framework & Concurrency. However I seemed to have made some good progress.</p>
+<p align="left">
+My search online to see how I can speed up my background worker thread lead me to <a href="http://www.switchonthecode.com/tutorials/csharp-tutorial-convert-a-color-image-to-grayscale">this website</a> which really demonstrates (most likely to the joy of C++ fan boys) how much managed code can really slow down performance. Pretty much by having direct access to the memory we can alter it faster than through .NET runtime. The author explains it nicely:</p>
+<blockquote><p>
+Locking the bits keeps the .NET runtime from moving them around in memory. This is important because we're going to use a pointer, and if the data is moving around the pointer won't point to the correct thing anymore. You'll need to know the pixel format of the image you're trying to convert. I'm using jpeg's, which are 24 bits per pixel.
+</p></blockquote>
+<p align="left">
+Not everything however was nicely explained or perhaps they are thought to be trivial. I was for some reason under the assumption that ARGB would be stored in that order. Such that every byte follows that pattern as I increase in memory address.<br />
+With a little debugging I discovered how the order is in fact in reverse (BGRA) and perhaps some head scratching makes me think it&rsquo;s probably that way since the file was written in Little Endian</p>
+<h3> How everything comes to together </h3>
+<p align="left">
+I guess it&rsquo;s funny how things relate and pop up so qiuckly. It has been perhaps only a week since I had read and written the splash code that makes use of the Invoke() method so that methods can be run on the same thread as the Window and yet during this side project I forgot totally about it (for a little bit at least). I was trying to update the Image in a PictureBoxControl in the background worker thread and wasn&rsquo;t sure why the image wasn&rsquo;t updating. It only took a few mins to remember that I needed to marshall into the proper thread.</p>
+<p align="left">
+The speed has already greatly improved and this is performing the calculatoins on a single thread which leaves the possibility to come back to the threadPool class which I might need to do if I want to get the RGB sliders as responsive as I&rsquo;d like.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2009-07-23-image-manipulation-tool-me-some-more.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

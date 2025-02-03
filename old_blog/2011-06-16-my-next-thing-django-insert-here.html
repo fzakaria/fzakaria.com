@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>My next thing: Django + [Insert Here] | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="My next thing: Django + [Insert Here]" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I&rsquo;ve decided to give a bit of rest to my relentless onslaught of projects towards Hype Machine (somewhat at the request/annoyance of Anthony Volodkin). As always, I like to pick projects where I have completely almost zero experience with and use it as a good chance to learn something new and possibly have fun. As much as it pains me to start to admit it, I think web development is slightly growing on me. It&rsquo;s kind of funny however that although I&rsquo;ve been hacking together Javascript for the past little while, I still don&rsquo;t at all completely understand the syntax and how it works. I should probably do something start, and go buy a book and read up on it&hellip; I&rsquo;ve decided then to continue in my exploration of the interwebz through creation of a Django project. Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design. I have yet to figure out what I would like to do with the Django application I&rsquo;d like to develop. Thoughts that I were tossing around were perhaps working with an additional site/SDK such as Facebook&rsquo;s, Soundcloud&rsquo;s etc&hellip; to try and deliver some neat functionality. If you have any suggestions, throw them my way. My choice to use Django was pretty easy. I love python and hate ruby. Deploying Django For some crazy reason, I decided to learn how to deploy Django on my shared hosted server Bluehost.com first before actually learning Django (don&rsquo;t get me started on my annoyance with using a shared server now). I have my main domain address &lsquo;www.fzakaria.com&rsquo; pointed to my Wordpress blog. I wanted to achieve in having Django installed as a sub directory/url of the domain (rather than a subdomain). i.e. &lsquo;www.fzakaria.com/django/&rsquo;&lt;/p&gt; There was plenty of resources available (shockingly even on the Bluehost FAQ) which helped me setup the server appropriately however I ran into a lot of GOTCHAS just because I didn&rsquo;t know what I was doing. Python doesn&rsquo;t recursively search through the PYTHONPATH if the directory is created as a module. (i.e. needs an __init__.py file in the directory). This caused a headache and me having to add a lot of additions to the PYTHONPATH before I realized it. Each directory under your public_html folder should have it&rsquo;s own .htaccess file. I mistakingly was trying to couple the .htaccess file for the main domain which handled my Wordpress blog and the one that would start the fcgi script to launch Django. Deploying to your server should really be the last step of creating a Django application, especially on a shared server. Since it&rsquo;s a shared server I haven&rsquo;t figured out a way to cause Django to refresh the server when I make modifications to any of the MVC python files for my application." />
+<meta property="og:description" content="I&rsquo;ve decided to give a bit of rest to my relentless onslaught of projects towards Hype Machine (somewhat at the request/annoyance of Anthony Volodkin). As always, I like to pick projects where I have completely almost zero experience with and use it as a good chance to learn something new and possibly have fun. As much as it pains me to start to admit it, I think web development is slightly growing on me. It&rsquo;s kind of funny however that although I&rsquo;ve been hacking together Javascript for the past little while, I still don&rsquo;t at all completely understand the syntax and how it works. I should probably do something start, and go buy a book and read up on it&hellip; I&rsquo;ve decided then to continue in my exploration of the interwebz through creation of a Django project. Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design. I have yet to figure out what I would like to do with the Django application I&rsquo;d like to develop. Thoughts that I were tossing around were perhaps working with an additional site/SDK such as Facebook&rsquo;s, Soundcloud&rsquo;s etc&hellip; to try and deliver some neat functionality. If you have any suggestions, throw them my way. My choice to use Django was pretty easy. I love python and hate ruby. Deploying Django For some crazy reason, I decided to learn how to deploy Django on my shared hosted server Bluehost.com first before actually learning Django (don&rsquo;t get me started on my annoyance with using a shared server now). I have my main domain address &lsquo;www.fzakaria.com&rsquo; pointed to my Wordpress blog. I wanted to achieve in having Django installed as a sub directory/url of the domain (rather than a subdomain). i.e. &lsquo;www.fzakaria.com/django/&rsquo;&lt;/p&gt; There was plenty of resources available (shockingly even on the Bluehost FAQ) which helped me setup the server appropriately however I ran into a lot of GOTCHAS just because I didn&rsquo;t know what I was doing. Python doesn&rsquo;t recursively search through the PYTHONPATH if the directory is created as a module. (i.e. needs an __init__.py file in the directory). This caused a headache and me having to add a lot of additions to the PYTHONPATH before I realized it. Each directory under your public_html folder should have it&rsquo;s own .htaccess file. I mistakingly was trying to couple the .htaccess file for the main domain which handled my Wordpress blog and the one that would start the fcgi script to launch Django. Deploying to your server should really be the last step of creating a Django application, especially on a shared server. Since it&rsquo;s a shared server I haven&rsquo;t figured out a way to cause Django to refresh the server when I make modifications to any of the MVC python files for my application." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-06-16-my-next-thing-django-insert-here.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-06-16-my-next-thing-django-insert-here.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-06-16T17:17:47-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="My next thing: Django + [Insert Here]" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-06-16T17:17:47-07:00","datePublished":"2011-06-16T17:17:47-07:00","description":"I&rsquo;ve decided to give a bit of rest to my relentless onslaught of projects towards Hype Machine (somewhat at the request/annoyance of Anthony Volodkin). As always, I like to pick projects where I have completely almost zero experience with and use it as a good chance to learn something new and possibly have fun. As much as it pains me to start to admit it, I think web development is slightly growing on me. It&rsquo;s kind of funny however that although I&rsquo;ve been hacking together Javascript for the past little while, I still don&rsquo;t at all completely understand the syntax and how it works. I should probably do something start, and go buy a book and read up on it&hellip; I&rsquo;ve decided then to continue in my exploration of the interwebz through creation of a Django project. Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design. I have yet to figure out what I would like to do with the Django application I&rsquo;d like to develop. Thoughts that I were tossing around were perhaps working with an additional site/SDK such as Facebook&rsquo;s, Soundcloud&rsquo;s etc&hellip; to try and deliver some neat functionality. If you have any suggestions, throw them my way. My choice to use Django was pretty easy. I love python and hate ruby. Deploying Django For some crazy reason, I decided to learn how to deploy Django on my shared hosted server Bluehost.com first before actually learning Django (don&rsquo;t get me started on my annoyance with using a shared server now). I have my main domain address &lsquo;www.fzakaria.com&rsquo; pointed to my Wordpress blog. I wanted to achieve in having Django installed as a sub directory/url of the domain (rather than a subdomain). i.e. &lsquo;www.fzakaria.com/django/&rsquo;&lt;/p&gt; There was plenty of resources available (shockingly even on the Bluehost FAQ) which helped me setup the server appropriately however I ran into a lot of GOTCHAS just because I didn&rsquo;t know what I was doing. Python doesn&rsquo;t recursively search through the PYTHONPATH if the directory is created as a module. (i.e. needs an __init__.py file in the directory). This caused a headache and me having to add a lot of additions to the PYTHONPATH before I realized it. Each directory under your public_html folder should have it&rsquo;s own .htaccess file. I mistakingly was trying to couple the .htaccess file for the main domain which handled my Wordpress blog and the one that would start the fcgi script to launch Django. Deploying to your server should really be the last step of creating a Django application, especially on a shared server. Since it&rsquo;s a shared server I haven&rsquo;t figured out a way to cause Django to refresh the server when I make modifications to any of the MVC python files for my application.","headline":"My next thing: Django + [Insert Here]","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-06-16-my-next-thing-django-insert-here.html"},"url":"https://fzakaria.com/old_blog/2011-06-16-my-next-thing-django-insert-here.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    My next thing: Django + [Insert Here]
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-06-16
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-06-16-my-next-thing-django-insert-here.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I&rsquo;ve decided to give a bit of rest to my relentless onslaught of projects towards <a href="http://hypem.com" target="_blank">Hype Machine</a> (somewhat at the request/annoyance of <a href="http://fascinated.fm/" target="_blank">Anthony Volodkin</a>). As always, I like to pick projects where I have <strike>completely</strike> almost zero experience with and use it as a good chance to learn something new and possibly have fun.</p>
+<p>As much as it pains me to start to admit it, I think web development is slightly growing on me. It&rsquo;s kind of funny however that although I&rsquo;ve been hacking together Javascript for the past little while, I still don&rsquo;t at all completely understand the syntax and how it works. <em>I should probably do something start, and go buy a book and read up on it&hellip; </em>I&rsquo;ve decided then to continue in my exploration of the interwebz through creation of a <a href="https://www.djangoproject.com/" target="_blank">Django</a> project.</p>
+<blockquote><h4><font style="font-weight: normal">Django is a high-level Python Web framework that encourages rapid development and clean, pragmatic design.</font></h4>
+</blockquote>
+<p>I have yet to figure out what I would like to do with the Django application I&rsquo;d like to develop. Thoughts that I were tossing around were perhaps working with an additional site/SDK such as Facebook&rsquo;s, Soundcloud&rsquo;s etc&hellip; to try and deliver some neat functionality. If you have any suggestions, throw them my way.</p>
+<p><em>My choice to use Django was pretty easy. I <strong>love </strong>python and <strong>hate</strong> ruby.</em></p>
+<p><!--more--><br />
+<h2>Deploying Django</h2>
+<p>For some <em>crazy</em><strong> </strong>reason, I decided to learn how to deploy Django on my shared hosted server <a href="http://www.bluehost.com/" target="_blank">Bluehost.com</a> first before <font color="#222222">actually learning Django (don&rsquo;t get me started on my annoyance with using a shared server now). </font></p>
+<p>I have my main domain address &lsquo;www.fzakaria.com&rsquo; pointed to my Wordpress blog. I wanted to achieve in having Django installed as a sub directory/url of the domain (rather than a subdomain). i.e. &lsquo;www.fzakaria.com/django/<myapp>&rsquo;</p>
+<p>There was plenty of resources available (shockingly even on the Bluehost FAQ) which helped me setup the server appropriately however I ran into a lot of <strong>GOTCHAS</strong> just because I didn&rsquo;t know what I was doing.</p>
+<ol>
+<li>Python doesn&rsquo;t recursively search through the PYTHONPATH if the directory is created as a module. (i.e. needs an __init__.py file in the directory). This caused a headache and me having to add a lot of additions to the PYTHONPATH before I realized it. </li>
+<li>Each directory under your public_html folder should have it&rsquo;s own .htaccess file. I mistakingly was trying to couple the .htaccess file for the main domain which handled my Wordpress blog and the one that would start the fcgi script to launch Django. </li>
+<li>Deploying to your server should really be the last step of creating a Django application, especially on a shared server. Since it&rsquo;s a shared server I haven&rsquo;t figured out a way to cause Django to <em>refresh</em> the server when I make modifications to any of the MVC python files for my application. </li>
+</ol>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-06-16-my-next-thing-django-insert-here.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

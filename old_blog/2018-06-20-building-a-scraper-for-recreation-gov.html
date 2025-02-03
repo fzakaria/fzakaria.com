@@ -1,0 +1,198 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Building a scraper for recreation.gov | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Building a scraper for recreation.gov" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The start of a new project A friend has recently asked if I can look into building a tool / site to scrape https://recreation.gov -- with a end-goal of building a system to automatically reserve for a desired permit. This piqued my interest and lets take a look at what I can do! At a high level I imagined building: register desired site -&gt; continously scrape -&gt; reserve -&gt; notify via text Looks like a good chance to put together some interesting technologies: web-framework (django?) &amp; twilio to send notifications Alternatives Before beginning any project, I take a look at the current space and see if there are any current open source alternatives or even a paid platform to leverage. I found the following: https://github.com/webrender/campsite-checker https://github.com/bri-bri/yosemite-camping I could not find a paid service and the OSS options seemed very difficult for non technical people to use. Can I haz API? Browsing online -- I was ecstatic when I came across ridb.recreation.gov which is a REST API for the recreation.gov website -- unfortunately it doesn&#39;t let you perform reservations and I couldn&#39;t decipher yet how to link them to the reservation portion. Perhaps it might be leveraged in the future! Time to use our favorite reverse engineering tools: wireshark &amp; Charles -- I ended up using Charles specifically because I find it easier to setup as a man-in-the-middle HTTPS proxy. You can follow the simple guide on how to setup Charles as a HTTPS proxy here Here is the raw request from Charles when searching locations matching whitney at https://www.recreation.gov/unifSearch.do (unimportant parts stripped out) POST /unifSearch.do HTTP/1.1 Host: www.recreation.gov User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:60.0) Gecko/20100101 Firefox/60.0 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 Accept-Language: en-US,en;q=0.5 Accept-Encoding: gzip, deflate, br Referer: https://www.recreation.gov/unifSearch.do Content-Type: application/x-www-form-urlencoded Content-Length: 275 Connection: keep-alive Upgrade-Insecure-Requests: 1&lt;/p&gt; currentMaximumWindow=12&amp;locationCriteria=whitney&amp;interest=&amp;locationPosition=&amp;selectedLocationCriteria=&amp;resetAllFilters=true&amp;filtersFormSubmitted=false&amp;glocIndex=0&amp;googleLocations=Whitney+Place+Northwest%2C+Seattle%2C+WA%2C+USA%7C-122.39853319999997%7C47.6974492%7C%7CLOCALITY &lt;/code&gt; The important part is that it is x-www-form-urlencoded with locationCriteria=whitney. The response is HTML however we can use various tools to strip out the desired list." />
+<meta property="og:description" content="The start of a new project A friend has recently asked if I can look into building a tool / site to scrape https://recreation.gov -- with a end-goal of building a system to automatically reserve for a desired permit. This piqued my interest and lets take a look at what I can do! At a high level I imagined building: register desired site -&gt; continously scrape -&gt; reserve -&gt; notify via text Looks like a good chance to put together some interesting technologies: web-framework (django?) &amp; twilio to send notifications Alternatives Before beginning any project, I take a look at the current space and see if there are any current open source alternatives or even a paid platform to leverage. I found the following: https://github.com/webrender/campsite-checker https://github.com/bri-bri/yosemite-camping I could not find a paid service and the OSS options seemed very difficult for non technical people to use. Can I haz API? Browsing online -- I was ecstatic when I came across ridb.recreation.gov which is a REST API for the recreation.gov website -- unfortunately it doesn&#39;t let you perform reservations and I couldn&#39;t decipher yet how to link them to the reservation portion. Perhaps it might be leveraged in the future! Time to use our favorite reverse engineering tools: wireshark &amp; Charles -- I ended up using Charles specifically because I find it easier to setup as a man-in-the-middle HTTPS proxy. You can follow the simple guide on how to setup Charles as a HTTPS proxy here Here is the raw request from Charles when searching locations matching whitney at https://www.recreation.gov/unifSearch.do (unimportant parts stripped out) POST /unifSearch.do HTTP/1.1 Host: www.recreation.gov User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:60.0) Gecko/20100101 Firefox/60.0 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 Accept-Language: en-US,en;q=0.5 Accept-Encoding: gzip, deflate, br Referer: https://www.recreation.gov/unifSearch.do Content-Type: application/x-www-form-urlencoded Content-Length: 275 Connection: keep-alive Upgrade-Insecure-Requests: 1&lt;/p&gt; currentMaximumWindow=12&amp;locationCriteria=whitney&amp;interest=&amp;locationPosition=&amp;selectedLocationCriteria=&amp;resetAllFilters=true&amp;filtersFormSubmitted=false&amp;glocIndex=0&amp;googleLocations=Whitney+Place+Northwest%2C+Seattle%2C+WA%2C+USA%7C-122.39853319999997%7C47.6974492%7C%7CLOCALITY &lt;/code&gt; The important part is that it is x-www-form-urlencoded with locationCriteria=whitney. The response is HTML however we can use various tools to strip out the desired list." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2018-06-20-building-a-scraper-for-recreation-gov.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2018-06-20-building-a-scraper-for-recreation-gov.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-20T15:53:20-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Building a scraper for recreation.gov" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-06-20T15:53:20-07:00","datePublished":"2018-06-20T15:53:20-07:00","description":"The start of a new project A friend has recently asked if I can look into building a tool / site to scrape https://recreation.gov -- with a end-goal of building a system to automatically reserve for a desired permit. This piqued my interest and lets take a look at what I can do! At a high level I imagined building: register desired site -&gt; continously scrape -&gt; reserve -&gt; notify via text Looks like a good chance to put together some interesting technologies: web-framework (django?) &amp; twilio to send notifications Alternatives Before beginning any project, I take a look at the current space and see if there are any current open source alternatives or even a paid platform to leverage. I found the following: https://github.com/webrender/campsite-checker https://github.com/bri-bri/yosemite-camping I could not find a paid service and the OSS options seemed very difficult for non technical people to use. Can I haz API? Browsing online -- I was ecstatic when I came across ridb.recreation.gov which is a REST API for the recreation.gov website -- unfortunately it doesn&#39;t let you perform reservations and I couldn&#39;t decipher yet how to link them to the reservation portion. Perhaps it might be leveraged in the future! Time to use our favorite reverse engineering tools: wireshark &amp; Charles -- I ended up using Charles specifically because I find it easier to setup as a man-in-the-middle HTTPS proxy. You can follow the simple guide on how to setup Charles as a HTTPS proxy here Here is the raw request from Charles when searching locations matching whitney at https://www.recreation.gov/unifSearch.do (unimportant parts stripped out) POST /unifSearch.do HTTP/1.1 Host: www.recreation.gov User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:60.0) Gecko/20100101 Firefox/60.0 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8 Accept-Language: en-US,en;q=0.5 Accept-Encoding: gzip, deflate, br Referer: https://www.recreation.gov/unifSearch.do Content-Type: application/x-www-form-urlencoded Content-Length: 275 Connection: keep-alive Upgrade-Insecure-Requests: 1&lt;/p&gt; currentMaximumWindow=12&amp;locationCriteria=whitney&amp;interest=&amp;locationPosition=&amp;selectedLocationCriteria=&amp;resetAllFilters=true&amp;filtersFormSubmitted=false&amp;glocIndex=0&amp;googleLocations=Whitney+Place+Northwest%2C+Seattle%2C+WA%2C+USA%7C-122.39853319999997%7C47.6974492%7C%7CLOCALITY &lt;/code&gt; The important part is that it is x-www-form-urlencoded with locationCriteria=whitney. The response is HTML however we can use various tools to strip out the desired list.","headline":"Building a scraper for recreation.gov","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2018-06-20-building-a-scraper-for-recreation-gov.html"},"url":"https://fzakaria.com/old_blog/2018-06-20-building-a-scraper-for-recreation-gov.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Building a scraper for recreation.gov
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2018-06-20
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2018-06-20-building-a-scraper-for-recreation-gov.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h3> The start of a new project </h3>
+<p>
+A friend has recently asked if I can look into building a tool / site to scrape <a href="https://recreation.gov">https://recreation.gov</a> -- with a end-goal of building a system to <em>automatically reserve</em> for a desired permit.</p>
+<p>This piqued my interest and lets take a look at what I can do! At a high level I imagined building:<br />
+<em>register desired site -> continously scrape -> reserve -> notify via text</em></p>
+<p>Looks like a good chance to put together some interesting technologies: web-framework (django?) & <a href="https://www.twilio.com/">twilio</a> to send notifications</p>
+<h4>Alternatives</h4>
+<p>
+Before beginning any project, I take a look at the current space and see if there are any current <em>open source alternatives</em> or even a paid platform to leverage.</p>
+<p>I found the following:</p>
+<ul>
+<li><a href="https://github.com/webrender/campsite-checker">https://github.com/webrender/campsite-checker</a></li>
+<li><a href="https://github.com/bri-bri/yosemite-camping">https://github.com/bri-bri/yosemite-camping</a></li>
+</ul>
+<p>I could <strong>not find</strong> a paid service and the OSS options seemed very difficult for non technical people to use.</p>
+<h4> Can I haz API? </h4>
+<p>
+Browsing online -- I was ecstatic when I came across <a href="https://ridb.recreation.gov/">ridb.recreation.gov</a> which is a REST API for the recreation.gov website -- unfortunately it doesn't let you perform reservations and I couldn't decipher yet how to link them to the reservation portion. Perhaps it might be leveraged in the future!</p>
+<p>Time to use our favorite reverse engineering tools: <a href="https://www.wireshark.org/">wireshark</a> & <a href="https://www.charlesproxy.com/">Charles</a> -- I ended up using Charles specifically because I find it easier to setup as a man-in-the-middle HTTPS proxy.</p>
+<blockquote><p>You can follow the simple guide on how to setup Charles as a HTTPS proxy <a href="https://www.charlesproxy.com/documentation/proxying/ssl-proxying/">here</a></p></blockquote>
+<p>Here is the raw request from Charles when searching locations matching <em>whitney</em> at <a href="https://www.recreation.gov/unifSearch.do">https://www.recreation.gov/unifSearch.do</a><br />
+(unimportant parts stripped out)</p>
+<p><code class="oldblog"><br />
+POST /unifSearch.do HTTP/1.1<br />
+Host: www.recreation.gov<br />
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:60.0) Gecko/20100101 Firefox/60.0<br />
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8<br />
+Accept-Language: en-US,en;q=0.5<br />
+Accept-Encoding: gzip, deflate, br<br />
+Referer: https://www.recreation.gov/unifSearch.do<br />
+Content-Type: application/x-www-form-urlencoded<br />
+Content-Length: 275<br />
+Connection: keep-alive<br />
+Upgrade-Insecure-Requests: 1</p>
+<p>currentMaximumWindow=12&locationCriteria=whitney&interest=&locationPosition=&selectedLocationCriteria=&resetAllFilters=true&filtersFormSubmitted=false&glocIndex=0&googleLocations=Whitney+Place+Northwest%2C+Seattle%2C+WA%2C+USA%7C-122.39853319999997%7C47.6974492%7C%7CLOCALITY<br />
+</code></p>
+<p>The important part is that it is <em>x-www-form-urlencoded</em> with <em>locationCriteria=whitney</em>.</p>
+<p>The response is HTML however we can use various tools to strip out the desired list.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2018-06-20-building-a-scraper-for-recreation-gov.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

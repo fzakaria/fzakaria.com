@@ -1,0 +1,333 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Investigating hydration times with Nix | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Investigating hydration times with Nix" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="📣 I want a give a huge shoutout to my colleague Micah Catlin, whose been constantly challenging me on questions on Nix – his analytical skills are 11/10. 🤓 We are working on a new build system using Nix as the underpinning framework. In order to smooth out the developer experience, we wanted to tackle a very simple question: “Can we force developers only to pull from the Nix binary cache?”" />
+<meta property="og:description" content="📣 I want a give a huge shoutout to my colleague Micah Catlin, whose been constantly challenging me on questions on Nix – his analytical skills are 11/10. 🤓 We are working on a new build system using Nix as the underpinning framework. In order to smooth out the developer experience, we wanted to tackle a very simple question: “Can we force developers only to pull from the Nix binary cache?”" />
+<link rel="canonical" href="https://fzakaria.com/2021/08/10/investigating-hydration-times-with-nix.html" />
+<meta property="og:url" content="https://fzakaria.com/2021/08/10/investigating-hydration-times-with-nix.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-08-10T08:43:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Investigating hydration times with Nix" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-08-10T08:43:00-07:00","datePublished":"2021-08-10T08:43:00-07:00","description":"📣 I want a give a huge shoutout to my colleague Micah Catlin, whose been constantly challenging me on questions on Nix – his analytical skills are 11/10. 🤓 We are working on a new build system using Nix as the underpinning framework. In order to smooth out the developer experience, we wanted to tackle a very simple question: “Can we force developers only to pull from the Nix binary cache?”","headline":"Investigating hydration times with Nix","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2021/08/10/investigating-hydration-times-with-nix.html"},"url":"https://fzakaria.com/2021/08/10/investigating-hydration-times-with-nix.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Investigating hydration times with Nix
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2021-08-10
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2021/08/10/investigating-hydration-times-with-nix.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>📣 I want a give a huge shoutout to my colleague <a href="https://www.linkedin.com/in/micah-catlin-0718991">Micah Catlin</a>, whose been constantly challenging me on questions on Nix – his analytical skills are 11/10. 🤓</p>
+</blockquote>
+
+<p>We are working on a new build system using Nix as the underpinning framework. In order to smooth out the developer experience, we wanted to tackle a very simple question:</p>
+
+<p><em>“Can we force developers only to pull from the Nix binary cache?”</em></p>
+
+<!--more-->
+
+<p>🤔 I did what you might typically do and visit the documentation for <a href="https://nixos.org/manual/nix/unstable/command-ref/conf-file.html">nix.conf</a> where it lists.</p>
+
+<blockquote>
+  <p>max-jobs</p>
+
+  <p>This option defines the maximum number of jobs that Nix will try to build in parallel. The default is 1. The special value auto causes Nix to use the number of CPUs in your system. 0 is useful when using remote builders to prevent any local builds (except for preferLocalBuild derivation attribute which executes locally regardless). It can be overridden using the –max-jobs (-j) command line switch.</p>
+
+  <p>Default: 1</p>
+
+  <p>Deprecated alias: build-max-jobs</p>
+</blockquote>
+
+<p>👌 Perfect! I answer the following and show an example:</p>
+
+<p>“Sure, just set <em>max-jobs</em> to zero in the configuration.”</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-build <span class="nt">--no-out-link</span> lolhello.nix <span class="nt">--option</span> max-jobs 0
+these derivations will be built:
+  /nix/store/vwrgdjl9h1h53ch2zh8cb18nd2raz8a7-lolhello.drv
+these paths will be fetched <span class="o">(</span>0.35 MiB download, 0.34 MiB unpacked<span class="o">)</span>:
+  /nix/store/vgaqghyhgk3apb503q5483v8cmn32ggm-hello-2.3.tar.bz2
+error: 1 derivations need to be built, but neither <span class="nb">local </span>builds <span class="o">(</span><span class="s1">'--max-jobs'</span><span class="o">)</span> nor remote builds <span class="o">(</span><span class="s1">'--builders'</span><span class="o">)</span> are enabled
+</code></pre></div></div>
+
+<p>My astute colleague however notices that setting up our <em>nix-shell</em> now takes considerably longer. His hypothesis is that the <em>max-jobs</em> when set to 0 now forces the downloading to become sequential.</p>
+
+<p>Let’s test! 📝</p>
+
+<p>First we will create a <em>large</em> dummy Nix artifact.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{};</span>
+<span class="kn">in</span>
+<span class="kn">with</span> <span class="nv">nixpkgs</span><span class="p">;</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="p">;</span>
+<span class="kn">with</span> <span class="nv">lib</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nv">make-large-derivation</span> <span class="o">=</span> <span class="nv">name</span><span class="p">:</span> <span class="kr">derivation</span> <span class="p">{</span>
+        <span class="kn">inherit</span> <span class="nv">name</span><span class="p">;</span>
+        <span class="nv">system</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="nv">currentSystem</span><span class="p">;</span>
+        <span class="nv">builder</span> <span class="o">=</span> <span class="nv">writeScript</span> <span class="s2">"builder.sh"</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">            #!/bin/sh</span><span class="err">
+</span><span class="s2">            </span><span class="si">${</span><span class="nv">coreutils</span><span class="si">}</span><span class="s2">/bin/dd if=/dev/urandom of=$out bs=64M count=16</span><span class="err">
+</span><span class="s2">        ''</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="nv">a</span> <span class="o">=</span> <span class="p">(</span><span class="nv">make-large-derivation</span> <span class="s2">"a"</span><span class="p">);</span>
+    <span class="nv">b</span> <span class="o">=</span> <span class="p">(</span><span class="nv">make-large-derivation</span> <span class="s2">"b"</span><span class="p">);</span>
+<span class="kn">in</span>
+<span class="kr">derivation</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"test"</span><span class="p">;</span>
+    <span class="nv">system</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="nv">currentSystem</span><span class="p">;</span>
+    <span class="nv">builder</span> <span class="o">=</span> <span class="nv">writeScript</span> <span class="s2">"builder.sh"</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">        #!/bin/sh</span><span class="err">
+</span><span class="s2">        echo </span><span class="si">${</span><span class="nv">a</span><span class="si">}</span><span class="s2"> &gt;&gt; $out</span><span class="err">
+</span><span class="s2">        echo </span><span class="si">${</span><span class="nv">b</span><span class="si">}</span><span class="s2"> &gt;&gt; $out</span><span class="err">
+</span><span class="s2">    ''</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">time </span>nix-build <span class="nt">--no-out-link</span> large-dummy-a.nix
+these derivations will be built:
+  /nix/store/nk7gljxxv2g5c6n4x08sdhmrvmg8smph-builder.sh.drv
+  /nix/store/vgbgd05fcgas6imrm4xsgilsv8gx1jqm-b.drv
+  /nix/store/zcdqjiqvampv7k3n161vzb6vzk2m35an-a.drv
+  /nix/store/gll9fjjcsji6yvw4zg3lfcmwi9mn4v3w-builder.sh.drv
+  /nix/store/xyx3zxkvjrkchjsz7gb9kzp7j3kiwypz-test.drv
+building <span class="s1">'/nix/store/nk7gljxxv2g5c6n4x08sdhmrvmg8smph-builder.sh.drv'</span>...
+building <span class="s1">'/nix/store/zcdqjiqvampv7k3n161vzb6vzk2m35an-a.drv'</span>...
+/nix/store/0vkw1m51q34dr64z5i87dy99an4hfmyg-coreutils-8.32/bin/dd: warning: partial <span class="nb">read</span> <span class="o">(</span>33554431 bytes<span class="o">)</span><span class="p">;</span> suggest <span class="nv">iflag</span><span class="o">=</span>fullblock
+0+16 records <span class="k">in
+</span>0+16 records out
+536870896 bytes <span class="o">(</span>537 MB, 512 MiB<span class="o">)</span> copied, 15.8208 s, 33.9 MB/s
+building <span class="s1">'/nix/store/vgbgd05fcgas6imrm4xsgilsv8gx1jqm-b.drv'</span>...
+/nix/store/0vkw1m51q34dr64z5i87dy99an4hfmyg-coreutils-8.32/bin/dd: warning: partial <span class="nb">read</span> <span class="o">(</span>33554431 bytes<span class="o">)</span><span class="p">;</span> suggest <span class="nv">iflag</span><span class="o">=</span>fullblock
+0+16 records <span class="k">in
+</span>0+16 records out
+536870896 bytes <span class="o">(</span>537 MB, 512 MiB<span class="o">)</span> copied, 15.18 s, 35.4 MB/s
+building <span class="s1">'/nix/store/gll9fjjcsji6yvw4zg3lfcmwi9mn4v3w-builder.sh.drv'</span>...
+building <span class="s1">'/nix/store/xyx3zxkvjrkchjsz7gb9kzp7j3kiwypz-test.drv'</span>...
+/nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+nix-build <span class="nt">--no-out-link</span> large-dummy-a.nix  3.24s user 31.37s system 94% cpu 36.506 total
+
+❯ <span class="nb">cat</span> /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+
+/nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
+/nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
+
+❯ <span class="nb">ls</span> <span class="nt">-lh</span> /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
+
+Permissions Size User     Date Modified Name
+.r--r--r--  536M fmzakari 31 Dec  1969  /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
+❯ <span class="nb">ls</span> <span class="nt">-lh</span> /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
+
+Permissions Size User     Date Modified Name
+.r--r--r--  536M fmzakari 31 Dec  1969  /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
+</code></pre></div></div>
+
+<p>Building it from scratch takes <strong>31.37s</strong> 🕒</p>
+
+<p>I add the large derivations to <code class="language-plaintext highlighter-rouge">$out</code> so it’s a runtime dependency</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-store <span class="nt">--query</span> <span class="nt">--tree</span> /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+
+/nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
++---/nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
++---/nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
+</code></pre></div></div>
+
+<p>Let’s upload them both to cachix.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ cachix push fzakaria /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+compressing and pushing /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a <span class="o">(</span>512.00 MiB<span class="o">)</span>
+compressing and pushing /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b <span class="o">(</span>512.00 MiB<span class="o">)</span>
+compressing and pushing /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test <span class="o">(</span>208.00 B<span class="o">)</span>
+All <span class="k">done</span><span class="nb">.</span>
+</code></pre></div></div>
+
+<p><strong>Don’t forget to cleanup these paths in between tests</strong></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-store <span class="nt">--delete</span> /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test<span class="p">;</span> <span class="se">\</span>
+  nix-store <span class="nt">--delete</span> /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a<span class="p">;</span> <span class="se">\</span>
+  nix-store <span class="nt">--delete</span> /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b<span class="p">;</span>
+</code></pre></div></div>
+
+<p>Now let’s <em>time</em> building it with jobs set to the <em>max-jobs</em> set to 5.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">time </span>nix-build <span class="nt">--no-out-link</span> large-dummy-a.nix <span class="nt">--option</span> max-jobs 5
+these paths will be fetched <span class="o">(</span>1024.05 MiB download, 1024.00 MiB unpacked<span class="o">)</span>:
+  /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+  /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
+  /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
+copying path <span class="s1">'/nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a'</span> from <span class="s1">'https://fzakaria.cachix.org'</span>...
+copying path <span class="s1">'/nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b'</span> from <span class="s1">'https://fzakaria.cachix.org'</span>...
+copying path <span class="s1">'/nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test'</span> from <span class="s1">'https://fzakaria.cachix.org'</span>...
+/nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+nix-build <span class="nt">--no-out-link</span> large-dummy-a.nix <span class="nt">--option</span> max-jobs 5  17.78s user 5.87s system 55% cpu 42.275 total
+</code></pre></div></div>
+
+<p>Downloading it with the default number of jobs, takes <strong>17.78s</strong> 🕒</p>
+
+<p>Now let’s <em>time</em> building it with jobs set to <em>0</em>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">time </span>nix-build <span class="nt">--no-out-link</span> large-dummy-a.nix <span class="nt">--option</span> max-jobs 0
+these paths will be fetched <span class="o">(</span>1024.05 MiB download, 1024.00 MiB unpacked<span class="o">)</span>:
+  /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+  /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
+  /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
+copying path <span class="s1">'/nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a'</span> from <span class="s1">'https://fzakaria.cachix.org'</span>...
+copying path <span class="s1">'/nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b'</span> from <span class="s1">'https://fzakaria.cachix.org'</span>...
+copying path <span class="s1">'/nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test'</span> from <span class="s1">'https://fzakaria.cachix.org'</span>...
+/nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+nix-build <span class="nt">--no-out-link</span> large-dummy-a.nix <span class="nt">--option</span> max-jobs 0  16.89s user 5.19s system 37% cpu 59.330 total
+
+</code></pre></div></div>
+
+<p>Hmmm. It still takes the same amount of time roughly <strong>16.89s</strong>.</p>
+
+<p>I can’t seem to get a noticeable impact with my experiment. I did find another configuration parameter <em>http-connections</em> that seems to affect more the concurrency of the downloads from the binary store.</p>
+
+<blockquote>
+  <p>http-connections</p>
+
+  <p>The maximum number of parallel TCP connections used to fetch files from binary caches and by other downloads. It defaults to 25. 0 means no limit.</p>
+
+  <p>Default: 25</p>
+
+  <p>Deprecated alias: binary-caches-parallel-connections</p>
+</blockquote>
+
+<p>Next step is to audit the source code and or think more about my experiment.
+Perhaps it’s not representative enough to show the problem he was noticing.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2021-08-10-investigating-hydration-times-with-nix.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Reproducibility in Disguise: Bazel, Dependencies, and the Versioning Lie | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Reproducibility in Disguise: Bazel, Dependencies, and the Versioning Lie" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Reproducibility has become a big deal. Whether it’s having higher confidence in one’s build or trying to better understand your supply chain for provenance, having an accurate view of your build graph is a must. Tools such as Bazel have picked up mainstream usage from their advocacy by large companies that use it or via similar derivatives such as Buck. These companies write &amp; proclaim how internally it’s solved many of their software development lifecycle problems. They’ve graciously open-sourced these tools for us to use so that we may also reap similar benefits. Sounds great right?" />
+<meta property="og:description" content="Reproducibility has become a big deal. Whether it’s having higher confidence in one’s build or trying to better understand your supply chain for provenance, having an accurate view of your build graph is a must. Tools such as Bazel have picked up mainstream usage from their advocacy by large companies that use it or via similar derivatives such as Buck. These companies write &amp; proclaim how internally it’s solved many of their software development lifecycle problems. They’ve graciously open-sourced these tools for us to use so that we may also reap similar benefits. Sounds great right?" />
+<link rel="canonical" href="https://fzakaria.com/2024/07/02/reproducibility-in-disguise.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/07/02/reproducibility-in-disguise.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-02T16:49:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Reproducibility in Disguise: Bazel, Dependencies, and the Versioning Lie" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-02T16:49:00-07:00","datePublished":"2024-07-02T16:49:00-07:00","description":"Reproducibility has become a big deal. Whether it’s having higher confidence in one’s build or trying to better understand your supply chain for provenance, having an accurate view of your build graph is a must. Tools such as Bazel have picked up mainstream usage from their advocacy by large companies that use it or via similar derivatives such as Buck. These companies write &amp; proclaim how internally it’s solved many of their software development lifecycle problems. They’ve graciously open-sourced these tools for us to use so that we may also reap similar benefits. Sounds great right?","headline":"Reproducibility in Disguise: Bazel, Dependencies, and the Versioning Lie","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/07/02/reproducibility-in-disguise.html"},"url":"https://fzakaria.com/2024/07/02/reproducibility-in-disguise.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Reproducibility in Disguise: Bazel, Dependencies, and the Versioning Lie
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-07-02
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/07/02/reproducibility-in-disguise.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Reproducibility has become a <em>big</em> deal. Whether it’s having higher confidence in one’s build or trying to better understand your supply chain for provenance, having an accurate view of your build graph is a <em>must</em>.</p>
+
+<p>Tools such as <a href="https://bazel.build/">Bazel</a> have picked up mainstream usage from their advocacy by large companies that use it or via similar derivatives such as Buck. These companies write &amp; proclaim how internally it’s solved many of their software development lifecycle problems. They’ve graciously open-sourced these tools for us to use so that we may also reap similar benefits. <em>Sounds great right?</em></p>
+
+<!--more-->
+
+<p>These companies however have a very distinctive software development practice from most of us: <strong>they vendor all their dependencies</strong>.</p>
+
+<p>Vendoring all third party dependencies has proven too onerous for most. Few developers truly understand the amount of code they pull in via transitive dependencies from their language package managers.</p>
+
+<p><img src="/assets/images/iceberg_third_party_50p.jpg" alt="third party iceberg" /></p>
+
+<p>To help those onboard to Bazel, the tool has introduced incrementally the concept of non-vendored dependencies (remote repositories) and integration with typical language package management tools such as <em>maven</em>, <em>pip</em> or <em>npm</em>. More recently, they’ve fully launched the <em>bazel mod</em> system which is a semantic versioning solver for dependencies. These are features that
+are not used internally at these companies that promote and have built out the tools themselves.</p>
+
+<p><em>Ah, diamond dependency problem, how I’ve missed you.</em> 🙃</p>
+
+<p>The introduction and use of Bazel has given many a <strong>false</strong> sense of security in that they have a lot better reproducibility than they did before.</p>
+
+<p><img src="/assets/images/head_in_sand_bazel_50p.jpeg" alt="head in sand meme" /></p>
+
+<p>The inconvenient truth is that by leveraging language package management packages and patterns, they’ve <em>infected</em> or <em>poisoned</em> the build system with ultimately the same root problems (diamond dependency) Google set out to thwart when building Bazel and vendoring dependencies.</p>
+
+<p>To illustrate this, let’s walk through an example within the Python ecosystem how one can easily run-amuck with semantic versioning, diamond dependencies and shared libraries.</p>
+
+<p>We will build two Python packages <strong>a</strong> &amp; <strong>b</strong>. Each package will have its own Python C extension which in turn depends on a C shared library <strong>foo</strong>. The idea here is that two distinct developers develop <strong>a</strong> &amp; <strong>b</strong> but they rely on the same common <strong>foo</strong> C shared object library.</p>
+
+<p>Using these packages in a Bazel build system, would like like:</p>
+<pre><code class="language-starlark">py_library(
+    name = "example",
+    srcs = [ "example.py"],
+    deps = [
+        # has a dependency on libfoo
+        "requirement(a)",
+        # has a dependency on libfoo
+        "requirement(b)"
+    ],
+)
+</code></pre>
+
+<p>Originally, when using package <strong>a</strong> or <strong>b</strong> you had to install the shared library on your system, likely using a package manager like <em>homebrew</em>, <em>dnf</em> or <em>apt</em>. The Python ecosystem recognized this was a UX nightmare and came out with <a href="https://peps.python.org/pep-0513/">PEP 513</a> which describes the process of bundling the shared library (in this case <em>foo</em>) within the wheel itself using something like <em>auditwheel</em> and giving the wheel produced the moniker “manylinux”.</p>
+
+<p><em>Thus solving the problem, right?</em>
+What happens when you have two packages that have built against a common shared object library at two different versions?</p>
+
+<p>Here is the <a href="https://github.com/fzakaria/python-shared-object-fallacy">sample repository</a> we will use to demonstrate how this is doomed for failure.
+We setup two packages <strong>a</strong> and <strong>b</strong> both with a C extension <strong>ext.c</strong>.
+Each C extension will link against <strong>libfoo</strong>. To mimic libfoo changing slightly across developer machines we have each package link against the variant within it’s directory.</p>
+
+<p>In the case of libfoo within A it has the symbol <em>buzz</em>.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">buzz</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"buzz from libfoo 1.1</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In the case of libfoo within B it has the symbol <em>bar</em>.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kt">void</span> <span class="nf">bar</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">"bar from libfoo 1.2</span><span class="se">\n</span><span class="s">"</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Notably, they are each missing the other respective function.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">src
+├── a
+│   ├── ext.c
+│   ├── __init__.py
+│   └── libfoo
+│       ├── foo.c
+│       ├── foo.h
+│       ├── libfoo.so
+│       └── Makefile
+└── b
+    ├── ext.c
+    ├── __init__.py
+    └── libfoo
+        ├── foo.c
+        ├── foo.h
+        ├── libfoo.so
+        └── Makefile
+</span></code></pre></div></div>
+
+<p>Both C extensions get build and list needing <strong>libfoo</strong> as a shared object dependency.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">patchelf --print-needed a/ext.cpython-311-x86_64-linux-gnu.so 
+libfoo.so
+libc.so.6
+
+patchelf --print-needed b/ext.cpython-311-x86_64-linux-gnu.so 
+libfoo.so
+libc.so.6
+</span></code></pre></div></div>
+
+<p>Trying to import both packages though results in a failure 💥.</p>
+
+<p>The problem is that only a single library with the given name <em>libfoo.so</em> can be loaded by the dynamic linker at runtime.</p>
+
+<p>It doesn’t matter if the shared objects are included in the wheel in the case of manylinux variants or found in the system. This is a diamond-dependency problem for the dependent shared library between two Python packages.</p>
+
+<p>This problem is made even worse in that Python packages <em>include no information about the version of their dependent shared libraries</em>. <strong>Semantic versioning is a lie.</strong></p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">&gt;</span><span class="o">&gt;&gt;</span> import a.ext
+<span class="gp">&gt;</span><span class="o">&gt;&gt;</span> a.ext.buzz<span class="o">()</span>
+<span class="go">buzz from libfoo 1.1
+</span><span class="gp">&gt;</span><span class="o">&gt;&gt;</span> import b.ext
+<span class="go">Traceback (most recent call last):
+</span><span class="gp">  File "&lt;stdin&gt;</span><span class="s2">", line 1, in &lt;module&gt;
+</span><span class="gp">  File "/.../.venv/lib/python3.11/site-packages/root-1.1-py3.11-linux-x86_64.egg/b/__init__.py", line 1, in &lt;module&gt;</span><span class="w">
+</span><span class="go">    from b.ext import bar
+ImportError: /.../.venv/lib/python3.11/site-packages/root-1.1-py3.11-linux-x86_64.egg/b/ext.cpython-311-x86_64-linux-gnu.so:
+undefined symbol: bar
+</span></code></pre></div></div>
+<p>For most of us at the hobbyist level this may not be a problem as <em>thankfully</em> C library developers for popular packages have taken the onerous burden to making them forward and backwards compatible through the use of symbol versioning.</p>
+
+<p>As an enterprise company however whose adopted Bazel with the promise though of reproducible and hermetic builds, we’ve been grifted.</p>
+
+<p>The only true solution to this problem is to build all your software together and vendor all your dependencies so that at least you know which version of the diamond dependency problem you’ve chosen ahead of time and can plan accordingly.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-07-02-reproducibility-in-disguise.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

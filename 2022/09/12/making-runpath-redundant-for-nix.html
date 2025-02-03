@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Making RUNPATH redundant for Nix | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Making RUNPATH redundant for Nix" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This post is a direct translation of Harmen Stoppel’s blog on the same subject for Nix. He has also contributed a fix to Spack. Please check out https://github.com/fzakaria/nix-harden-needed for my solution for the Nix ecosystem. Nix and other store-like systems (i.e. Guix or Spack), resolve all their dependencies within their store (/nix/store) to enforce hermiticity. They leverage for the most part RUNPATH which is a field on the ELF executable to instruct the dynamic linker where to discover the libraries – as opposed to searching default search paths like /lib. ❯ which ruby /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/bin/ruby ❯ patchelf --print-rpath $(which ruby) /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/lib:/nix/store/r90cncsaa519pwqpijg7ii4rkcmwjn6h-zlib-1.2.12/lib:/nix/store/bvy2z17rzlvkx2sj7fy99ajm853yv898-glibc-2.34-210/lib I have a paper about to published for SuperComputing 2022 (please reach out if you’d like early copy) that demonstrates there is a non-trivial cost to continuously searching needlessly through the RUNPATH. In fact, I have written previously about the specific costs and our tool Shrinkwrap that can avoid it. Although Shrinkwrap is one approach for a solution, it is merely a bandaid over the existing problem. Can systems like Nix do more to solve this problem?" />
+<meta property="og:description" content="This post is a direct translation of Harmen Stoppel’s blog on the same subject for Nix. He has also contributed a fix to Spack. Please check out https://github.com/fzakaria/nix-harden-needed for my solution for the Nix ecosystem. Nix and other store-like systems (i.e. Guix or Spack), resolve all their dependencies within their store (/nix/store) to enforce hermiticity. They leverage for the most part RUNPATH which is a field on the ELF executable to instruct the dynamic linker where to discover the libraries – as opposed to searching default search paths like /lib. ❯ which ruby /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/bin/ruby ❯ patchelf --print-rpath $(which ruby) /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/lib:/nix/store/r90cncsaa519pwqpijg7ii4rkcmwjn6h-zlib-1.2.12/lib:/nix/store/bvy2z17rzlvkx2sj7fy99ajm853yv898-glibc-2.34-210/lib I have a paper about to published for SuperComputing 2022 (please reach out if you’d like early copy) that demonstrates there is a non-trivial cost to continuously searching needlessly through the RUNPATH. In fact, I have written previously about the specific costs and our tool Shrinkwrap that can avoid it. Although Shrinkwrap is one approach for a solution, it is merely a bandaid over the existing problem. Can systems like Nix do more to solve this problem?" />
+<link rel="canonical" href="https://fzakaria.com/2022/09/12/making-runpath-redundant-for-nix.html" />
+<meta property="og:url" content="https://fzakaria.com/2022/09/12/making-runpath-redundant-for-nix.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-09-12T09:22:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Making RUNPATH redundant for Nix" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-09-12T09:22:00-07:00","datePublished":"2022-09-12T09:22:00-07:00","description":"This post is a direct translation of Harmen Stoppel’s blog on the same subject for Nix. He has also contributed a fix to Spack. Please check out https://github.com/fzakaria/nix-harden-needed for my solution for the Nix ecosystem. Nix and other store-like systems (i.e. Guix or Spack), resolve all their dependencies within their store (/nix/store) to enforce hermiticity. They leverage for the most part RUNPATH which is a field on the ELF executable to instruct the dynamic linker where to discover the libraries – as opposed to searching default search paths like /lib. ❯ which ruby /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/bin/ruby ❯ patchelf --print-rpath $(which ruby) /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/lib:/nix/store/r90cncsaa519pwqpijg7ii4rkcmwjn6h-zlib-1.2.12/lib:/nix/store/bvy2z17rzlvkx2sj7fy99ajm853yv898-glibc-2.34-210/lib I have a paper about to published for SuperComputing 2022 (please reach out if you’d like early copy) that demonstrates there is a non-trivial cost to continuously searching needlessly through the RUNPATH. In fact, I have written previously about the specific costs and our tool Shrinkwrap that can avoid it. Although Shrinkwrap is one approach for a solution, it is merely a bandaid over the existing problem. Can systems like Nix do more to solve this problem?","headline":"Making RUNPATH redundant for Nix","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2022/09/12/making-runpath-redundant-for-nix.html"},"url":"https://fzakaria.com/2022/09/12/making-runpath-redundant-for-nix.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Making RUNPATH redundant for Nix
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2022-09-12
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2022/09/12/making-runpath-redundant-for-nix.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This post is a direct translation of Harmen Stoppel’s <a href="https://stoppels.ch/2022/08/04/stop-searching-for-shared-libraries.html">blog</a> on the same subject for Nix. He has also contributed a fix to <a href="http://spack.io/">Spack</a>.</p>
+
+  <p>Please check out <a href="https://github.com/fzakaria/nix-harden-needed">https://github.com/fzakaria/nix-harden-needed</a> for my solution for the Nix ecosystem.</p>
+</blockquote>
+
+<p>Nix and other store-like systems (i.e. Guix or Spack), resolve all their dependencies within their store (<em>/nix/store</em>) to enforce hermiticity. They leverage for the most part <em>RUNPATH</em> which is a field on the ELF executable to instruct the
+dynamic linker where to discover the libraries – as opposed to searching default search paths like <em>/lib</em>.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ which ruby
+/nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/bin/ruby
+
+</span><span class="gp">❯ patchelf --print-rpath $</span><span class="o">(</span>which ruby<span class="o">)</span>
+<span class="go">/nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/lib:/nix/store/r90cncsaa519pwqpijg7ii4rkcmwjn6h-zlib-1.2.12/lib:/nix/store/bvy2z17rzlvkx2sj7fy99ajm853yv898-glibc-2.34-210/lib
+</span></code></pre></div></div>
+
+<p>I have a paper about to published for <a href="https://sc22.supercomputing.org/">SuperComputing 2022</a> (please reach out if you’d like early copy) that demonstrates there is a non-trivial cost to continuously searching needlessly through
+the <em>RUNPATH</em>. In fact, I have <a href="/2022/03/14/shrinkwrap-taming-dynamic-shared-objects.html">written previously</a> about the specific costs and our tool <a href="https://github.com/fzakaria/shrinkwrap">Shrinkwrap</a> that can avoid it.</p>
+
+<p>Although Shrinkwrap is one approach for a solution, it is merely a bandaid over the existing problem.</p>
+
+<p>Can systems like Nix do more to solve this problem?
+<!--more--></p>
+
+<p>Nix and similar systems have the benefit of knowing ahead of time the exact path for every dependency. They are also particularly well positioned to make deep impactful changes because they rebuild the world <strong>bottom up</strong>, starting from libc.</p>
+
+<p>Although these systems are radical departures from traditional Linux distributions and try to rebel against the Filesystem Hierarchy Standard, they nevertheless rely on fundamental tooling and control knobs such as <em>RUNPATH</em> to bandaid over the solution.</p>
+
+<p>🧐 Let’s make the use of <em>RUNPATH</em> in Nix obsolete and unnecessary.</p>
+
+<p>We can do this through the observation that GCC will propagate the <em>soname</em> stored in the library into the <em>DT_NEEDED</em> entry of the upstream binary. That means that if our <em>soname</em> happens to be an absolute path, such as a <em>/nix/store</em> entry, it will get set for the <em>DT_NEEDED</em> and searching through <em>RUNPATH</em> will be unnecessary. 🎆</p>
+
+<p>Here is a small example to demonstrate</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Let's build our library with an absolute path for soname
+# notice I have set the soname to an absolute path
+❯ gcc -shared -o libf.so -Wl,-soname,/nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so -x c - &lt;&lt;EOF
+        #include &lt;stdio.h&gt;
+        void f() { puts("hello world"); }
+    EOF
+
+❯ patchelf --print-soname libf.so
+/nix/store/zir4jfm86i3037lnsaz5br55iwavvhpz-libf-0.1/lib/libf.so
+
+# now build the application that relies on it
+❯ gcc -o app -lf -L. -x c - &lt;&lt;EOF
+    void f();
+    int main() { f(); }
+EOF
+
+❯ patchelf --print-needed app
+/nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so
+libc.so.6
+</code></pre></div></div>
+
+<p>Nothing of the above cannot be done during the building of a library <strong>automatically</strong> within Nix and specifically Nixpkgs. During build time, the store path is known (<em>$out</em>) and it can be set for the <em>soname</em>.</p>
+
+<p>Ideally, I believe a deep fix for Nixpkgs is possible by altering the <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/bintools-wrapper/ld-wrapper.sh">ld-wrapper</a> to correctly set the <em>soname</em>
+which will be picked up for every derivation built with <em>stdenv</em>.</p>
+
+<p>Unfortunately since I am not a <em>bash</em> Guru, I opted for a fix similar to <em>autopatchelf</em> – <a href="https://github.com/fzakaria/nix-harden-needed">nix-harden-needed</a>.</p>
+
+<p>It is a Nix <em>stdenv</em> setuphook that will automatically call <em>patchelf</em> to set the <em>soname</em> to the correct value – their absolute path. This means that the <em>DT_NEEDED</em>
+entry for any binary upstream that relies on it will leverage the absolute path and avoid the costly lookup through <em>RUNPATH</em>.</p>
+
+<p>It’s incredibly easy to use, you simply have to add it as a build input to your derivation. Let’s revisit the above example using the setup-hook.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let libf = stdenv.mkDerivation rec {
+  pname = "libf";
+  version = "0.1";
+
+  dontUnpack = true;
+
+  buildInputs = [
+    nix-harden-needed-hook
+  ];
+
+  buildPhase = ''
+    # Enable if you'd like to see wrapper debug information
+    # NIX_DEBUG=1 
+    $CC -shared -o libf.so -Wl,-soname,libf.so -x c - &lt;&lt;EOF
+        #include &lt;stdio.h&gt;
+        void f() { puts("hello world"); }
+    EOF
+  '';
+
+  installPhase = ''
+    mkdir -p $out/lib
+    mv libf.so $out/lib
+  '';
+};
+in
+stdenv.mkDerivation rec {
+  pname = "app";
+
+  version = "0.1";
+
+  dontUnpack = true;
+
+  buildInputs = [
+    libf
+  ];
+
+  buildPhase = ''
+    # Enable if you'd like to see wrapper debug information
+    # NIX_DEBUG=1 
+    $CC -o app -lf -x c - &lt;&lt;EOF
+        void f();
+        int main() { f(); }
+    EOF
+  '';
+
+  installPhase = ''
+    mkdir -p $out/bin
+    mv app $out/bin
+  '';
+
+}
+</code></pre></div></div>
+
+<p>The built binary will correctly have the <em>DT_NEEDED</em> set to the absolute path of the shared object file.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ patchelf --print-needed /nix/store/6pg9d3lwlmgcmmswv937fcy211vkqxch-app-0.1/bin/app
+/nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so
+libc.so.6
+❯ patchelf --print-soname /nix/store/zir4jfm86i3037lnsaz5br55iwavvhpz-libf-0.1/lib/libf.so
+/nix/store/zir4jfm86i3037lnsaz5br55iwavvhpz-libf-0.1/lib/libf.so
+</span></code></pre></div></div>
+
+<p>I believe systems such as Nix have ushered a new paradigm shift of thinking about software and there is immense opportunity to go beyond the current limitations and tooling.</p>
+
+<p>🙇 Everything can be re-thought and re-imagined.</p>
+
+<blockquote>
+  <p>Please reach out if you are a <em>bash guru</em> and we can work together to apply a deeper fix to Nixpkgs of the above ideas.</p>
+</blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2022-09-12-making-runpath-redundant-for-nix.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

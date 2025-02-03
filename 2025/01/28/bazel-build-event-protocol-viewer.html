@@ -1,0 +1,204 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bazel: Build Event Protocol Viewer | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Bazel: Build Event Protocol Viewer" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Visit https://visible.build to try a client-side only build event protocol viewer 🎉. You can find the MIT licensed source code here. I consider myself a “backend” engineer. Although I have dabbled in UI frameworks professionally (.NET and the occasional JavaScript) – I rarely work on the front-end visual portion of a product. My knowledge of HTML/CSS has been forever cemented since I learnt the technology in my teens – culminating in the ultimate personal expression of &lt;marquee&gt; on GeoCities. Revisiting front-end development for occasional projects has always been stress-inducing. The pace of change in the ecosystem is fast from the toolset to even the language (👋 TypeScript)." />
+<meta property="og:description" content="Visit https://visible.build to try a client-side only build event protocol viewer 🎉. You can find the MIT licensed source code here. I consider myself a “backend” engineer. Although I have dabbled in UI frameworks professionally (.NET and the occasional JavaScript) – I rarely work on the front-end visual portion of a product. My knowledge of HTML/CSS has been forever cemented since I learnt the technology in my teens – culminating in the ultimate personal expression of &lt;marquee&gt; on GeoCities. Revisiting front-end development for occasional projects has always been stress-inducing. The pace of change in the ecosystem is fast from the toolset to even the language (👋 TypeScript)." />
+<link rel="canonical" href="https://fzakaria.com/2025/01/28/bazel-build-event-protocol-viewer.html" />
+<meta property="og:url" content="https://fzakaria.com/2025/01/28/bazel-build-event-protocol-viewer.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-01-28T14:11:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bazel: Build Event Protocol Viewer" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-01-28T14:11:00-08:00","datePublished":"2025-01-28T14:11:00-08:00","description":"Visit https://visible.build to try a client-side only build event protocol viewer 🎉. You can find the MIT licensed source code here. I consider myself a “backend” engineer. Although I have dabbled in UI frameworks professionally (.NET and the occasional JavaScript) – I rarely work on the front-end visual portion of a product. My knowledge of HTML/CSS has been forever cemented since I learnt the technology in my teens – culminating in the ultimate personal expression of &lt;marquee&gt; on GeoCities. Revisiting front-end development for occasional projects has always been stress-inducing. The pace of change in the ecosystem is fast from the toolset to even the language (👋 TypeScript).","headline":"Bazel: Build Event Protocol Viewer","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2025/01/28/bazel-build-event-protocol-viewer.html"},"url":"https://fzakaria.com/2025/01/28/bazel-build-event-protocol-viewer.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Bazel: Build Event Protocol Viewer
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2025-01-28
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>Visit <a href="https://visible.build">https://visible.build</a> to try a <em>client-side only</em> build event protocol viewer 🎉.</p>
+
+  <p>You can find the MIT licensed source code <a href="https://github.com/fzakaria/bazel-build-event-viewer/">here</a>.</p>
+</blockquote>
+
+<p>I consider myself a “backend” engineer.</p>
+
+<p>Although I have dabbled in UI frameworks professionally (.NET and the occasional JavaScript) – I rarely work on the front-end visual portion of a product.</p>
+
+<p>My knowledge of HTML/CSS has been forever cemented since I learnt the technology in my teens – culminating in the ultimate personal expression of <code class="language-plaintext highlighter-rouge">&lt;marquee&gt;</code> on GeoCities.</p>
+
+<p>Revisiting front-end development for occasional projects has always been stress-inducing. The pace of change in the ecosystem is fast from the toolset to even the language (👋 TypeScript).</p>
+
+<!--more-->
+
+<p>Nevertheless, this last weekend I was lazer focused on a single goal.</p>
+
+<p><em>To build a front-end only website to visualize the <a href="https://bazel.build/remote/bep">Build Event Protocol (BEP)</a> for Bazel</em> 🎯.</p>
+
+<blockquote>
+  <p>The Build Event Protocol (BEP) is a protocol buffer message format that describes various events during a Bazel invocation that can help provide insights or provide a beautiful UI to display build results.</p>
+</blockquote>
+
+<p>Why?</p>
+
+<p>I’m in awe &amp; admiration of all the tooling others have built in the Bazel ecosystem to do something similar however they all necessitate a server.</p>
+
+<p>Although running a server isn’t an incredibly tall-order, it’s still a step that must be taken. Providing a free &amp; open server solution is also possible – but then I would have to worry about scale and costs.</p>
+
+<p>A <em>client-only</em> solution although limited by what it might be able to display, felt like a great contribution to the ecosystem. A nice addition is that client-only solutions also put at ease security minded individuals when uploading potentially sensitive data.</p>
+
+<p>As someone without much frontend experience, I’m happy with the results. 😊</p>
+
+<p><img src="/assets/images/build_event_protocol_viewer_overview.png" alt="Build Event Protocol Viewer Overview" /></p>
+
+<p>This project is available on <a href="https://visible.build">visible.build</a>, available at <a href="https://github.com/fzakaria/build-event-protocol-viewer">https://github.com/fzakaria/build-event-protocol-viewer</a>, hosted on GitHub Pages and should be ready to explore your Bazel invocations 🤘.</p>
+
+<p>The project is built as a single-page-application (SPA) and pre-rendered so there is absolutely no server requests beyond fetching the static-content.</p>
+
+<p>I chose to use <a href="https://svelte.dev/">Svelte</a> to generate the UI – oddly seemed to <em>fit my brain</em>. It’s as if <a href="https://react.dev/">React</a> &amp; <a href="https://angular.dev/">Angular</a> had a baby. Coupled with <a href="https://getbootstrap.com/">Bootstrap</a> I was able to get a semi-decent looking CSS without much fanfare.</p>
+
+<p>I leveraged &amp; learnt TypeScript, which coupled with <a href="https://github.com/protobufjs">protobufjs</a> to build the equivalent classes for the protocol definitions, made it relatively straightforward to explore the model. The main challenge was the abundance of fields, many of which were marked as <em>deprecated</em> in the proto definition file.</p>
+
+<p>A nice cherry ontop 🍒 this project is that it has a <em>clear end state</em> that it achieved; which is rare in projects. I set out to do a <em>single thing</em> (i.e. make a simple client-side only UI for BEP), and there’s only so much you can do without a server.</p>
+
+<p>I’ve reached that end state. Visualized <em>nearly</em> at most what I could from the single protocol file and achieved <em>project nirvana</em>. 🧘🏼</p>
+
+<p><em>Give it a shot. Contribute if you see a bug. Please let me know if you are using it.</em></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2025-01-28-bazel-build-event-protocol-viewer.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

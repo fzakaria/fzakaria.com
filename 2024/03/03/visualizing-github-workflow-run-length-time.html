@@ -1,0 +1,242 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Visualizing GitHub workflow run length time | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Visualizing GitHub workflow run length time" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="GitHub Actions have now become an integral part of many open source projects, providing a free &amp; powerful CI system. I am surprised however there is no provided way to visualize the run length time (or other meaningful metrics) of your actions. 🕵️ I did find a few other third-party solutions that either extract the data or themselves can be added as a step to your workflow to get similar visualizations. I wanted something simpler. I previously wrote a post about the cost of runfiles which had become evident when we noticed our GitHub Bazel build workflow had slowed down by 50x. After landing my fix, I wanted to visualize the run length time of the action; and objectively see if my fix had worked. Trust but verify." />
+<meta property="og:description" content="GitHub Actions have now become an integral part of many open source projects, providing a free &amp; powerful CI system. I am surprised however there is no provided way to visualize the run length time (or other meaningful metrics) of your actions. 🕵️ I did find a few other third-party solutions that either extract the data or themselves can be added as a step to your workflow to get similar visualizations. I wanted something simpler. I previously wrote a post about the cost of runfiles which had become evident when we noticed our GitHub Bazel build workflow had slowed down by 50x. After landing my fix, I wanted to visualize the run length time of the action; and objectively see if my fix had worked. Trust but verify." />
+<link rel="canonical" href="https://fzakaria.com/2024/03/03/visualizing-github-workflow-run-length-time.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/03/03/visualizing-github-workflow-run-length-time.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-03-03T15:24:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Visualizing GitHub workflow run length time" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-03-03T15:24:00-08:00","datePublished":"2024-03-03T15:24:00-08:00","description":"GitHub Actions have now become an integral part of many open source projects, providing a free &amp; powerful CI system. I am surprised however there is no provided way to visualize the run length time (or other meaningful metrics) of your actions. 🕵️ I did find a few other third-party solutions that either extract the data or themselves can be added as a step to your workflow to get similar visualizations. I wanted something simpler. I previously wrote a post about the cost of runfiles which had become evident when we noticed our GitHub Bazel build workflow had slowed down by 50x. After landing my fix, I wanted to visualize the run length time of the action; and objectively see if my fix had worked. Trust but verify.","headline":"Visualizing GitHub workflow run length time","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/03/03/visualizing-github-workflow-run-length-time.html"},"url":"https://fzakaria.com/2024/03/03/visualizing-github-workflow-run-length-time.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Visualizing GitHub workflow run length time
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-03-03
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/03/03/visualizing-github-workflow-run-length-time.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>GitHub Actions have now become an integral part of many open source projects, providing a free &amp; powerful CI system. I am surprised however there is no provided way to visualize the run length time (or other meaningful metrics) of your actions.</p>
+
+<blockquote>
+  <p>🕵️ I did find a few other third-party solutions that either extract the data or themselves can be added <a href="https://github.com/marketplace/actions/workflow-telemetry">as a step</a> to your workflow to get similar visualizations. I wanted something <em>simpler</em>.</p>
+</blockquote>
+
+<p>I previously wrote a post about <a href="/2024/02/27/hermetic-but-at-what-cost.html">the cost of runfiles</a> which had become evident when we noticed our GitHub Bazel build workflow had slowed down by 50x.</p>
+
+<p>After landing my fix, I wanted to <em>visualize</em> the run length time of the action; and objectively see if my fix had worked. <em>Trust <strong>but</strong> verify</em>.</p>
+
+<!--more-->
+
+<p>I found the <a href="https://docs.github.com/en/rest/actions/workflow-runs?apiVersion=2022-11-28#list-workflow-runs-for-a-repository">GitHub API</a> does provide the run time length of each workflow. The <a href="https://github.com/cli/cli">GitHub CLI</a> makes it easy to extract out the data as JSON.</p>
+
+<p>The following command generates the 100 last runs of the <code class="language-plaintext highlighter-rouge">buildAndTestBazel.yml</code> workflow for the <code class="language-plaintext highlighter-rouge">openxla/stablehlo</code> repository. It then filters the data to only include the <code class="language-plaintext highlighter-rouge">startedAt</code> and <code class="language-plaintext highlighter-rouge">updatedAt</code> fields and saves it to a file called <code class="language-plaintext highlighter-rouge">json_data.json</code>.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>gh run list <span class="nt">--workflow</span> buildAndTestBazel.yml <span class="se">\</span>
+<span class="go">              --repo openxla/stablehlo \
+              --json startedAt,updatedAt \
+              --status completed \
+              --branch main \
+</span><span class="gp">              --limit 100 &gt;</span><span class="w"> </span>json_data.json
+</code></pre></div></div>
+
+<p>This JSON file then served as the foundation for the next phase: visualization. Enter <a href="https://plotnine.org/">plotnine</a>, a Python plotting library that brings the declarative and powerful grammar of graphics (the philosophy behind ggplot2 in R) to the Python ecosystem. Plotnine enables creating complex plots from data in a DataFrame with minimal fuss, making it an ideal choice for our purpose.</p>
+
+<blockquote>
+  <p>🕵️ For those unfamiliar, ggplot (and by extension, plotnine) is predicated on the idea of building plots layer by layer, adding components such as scales, axes, and geometries incrementally. This approach not only makes the plot construction intuitive but also highly customizable. I really like using them graphing because it means I can commit reusable, reliable and reproducible code for generating my visualizations.</p>
+</blockquote>
+
+<p>Using another script, I transformed the JSON data into a Pandas DataFrame and then into time series graphs using plotnine. The final visualization was used to prove that my fix had worked and that the run length time had indeed decreased.</p>
+
+<blockquote>
+  <p>You can view the script at <a href="https://gist.github.com/fzakaria/b3ca5a1d3700714497925d026bd8105b">this gist - b3ca5a1d3700714497925d026bd8105b</a></p>
+</blockquote>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">from</span> <span class="nn">plotnine</span> <span class="kn">import</span> <span class="n">ggplot</span><span class="p">,</span> <span class="n">aes</span><span class="p">,</span> <span class="n">geom_line</span><span class="p">,</span> <span class="n">theme</span><span class="p">,</span> <span class="n">labs</span><span class="p">,</span> <span class="n">scale_x_datetime</span><span class="p">,</span> <span class="n">element_text</span><span class="p">,</span> <span class="n">geom_point</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="c1">#  $ gh run list --workflow buildAndTestBazel.yml --repo openxla/stablehlo --json startedAt,updatedAt --status completed --branch main --limit 100 &gt; json_data.json
+# Assuming `json_data` is your JSON data loaded into a variable
+# If your JSON is in a file, you can load it with:
+</span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'json_data.json'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">json_data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+<span class="c1"># Convert JSON data to DataFrame
+</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">json_data</span><span class="p">)</span>
+
+<span class="c1"># Convert the startedAt and updatedAt columns to datetime
+</span><span class="n">df</span><span class="p">[</span><span class="s">'startedAt'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">'startedAt'</span><span class="p">])</span>
+<span class="n">df</span><span class="p">[</span><span class="s">'updatedAt'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">'updatedAt'</span><span class="p">])</span>
+
+<span class="c1"># Calculate the elapsed time in seconds
+</span><span class="n">df</span><span class="p">[</span><span class="s">'elapsedTime'</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">'updatedAt'</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="p">[</span><span class="s">'startedAt'</span><span class="p">]).</span><span class="n">dt</span><span class="p">.</span><span class="n">total_seconds</span><span class="p">()</span>
+
+<span class="c1"># If your datetimes are in UTC, ensure the comparison Timestamp is also in UTC
+</span><span class="n">now</span> <span class="o">=</span> <span class="n">pd</span><span class="p">.</span><span class="n">Timestamp</span><span class="p">.</span><span class="n">utcnow</span><span class="p">()</span>
+<span class="n">one_month_ago</span> <span class="o">=</span> <span class="n">now</span> <span class="o">-</span> <span class="n">pd</span><span class="p">.</span><span class="n">DateOffset</span><span class="p">(</span><span class="n">months</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># Filter data to the last month, ensuring both datetimes are timezone-aware or both are naive
+</span><span class="n">df_last_month</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s">'startedAt'</span><span class="p">].</span><span class="n">dt</span><span class="p">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="bp">None</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">one_month_ago</span><span class="p">.</span><span class="n">tz_localize</span><span class="p">(</span><span class="bp">None</span><span class="p">)]</span>
+
+<span class="c1"># Plot using plotnine
+</span><span class="n">plot</span> <span class="o">=</span> <span class="p">(</span><span class="n">ggplot</span><span class="p">(</span><span class="n">df_last_month</span><span class="p">,</span> <span class="n">aes</span><span class="p">(</span><span class="s">'startedAt'</span><span class="p">,</span> <span class="s">'elapsedTime'</span><span class="p">))</span> <span class="o">+</span>
+        <span class="n">geom_line</span><span class="p">()</span> <span class="o">+</span>
+        <span class="n">theme</span><span class="p">(</span><span class="n">axis_text_x</span><span class="o">=</span><span class="n">element_text</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">90</span><span class="p">,</span> <span class="n">hjust</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span>
+        <span class="n">labs</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="s">'Date Workflow Started'</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s">'Elapsed Time (seconds)'</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">'Elapsed Time Series'</span><span class="p">)</span> <span class="o">+</span>
+        <span class="n">scale_x_datetime</span><span class="p">(</span><span class="n">date_breaks</span><span class="o">=</span><span class="s">'1 day'</span><span class="p">,</span> <span class="n">date_labels</span><span class="o">=</span><span class="s">'%Y-%m-%d'</span><span class="p">))</span> <span class="o">+</span> <span class="n">geom_point</span><span class="p">()</span>
+
+<span class="c1"># Display or save the plot
+# To display the plot in a Jupyter notebook or similar environment, just use:
+</span><span class="n">plot</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
+
+<span class="c1"># To save the plot to a file, use:
+</span><span class="n">plot</span><span class="p">.</span><span class="n">save</span><span class="p">(</span><span class="s">"elapsed_time_series.png"</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">dpi</span><span class="o">=</span><span class="mi">150</span><span class="p">)</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>😲 ChatGPT &amp; Gemini were both pretty good options at generating the code necessary to generate the graphs. Declarative language for tasks proves to be a powerful use for LLMs.</p>
+</blockquote>
+
+<p><img src="/assets/images/workflow_time_series.png" alt="Workflow graph" /></p>
+
+<p>The visualized graph may <em>not be the prettiest</em> but it gets the job done and is reproducible for the dataset.</p>
+
+<p>If you have suggestions on how to improve the visualization or the process, please let me know. Hopefully GitHub will provide a built-in way to visualize this data in the future. 🤞</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-03-03-visualizing-github-workflow-run-length-time.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

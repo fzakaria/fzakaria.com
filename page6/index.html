@@ -1,0 +1,441 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Page 6 of 7 for Farid Zakaria’s Blog | I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Farid Zakaria’s Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<meta property="og:description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<link rel="canonical" href="https://fzakaria.com/page6/" />
+<meta property="og:url" content="https://fzakaria.com/page6/" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="website" />
+<link rel="prev" href="https://fzakaria.com/page5" />
+<link rel="next" href="https://fzakaria.com/page7" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Farid Zakaria’s Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.","headline":"Farid Zakaria’s Blog","url":"https://fzakaria.com/page6/"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Farid Zakaria's Blog
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/page6/">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <div class="media">
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-23
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/23/vpns-continued.html">VPNs continued</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is <em>part 2</em> of a post regarding VPNs. Please see <a href="/2020/09/20/vpns-from-first-principles.html">here</a> for part 1.</p>
+</blockquote>
+
+<p>In the <a href="/2020/09/20/vpns-from-first-principles.html">previous post</a>, we discussed the basics of setting up a virtual private network; the goal of which was bridging two distinct private subnets.</p>
+
+<p>This gave us the alluring property of treating separate networks as they were colocated and can be accessed easily. However most people are first introduced into VPNs for other features such as: <em>anonymity</em>, <em>secrecy</em> &amp; <em>privacy</em>.</p>
+
+<blockquote>
+  <p>A common example may be to tunnel traffic through a host in another country to disguise the origin. For instance, maybe you are in Canada but want to browse the American Netflix catalog.</p>
+</blockquote>
+
+<p><em>How can we extend <a href="https://github.com/fzakaria/lametun">lametun</a> to do this?</em></p>
+
+<p>I’ll present a few alternatives. The main goal however will to forward all traffic, including ones destined for the Internet, through the tunnel.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-20
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/20/vpns-from-first-principles.html">VPNs from first principles</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>If you enjoy the <em>from first principles</em> theme, consider reading the one
+on <a href="/2020/05/31/containers-from-first-principles.html">containers</a>.</p>
+</blockquote>
+
+<p>Networking can seem like <em>voodoo</em>; many of us take for granted how data transmits from one computer to the next. Recently, <a href="https://www.wireguard.com/">wireguard</a>, has attracted a lot of publicity for it’s inclusion into the Linux kernel &amp; for it’s stated goal of making setting up VPNs simpler.</p>
+
+<p>Behind all the magic, is a very simple premise. Let’s shed some of the complexity and break it down to <em>first principles</em>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-17
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/17/tailscale-is-magic-even-more-so-with-nixos.html">Tailscale is magic; even more so with NixOS</a>
+        
+      </span>
+    </h2>
+    
+    <p>Our adventure into NixOS continues; this time let’s look into how we can <strong>harden</strong> our NixOS machines by putting them within a VPN. We will be using <a href="https://tailscale.com/">tailscale</a> to setup our VPN.</p>
+
+<p>Restricting your machines; especially SSH for servers; behind a VPN is a great way to add a layer of security without having to mess with various checklists like making sure <em>password based logins</em> are disabled.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-08
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/08/nixos-what-s-in-a-rebuild-continued.html">NixOS; what's in a rebuild? Continued.</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is <em>part 2</em> of a series on <strong>nixos-rebuild</strong>. You can read part 1 <a href="/2020/09/06/nixos-what-s-in-a-rebuild.html">here</a>.</p>
+</blockquote>
+
+<p>We previously broke down that one of the first tasks done by <em>nixos-rebuild</em> is to build the <em>system</em> attribute.</p>
+
+<p>What happens next for <strong>switch</strong> ? Let’s go back to the <a href="https://github.com/NixOS/nixpkgs/blob/02590c96209d374d7f720293fcb8337e17104bc9/nixos/modules/installer/tools/nixos-rebuild.sh#L428-L429">source</a>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-06
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/06/nixos-what-s-in-a-rebuild.html">NixOS; what's in a rebuild?</a>
+        
+      </span>
+    </h2>
+    
+    <p>I have been using Nix but mainly through <a href="https://github.com/rycee/home-manager">home-manager</a> on my Debian system; finally I made the plunge into running NixOS on an AWS server for my <em>side-projects</em>.</p>
+
+<p>There’s a lot of information on how to configure &amp; setup an already created NixOS machine but not much advice for workflows, best practices &amp; multiple machines.</p>
+
+<p>Here I’ll document what I found useful and pulling back the veil on some of the NixOS tooling.</p>
+
+<blockquote>
+  <p>Feel free to check my Nix repository for home-manager &amp; NixOS
+<a href="https://github.com/fzakaria/nix-home">https://github.com/fzakaria/nix-home</a></p>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-04
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/04/mvn2nix-welcoming-maven-into-nix-s-warm-embrace.html">mvn2nix; welcoming Maven into Nix's warm embrace</a>
+        
+      </span>
+    </h2>
+    
+    <p>I wrote <a href="/2020/07/20/packaging-a-maven-application-with-nix.html">previously</a> about the current state of affairs for Java packaging in the Nix ecosystem; including a little blurb at the end about a little project I have been working on.</p>
+
+<p>I would like to announce a <em>beta release</em> for <a href="https://github.com/fzakaria/mvn2nix">mvn2nix</a>.</p>
+
+<p>You find find the similar announcement on <a href="https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751">https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751</a></p>
+
+<blockquote>
+  <p>Easily package your Maven Java application with the Nix package manager.</p>
+</blockquote>
+
+<p><strong>mvn2nix</strong> is my attempt &amp; re-imagining of what a lock file type Nix Java ecosystem should look like.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-02
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/02/quassel-core-on-nixos-with-let-s-encrypt.html">quassel core on NixOS with Let's Encrypt</a>
+        
+      </span>
+    </h2>
+    
+    <p>I have been wanting to take part of the NixOS community more; specifically the IRC channels. I have been heavily using the <a href="https://discord.gg/RbvHtGa">Discord</a> server but I found many other contributors are only on the IRC network. ✊</p>
+
+<p><a href="irc://irc.freenode.net/#nixos">#nixos</a>
+<a href="irc://irc.freenode.net/#nix-community">#nix-community</a></p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-09-02
+      </span>
+      <span class="title">
+        
+        <a href="/2020/09/02/nix-coercion-trick.html">nix coercion trick</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p><strong>tl;dr;</strong> If the <em>attrset</em> contains <strong>outPath</strong>, it can automatically be converted to a String.</p>
+</blockquote>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-08-11
+      </span>
+      <span class="title">
+        
+        <a href="/2020/08/11/caching-your-nix-shell.html">caching your nix-shell</a>
+        
+      </span>
+    </h2>
+    
+    <p><strong>tl;dr;</strong> you can use the following invocation to cache  your <em>nix-shell</em></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">$ </span>nix-store <span class="nt">--query</span> <span class="nt">--references</span> <span class="si">$(</span>nix-instantiate shell.nix<span class="si">)</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--realise</span> | <span class="se">\</span>
+    xargs nix-store <span class="nt">--query</span> <span class="nt">--requisites</span> | <span class="se">\</span>
+    cachix push your_cache
+</code></pre></div></div>
+
+<p>I have been <em>hooked</em> on Nix as a way to introduce <strong>reproducible</strong> development environments. However I had to introduce a <em>shell.nix</em> file for a project that relied on a very old version of <a href="https://nodejs.org/en/">nodejs</a>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2020-07-20
+      </span>
+      <span class="title">
+        
+        <a href="/2020/07/20/packaging-a-maven-application-with-nix.html">Packaging a Maven application with Nix</a>
+        
+      </span>
+    </h2>
+    
+    <p>Surprisingly for Java’s popularity, the Nix Java ecosystem is pretty immature &amp; fragmented. There are several community driven solutions for integrating Maven (Java’s package manager) with Nix all which have their own <em>pitfalls</em>.</p>
+
+<p>This post will go through a <em>single idiom</em> on how to package a Maven project in Nix that at the very least does not rely on 3rd party support: <strong>Double invoking Maven</strong></p>
+
+
+    
+</div>
+
+		<hr>
+	
+
+	
+	    <div class="pull-left">
+	        <a href="/page5" class="btn btn-primary">
+	            <span class="icon">
+	              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M192 127.338v257.324c0 17.818-21.543 26.741-34.142 14.142L29.196 270.142c-7.81-7.81-7.81-20.474 0-28.284l128.662-128.662c12.599-12.6 34.142-3.676 34.142 14.142z"/></svg>
+	            </span>
+	            Page 5
+	        </a>
+	    </div>
+	
+
+	
+    <div class="pull-right">
+        <a href="/page7" class="btn btn-primary">
+            Page 7
+            <span class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"/></svg>
+            </span>
+        </a>
+    </div>
+    
+</div>
+<div class="clearfix"></div>
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/page6/index.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

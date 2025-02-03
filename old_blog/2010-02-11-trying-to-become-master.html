@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Trying to become Master++ | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Trying to become Master++" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I&#39;ve been reading (slowly) the Best of Game Programming Gems book I had recently purchased and I find it amusing that every recommendation/lesson within the articles of the book that I&#39;ve read is being put to use within the company I&#39;m currently working at. It makes the information within the book seem more real in my opinion and adds some more weight and validity to the issues they bring up (along with solutions). Just one of the first few chapters within the book discusses the power of macros and the use of them v.s. inline functions. For a programmer who has done most of his programming work at school, I&#39;ve rarely had to touch Macros and inline functions (although I knew of both). Although perhaps the general power and weakness of each are taught in theory perhaps corner cases of each aren&#39;t brought up within the classroom and exposure is limited. The code-base I am working with currently uses Macros heavily and I think I have just started to begin training my brain to remember that they are not what they seem. For instance, a silly simple example the book lists about the common pitfalls of using Macros: #define max(a,b) ((a) &gt; (b) ? (a) : (b)) int x =5; int y=3; int maxValue = max(++x, y); //What would maxValue return? Another great chapter in the book involves asserts and getting more information across from your assert. In about 10-30 lines of code, they breakdown how to initially setup a great Assert macro that will convey additional information and lead to overall better productivity through injections of smart Asserts. What really drives me to Software Engineering is the principle of learning and conveying proper messages and relevant useful information. Even the most simplest tip of replacing assert(expression) with assert(expression &amp;&amp; &quot;My error message&quot;) helps to convey more information across in case you do not want to break into the program for instance. What I am enjoying the most is that I am diligently trying to write good code, although it is tough when you are modifying less than stellar code." />
+<meta property="og:description" content="I&#39;ve been reading (slowly) the Best of Game Programming Gems book I had recently purchased and I find it amusing that every recommendation/lesson within the articles of the book that I&#39;ve read is being put to use within the company I&#39;m currently working at. It makes the information within the book seem more real in my opinion and adds some more weight and validity to the issues they bring up (along with solutions). Just one of the first few chapters within the book discusses the power of macros and the use of them v.s. inline functions. For a programmer who has done most of his programming work at school, I&#39;ve rarely had to touch Macros and inline functions (although I knew of both). Although perhaps the general power and weakness of each are taught in theory perhaps corner cases of each aren&#39;t brought up within the classroom and exposure is limited. The code-base I am working with currently uses Macros heavily and I think I have just started to begin training my brain to remember that they are not what they seem. For instance, a silly simple example the book lists about the common pitfalls of using Macros: #define max(a,b) ((a) &gt; (b) ? (a) : (b)) int x =5; int y=3; int maxValue = max(++x, y); //What would maxValue return? Another great chapter in the book involves asserts and getting more information across from your assert. In about 10-30 lines of code, they breakdown how to initially setup a great Assert macro that will convey additional information and lead to overall better productivity through injections of smart Asserts. What really drives me to Software Engineering is the principle of learning and conveying proper messages and relevant useful information. Even the most simplest tip of replacing assert(expression) with assert(expression &amp;&amp; &quot;My error message&quot;) helps to convey more information across in case you do not want to break into the program for instance. What I am enjoying the most is that I am diligently trying to write good code, although it is tough when you are modifying less than stellar code." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2010-02-11-trying-to-become-master.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2010-02-11-trying-to-become-master.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2010-02-11T17:21:15-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Trying to become Master++" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2010-02-11T17:21:15-08:00","datePublished":"2010-02-11T17:21:15-08:00","description":"I&#39;ve been reading (slowly) the Best of Game Programming Gems book I had recently purchased and I find it amusing that every recommendation/lesson within the articles of the book that I&#39;ve read is being put to use within the company I&#39;m currently working at. It makes the information within the book seem more real in my opinion and adds some more weight and validity to the issues they bring up (along with solutions). Just one of the first few chapters within the book discusses the power of macros and the use of them v.s. inline functions. For a programmer who has done most of his programming work at school, I&#39;ve rarely had to touch Macros and inline functions (although I knew of both). Although perhaps the general power and weakness of each are taught in theory perhaps corner cases of each aren&#39;t brought up within the classroom and exposure is limited. The code-base I am working with currently uses Macros heavily and I think I have just started to begin training my brain to remember that they are not what they seem. For instance, a silly simple example the book lists about the common pitfalls of using Macros: #define max(a,b) ((a) &gt; (b) ? (a) : (b)) int x =5; int y=3; int maxValue = max(++x, y); //What would maxValue return? Another great chapter in the book involves asserts and getting more information across from your assert. In about 10-30 lines of code, they breakdown how to initially setup a great Assert macro that will convey additional information and lead to overall better productivity through injections of smart Asserts. What really drives me to Software Engineering is the principle of learning and conveying proper messages and relevant useful information. Even the most simplest tip of replacing assert(expression) with assert(expression &amp;&amp; &quot;My error message&quot;) helps to convey more information across in case you do not want to break into the program for instance. What I am enjoying the most is that I am diligently trying to write good code, although it is tough when you are modifying less than stellar code.","headline":"Trying to become Master++","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2010-02-11-trying-to-become-master.html"},"url":"https://fzakaria.com/old_blog/2010-02-11-trying-to-become-master.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Trying to become Master++
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2010-02-11
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2010-02-11-trying-to-become-master.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>
+I've been reading (slowly) the <a href="http://www.blog.fzakaria.com/?now_reading_author=mark-deloura&now_reading_title=best-of-game-programming-gems">Best of Game Programming Gems</a> book I had recently purchased and I find it amusing that every recommendation/lesson within the articles of the book that I've read is being put to use within the company I'm currently working at. It makes the information within the book seem more real in my opinion and adds some more weight and validity to the issues they bring up (along with solutions).</p>
+<p>
+Just one of the first few chapters within the book discusses the power of macros and the use of them v.s. inline functions. For a programmer who has done most of his programming work at school, I've rarely had to touch Macros and inline functions (although I knew of both). Although perhaps the general power and weakness of each are taught in theory perhaps corner cases of each aren't brought up within the classroom and exposure is limited.</p>
+<p>
+The code-base I am working with currently uses Macros heavily and I think I have just started to begin training my brain to remember that they are not what they seem. For instance, a silly simple example the book lists about the common pitfalls of using Macros:</p>
+<pre>
+<code>
+#define max(a,b) ((a) > (b) ? (a) : (b))
+int x =5;
+int y=3;
+int maxValue = max(++x, y);
+//What would maxValue return?
+</code>
+</pre>
+<p>
+Another great chapter in the book involves asserts and getting more information across from your assert. In about 10-30 lines of code, they breakdown how to initially setup a great Assert macro that will convey additional information and lead to overall better productivity through injections of smart Asserts. What really drives me to Software Engineering is the principle of learning and conveying proper messages and relevant useful information.</p>
+<p>
+Even the most simplest tip of replacing assert(expression) with assert(expression && "My error message") helps to convey more information across in case you do not want to break into the program for instance.</p>
+<blockquote><p>What I am enjoying the most is that I am diligently trying to write good code, although it is tough when you are modifying less than stellar code. </p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2010-02-11-trying-to-become-master.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

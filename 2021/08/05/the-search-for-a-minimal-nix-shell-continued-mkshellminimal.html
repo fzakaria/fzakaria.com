@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>The search for a minimal nix-shell continued; mkShellMinimal | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="The search for a minimal nix-shell continued; mkShellMinimal" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="“The simplest things are often the truest.” - Richard Bach, 1936. Earlier I wrote about trying to get a minimal nix-shell. The goal and challenge of the post was about reducing the dependency closure size of the shell. I was asked what’s the point in trying to minimize the closure size ? We are using nix-shell in our CI infrastructure and every CI job hydrates it’s own /nix/store from scratch. Reducing the dependency closure size would mean faster CI runs. 🏎️ The post finished with a question, “Can we do better ?”, to which I answered “No, not at this time.”. I’d like to introduce mkShellMinimal that does better 🎊" />
+<meta property="og:description" content="“The simplest things are often the truest.” - Richard Bach, 1936. Earlier I wrote about trying to get a minimal nix-shell. The goal and challenge of the post was about reducing the dependency closure size of the shell. I was asked what’s the point in trying to minimize the closure size ? We are using nix-shell in our CI infrastructure and every CI job hydrates it’s own /nix/store from scratch. Reducing the dependency closure size would mean faster CI runs. 🏎️ The post finished with a question, “Can we do better ?”, to which I answered “No, not at this time.”. I’d like to introduce mkShellMinimal that does better 🎊" />
+<link rel="canonical" href="https://fzakaria.com/2021/08/05/the-search-for-a-minimal-nix-shell-continued-mkshellminimal.html" />
+<meta property="og:url" content="https://fzakaria.com/2021/08/05/the-search-for-a-minimal-nix-shell-continued-mkshellminimal.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-08-05T18:53:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="The search for a minimal nix-shell continued; mkShellMinimal" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-08-05T18:53:00-07:00","datePublished":"2021-08-05T18:53:00-07:00","description":"“The simplest things are often the truest.” - Richard Bach, 1936. Earlier I wrote about trying to get a minimal nix-shell. The goal and challenge of the post was about reducing the dependency closure size of the shell. I was asked what’s the point in trying to minimize the closure size ? We are using nix-shell in our CI infrastructure and every CI job hydrates it’s own /nix/store from scratch. Reducing the dependency closure size would mean faster CI runs. 🏎️ The post finished with a question, “Can we do better ?”, to which I answered “No, not at this time.”. I’d like to introduce mkShellMinimal that does better 🎊","headline":"The search for a minimal nix-shell continued; mkShellMinimal","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2021/08/05/the-search-for-a-minimal-nix-shell-continued-mkshellminimal.html"},"url":"https://fzakaria.com/2021/08/05/the-search-for-a-minimal-nix-shell-continued-mkshellminimal.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    The search for a minimal nix-shell continued; mkShellMinimal
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2021-08-05
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2021/08/05/the-search-for-a-minimal-nix-shell-continued-mkshellminimal.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>“The simplest things are often the truest.” - Richard Bach, 1936.</p>
+</blockquote>
+
+<p>Earlier <a href="/2021/08/02/a-minimal-nix-shell.html">I wrote about</a> trying to get a minimal nix-shell. The goal and challenge of the post was about reducing the dependency closure size of the shell.</p>
+
+<blockquote>
+  <p>I was asked what’s the point in trying to minimize the closure size ?</p>
+
+  <p>We are using <em>nix-shell</em> in our CI infrastructure and every CI job hydrates it’s own
+<em>/nix/store</em> from scratch. Reducing the dependency closure size would mean faster CI runs. 🏎️</p>
+</blockquote>
+
+<p>The post finished with a question, <em>“Can we do better ?”</em>, to which I answered <em>“No, not at this time.”</em>.</p>
+
+<p>I’d like to introduce <a href="https://github.com/NixOS/nixpkgs/pull/132617">mkShellMinimal</a> that does better 🎊</p>
+
+<!--more-->
+
+<p>Let’s first look at a similar basic example, a <em>nix-shell</em> without any user declared dependencies.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{</span> <span class="p">};</span>
+<span class="kn">in</span>
+<span class="kn">with</span> <span class="nv">nixpkgs</span><span class="p">;</span>
+<span class="nv">mkShellMinimal</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"my-minimal-shell"</span><span class="p">;</span>
+
+  <span class="c"># No user defined dependencies</span>
+  <span class="nv">packages</span> <span class="o">=</span> <span class="p">[</span> <span class="p">];</span>
+
+  <span class="c"># You can do typical environment variable setting</span>
+  <span class="nv">FOO</span> <span class="o">=</span> <span class="s2">"bar"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If we check the closure size of our shell, we see that it’s only <strong>1.4KiB</strong> 😮</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix path-info <span class="nt">-rSsh</span> <span class="si">$(</span>nix-build shell.nix<span class="si">)</span> 
+This derivation is not meant to be built, unless you want to capture the dependency closure.
+
+/nix/store/8ka1hnlf06z3h2rpd00b4d9w5yxh0n39-setup        	 376.0 	 376.0
+/nix/store/nprykggfqhdkn4r5lxxknjvlqc4qm1yl-builder.sh   	 280.0 	 280.0
+/nix/store/xd8d72ccrxhaz3sxlmiqjnn1z0zwfhm8-my-minimal-shell	 744.0 	   1.4K
+</code></pre></div></div>
+
+<p>That’s nearly a <strong>200_000x</strong> improvement. 😱</p>
+
+<blockquote>
+  <p>To facilitate a simpler way to introspect or upload the transitive closure of the shell, I’ve allowed it to be
+buildable.</p>
+</blockquote>
+
+<p>I’ve greatly simplified the feature set of what you can do with <em>mkShellMinimal</em> as opposed to <em>mkShell</em>.</p>
+
+<p>For instance the only way to declare dependencies is with the <em>packages</em> keyword. There is no dependency even on <a href="https://www.gnu.org/software/coreutils/">coreutils</a> and one could replace it with <a href="https://www.busybox.net/">busybox</a>.</p>
+
+<blockquote>
+  <p>Thank you to <a href="https://github.com/jappeace">jappeace</a> for inspiring the pursuit.</p>
+</blockquote>
+
+<h3 id="challenges--trivia">Challenges &amp; Trivia</h3>
+
+<p>The rest of the post will document what it took to deliver this minimal shell. It was in fact not as trivial as it
+might have originally seemed.</p>
+
+<blockquote>
+  <p>If you are only interested in having a minimal <em>nix-shell</em> you can stop reading here 📖.</p>
+</blockquote>
+
+<h4 id="tight-coupling-with-stdenv">Tight coupling with stdenv</h4>
+
+<p>In the pursuit of trying to remove <a href="https://nixos.org/manual/nixpkgs/stable/#chap-stdenv">stdenv</a> was somewhat <em>annoying</em>. I discovered that the <em>nix-shell</em> implementation has some <a href="https://github.com/NixOS/nix/blob/94ec9e47030c2a7280503d338f0dca7ad92811f5/src/nix-build/nix-build.cc#L494">tight coupling</a>(<code class="language-plaintext highlighter-rouge">source $stdenv/setup</code>) with it by expecting a setup file provided by stdenv; this needed to be <em>hacked in</em> 🐱‍💻.</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">rc</span> <span class="o">=</span> <span class="n">fmt</span><span class="p">(</span>
+        <span class="s">R"(_nix_shell_clean_tmpdir() { rm -rf %1%; }; )"</span><span class="n">s</span> <span class="o">+</span>
+        <span class="p">(</span><span class="n">keepTmp</span> <span class="o">?</span>
+            <span class="s">"trap _nix_shell_clean_tmpdir EXIT; "</span>
+            <span class="s">"exitHooks+=(_nix_shell_clean_tmpdir); "</span>
+            <span class="s">"failureHooks+=(_nix_shell_clean_tmpdir); "</span><span class="o">:</span>
+            <span class="s">"_nix_shell_clean_tmpdir; "</span><span class="p">)</span> <span class="o">+</span>
+        <span class="p">(</span><span class="n">pure</span> <span class="o">?</span> <span class="s">""</span> <span class="o">:</span> <span class="s">"[ -n </span><span class="se">\"</span><span class="s">$PS1</span><span class="se">\"</span><span class="s"> ] &amp;&amp; [ -e ~/.bashrc ] &amp;&amp; source ~/.bashrc;"</span><span class="p">)</span> <span class="o">+</span>
+        <span class="s">"%2%"</span>
+        <span class="s">"dontAddDisableDepTrack=1;</span><span class="se">\n</span><span class="s">"</span>
+        <span class="o">+</span> <span class="n">structuredAttrsRC</span> <span class="o">+</span>
+        <span class="s">"</span><span class="se">\n</span><span class="s">[ -e $stdenv/setup ] &amp;&amp; source $stdenv/setup; "</span>
+        <span class="s">"%3%"</span>
+        <span class="s">"PATH=%4%:</span><span class="se">\"</span><span class="s">$PATH</span><span class="se">\"</span><span class="s">; "</span>
+        <span class="s">"SHELL=%5%; "</span>
+</code></pre></div></div>
+
+<h4 id="how-is-bash-as-a-dependency-gone">How is Bash as a dependency gone?</h4>
+
+<p>Well since the purpose behind <em>nix-shell shell.nix</em> is for a developer friendly environment (as opposed to debugging a failing deriviation), I have <em>mkShellMinimal</em> rely on <em>/bin/sh</em> which is <em>nearly</em> required for POSIX compliance.</p>
+
+<blockquote>
+  <p>In fact, even NixOS <a href="https://github.com/NixOS/nixpkgs/blame/982fe76fa696743f7ddcfea68a54ed3c1a9ee4ec/nixos/modules/config/shells-environment.nix#L191-L198">adds a symlink</a> for /bin/sh.</p>
+</blockquote>
+
+<p>This works well for this case since the builder used for this shell is exceptionally simple.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">builder</span> <span class="o">=</span> <span class="nv">writeScript</span> <span class="s2">"builder.sh"</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    #!/bin/sh</span><span class="err">
+</span><span class="s2">    echo</span><span class="err">
+</span><span class="s2">    echo "This derivation is not meant to be built, unless you want to capture the dependency closure.";</span><span class="err">
+</span><span class="s2">    echo</span><span class="err">
+</span><span class="s2">    export &gt; $out</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="but-my-nix-shell-still-drops-me-in-bash-huh">But my nix-shell still drops me in Bash? Huh?</h4>
+
+<p>This is probably one of the most <em>bizarre</em> aspects of <em>nix-shell</em> and Nix; a system which tries to have reproducibility at it’s core.</p>
+
+<p><em>nix-shell</em> by default, <a href="https://github.com/NixOS/nix/blob/94ec9e47030c2a7280503d338f0dca7ad92811f5/src/nix-build/nix-build.cc#L365">will start up Bash</a> from whatever is referenced via your <em>nixpkgs</em> channel. 😳</p>
+
+<div class="language-c++ highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">auto</span> <span class="n">expr</span> <span class="o">=</span> <span class="n">state</span><span class="o">-&gt;</span><span class="n">parseExprFromString</span><span class="p">(</span><span class="s">"(import &lt;nixpkgs&gt; {}).bashInteractive"</span><span class="p">,</span> <span class="n">absPath</span><span class="p">(</span><span class="s">"."</span><span class="p">));</span>
+</code></pre></div></div>
+
+<p>This means you could, <em>in theory</em>, write a <em>shellHook</em> in your mkShell that fails on another user’s machine since their <em>nixpkgs</em> channel references a wildly different major version of Bash. 🤯</p>
+
+<p><a href="https://github.com/NixOS/nix/issues/5098">I would like to see</a> <em>nix-shell</em> use a value specified in the derivation itself, to identify the version of Bash to use. That would make it completely hermetic.</p>
+
+<h4 id="undocumented-requirements-to-have-nix-shell---pure-work">Undocumented requirements to have <code class="language-plaintext highlighter-rouge">nix-shell --pure</code> work</h4>
+
+<p>I was struggling to get <code class="language-plaintext highlighter-rouge">nix-shell --pure</code> to enforce purity and not persist my <em>$PATH</em>. <a href="https://github.com/NixOS/nix/issues/5092">I would have expected</a> this to a feature of the Nix CLI itself and not one of underlying derivation.</p>
+
+<p>Turns out that is not the case.</p>
+
+<p><em>nix-shell</em> requires that the <em>builder</em> <strong>unconditionally</strong> clears the <em>$PATH</em> always at the start.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2021-08-05-the-search-for-a-minimal-nix-shell-continued-mkshellminimal.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

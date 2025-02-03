@@ -1,0 +1,300 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Import but don’t import your NixOS modules | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Import but don’t import your NixOS modules" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a follow-up post to my prior one NixOS Option Inspection. Many thanks to @roberth who followed up on my issue and helped explain it. 🙏 If you are using NixOS, you’ve likely encountered the module system. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix { imports = [ ./hello.nix ]; services.hello = { enable = true; greeter = &quot;Bob&quot;; }; } In a prior post, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined. Turns out, the answer in the post was relatively simple and Nixpkgs has a gesture for discovering the answer via definitionsWithLocations. Turns out, in order to get definitionsWithLocations to play nice, you have to avoid a surprisingly common footgun 🥵." />
+<meta property="og:description" content="This is a follow-up post to my prior one NixOS Option Inspection. Many thanks to @roberth who followed up on my issue and helped explain it. 🙏 If you are using NixOS, you’ve likely encountered the module system. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix { imports = [ ./hello.nix ]; services.hello = { enable = true; greeter = &quot;Bob&quot;; }; } In a prior post, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined. Turns out, the answer in the post was relatively simple and Nixpkgs has a gesture for discovering the answer via definitionsWithLocations. Turns out, in order to get definitionsWithLocations to play nice, you have to avoid a surprisingly common footgun 🥵." />
+<link rel="canonical" href="https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-29T19:38:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Import but don’t import your NixOS modules" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-29T19:38:00-07:00","datePublished":"2024-07-29T19:38:00-07:00","description":"This is a follow-up post to my prior one NixOS Option Inspection. Many thanks to @roberth who followed up on my issue and helped explain it. 🙏 If you are using NixOS, you’ve likely encountered the module system. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix { imports = [ ./hello.nix ]; services.hello = { enable = true; greeter = &quot;Bob&quot;; }; } In a prior post, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined. Turns out, the answer in the post was relatively simple and Nixpkgs has a gesture for discovering the answer via definitionsWithLocations. Turns out, in order to get definitionsWithLocations to play nice, you have to avoid a surprisingly common footgun 🥵.","headline":"Import but don’t import your NixOS modules","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html"},"url":"https://fzakaria.com/2024/07/29/import-but-don-t-import-your-nixos-modules.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Import but don't import your NixOS modules
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-07-29
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/07/29/import-but-don-t-import-your-nixos-modules.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a follow-up post to my prior one <a href="/2024/07/28/nixos-option-inspection.html">NixOS Option Inspection</a>. Many thanks to <a href="https://github.com/roberth">@roberth</a> who followed up on my <a href="https://github.com/NixOS/nix/issues/11210">issue</a> and helped explain it. 🙏</p>
+</blockquote>
+
+<p>If you are using <a href="https://nixos.org">NixOS</a>, you’ve likely encountered the <em>module system</em>. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span> <span class="sx">./hello.nix</span> <span class="p">];</span>
+  
+  <span class="nv">services</span><span class="o">.</span><span class="nv">hello</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">greeter</span> <span class="o">=</span> <span class="s2">"Bob"</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In a <a href="/2024/07/28/nixos-option-inspection.html">prior post</a>, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined.</p>
+
+<p>Turns out, the answer in the post was <em>relatively simple</em> and Nixpkgs has a gesture for discovering the answer via <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code>.</p>
+
+<p>Turns out, in order to get <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code> to play nice, you have to avoid a surprisingly common <a href="https://notes.rmhogervorst.nl/post/2022/11/21/what-is-a-footgun/">footgun</a> 🥵.</p>
+
+<!--more-->
+
+<p>Let’s use an incredibly simple example to demonstrate the bug.</p>
+
+<p>First let’s make our module <code class="language-plaintext highlighter-rouge">greet.nix</code>; it’s a trivial module that sets a single option. We also have a <code class="language-plaintext highlighter-rouge">config.nix</code> which you could think of as our <code class="language-plaintext highlighter-rouge">configuration.nix</code> in a typical NixOS installation that defines the option.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># greet.nix</span>
+<span class="p">{</span><span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+    <span class="nv">greet</span><span class="o">.</span><span class="nv">name</span> <span class="o">=</span> <span class="s2">"hi"</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c"># config.nix</span>
+<span class="kd">let</span> 
+<span class="nv">modules</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nv">greet</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./greet.nix</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="nv">system</span> <span class="o">=</span> <span class="p">{</span><span class="nv">lib</span><span class="p">,</span> <span class="o">...</span><span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nv">modules</span><span class="o">.</span><span class="nv">greet</span>
+  <span class="p">];</span>
+
+  <span class="nv">options</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">greet</span><span class="o">.</span><span class="nv">name</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkOption</span> <span class="p">{</span>
+        <span class="nv">type</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">types</span><span class="o">.</span><span class="nv">str</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+<span class="p">};</span>
+<span class="kn">in</span> <span class="p">(</span><span class="kr">import</span> <span class="o">&lt;</span><span class="sx">nixpkgs/lib</span><span class="o">&gt;</span><span class="p">)</span><span class="o">.</span><span class="nv">evalModules</span> <span class="p">{</span>
+  <span class="nv">modules</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">system</span>  <span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>Next, let’s import this module, à la <code class="language-plaintext highlighter-rouge">imports</code> keyword attribute in a NixOS module.</p>
+
+<p>❗I have chosen to create a container attrset <em>modules</em> to mimic what we might accomplish in a Nix Flakes.</p>
+
+<p>Everything looks OK, and evaluates correctly.</p>
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix-instantiate --eval config.nix -A config.greet.name
+"hi"
+</span></code></pre></div></div>
+
+<p>If we try <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code> however we don’t get what we expected. 🤮</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl 
+Nix 2.23.2
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:l ./config.nix
+<span class="go">Added 7 variables.
+
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p options.greet.name.definitionsWithLocations
+<span class="go">[
+  {
+</span><span class="gp">    file = "&lt;unknown-file&gt;</span><span class="s2">";
+</span><span class="gp">    value = "hi";</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>Did you spot the problem ? 🕵️‍♂️🧐🤔</p>
+
+<p>It was the <code class="language-plaintext highlighter-rouge">import ./greet.nix</code> 🤯</p>
+
+<p>We <em>imported</em> the Nix expression into our modules container and as a result lost any traceability back to the originating file.</p>
+
+<p>Luckily, the fix is simple! <strong>Don’t <code class="language-plaintext highlighter-rouge">import</code> within an <code class="language-plaintext highlighter-rouge">imports</code></strong> 👌</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This is better ✅</span>
+<span class="nv">modules</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="nv">greet</span> <span class="o">=</span> <span class="sx">./greet.nix</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c"># This is also good ✅</span>
+<span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="sx">./greet.nix</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<p>With the applied fix, the results are what we want, and the world makes sense again. 😌</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="go">❯ nix repl
+Nix 2.23.2
+Type :? for help.
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:l ./config.nix                                
+<span class="go">Added 7 variables.
+
+</span><span class="gp">nix-repl&gt;</span><span class="w"> </span>:p options.greet.name.definitionsWithLocations
+<span class="go">[
+  {
+</span><span class="gp">    file = "greet.nix";</span><span class="w">
+</span><span class="gp">    value = "hi";</span><span class="w">
+</span><span class="go">  }
+]
+</span></code></pre></div></div>
+
+<p>How common is this <em>footgun</em> ?</p>
+
+<p>Turns out incredibly common (anecdotally) since there is nothing from preventing one from doing it; and it still “works”. The Nix Flake’s format makes this setup increasingly more common as well.</p>
+
+<p>For a demonstration of how easy the fix is, I contributed a patch to <a href="https://github.com/ryantm/agenix">agenix</a> in <a href="https://github.com/ryantm/agenix/pull/277">#277</a> that fixes the issue.</p>
+
+<div class="language-diff highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gh">diff --git a/flake.nix b/flake.nix
+index 587138e..3a68940 100644
+</span><span class="gd">--- a/flake.nix
+</span><span class="gi">+++ b/flake.nix
+</span><span class="p">@@ -23,13 +23,13 @@</span>
+   }: let
+     eachSystem = nixpkgs.lib.genAttrs (import systems);
+   in {
+<span class="gd">-    nixosModules.age = import ./modules/age.nix;
+</span><span class="gi">+    nixosModules.age = ./modules/age.nix;
+</span>     nixosModules.default = self.nixosModules.age;
+ 
+<span class="gd">-    darwinModules.age = import ./modules/age.nix;
+</span><span class="gi">+    darwinModules.age = ./modules/age.nix;
+</span>     darwinModules.default = self.darwinModules.age;
+ 
+<span class="gd">-    homeManagerModules.age = import ./modules/age-home.nix;
+</span><span class="gi">+    homeManagerModules.age = ./modules/age-home.nix;
+</span>     homeManagerModules.default = self.homeManagerModules.age;
+ 
+     overlays.default = import ./overlay.nix;
+</code></pre></div></div>
+
+<p><strong>Don’t <code class="language-plaintext highlighter-rouge">import</code> within an <code class="language-plaintext highlighter-rouge">imports</code></strong></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-07-29-import-but-don-t-import-your-nixos-modules.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

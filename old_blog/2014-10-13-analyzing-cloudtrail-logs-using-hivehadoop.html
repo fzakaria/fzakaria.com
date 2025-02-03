@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Analyzing CloudTrail Logs Using Hive/Hadoop | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Analyzing CloudTrail Logs Using Hive/Hadoop" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Disclaimer This is simply a blog post record for myself as I had great difficulty in finding information on the subject. It&#39;s not meant to be a very informative guide on either CloudTrail or Hive/hadoop Intro Recently at work we&#39;ve had an issue where some security group ingress rules were being modified (either automated or manually) and it has been affecting our test runs that rely on those rules. In order to try and track down the source of the modification we have enabled CloudTrail. CloudTrail is part of the AWS family of web services and it records AWS API records you&#39;ve made and places those logs in an S3 bucket that you can access. The recorded information includes the identity of the API caller, the time of the API call, the source IP address of the API caller, the request parameters, and the response elements returned by the AWS service. Hive My experience with Hive has been very limited (simple exposure from running tutorials) however I was aware that it was a SQL-ish type execution engine that transformed those queries into MapReduce jobs to execute using Hadoop. As it was built with Hadoop that means it has native support for using S3 as a HDFS. With the little knowledge of Hive I had, I thought there should exist a very prominent white paper in which describes how to consume CloudTrail logs using Hive (using some custom SerDe). A co-worker was simply consuming the JSON log files via Python however I was on a mission to see if I could solve the solution (querying relevant data from the logs) using an easy-setup with Hive! The benefit of setting up the Hadoop/Hive cluster for this would be that it could be used easily to query additional information and be persistent. Solution After contacting some people from the EMR team (I was unable to find anything myself on the internet) I was finally pointed to some relevant information! I&#39;ve included the reference link and the original example code for incase the link ever breaks. reference: http://www.emrsandbox.com/beeswax/execute/design/4#query The key thing to note from the example is that it is using a custom SerDe that is included with the Hadoop clusters created with AWS ElasticMapReduce. The SerDe includes the input format table and deserializer which will properly consume the nested JSON records. With this you can now query easily CloudTrail logs! -- This example creates an external Hive table from a location containing CloudTrail logs for a day. -- A custom SerDe - CloudTrailLogDeserializer which comes with EMR AMI is used for this example -- and a few sample queries are provided below. -- Please click &#39;Execute&#39; to create table and then &#39;Next&#39; to run subsequent queries." />
+<meta property="og:description" content="Disclaimer This is simply a blog post record for myself as I had great difficulty in finding information on the subject. It&#39;s not meant to be a very informative guide on either CloudTrail or Hive/hadoop Intro Recently at work we&#39;ve had an issue where some security group ingress rules were being modified (either automated or manually) and it has been affecting our test runs that rely on those rules. In order to try and track down the source of the modification we have enabled CloudTrail. CloudTrail is part of the AWS family of web services and it records AWS API records you&#39;ve made and places those logs in an S3 bucket that you can access. The recorded information includes the identity of the API caller, the time of the API call, the source IP address of the API caller, the request parameters, and the response elements returned by the AWS service. Hive My experience with Hive has been very limited (simple exposure from running tutorials) however I was aware that it was a SQL-ish type execution engine that transformed those queries into MapReduce jobs to execute using Hadoop. As it was built with Hadoop that means it has native support for using S3 as a HDFS. With the little knowledge of Hive I had, I thought there should exist a very prominent white paper in which describes how to consume CloudTrail logs using Hive (using some custom SerDe). A co-worker was simply consuming the JSON log files via Python however I was on a mission to see if I could solve the solution (querying relevant data from the logs) using an easy-setup with Hive! The benefit of setting up the Hadoop/Hive cluster for this would be that it could be used easily to query additional information and be persistent. Solution After contacting some people from the EMR team (I was unable to find anything myself on the internet) I was finally pointed to some relevant information! I&#39;ve included the reference link and the original example code for incase the link ever breaks. reference: http://www.emrsandbox.com/beeswax/execute/design/4#query The key thing to note from the example is that it is using a custom SerDe that is included with the Hadoop clusters created with AWS ElasticMapReduce. The SerDe includes the input format table and deserializer which will properly consume the nested JSON records. With this you can now query easily CloudTrail logs! -- This example creates an external Hive table from a location containing CloudTrail logs for a day. -- A custom SerDe - CloudTrailLogDeserializer which comes with EMR AMI is used for this example -- and a few sample queries are provided below. -- Please click &#39;Execute&#39; to create table and then &#39;Next&#39; to run subsequent queries." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2014-10-13-analyzing-cloudtrail-logs-using-hivehadoop.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2014-10-13-analyzing-cloudtrail-logs-using-hivehadoop.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-10-13T12:53:28-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Analyzing CloudTrail Logs Using Hive/Hadoop" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2014-10-13T12:53:28-07:00","datePublished":"2014-10-13T12:53:28-07:00","description":"Disclaimer This is simply a blog post record for myself as I had great difficulty in finding information on the subject. It&#39;s not meant to be a very informative guide on either CloudTrail or Hive/hadoop Intro Recently at work we&#39;ve had an issue where some security group ingress rules were being modified (either automated or manually) and it has been affecting our test runs that rely on those rules. In order to try and track down the source of the modification we have enabled CloudTrail. CloudTrail is part of the AWS family of web services and it records AWS API records you&#39;ve made and places those logs in an S3 bucket that you can access. The recorded information includes the identity of the API caller, the time of the API call, the source IP address of the API caller, the request parameters, and the response elements returned by the AWS service. Hive My experience with Hive has been very limited (simple exposure from running tutorials) however I was aware that it was a SQL-ish type execution engine that transformed those queries into MapReduce jobs to execute using Hadoop. As it was built with Hadoop that means it has native support for using S3 as a HDFS. With the little knowledge of Hive I had, I thought there should exist a very prominent white paper in which describes how to consume CloudTrail logs using Hive (using some custom SerDe). A co-worker was simply consuming the JSON log files via Python however I was on a mission to see if I could solve the solution (querying relevant data from the logs) using an easy-setup with Hive! The benefit of setting up the Hadoop/Hive cluster for this would be that it could be used easily to query additional information and be persistent. Solution After contacting some people from the EMR team (I was unable to find anything myself on the internet) I was finally pointed to some relevant information! I&#39;ve included the reference link and the original example code for incase the link ever breaks. reference: http://www.emrsandbox.com/beeswax/execute/design/4#query The key thing to note from the example is that it is using a custom SerDe that is included with the Hadoop clusters created with AWS ElasticMapReduce. The SerDe includes the input format table and deserializer which will properly consume the nested JSON records. With this you can now query easily CloudTrail logs! -- This example creates an external Hive table from a location containing CloudTrail logs for a day. -- A custom SerDe - CloudTrailLogDeserializer which comes with EMR AMI is used for this example -- and a few sample queries are provided below. -- Please click &#39;Execute&#39; to create table and then &#39;Next&#39; to run subsequent queries.","headline":"Analyzing CloudTrail Logs Using Hive/Hadoop","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2014-10-13-analyzing-cloudtrail-logs-using-hivehadoop.html"},"url":"https://fzakaria.com/old_blog/2014-10-13-analyzing-cloudtrail-logs-using-hivehadoop.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Analyzing CloudTrail Logs Using Hive/Hadoop
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2014-10-13
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2014-10-13-analyzing-cloudtrail-logs-using-hivehadoop.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h3>Disclaimer</h3>
+<p>
+This is simply a blog post record for myself as I had great difficulty in finding information on the subject. It's not meant to be a very informative guide on either CloudTrail or Hive/hadoop</p>
+<h2>Intro</h2>
+<p>
+Recently at work we've had an issue where some security group ingress rules were being modified (either automated or manually) and it has been affecting our test runs that rely on those rules. In order to try and track down the source of the modification we have enabled <a href="http://aws.amazon.com/cloudtrail/">CloudTrail</a>. CloudTrail is part of the AWS family of web services and it records AWS API records you've made and places those logs in an S3 bucket that you can access.</p>
+<blockquote><p>The recorded information includes the identity of the API caller, the time of the API call, the source IP address of the API caller, the request parameters, and the response elements returned by the AWS service.</p></blockquote>
+<h2> Hive </h2>
+<p>
+My experience with <a href="https://hive.apache.org/">Hive</a> has been very limited (simple exposure from running tutorials) however I was aware that it was a SQL-ish type execution engine that transformed those queries into MapReduce jobs to execute using Hadoop. As it was built with Hadoop that means it has native support for using S3 as a HDFS.</p>
+<p>With the little knowledge of Hive I had, I thought there should exist a very prominent white paper in which describes how to consume CloudTrail logs using Hive (using some custom <a href="https://cwiki.apache.org/confluence/display/Hive/SerDe">SerDe</a>). A co-worker was simply consuming the JSON log files via Python however I was on a mission to see if I could solve the solution (querying relevant data from the logs) using an easy-setup with Hive! The benefit of setting up the Hadoop/Hive cluster for this would be that it could be used easily to query additional information and be persistent.</p>
+<h2>Solution</h2>
+<p>
+After contacting some people from the <a href="http://aws.amazon.com/elasticmapreduce/">EMR</a> team (I was unable to find anything myself on the internet) I was finally pointed to some relevant information! I've included the reference link and the original example code for incase the link ever breaks.<br />
+<strong>reference:</strong> <a href="http://www.emrsandbox.com/beeswax/execute/design/4#query">http://www.emrsandbox.com/beeswax/execute/design/4#query</a></p>
+<p>
+The key thing to note from the example is that it is using a custom SerDe that is included with the Hadoop clusters created with AWS ElasticMapReduce. The SerDe includes the input format table and deserializer which will properly consume the nested JSON records. With this you can now query easily CloudTrail logs!</p>
+<pre class="lang:default decode:true " title="Analyzing CloudTrail with Hive">-- This example creates an external Hive table from a location containing CloudTrail logs for a day.
+-- A custom SerDe - CloudTrailLogDeserializer which comes with EMR AMI is used for this example 
+-- and a few sample queries are provided below.
+-- Please click 'Execute' to create table and then 'Next' to run subsequent queries.
+
+ADD JAR /usr/share/aws/emr/goodies/lib/EmrHadoopGoodies-1.0.0.jar;
+ADD JAR /usr/share/aws/emr/goodies/lib/EmrHiveGoodies-1.0.0.jar;
+
+-- Create Hive table for CloudTrail logs
+CREATE EXTERNAL TABLE IF NOT EXISTS CloudTrailTable
+ROW FORMAT SERDE 'com.amazon.emr.hive.serde.CloudTrailLogDeserializer'
+STORED AS INPUTFORMAT 'com.amazon.emr.cloudtrail.CloudTrailInputFormat'
+OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+LOCATION 's3://us-east-1.elasticmapreduce.samples/cloudtrail-logs/data/AWSLogs/176430881729/CloudTrail/us-east-1/2014/07/01/';
+
+-- Show all API calls made by given user
+SELECT DISTINCT(eventName)
+FROM CloudTrailTable
+WHERE userIdentity.principalId = "63f29b7986e7c43cb8cd4";
+
+-- Show all API calls made by given user between time period T1 and T2
+SELECT DISTINCT(eventName)
+FROM CloudTrailTable
+WHERE userIdentity.principalId = "40c71535f6ba"
+AND 
+TO_UNIX_TIMESTAMP(eventTime,"yyyy-MM-dd'T'HH:mm:ss'Z'")
+BETWEEN TO_UNIX_TIMESTAMP("2014-07-01T10:00:53Z","yyyy-MM-dd'T'HH:mm:ss'Z'")
+AND 
+TO_UNIX_TIMESTAMP("2014-07-01T20:00:53Z","yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+-- Show calls originating from EMR Service along with the caller
+SELECT eventName,  userIdentity.principalId
+FROM CloudTrailTable
+WHERE eventSource = "elasticmapreduce.amazonaws.com";
+
+-- Show count of different clients used
+SELECT userAgent , count(requestId) AS cnt
+FROM CloudTrailTable
+GROUP BY userAgent
+ORDER BY cnt DESC;
+
+-- Optional way to create Hive table, if your CloudTrail logs are small files.
+-- When you copy data using Hive, it will combine data from multiple small files into appropriate large files.
+-- Below are the steps to copy data from CloudTrail logs location to HDFS/S3 location.
+
+-- SET mapred.input.dir.recursive=true; 
+-- SET hive.mapred.supports.subdirectories=true;
+-- SET hive.merge.mapredfiles=true;
+-- SET hive.merge.mapfiles=true;
+
+-- CREATE EXTERNAL TABLE IF NOT EXISTS CloudTrailTempTable
+-- ROW FORMAT SERDE 'com.amazon.emr.hive.serde.CloudTrailLogDeserializer'
+-- STORED AS INPUTFORMAT 'com.amazon.emr.cloudtrail.CloudTrailInputFormat'
+-- OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'
+-- LOCATION 's3://us-east-1.elasticmapreduce.samples/cloudtrail-logs/data/AWSLogs/176430881729/CloudTrail/us-east-1/2014/07/';
+
+-- Change the HDFS location to point to your home directory in HDFS.
+-- CREATE EXTERNAL TABLE IF NOT EXISTS CloudTrailHDFS(
+--  eventversion STRING,
+--   userIdentity STRUCT<
+--   type:STRING,
+--   principalid:STRING,
+--   arn:STRING,
+--   accountid:STRING,
+--   invokedby:STRING,
+--   accesskeyid:STRING,
+--   sessioncontext:STRUCT<
+--    attributes:STRUCT<
+--     mfaauthenticated:STRING,
+--     creationdate:STRING
+--    >
+--   >
+--  >,
+--  eventTime STRING,
+--  eventSource STRING,
+--  eventName STRING,
+--  awsRegion STRING,
+--  sourceIpAddress STRING,
+--  userAgent STRING,
+--  requestId STRING,
+--  eventId STRING
+--  )
+-- LOCATION 'hdfs:///cloudTraillogs/';
+
+-- INSERT OVERWRITE TABLE CloudTrailHDFS 
+-- SELECT * FROM CloudTrailTempTable;
+</pre></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2014-10-13-analyzing-cloudtrail-logs-using-hivehadoop.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

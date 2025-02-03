@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Fish the bash way | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Fish the bash way" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I have been a big fan of the fish shell lately mostly because it delivers what it promises; works out of the box™️. The obvious downside to fish is that it is non-standard POSIX sh – meaning some (not all!) of the 1-line scripts you find on the Internet may not work. I use to be a pretty big zsh fan but I hit enough oddities with my setup that I gave up in anger one day. 😤" />
+<meta property="og:description" content="I have been a big fan of the fish shell lately mostly because it delivers what it promises; works out of the box™️. The obvious downside to fish is that it is non-standard POSIX sh – meaning some (not all!) of the 1-line scripts you find on the Internet may not work. I use to be a pretty big zsh fan but I hit enough oddities with my setup that I gave up in anger one day. 😤" />
+<link rel="canonical" href="https://fzakaria.com/2024/07/17/fish-the-bash-way.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/07/17/fish-the-bash-way.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-07-17T20:20:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Fish the bash way" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-07-17T20:20:00-07:00","datePublished":"2024-07-17T20:20:00-07:00","description":"I have been a big fan of the fish shell lately mostly because it delivers what it promises; works out of the box™️. The obvious downside to fish is that it is non-standard POSIX sh – meaning some (not all!) of the 1-line scripts you find on the Internet may not work. I use to be a pretty big zsh fan but I hit enough oddities with my setup that I gave up in anger one day. 😤","headline":"Fish the bash way","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/07/17/fish-the-bash-way.html"},"url":"https://fzakaria.com/2024/07/17/fish-the-bash-way.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Fish the bash way
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-07-17
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/07/17/fish-the-bash-way.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I have been a big fan of the <a href="https://fishshell.com/">fish shell</a> lately mostly because it delivers what it promises; <em>works out of the box™️</em>.</p>
+
+<p>The <strong>obvious downside</strong> to fish is that it is non-standard POSIX <code class="language-plaintext highlighter-rouge">sh</code> – meaning some (not all!) of the 1-line scripts you find on the Internet <em>may not work</em>.</p>
+
+<blockquote>
+  <p>I use to be a pretty big <em>zsh</em> fan but I hit enough oddities with my setup that I gave up in anger one day.  😤</p>
+</blockquote>
+
+<!--more-->
+
+<p>In practice, it should not that bad since scripts can set a shebang like <code class="language-plaintext highlighter-rouge">#! /usr/bin/env bash</code> to make sure they are portable. <strong>In reality</strong>, I’ve been bit too much by tools that run commands without explicitly setting the shell and relying on my login <code class="language-plaintext highlighter-rouge">$SHELL</code>. 🙅‍♂️🤯</p>
+
+<p>Here is a little trick I’ve used to get the <em>best of both</em>.</p>
+
+<ol>
+  <li>
+    <p>Set your login shell to bash, <em>even though we intend to use fish</em>.</p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">users</span><span class="o">.</span><span class="nv">extraUsers</span><span class="o">.</span><span class="nv">fmzakari</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="nv">isNormalUser</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+     <span class="nv">shell</span> <span class="o">=</span> <span class="nv">pkgs</span><span class="o">.</span><span class="nv">bash</span><span class="p">;</span>
+     <span class="nv">extraGroups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"wheel"</span> <span class="s2">"networkmanager"</span><span class="p">];</span>
+     <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Farid Zakaria"</span><span class="p">;</span>
+ <span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Set your <code class="language-plaintext highlighter-rouge">.bash_profile</code> or (<code class="language-plaintext highlighter-rouge">.bashrc</code> conditional on interactive shell) to exec into fish.</p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">bash</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+     <span class="nv">initExtra</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">     # I have had so much trouble running fish as my login shell</span><span class="err">
+</span><span class="s2">     # instead run bash as my default login shell but just exec into it.</span><span class="err">
+</span><span class="s2">     # Check if the shell is interactive.</span><span class="err">
+</span><span class="s2">     if [[ $- == *i* &amp;&amp; -z "$NO_FISH_BASH" ]]; then</span><span class="err">
+</span><span class="s2">         exec </span><span class="si">${</span><span class="nv">pkgs</span><span class="o">.</span><span class="nv">fish</span><span class="si">}</span><span class="s2">/bin/fish</span><span class="err">
+</span><span class="s2">     fi</span><span class="err">
+</span><span class="s2">     ''</span><span class="p">;</span>
+ <span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>Create a bash function in fish that starts bash with the <em>secret</em> environment variable <code class="language-plaintext highlighter-rouge">NO_FISH_BASH</code> so that we don’t get into an endless loop.</p>
+
+    <div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code> <span class="nv">programs</span><span class="o">.</span><span class="nv">fish</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+     <span class="nv">functions</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="c"># to avoid going into a loop from bash -&gt; fish -&gt; bash</span>
+         <span class="c"># set the environment variable which stops that.</span>
+         <span class="nv">bash</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="nv">body</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">             NO_FISH_BASH="1" command bash $argv</span><span class="err">
+</span><span class="s2">         ''</span><span class="p">;</span>
+         <span class="nv">wraps</span> <span class="o">=</span> <span class="s2">"bash"</span><span class="p">;</span>
+         <span class="p">};</span>
+     <span class="p">};</span>
+ <span class="p">};</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<p>Now when you start your shell, via an interactive session, it will automatically exec into a fish shell 🎉.</p>
+
+<p><strong>AND</strong></p>
+
+<p>Your <code class="language-plaintext highlighter-rouge">$SHELL</code> remains bash, which means that any non-interactive use by programs will get the common bash they unfortunately implicitly rely on.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">❯ ps -p $</span>fish_pid
+<span class="go">    PID TTY          TIME CMD
+  71116 pts/2    00:00:00 fish
+
+</span><span class="gp">❯ echo $</span>SHELL
+<span class="go">/run/current-system/sw/bin/bash
+
+</span><span class="gp">❯ bash -c "echo $</span>SHELL<span class="s2">"
+</span><span class="go">/run/current-system/sw/bin/bash
+</span></code></pre></div></div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-07-17-fish-the-bash-way.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Computing all output paths for every attribute in Nixpkgs | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Computing all output paths for every attribute in Nixpkgs" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Nix is an amazing tool, unfortunately doing simple things can be quite challenging. This is a little write-up of my attempt to try and accomplish what I would have thought to be a simple thing; computing all store paths for every attribute in nixpkgs. Why would I want to do such a thing? I had some /nix/store entries on my system and I wanted to revisit the exact nixpkgs commit with which it was built to debug something. Without this reverse index you are pretty much out of luck for figuring it out. I want to give early shoutout to other similar tools in this space that let you do meta searches over nixpkgs such as Nix Package Versions and Pkgs on Nix." />
+<meta property="og:description" content="Nix is an amazing tool, unfortunately doing simple things can be quite challenging. This is a little write-up of my attempt to try and accomplish what I would have thought to be a simple thing; computing all store paths for every attribute in nixpkgs. Why would I want to do such a thing? I had some /nix/store entries on my system and I wanted to revisit the exact nixpkgs commit with which it was built to debug something. Without this reverse index you are pretty much out of luck for figuring it out. I want to give early shoutout to other similar tools in this space that let you do meta searches over nixpkgs such as Nix Package Versions and Pkgs on Nix." />
+<link rel="canonical" href="https://fzakaria.com/2022/01/05/computing-all-output-paths-for-every-attribute-in-nixpkgs.html" />
+<meta property="og:url" content="https://fzakaria.com/2022/01/05/computing-all-output-paths-for-every-attribute-in-nixpkgs.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-01-05T20:49:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Computing all output paths for every attribute in Nixpkgs" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2022-01-05T20:49:00-08:00","datePublished":"2022-01-05T20:49:00-08:00","description":"Nix is an amazing tool, unfortunately doing simple things can be quite challenging. This is a little write-up of my attempt to try and accomplish what I would have thought to be a simple thing; computing all store paths for every attribute in nixpkgs. Why would I want to do such a thing? I had some /nix/store entries on my system and I wanted to revisit the exact nixpkgs commit with which it was built to debug something. Without this reverse index you are pretty much out of luck for figuring it out. I want to give early shoutout to other similar tools in this space that let you do meta searches over nixpkgs such as Nix Package Versions and Pkgs on Nix.","headline":"Computing all output paths for every attribute in Nixpkgs","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2022/01/05/computing-all-output-paths-for-every-attribute-in-nixpkgs.html"},"url":"https://fzakaria.com/2022/01/05/computing-all-output-paths-for-every-attribute-in-nixpkgs.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Computing all output paths for every attribute in Nixpkgs
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2022-01-05
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2022/01/05/computing-all-output-paths-for-every-attribute-in-nixpkgs.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Nix is an amazing tool, unfortunately doing <em>simple</em> things can be quite challenging.</p>
+
+<p>This is a little write-up of my attempt to try and accomplish what I would have thought to be a <em>simple</em> thing; computing all store paths for every attribute in <a href="https://github.com/NixOS/nixpkgs/">nixpkgs</a>.</p>
+
+<p>Why would I want to do such a thing?</p>
+
+<p>I had some <em>/nix/store</em> entries on my system and I wanted to revisit the <strong>exact</strong> nixpkgs commit with which it was built to debug something.
+Without this <a href="https://en.wikipedia.org/wiki/Reverse_index">reverse index</a> you are pretty much out of luck for figuring it out.</p>
+
+<blockquote>
+  <p>I want to give early <em>shoutout</em> to other similar tools in this space that let you do meta searches over nixpkgs such as <a href="https://lazamar.co.uk/nix-versions/">Nix Package Versions</a> and <a href="https://pkgs.on-nix.com/">Pkgs on Nix</a>.</p>
+</blockquote>
+
+<!--more-->
+
+<p>🗣️ This goal has been made extra arduous due to the migrations of the new Nix CLI commands and the migration to Flakes.</p>
+
+<h2 id="-goal-1-get-a-list-of-all-package-names">🎯 Goal 1: Get a list of all package names</h2>
+
+<p>Any attempt to try and do this within the Nix language expression is <strong>doomed</strong>.
+Any immediate attempt to iterate over all keys within the <em>top-level</em> attribute in Nixpkgs is faced with hurdle and after hurdle.</p>
+
+<p>I got pretty far with the following <a href="https://gist.github.com/fzakaria/ae27a2ad58e1d80f5453b0ed0052297f">gist</a> but it still hit roadblocks.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">pkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="nv">config</span><span class="o">.</span><span class="nv">allowBroken</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">config</span><span class="o">.</span><span class="nv">allowUnfree</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="p">};</span>
+  <span class="nv">lib</span> <span class="o">=</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="sx">nixpkgs/lib</span><span class="o">&gt;</span><span class="p">;</span>
+  <span class="nv">tryEval</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="nv">tryEval</span><span class="p">;</span>
+<span class="kn">in</span>
+  <span class="nv">lib</span><span class="o">.</span><span class="nv">mapAttrs</span> <span class="p">(</span><span class="nv">k</span><span class="p">:</span> <span class="nv">v</span><span class="p">:</span>
+    <span class="kd">let</span> <span class="nv">name</span> <span class="o">=</span> <span class="p">(</span><span class="nv">tryEval</span> <span class="nv">v</span><span class="o">.</span><span class="nv">name</span> <span class="nv">or</span> <span class="s2">""</span><span class="p">);</span>
+    <span class="nv">out</span> <span class="o">=</span> <span class="p">(</span><span class="nv">tryEval</span> <span class="nv">v</span><span class="o">.</span><span class="nv">outPath</span> <span class="nv">or</span> <span class="s2">""</span><span class="p">);</span>
+    <span class="kn">in</span> <span class="p">{</span>
+      <span class="nv">name</span> <span class="o">=</span> <span class="nv">name</span><span class="o">.</span><span class="nv">value</span><span class="p">;</span>
+      <span class="nv">out</span>  <span class="o">=</span> <span class="nv">out</span><span class="o">.</span><span class="nv">value</span><span class="p">;</span>
+    <span class="p">}</span>
+  <span class="p">)</span> <span class="nv">pkgs</span>
+</code></pre></div></div>
+
+<p>Feedback from the community has been to use <em>nix</em> tooling such as <em>nix-env</em> or <em>nix-search</em> that have special handling for all these sharp edges, or some of the <em>fancier</em> work used
+by <a href="https://github.com/NixOS/hydra">hydra</a> or <a href="https://github.com/NixOS/ofborg/">ofborg</a>.</p>
+
+<p>I succumb to peer pressure and decided to use these tools 😮‍💨 rather than what I was hoping to be an elegant <em>pure Nix</em> expression.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix search <span class="nb">.</span> <span class="nt">--json</span> | jq <span class="nt">-r</span> <span class="s1">'keys|.[]'</span> <span class="o">&gt;</span> package-names.txt
+
+❯ <span class="nb">head</span> <span class="nt">-n</span> 10 package-names.txt
+legacyPackages.x86_64-linux.AMB-plugins
+legacyPackages.x86_64-linux.ArchiSteamFarm
+legacyPackages.x86_64-linux.AusweisApp2
+legacyPackages.x86_64-linux.CHOWTapeModel
+legacyPackages.x86_64-linux.ChowKick
+legacyPackages.x86_64-linux.CoinMP
+legacyPackages.x86_64-linux.CuboCore.coreaction
+legacyPackages.x86_64-linux.CuboCore.corearchiver
+legacyPackages.x86_64-linux.CuboCore.corefm
+legacyPackages.x86_64-linux.CuboCore.coregarage
+</code></pre></div></div>
+
+<blockquote>
+  <p>😑 Super annoying that these new Nix commands even with <em>-L</em> continue to write the text in-place for their log output.</p>
+</blockquote>
+
+<h2 id="-goal-2-compute-outpaths-for-every-package">🎯 Goal 2: Compute outPaths for every package</h2>
+
+<p>Since we are using <em>nix search</em> the names of the packages are now following the Flakes naming convention with prefixing them with <em>legacyPackages</em>.</p>
+
+<p>The plan here to continue with the new Nix commands and now evaluate the <em>outPath</em> of each package.</p>
+
+<p>⚠️ This does not build the derivation.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">cat </span>package-names.txt | <span class="se">\</span>
+xargs <span class="nt">-I</span><span class="s1">'{}'</span> sh <span class="nt">-c</span> <span class="se">\</span>
+<span class="s1">'nix eval --raw ".#{}.outPath" &gt;&gt; outpaths.txt; echo &gt;&gt; outpaths.txt'</span>
+
+❯ <span class="nb">head</span> <span class="nt">-n</span> 10 outpaths.txt
+/nix/store/jrvzirqlzpylxxij8q10hramdsgk6nvx-AMB-plugins-0.8.1
+/nix/store/szh7aikwz12vj1sbkf4r6vdvy1k8apym-archisteamfarm-5.1.5.3
+/nix/store/mxi5pignri1z8n3lizkcp8y8m8cgfn55-AusweisApp2-1.22.2
+/nix/store/6d69d3lbk6dbgqnvzccx9lpi7hj3f6i9-CHOWTapeModel-2.10.0
+/nix/store/lhk99h3adbfhzdk1spcx7awky7bzhwab-ChowKick-1.1.1
+/nix/store/6p5g08rrq4cf5yrs970h4qrv7drj812l-CoinMP-1.8.4
+/nix/store/qlxs8yrmssi1x54a5m3q0941ha4qvaa8-coreaction-4.2.0
+/nix/store/64r6kkd6cxm1jhlhl9zma80jgvidrfyw-corearchiver-4.2.0
+/nix/store/mh79zi4l343fj1xa54p1a4qif38f4435-corefm-4.2.0
+/nix/store/6disqp58dkyi8i3vpb6ja5sr8g4xpqxg-coregarage-4.2.0
+</code></pre></div></div>
+
+<p>⚠️ I could not seem to make this <em>parallel</em> at all since the evaluation requires a global lock.</p>
+
+<p>Now I just need to rename <em>outpaths.txt</em> to something that indicates the Git commit I used when generating this and I am starting to
+build some nice structure data 📊.</p>
+
+<h2 id="bonus-work-and-collaboration">Bonus Work and Collaboration</h2>
+
+<p>Of course what I am doing here is only generating for my current <em>builtins.currentSystem</em> (i.e. x86_64) and will not generate for all other supported platforms.</p>
+
+<p>There are also recursive subtrees within <em>nixpkgs</em> such as <em>pkgsStatic</em> or <em>pkgsMusl</em> that I don’t believe are returned from <em>nix search</em> and therefore I am not
+detecting those output paths.</p>
+
+<p>I would like to continue to understand better how tools such as Hydra generate all attributes for all systems.</p>
+
+<p>If this problem and goal to build an <em>outputPath</em> reverse index for Nix sounds interesting, reach out to <a href="mailto:farid.m.zakaria@gmail.com">me</a>!
+I would love to collaborate.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2022-01-05-computing-all-output-paths-for-every-attribute-in-nixpkgs.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

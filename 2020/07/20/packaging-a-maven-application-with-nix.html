@@ -1,0 +1,353 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Packaging a Maven application with Nix | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Packaging a Maven application with Nix" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Surprisingly for Java’s popularity, the Nix Java ecosystem is pretty immature &amp; fragmented. There are several community driven solutions for integrating Maven (Java’s package manager) with Nix all which have their own pitfalls. This post will go through a single idiom on how to package a Maven project in Nix that at the very least does not rely on 3rd party support: Double invoking Maven" />
+<meta property="og:description" content="Surprisingly for Java’s popularity, the Nix Java ecosystem is pretty immature &amp; fragmented. There are several community driven solutions for integrating Maven (Java’s package manager) with Nix all which have their own pitfalls. This post will go through a single idiom on how to package a Maven project in Nix that at the very least does not rely on 3rd party support: Double invoking Maven" />
+<link rel="canonical" href="https://fzakaria.com/2020/07/20/packaging-a-maven-application-with-nix.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/07/20/packaging-a-maven-application-with-nix.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-20T14:26:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Packaging a Maven application with Nix" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-07-20T14:26:00-07:00","datePublished":"2020-07-20T14:26:00-07:00","description":"Surprisingly for Java’s popularity, the Nix Java ecosystem is pretty immature &amp; fragmented. There are several community driven solutions for integrating Maven (Java’s package manager) with Nix all which have their own pitfalls. This post will go through a single idiom on how to package a Maven project in Nix that at the very least does not rely on 3rd party support: Double invoking Maven","headline":"Packaging a Maven application with Nix","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/07/20/packaging-a-maven-application-with-nix.html"},"url":"https://fzakaria.com/2020/07/20/packaging-a-maven-application-with-nix.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Packaging a Maven application with Nix
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-07-20
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/07/20/packaging-a-maven-application-with-nix.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Surprisingly for Java’s popularity, the Nix Java ecosystem is pretty immature &amp; fragmented. There are several community driven solutions for integrating Maven (Java’s package manager) with Nix all which have their own <em>pitfalls</em>.</p>
+
+<p>This post will go through a <em>single idiom</em> on how to package a Maven project in Nix that at the very least does not rely on 3rd party support: <strong>Double invoking Maven</strong></p>
+
+<!--more-->
+
+<p>The main <em>crux</em> of packaging a Maven application in a Nix derivation is that the derivation is restricted from performing any network access. The builder is also in a <em>chroot</em> directory without access to the local Maven repository <em>~/.m2</em>.</p>
+
+<p>How can we hydrate the local Maven repository within a Nix derivation?</p>
+
+<p>Using <strong>Fixed output derivations</strong>!</p>
+
+<h2 id="fixed-output-derivation">Fixed Output Derivation</h2>
+
+<p>Fixed output derivations (FOD) are derivations that specify the hash of the output contents (Nix typically calculates the hash of the input). These derivations are allowed to perform network access in sandboxed mode.</p>
+
+<p>Here is a very simple <em>fixed output derivation</em> to demonstrate.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{}</span> <span class="p">}:</span>
+<span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span>
+<span class="nv">runCommand</span> <span class="s2">"fetching-with-curl"</span> <span class="p">{</span>
+  <span class="nv">outputHash</span> <span class="o">=</span> <span class="s2">"01c7d3wsq6g4s6k2vl95z2gix8q9spk86knwmgvkfijp04jq00z0"</span><span class="p">;</span>
+  <span class="nv">outputHashAlgo</span> <span class="o">=</span> <span class="s2">"sha256"</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">curl</span> <span class="p">];</span>
+  <span class="nv">SSL_CERT_FILE</span> <span class="o">=</span> <span class="s2">"</span><span class="si">${</span><span class="nv">cacert</span><span class="si">}</span><span class="s2">/etc/ssl/certs/ca-bundle.crt"</span><span class="p">;</span>
+<span class="p">}</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">  curl https://repo.maven.apache.org/maven2/org/codehaus/plexus/plexus-interpolation/1.25/plexus-interpolation-1.25.jar --output $out</span><span class="err">
+</span><span class="s2">''</span>
+</code></pre></div></div>
+
+<p>If <strong>outputHash</strong> was not provided; the <em>cURL</em> command would fail to establish a connection.</p>
+
+<h2 id="maven-repository-as-a-fixed-output-derivation">Maven Repository as a Fixed Output Derivation</h2>
+
+<p>Armed with the knowledge, a Fixed Output Derivation can make network calls, we can construct a derivation that will download all necessary dependencies.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">stdenv</span><span class="p">,</span> <span class="nv">jdk11_headless</span><span class="p">,</span> <span class="nv">maven</span> <span class="p">}:</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="p">;</span>
+<span class="nv">mkDerivation</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"maven-dependencies"</span><span class="p">;</span>
+    <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">jdk11_headless</span> <span class="nv">maven</span> <span class="p">];</span>
+    <span class="nv">src</span> <span class="o">=</span> <span class="sx">./.</span><span class="p">;</span>
+    <span class="nv">buildPhase</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">      while mvn package -Dmaven.repo.local=$out/.m2 -Dmaven.wagon.rto=5000; [ $? = 1 ]; do</span><span class="err">
+</span><span class="s2">        echo "timeout, restart maven to continue downloading"</span><span class="err">
+</span><span class="s2">      done</span><span class="err">
+</span><span class="s2">    ''</span><span class="p">;</span>
+    <span class="c"># keep only *.{pom,jar,sha1,nbm} and delete all ephemeral files with lastModified timestamps inside</span>
+    <span class="nv">installPhase</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">        find $out/.m2 -type f -regex '.+\\(\\.lastUpdated\\|resolver-status\\.properties\\|_remote\\.repositories\\)' -delete</span><span class="err">
+</span><span class="s2">    ''</span><span class="p">;</span>
+    <span class="nv">outputHashAlgo</span> <span class="o">=</span> <span class="s2">"sha256"</span><span class="p">;</span>
+    <span class="nv">outputHashMode</span> <span class="o">=</span> <span class="s2">"recursive"</span><span class="p">;</span>
+    <span class="nv">outputHash</span> <span class="o">=</span> <span class="s2">"026wmcpbdvkm7xizxgg0c12z4sl88n2h7bdwvvk6r7y5b6q18nsf"</span><span class="p">;</span>
+  <span class="p">};</span>
+</code></pre></div></div>
+
+<p>The key insight here is <code class="language-plaintext highlighter-rouge">-Dmaven.repo.local=$out/.m2</code>; which will cause the execution of <em>maven</em> to download all the necessary dependencies into a maven repository rooted within the derivation’s output directory.</p>
+
+<blockquote>
+  <p>Some additional files are deleted that would cause the output hash to change potentially on subsequent runs.</p>
+</blockquote>
+
+<p>If your package uses <strong>SNAPSHOT</strong> dependencies; there is a string likelihood that over-time your output hash will change.</p>
+
+<p>We now have an entry in our <em>/nix/store</em> that is a Maven repository of all the necessary dependencies our application needs.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/nix/store/bxhr4p2x99jvqk027jsv250b861wklsq-dependencies/.m2
+├── backport-util-concurrent
+│   └── backport-util-concurrent
+│       └── 3.1
+│           ├── backport-util-concurrent-3.1.pom
+│           ├── backport-util-concurrent-3.1.pom.sha1
+│           └── _remote.repositories
+├── classworlds
+│   └── classworlds
+│       ├── 1.1
+│       │   ├── classworlds-1.1.jar
+│       │   ├── classworlds-1.1.jar.sha1
+│       │   ├── classworlds-1.1.pom
+│       │   ├── classworlds-1.1.pom.sha1
+│       │   └── _remote.repositories
+</code></pre></div></div>
+
+<h2 id="building-the-java-application">Building the Java Application</h2>
+
+<p>With a derivation setup to contain our full Maven repository, we are ready to build the Maven application.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">stdenv</span><span class="p">,</span> <span class="nv">jdk11_headless</span><span class="p">,</span> <span class="nv">maven</span><span class="p">,</span> <span class="nv">makeWrapper</span> <span class="p">}:</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nv">dependencies</span> <span class="o">=</span> <span class="p">{</span> <span class="c"># see above</span>
+<span class="p">};</span>
+<span class="kn">in</span> <span class="nv">mkDerivation</span> <span class="kr">rec</span> <span class="p">{</span>
+  <span class="nv">pname</span> <span class="o">=</span> <span class="s2">"maven-application"</span><span class="p">;</span>
+  <span class="kn">inherit</span> <span class="nv">version</span><span class="p">;</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"</span><span class="si">${</span><span class="nv">pname</span><span class="si">}</span><span class="s2">-</span><span class="si">${</span><span class="nv">version</span><span class="si">}</span><span class="s2">"</span><span class="p">;</span>
+  <span class="nv">src</span> <span class="o">=</span> <span class="sx">./.</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="nv">jdk11_headless</span> <span class="nv">maven</span> <span class="nv">makeWrapper</span> <span class="p">];</span>
+  <span class="nv">buildPhase</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    # 'maven.repo.local' must be writable so copy it out of nix store</span><span class="err">
+</span><span class="s2">    mvn package --offline -Dmaven.repo.local=</span><span class="si">${</span><span class="nv">dependencies</span><span class="si">}</span><span class="s2">/.m2</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+
+  <span class="nv">installPhase</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    # create the bin directory</span><span class="err">
+</span><span class="s2">    mkdir -p $out/bin</span><span class="err">
+
+</span><span class="s2">    # create a symbolic link for the lib directory</span><span class="err">
+</span><span class="s2">    ln -s </span><span class="si">${</span><span class="nv">dependencies</span><span class="si">}</span><span class="s2">/.m2 $out/lib</span><span class="err">
+
+</span><span class="s2">    # copy out the JAR</span><span class="err">
+</span><span class="s2">    # Maven already setup the classpath to use m2 repository layout</span><span class="err">
+</span><span class="s2">    # with the prefix of lib/</span><span class="err">
+</span><span class="s2">    cp target/</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.jar $out/</span><span class="err">
+
+</span><span class="s2">    # create a wrapper that will automatically set the classpath</span><span class="err">
+</span><span class="s2">    # this should be the paths from the dependency derivation</span><span class="err">
+</span><span class="s2">    makeWrapper </span><span class="si">${</span><span class="nv">jdk11_headless</span><span class="si">}</span><span class="s2">/bin/java $out/bin/</span><span class="si">${</span><span class="nv">pname</span><span class="si">}</span><span class="s2"> \</span><span class="err">
+</span><span class="s2">          --add-flags "-jar $out/</span><span class="si">${</span><span class="nv">name</span><span class="si">}</span><span class="s2">.jar"</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This derivation builds the Maven application while instructing Maven to be in “offline” mode (do not try to contact the remote repositories) and we set the local repository to the output of the previous derivation.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>mvn package --offline -Dmaven.repo.local=${dependencies}/.m2
+</code></pre></div></div>
+
+<p>The <em>makeWrapper</em> portion should be straightforward as we are simply offering a simple executable to launch our application.</p>
+
+<p>Another key insight is the symbolic link within our derivation’s output to the Maven repository.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ln -s ${dependencies}/.m2 $out/lib
+</code></pre></div></div>
+
+<p>The main JAR must be instructed to search this directory as part of the ClassPath. Luckily, Maven offers a plugin to easily configure this.</p>
+
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;plugin&gt;</span>
+    <span class="nt">&lt;artifactId&gt;</span>maven-jar-plugin<span class="nt">&lt;/artifactId&gt;</span>
+    <span class="nt">&lt;version&gt;</span>3.2.0<span class="nt">&lt;/version&gt;</span>
+    <span class="nt">&lt;configuration&gt;</span>
+        <span class="nt">&lt;archive&gt;</span>
+            <span class="nt">&lt;manifest&gt;</span>
+                <span class="nt">&lt;addClasspath&gt;</span>true<span class="nt">&lt;/addClasspath&gt;</span>
+                <span class="nt">&lt;classpathPrefix&gt;</span>lib/<span class="nt">&lt;/classpathPrefix&gt;</span>
+                <span class="nt">&lt;classpathLayoutType&gt;</span>repository<span class="nt">&lt;/classpathLayoutType&gt;</span>
+                <span class="nt">&lt;mainClass&gt;</span>com.example.Main<span class="nt">&lt;/mainClass&gt;</span>
+            <span class="nt">&lt;/manifest&gt;</span>
+        <span class="nt">&lt;/archive&gt;</span>
+    <span class="nt">&lt;/configuration&gt;</span>
+<span class="nt">&lt;/plugin&gt;</span>
+</code></pre></div></div>
+
+<p>As the JAR is located in <strong>$out</strong>, we’ve augmented the ClassPath to search for all dependencies within the <strong>lib/</strong> directory assuming a Maven repository layout.</p>
+
+<p>Here is an example of the <strong>META-INF/MANIFEST.MF</strong> that may be generated
+(assuming the output JAR is <em>application-01.jar</em>):</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ unzip -q -c  result/application-0.1.jar META-INF/MANIFEST.MF
+
+Manifest-Version: 1.0
+Created-By: Maven Jar Plugin 3.2.0
+Build-Jdk-Spec: 11
+Class-Path: . lib/org/slf4j/slf4j-api/1.7.30/slf4j-api-1.7.30.jar lib/or
+ g/slf4j/slf4j-simple/1.7.30/slf4j-simple-1.7.30.jar lib/com/google/guav
+ a/guava/29.0-jre/guava-29.0-jre.jar lib/com/google/guava/failureaccess/
+ 1.0.1/failureaccess-1.0.1.jar lib/com/google/guava/listenablefuture/999
+ 9.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to
+ -avoid-conflict-with-guava.jar lib/com/google/code/findbugs/jsr305/3.0.
+ 2/jsr305-3.0.2.jar lib/org/checkerframework/checker-qual/2.11.1/checker
+ -qual-2.11.1.jar lib/com/google/errorprone/error_prone_annotations/2.3.
+ 4/error_prone_annotations-2.3.4.jar lib/com/google/j2objc/j2objc-annota
+ tions/1.3/j2objc-annotations-1.3.jar
+Main-Class: com.example.Main
+</code></pre></div></div>
+
+<p><strong>Congratulations you’ve just packaged your Maven application with Nix!</strong></p>
+
+<p>This “double invocation” solution works pretty well but has one major drawback.</p>
+
+<p>Due to the <em>coarseness</em> of having all dependencies in a single output derivation, Nix cannot make use of sharing dependencies across derivations within the <em>/nix/store</em>. The solution however is pretty simplistic minus the cost-efficiency due to the wasted space.</p>
+
+<p>I hope that little deep dive into how to build a Maven application through Nix was informative.</p>
+
+<h2 id="mvn2nix">mvn2nix</h2>
+
+<p>As mentioned in the top of this post, there are a variety of tools already for integrating Maven with Nix better:</p>
+<ol>
+  <li><a href="https://github.com/obsidiansystems/haven">haven</a></li>
+  <li><a href="https://github.com/nix-community/mavenix">mavenix</a></li>
+  <li><a href="https://github.com/NixOS/mvn2nix-maven-plugin">mvn2nix-maven-plugin</a></li>
+</ol>
+
+<p>Each <em>somewhat work</em> but have odd limitations of trying to work around Maven’s clunky API. The problem though is Maven’s dependency resolution is complex and rationalizing it from the outside is <em>error-prone</em>.</p>
+
+<p><strong>mvn2nix-maven-plugin</strong> seems like it has the best <em>shot</em> with included support within <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> through <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/build-support/build-maven.nix">buildMaven</a> build support but it’s slow &amp; has limited support for different repositories.</p>
+
+<p>I started work on a separate binary <a href="https://github.com/fzakaria/mvn2nix">mvn2nix</a>; and seeking collaborators.</p>
+
+<p>The goal is a minimal binary that duplicates Maven’s dependency resolution through the exposed APIs to generate a Nix expression for use with <em>fetchUrl</em>.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-07-20-packaging-a-maven-application-with-nix.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

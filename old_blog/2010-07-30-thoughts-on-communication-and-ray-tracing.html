@@ -1,0 +1,181 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Thoughts on communication and Ray Tracing | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Thoughts on communication and Ray Tracing" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I definitely have a few things I&#39;d like to write about and here&#39;s a little snippet on some of those things Ray Tracing I guess to start, I just want to showcase/discuss my final CS488 project, which was an extended Ray Tracer. I greatly enjoyed writing a ray tracer, because it was truly one of the most modular/distributed programming projects I&#39;ve done. It seemed to echo nicely much of the software architectural designs I&#39;ve read about but never truly seen in practice. I could almost imagine it done through Pipe-and-filter for instance. On my upcomming work term, I really look forward to porting the ray tracer into CUDA even if I just manage a bare ray tracer it would be pretty cool. One of the mos difficult aspects of the ray tracer, was surprisingly for me Refraction. What was aggravating was that to have a realistic refraction it required a lot of additional work then some of the other objectives (such as Depth of Field). Needing to implement attenuation (using Beer&#39;s law etc..). Check out my gallery for the project All things manly I&#39;ve been thinking a lot lately (odd I know) about some things about relationships and just between the whole courting process. I think I&#39;m going to write about what I&#39;ve been thinking about because I&#39;ve been recently sharing them to some friends and they&#39;ve found the information pretty useful and informative. &quot;What is the power involved when you lock eyes with a stranger that is the opposite sex? I have had it happen to me only twice (I&#39;m 23) but each time, there&#39;s a strange hypnotising magnetic power that holds the eye contact - and their face is imprinted upon your brain. They don&#39;t have to be extremely attractive - the eyes that have it.&quot; - Some guy online We&#39;ve all heard how the eyes are the window to the soul, however I&#39;ve been recently hanging out with some friends who are magicians very skilled with people of the opposite sex, and one of the main things I&#39;ve noticed they do is truly lock eyes. Eye Locking Many of us believe we stare at the person we speak, however I began to notice that true &quot;eye-locking&quot; is rare and doesn&#39;t occur (people are in fact prone to avoid direct eye contact). When people believe they are eye-locking, they are in fact looking at their mouth, nose, facial expression or anything else but their eyes! The fact that staring someone in the eyes is so unnatural and avoided, when people perform it, it comes off extremely intense and conveys strong emotions. You&#39;ll see eye gazing into those who are already in &quot;love&quot;, however for those looking to convey to a girl across the room that they are interested, nothing is as powerful as truly looking into their eye. Coming out of a semi-long first relationship, I was a large novice still when it came to the opposite sex and for myself can say this was one the biggest self-discoveries (writing about it here, so you don&#39;t waste as much time as me). So much of flirting is about the back-and-forth of staring at each other. Trying to catch glimpses when the other is not looking, or diverting your gaze when they catch you. The joke however is that so much more is conveyed if you keep your gazed locked and find each others eyes. I have a lot to say about texting, which I&#39;ll write about soon.... I wrote this at like 3 AM, so I&#39;m sure there are tons of grammatical mistakes. I&#39;ll worry about them in the unforeseeable future." />
+<meta property="og:description" content="I definitely have a few things I&#39;d like to write about and here&#39;s a little snippet on some of those things Ray Tracing I guess to start, I just want to showcase/discuss my final CS488 project, which was an extended Ray Tracer. I greatly enjoyed writing a ray tracer, because it was truly one of the most modular/distributed programming projects I&#39;ve done. It seemed to echo nicely much of the software architectural designs I&#39;ve read about but never truly seen in practice. I could almost imagine it done through Pipe-and-filter for instance. On my upcomming work term, I really look forward to porting the ray tracer into CUDA even if I just manage a bare ray tracer it would be pretty cool. One of the mos difficult aspects of the ray tracer, was surprisingly for me Refraction. What was aggravating was that to have a realistic refraction it required a lot of additional work then some of the other objectives (such as Depth of Field). Needing to implement attenuation (using Beer&#39;s law etc..). Check out my gallery for the project All things manly I&#39;ve been thinking a lot lately (odd I know) about some things about relationships and just between the whole courting process. I think I&#39;m going to write about what I&#39;ve been thinking about because I&#39;ve been recently sharing them to some friends and they&#39;ve found the information pretty useful and informative. &quot;What is the power involved when you lock eyes with a stranger that is the opposite sex? I have had it happen to me only twice (I&#39;m 23) but each time, there&#39;s a strange hypnotising magnetic power that holds the eye contact - and their face is imprinted upon your brain. They don&#39;t have to be extremely attractive - the eyes that have it.&quot; - Some guy online We&#39;ve all heard how the eyes are the window to the soul, however I&#39;ve been recently hanging out with some friends who are magicians very skilled with people of the opposite sex, and one of the main things I&#39;ve noticed they do is truly lock eyes. Eye Locking Many of us believe we stare at the person we speak, however I began to notice that true &quot;eye-locking&quot; is rare and doesn&#39;t occur (people are in fact prone to avoid direct eye contact). When people believe they are eye-locking, they are in fact looking at their mouth, nose, facial expression or anything else but their eyes! The fact that staring someone in the eyes is so unnatural and avoided, when people perform it, it comes off extremely intense and conveys strong emotions. You&#39;ll see eye gazing into those who are already in &quot;love&quot;, however for those looking to convey to a girl across the room that they are interested, nothing is as powerful as truly looking into their eye. Coming out of a semi-long first relationship, I was a large novice still when it came to the opposite sex and for myself can say this was one the biggest self-discoveries (writing about it here, so you don&#39;t waste as much time as me). So much of flirting is about the back-and-forth of staring at each other. Trying to catch glimpses when the other is not looking, or diverting your gaze when they catch you. The joke however is that so much more is conveyed if you keep your gazed locked and find each others eyes. I have a lot to say about texting, which I&#39;ll write about soon.... I wrote this at like 3 AM, so I&#39;m sure there are tons of grammatical mistakes. I&#39;ll worry about them in the unforeseeable future." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2010-07-30-thoughts-on-communication-and-ray-tracing.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2010-07-30-thoughts-on-communication-and-ray-tracing.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2010-07-30T16:05:14-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Thoughts on communication and Ray Tracing" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2010-07-30T16:05:14-07:00","datePublished":"2010-07-30T16:05:14-07:00","description":"I definitely have a few things I&#39;d like to write about and here&#39;s a little snippet on some of those things Ray Tracing I guess to start, I just want to showcase/discuss my final CS488 project, which was an extended Ray Tracer. I greatly enjoyed writing a ray tracer, because it was truly one of the most modular/distributed programming projects I&#39;ve done. It seemed to echo nicely much of the software architectural designs I&#39;ve read about but never truly seen in practice. I could almost imagine it done through Pipe-and-filter for instance. On my upcomming work term, I really look forward to porting the ray tracer into CUDA even if I just manage a bare ray tracer it would be pretty cool. One of the mos difficult aspects of the ray tracer, was surprisingly for me Refraction. What was aggravating was that to have a realistic refraction it required a lot of additional work then some of the other objectives (such as Depth of Field). Needing to implement attenuation (using Beer&#39;s law etc..). Check out my gallery for the project All things manly I&#39;ve been thinking a lot lately (odd I know) about some things about relationships and just between the whole courting process. I think I&#39;m going to write about what I&#39;ve been thinking about because I&#39;ve been recently sharing them to some friends and they&#39;ve found the information pretty useful and informative. &quot;What is the power involved when you lock eyes with a stranger that is the opposite sex? I have had it happen to me only twice (I&#39;m 23) but each time, there&#39;s a strange hypnotising magnetic power that holds the eye contact - and their face is imprinted upon your brain. They don&#39;t have to be extremely attractive - the eyes that have it.&quot; - Some guy online We&#39;ve all heard how the eyes are the window to the soul, however I&#39;ve been recently hanging out with some friends who are magicians very skilled with people of the opposite sex, and one of the main things I&#39;ve noticed they do is truly lock eyes. Eye Locking Many of us believe we stare at the person we speak, however I began to notice that true &quot;eye-locking&quot; is rare and doesn&#39;t occur (people are in fact prone to avoid direct eye contact). When people believe they are eye-locking, they are in fact looking at their mouth, nose, facial expression or anything else but their eyes! The fact that staring someone in the eyes is so unnatural and avoided, when people perform it, it comes off extremely intense and conveys strong emotions. You&#39;ll see eye gazing into those who are already in &quot;love&quot;, however for those looking to convey to a girl across the room that they are interested, nothing is as powerful as truly looking into their eye. Coming out of a semi-long first relationship, I was a large novice still when it came to the opposite sex and for myself can say this was one the biggest self-discoveries (writing about it here, so you don&#39;t waste as much time as me). So much of flirting is about the back-and-forth of staring at each other. Trying to catch glimpses when the other is not looking, or diverting your gaze when they catch you. The joke however is that so much more is conveyed if you keep your gazed locked and find each others eyes. I have a lot to say about texting, which I&#39;ll write about soon.... I wrote this at like 3 AM, so I&#39;m sure there are tons of grammatical mistakes. I&#39;ll worry about them in the unforeseeable future.","headline":"Thoughts on communication and Ray Tracing","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2010-07-30-thoughts-on-communication-and-ray-tracing.html"},"url":"https://fzakaria.com/old_blog/2010-07-30-thoughts-on-communication-and-ray-tracing.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Thoughts on communication and Ray Tracing
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2010-07-30
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2010-07-30-thoughts-on-communication-and-ray-tracing.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I definitely have a few things I'd like to write about and here's a little snippet on some of those things </p>
+<h3> Ray Tracing </h3>
+<p><br><br />
+<br><br />
+<a href="http://www.blog.fzakaria.com/raytracer/Main.html"><img src="http://www.blog.fzakaria.com/wp-content/uploads/2010/07/finalScene-300x300.png" alt="" title="Final Scene" width="300" height="300" class="aligncenter size-medium wp-image-306" /></a></p>
+<p> I guess to start, I just want to showcase/discuss my final <a href="http://www.student.cs.uwaterloo.ca/~cs488/">CS488</a> project, which was an extended Ray Tracer. I greatly enjoyed writing a ray tracer, because it was truly one of the most modular/distributed programming projects I've done. It seemed to echo nicely much of the software architectural designs I've read about but never truly seen in practice. I could almost imagine it done through <a href="http://www.dossier-andreas.net/software_architecture/pipe_and_filter.html">Pipe-and-filter</a> for instance. </p>
+<p>On my upcomming work term, I really look forward to porting the ray tracer into <a href="http://en.wikipedia.org/wiki/CUDA">CUDA</a> even if I just manage a bare ray tracer it would be pretty cool. </p>
+<p>One of the mos difficult aspects of the ray tracer, was surprisingly for me <em>Refraction</em>. What was aggravating was that to have a realistic refraction it required a lot of additional work then some of the other objectives (such as Depth of Field). Needing to implement attenuation (using Beer's law etc..). </p>
+<p> Check out my <a href="www.fzakaria.com/raytracer/Main.html">gallery</a> for the project </p>
+<h3> All things manly </h3>
+<p>I've been <em>thinking</em> a lot lately (odd I know) about some things about relationships and just between the whole courting process. I think I'm going to write about what I've been thinking about because I've been recently sharing them to some friends and they've found the information pretty useful and informative.</p>
+<p><a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/07/eyes.jpg"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/07/eyes.jpg" alt="" title="Eyes" width="400" height="300" class="aligncenter size-full wp-image-308" /></a></p>
+<blockquote><p> "What is the power involved when you lock eyes with a stranger that is the opposite sex? I have had it happen to me only twice (I'm 23) but each time, there's a strange hypnotising magnetic power that holds the eye contact - and their face is imprinted upon your brain. They don't have to be extremely attractive - the eyes that have it." - Some guy online  </p></blockquote>
+<p>We've all heard how the eyes are the window to the soul, however I've been recently hanging out with some friends who are <del datetime="2010-07-30T19:34:47+00:00">magicians</del> very skilled with people of the opposite sex, and one of the main things I've noticed they do is <strong>truly lock eyes</strong>. </p>
+<h4> Eye Locking </h4>
+<p><br></p>
+<p>Many of us believe we stare at the person we speak, however I began to notice that true "eye-locking" is rare and doesn't occur (people are in fact prone to avoid direct eye contact). When people believe they are eye-locking, they are in fact looking at their mouth, nose, facial expression or anything else but their eyes!</p>
+<p>The fact that staring someone in the eyes is so unnatural and avoided, when people perform it, it comes off extremely intense and conveys strong emotions. You'll see eye gazing into those who are already in "love", however for those looking to convey to a girl across the room that they are interested, nothing is as powerful as truly looking into their eye. </p>
+<p> Coming out of a semi-long first relationship, I was a large novice still when it came to the opposite sex and for myself can say this was one the biggest self-discoveries (writing about it here, so you don't waste as much time as me).  So much of flirting is about the <em>back-and-forth</em> of staring at each other. Trying to catch glimpses when the other is not looking, or diverting your gaze when they catch you. The joke however is that so much more is conveyed if you keep your gazed locked and find each others eyes. </p>
+<p>I have a lot to say about texting, which I'll write about soon....</p>
+<blockquote><p> I wrote this at like 3 AM, so I'm sure there are tons of grammatical mistakes. I'll worry about them in the unforeseeable future. </p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2010-07-30-thoughts-on-communication-and-ray-tracing.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

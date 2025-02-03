@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Catching Up: Hypescript fixed. More to come. | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Catching Up: Hypescript fixed. More to come." />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Finally have some time I&#39;ve received numerous (very nice hearing how many people have been using my software) e-mails and responses regarding how my hypescript and batch downloader are no longer working. I&#39;ve recently accepted a new position at Amazon in Seattle and the move was very time consuming. I was saddened at the state of the code and how I felt like I was letting people down by not fixing it in a timely fashion. Now that it&#39;s been a month or so since my move I&#39;ve finally had time to work on fixing them for you guys! :) The fix The HypeMachine guys keep breaking the script due to my terrible regular expression I was using to scrape the site for the id &amp; keys. I&#39;m hoping the current regex I&#39;ve updated it to is more robust and will thwart a few more attempts from them from breaking it! What needs to be parsed trackList[document.location.href][&#39;item_1n361&#39;] = {" />
+<meta property="og:description" content="Finally have some time I&#39;ve received numerous (very nice hearing how many people have been using my software) e-mails and responses regarding how my hypescript and batch downloader are no longer working. I&#39;ve recently accepted a new position at Amazon in Seattle and the move was very time consuming. I was saddened at the state of the code and how I felt like I was letting people down by not fixing it in a timely fashion. Now that it&#39;s been a month or so since my move I&#39;ve finally had time to work on fixing them for you guys! :) The fix The HypeMachine guys keep breaking the script due to my terrible regular expression I was using to scrape the site for the id &amp; keys. I&#39;m hoping the current regex I&#39;ve updated it to is more robust and will thwart a few more attempts from them from breaking it! What needs to be parsed trackList[document.location.href][&#39;item_1n361&#39;] = {" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-06-28-catching-up-hypescript-fixed-more-to-come.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-06-28-catching-up-hypescript-fixed-more-to-come.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-06-28T23:47:45-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Catching Up: Hypescript fixed. More to come." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-06-28T23:47:45-07:00","datePublished":"2012-06-28T23:47:45-07:00","description":"Finally have some time I&#39;ve received numerous (very nice hearing how many people have been using my software) e-mails and responses regarding how my hypescript and batch downloader are no longer working. I&#39;ve recently accepted a new position at Amazon in Seattle and the move was very time consuming. I was saddened at the state of the code and how I felt like I was letting people down by not fixing it in a timely fashion. Now that it&#39;s been a month or so since my move I&#39;ve finally had time to work on fixing them for you guys! :) The fix The HypeMachine guys keep breaking the script due to my terrible regular expression I was using to scrape the site for the id &amp; keys. I&#39;m hoping the current regex I&#39;ve updated it to is more robust and will thwart a few more attempts from them from breaking it! What needs to be parsed trackList[document.location.href][&#39;item_1n361&#39;] = {","headline":"Catching Up: Hypescript fixed. More to come.","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-06-28-catching-up-hypescript-fixed-more-to-come.html"},"url":"https://fzakaria.com/old_blog/2012-06-28-catching-up-hypescript-fixed-more-to-come.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Catching Up: Hypescript fixed. More to come.
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-06-28
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-06-28-catching-up-hypescript-fixed-more-to-come.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2>Finally have some time</h2>
+<p>
+I've received numerous (very nice hearing how many people have been using my software) e-mails and responses regarding how my <a href="https://github.com/fzakaria/HypeScrip">hypescript</a> and <a href="https://github.com/fzakaria/HypeMachine-Java">batch downloader</a> are no longer working.</p>
+<p>
+I've recently accepted a new position at Amazon in Seattle and the move was very time consuming. I was saddened at the state of the code and how I felt like I was letting people down by not fixing it in a timely fashion. Now that it's been a month or so since my move I've finally had time to work on fixing them for you guys! :)</p>
+<h2>The fix</h2>
+<p>
+The HypeMachine guys keep breaking the script due to my terrible regular expression I was using to scrape the site for the id & keys. I'm hoping the current regex I've updated it to is more robust and will thwart a few more attempts from them from breaking it!</p>
+<h3>What needs to be parsed</h3>
+<pre>
+<code>
+trackList[document.location.href]['item_1n361'] = { 
+
+    seq: trackList[document.location.href].length,
+    type:'normal',
+    
+        id:'1n361',
+    time:'266',
+
+ 
+
+    ts: '1340722642',
+postid:'1852087',
+posturl:'http://www.gorillavsbear.net/2012/06/26/mp3-premiere-erika-spring-hidden-jensen-sportag-remix/',
+fav:'0',
+key: 'c3f03b16ecce82ef18b6bf6e25c8e52b',
+    artist:'Erika Spring',
+    song:'Erika Spring -Hidden_ (Sportag Remix)_MS...',
+    thumb_url_large: 'http://static-ak.hypem.net/images/blog_images/15203.png'
+
+};
+
+trackList[document.location.href].push(trackList[document.location.href]['item_1n361']);
+</code>
+</pre>
+<h3>My regular expression</h3>
+<pre>
+<code>
+#old regex
+idMatches = re.findall("[ t]id:'(w*)(?=')", contents)
+keyMatches = re.findall("(?<=tkey: ')w*(?=')", contents)
+songMatches= re.findall("(?<=tsong:').*(?=')", contents)
+artistMatches= re.findall("(?<=tartist:').*(?=')", contents)
+#new regex
+idMatches = re.findall("s+id:s*'(.+)'", contents)
+keyMatches = re.findall("s+key:s*'(.+)'", contents)
+songMatches = re.findall("s+song:s*'(.+)'", contents)
+artistMatches = re.findall("s+artist:s*'(.+)'", contents)
+</code>
+</pre>
+<blockquote><p>If you are more of a wiz at regex than me please recommend a better pattern :)</p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-06-28-catching-up-hypescript-fixed-more-to-come.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

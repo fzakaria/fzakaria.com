@@ -1,0 +1,219 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Double request for Songs + New Layout | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Double request for Songs + New Layout" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Two For One Ajax Request I believe in an attempt to stop browser extensions that inject download buttons onto HypeMachine&#39;s website, they&#39;ve recently changed how the songs are delivered. This is annoying once again because it means not only my extension is broken but all my scripts + Java Batch Loader as well. Let&#39;s take a look at what they&#39;ve changed. Prior the requests to the song were simply one Ajax Request Before var song_url = &quot;/serve/play/&quot; + activeItem.id + &quot;/&quot; + activeItem.key; try { currentPlayerObj[0] = soundManager.createSound({ id: &#39;currentPlayer&#39; + currentTrack, url: song_url } Now function playTrack(skip_prompts) { //removed bunch of code not related to grabbing the song content r = new Ajax.Request(&quot;/serve/source/&quot; + activeItem.id + &quot;/&quot; + activeItem.key, { method: &#39;get&#39;, onSuccess: function (transport) { var source_data; source_data = transport.responseText.evalJSON(); try { currentPlayerObj[0] = soundManager.createSound({ id: &#39;currentPlayer&#39; + currentTrack, url: source_data.url, } //removed a bunch of settings set for creating the sound object for sake of brevity }); } The request to &quot;/serve/source/&quot; + activeItem.id + &quot;/&quot; + activeItem.key now results in a JSON object that contains the appropriate URL and some additional data. Making retrieving song requiring two Ajax requests. For those that are curious to look at the HypeMachine&#39;s javascript, you will notice that it has been minified in order to save space. I&#39;ve been suing JSBeautifier , in order to &#39;un-minify&#39; it. A very clean and wonderfully helpful website, kudos. What does this mean for my extension and scripts ? Previously the buttons I injected were linked to straight MP3 but now instead when I inject the buttons I&#39;ll have to perform an Ajax request for each one to get the proper URL to the MP3 file. I haven&#39;t implemented this yet but hopefully it doesn&#39;t cause the injection to be exceedingly slow and unusable. I&#39;ll work on it sometime this week and hopefully can fix it ! The change is less severe for the scripts &amp; java program as I just need to make another request to get the URL before downloading the file. Just another hoop to jump through... I&#39;m Against The Layout Change Hype Machine just pushed a layout change to their website. I just wanted to openly voice my opinion that I am against the change for the following reasons: It is overall visually unappealing. I miss the standard green colour backdrop, I&#39;ve known to come and love. There is a huge grotesque nestea add on the site now. I find the fact that only the song content scroll and not the whole site in general hurtful on my eyes. Here&#39;s a pic of the new layout (in case they decide to revert it): [caption id=&quot;attachment_586&quot; align=&quot;aligncenter&quot; width=&quot;300&quot; caption=&quot;Visually unaesthetic&quot;][/caption] Not a fan." />
+<meta property="og:description" content="Two For One Ajax Request I believe in an attempt to stop browser extensions that inject download buttons onto HypeMachine&#39;s website, they&#39;ve recently changed how the songs are delivered. This is annoying once again because it means not only my extension is broken but all my scripts + Java Batch Loader as well. Let&#39;s take a look at what they&#39;ve changed. Prior the requests to the song were simply one Ajax Request Before var song_url = &quot;/serve/play/&quot; + activeItem.id + &quot;/&quot; + activeItem.key; try { currentPlayerObj[0] = soundManager.createSound({ id: &#39;currentPlayer&#39; + currentTrack, url: song_url } Now function playTrack(skip_prompts) { //removed bunch of code not related to grabbing the song content r = new Ajax.Request(&quot;/serve/source/&quot; + activeItem.id + &quot;/&quot; + activeItem.key, { method: &#39;get&#39;, onSuccess: function (transport) { var source_data; source_data = transport.responseText.evalJSON(); try { currentPlayerObj[0] = soundManager.createSound({ id: &#39;currentPlayer&#39; + currentTrack, url: source_data.url, } //removed a bunch of settings set for creating the sound object for sake of brevity }); } The request to &quot;/serve/source/&quot; + activeItem.id + &quot;/&quot; + activeItem.key now results in a JSON object that contains the appropriate URL and some additional data. Making retrieving song requiring two Ajax requests. For those that are curious to look at the HypeMachine&#39;s javascript, you will notice that it has been minified in order to save space. I&#39;ve been suing JSBeautifier , in order to &#39;un-minify&#39; it. A very clean and wonderfully helpful website, kudos. What does this mean for my extension and scripts ? Previously the buttons I injected were linked to straight MP3 but now instead when I inject the buttons I&#39;ll have to perform an Ajax request for each one to get the proper URL to the MP3 file. I haven&#39;t implemented this yet but hopefully it doesn&#39;t cause the injection to be exceedingly slow and unusable. I&#39;ll work on it sometime this week and hopefully can fix it ! The change is less severe for the scripts &amp; java program as I just need to make another request to get the URL before downloading the file. Just another hoop to jump through... I&#39;m Against The Layout Change Hype Machine just pushed a layout change to their website. I just wanted to openly voice my opinion that I am against the change for the following reasons: It is overall visually unappealing. I miss the standard green colour backdrop, I&#39;ve known to come and love. There is a huge grotesque nestea add on the site now. I find the fact that only the song content scroll and not the whole site in general hurtful on my eyes. Here&#39;s a pic of the new layout (in case they decide to revert it): [caption id=&quot;attachment_586&quot; align=&quot;aligncenter&quot; width=&quot;300&quot; caption=&quot;Visually unaesthetic&quot;][/caption] Not a fan." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-06-21-double-request-for-songs-new-layout.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-06-21-double-request-for-songs-new-layout.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-06-21T11:36:13-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Double request for Songs + New Layout" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-06-21T11:36:13-07:00","datePublished":"2011-06-21T11:36:13-07:00","description":"Two For One Ajax Request I believe in an attempt to stop browser extensions that inject download buttons onto HypeMachine&#39;s website, they&#39;ve recently changed how the songs are delivered. This is annoying once again because it means not only my extension is broken but all my scripts + Java Batch Loader as well. Let&#39;s take a look at what they&#39;ve changed. Prior the requests to the song were simply one Ajax Request Before var song_url = &quot;/serve/play/&quot; + activeItem.id + &quot;/&quot; + activeItem.key; try { currentPlayerObj[0] = soundManager.createSound({ id: &#39;currentPlayer&#39; + currentTrack, url: song_url } Now function playTrack(skip_prompts) { //removed bunch of code not related to grabbing the song content r = new Ajax.Request(&quot;/serve/source/&quot; + activeItem.id + &quot;/&quot; + activeItem.key, { method: &#39;get&#39;, onSuccess: function (transport) { var source_data; source_data = transport.responseText.evalJSON(); try { currentPlayerObj[0] = soundManager.createSound({ id: &#39;currentPlayer&#39; + currentTrack, url: source_data.url, } //removed a bunch of settings set for creating the sound object for sake of brevity }); } The request to &quot;/serve/source/&quot; + activeItem.id + &quot;/&quot; + activeItem.key now results in a JSON object that contains the appropriate URL and some additional data. Making retrieving song requiring two Ajax requests. For those that are curious to look at the HypeMachine&#39;s javascript, you will notice that it has been minified in order to save space. I&#39;ve been suing JSBeautifier , in order to &#39;un-minify&#39; it. A very clean and wonderfully helpful website, kudos. What does this mean for my extension and scripts ? Previously the buttons I injected were linked to straight MP3 but now instead when I inject the buttons I&#39;ll have to perform an Ajax request for each one to get the proper URL to the MP3 file. I haven&#39;t implemented this yet but hopefully it doesn&#39;t cause the injection to be exceedingly slow and unusable. I&#39;ll work on it sometime this week and hopefully can fix it ! The change is less severe for the scripts &amp; java program as I just need to make another request to get the URL before downloading the file. Just another hoop to jump through... I&#39;m Against The Layout Change Hype Machine just pushed a layout change to their website. I just wanted to openly voice my opinion that I am against the change for the following reasons: It is overall visually unappealing. I miss the standard green colour backdrop, I&#39;ve known to come and love. There is a huge grotesque nestea add on the site now. I find the fact that only the song content scroll and not the whole site in general hurtful on my eyes. Here&#39;s a pic of the new layout (in case they decide to revert it): [caption id=&quot;attachment_586&quot; align=&quot;aligncenter&quot; width=&quot;300&quot; caption=&quot;Visually unaesthetic&quot;][/caption] Not a fan.","headline":"Double request for Songs + New Layout","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-06-21-double-request-for-songs-new-layout.html"},"url":"https://fzakaria.com/old_blog/2011-06-21-double-request-for-songs-new-layout.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Double request for Songs + New Layout
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-06-21
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-06-21-double-request-for-songs-new-layout.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Two For One Ajax Request</h2>
+<p>
+I believe in an attempt to stop browser extensions that inject download buttons onto <a href="http://hypem.com">HypeMachine's </a>website, they've recently changed how the songs are delivered. This is annoying once again because it means not only my extension is broken but all my scripts + <a href="http://www.blog.fzakaria.com/2011/05/java-hypemachine-batch-downloader/">Java Batch Loader</a> as well.<br />
+Let's take a look at what they've changed.</p>
+<blockquote><p>Prior the requests to the song were simply one Ajax Request</p></blockquote>
+<h3> Before </h3>
+<p><pre>
+<code>
+ var song_url = "/serve/play/" + activeItem.id + "/" + activeItem.key;
+ try {
+  currentPlayerObj[0] = soundManager.createSound({
+  id: 'currentPlayer' + currentTrack,
+  url: song_url 
+ }
+</code>
+</pre></p>
+<h3> Now </h3>
+<p><pre>
+<code>
+function playTrack(skip_prompts) {
+//removed bunch of code not related to grabbing the song content
+r = new Ajax.Request("/serve/source/" + activeItem.id + "/" + activeItem.key, {
+ method: 'get',
+ onSuccess: function (transport) {
+ var source_data;
+ source_data = transport.responseText.evalJSON();
+ try {
+  currentPlayerObj[0] = soundManager.createSound({
+  id: 'currentPlayer' + currentTrack,
+  url: source_data.url,
+  }
+  //removed a bunch of settings set for creating the sound object for sake of brevity
+ });
+}
+</code>
+</pre></p>
+<blockquote><p>The request to <em>"/serve/source/" + activeItem.id + "/" + activeItem.key</em> now results in a JSON object that contains the appropriate URL and some additional data. Making retrieving song requiring <strong>two</strong> Ajax requests.</p></blockquote>
+<p>
+For those that are curious to look at the HypeMachine's javascript, you will notice that it has been minified in order to save space. I've been suing <a href="http://jsbeautifier.org">JSBeautifier </a>, in order to 'un-minify' it. A very clean and wonderfully helpful website, <strong>kudos</strong>.</p>
+<h2> What does this mean for my extension and scripts ? </h2>
+<p>
+Previously the buttons I injected were linked to straight MP3 but now instead when I inject the buttons I'll have to perform an Ajax request for each one to get the proper URL to the MP3 file. I haven't implemented this yet but hopefully it doesn't cause the injection to be exceedingly slow and unusable. I'll work on it sometime this week and hopefully can fix it !</p>
+<p>
+The change is less severe for the scripts & java program as I just need to make another request to get the URL before downloading the file. </p>
+<p>
+<em>Just another hoop to jump through...</em></p>
+<p><!--more--></p>
+<h2> I'm Against The Layout Change </h2>
+<p>
+Hype Machine just pushed a layout change to their website. I just wanted to openly voice my opinion that I am against the change for the following reasons:</p>
+<ol>
+<li>It is overall visually unappealing.</li>
+<li>I miss the standard green colour backdrop, I've known to come and love.</li>
+<li>There is a huge <strong>grotesque </strong>nestea add on the site now.</li>
+<li>I find the fact that only the song content scroll and not the whole site in general hurtful on my eyes.</li>
+</ol>
+<p>Here's a pic of the new layout (in case they decide to revert it):<br />
+[caption id="attachment_586" align="aligncenter" width="300" caption="Visually unaesthetic"]<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/06/hypem.png"><img src="http://www.blog.fzakaria.com/wp-content/uploads/2011/06/hypem-300x170.png" alt="" title="New HypeMachine Layout" width="300" height="170" class="size-medium wp-image-586" /></a>[/caption]</p>
+<p><strong>Not a fan.</strong></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-06-21-double-request-for-songs-new-layout.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

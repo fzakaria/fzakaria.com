@@ -1,0 +1,270 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Nix parallelism &amp; Import From Derivation | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Nix parallelism &amp; Import From Derivation" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I recently submitted a pull-request #101096 for nixpkgs to include new functionality to list all files recursively within a directory. One of the feedback from @grahamc &amp; @roberth was that function may cause Nix evaluation to stall. It was not clear why and even more confusing is the name given to this gotcha; Import From Derivation. Import From Derivation (IFD) is where during a single Nix evaluation, the Nix expression: creates a derivation which will build a Nix expression imports that expression uses the results of the evaluation of the expression. Let’s dig into this problem and how it’s caused." />
+<meta property="og:description" content="I recently submitted a pull-request #101096 for nixpkgs to include new functionality to list all files recursively within a directory. One of the feedback from @grahamc &amp; @roberth was that function may cause Nix evaluation to stall. It was not clear why and even more confusing is the name given to this gotcha; Import From Derivation. Import From Derivation (IFD) is where during a single Nix evaluation, the Nix expression: creates a derivation which will build a Nix expression imports that expression uses the results of the evaluation of the expression. Let’s dig into this problem and how it’s caused." />
+<link rel="canonical" href="https://fzakaria.com/2020/10/20/nix-parallelism-import-from-derivation.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/10/20/nix-parallelism-import-from-derivation.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-10-20T22:24:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Nix parallelism &amp; Import From Derivation" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-10-20T22:24:00-07:00","datePublished":"2020-10-20T22:24:00-07:00","description":"I recently submitted a pull-request #101096 for nixpkgs to include new functionality to list all files recursively within a directory. One of the feedback from @grahamc &amp; @roberth was that function may cause Nix evaluation to stall. It was not clear why and even more confusing is the name given to this gotcha; Import From Derivation. Import From Derivation (IFD) is where during a single Nix evaluation, the Nix expression: creates a derivation which will build a Nix expression imports that expression uses the results of the evaluation of the expression. Let’s dig into this problem and how it’s caused.","headline":"Nix parallelism &amp; Import From Derivation","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/10/20/nix-parallelism-import-from-derivation.html"},"url":"https://fzakaria.com/2020/10/20/nix-parallelism-import-from-derivation.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Nix parallelism & Import From Derivation
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-10-20
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/10/20/nix-parallelism-import-from-derivation.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I recently submitted a pull-request <a href="https://github.com/NixOS/nixpkgs/pull/101096">#101096</a> for <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a> to include new functionality to list all files recursively within a directory.</p>
+
+<p>One of the feedback from <a href="https://github.com/grahamc">@grahamc</a> &amp; <a href="https://github.com/roberth">@roberth</a> was that function may cause Nix evaluation to <em>stall</em>.</p>
+
+<p>It was not clear why and even more confusing is the name given to this <em>gotcha</em>; <a href="https://nixos.wiki/wiki/Import_From_Derivation">Import From Derivation</a>.</p>
+
+<blockquote>
+  <p>Import From Derivation (IFD) is where during a single Nix evaluation, the Nix expression:</p>
+  <ol>
+    <li>creates a derivation which will build a Nix expression</li>
+    <li>imports that expression</li>
+    <li>uses the results of the evaluation of the expression.</li>
+  </ol>
+</blockquote>
+
+<p>Let’s dig into this problem and how it’s caused.</p>
+
+<!--more-->
+
+<p>First off, let’s consider a super simple Nix derivation that takes <em>15 seconds</em> to build.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{}}:</span>
+<span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span>
+<span class="nv">runCommand</span> <span class="s2">"long-running"</span> <span class="p">{}</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    echo "Sleeping!"</span><span class="err">
+</span><span class="s2">    sleep 15</span><span class="err">
+</span><span class="s2">    echo "Finished sleeping" &gt; $out</span><span class="err">
+</span><span class="s2">''</span>
+</code></pre></div></div>
+
+<p>We can confirm that <em>nix-instantiate</em> is <strong>instant</strong>, whereas <em>nix-build</em> takes 15 seconds to realise “build” the derivation. <em>This makes sense, as the sleep is part of the builder of the derivation.</em></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">time </span>nix-instantiate long-running.nix
+warning: you did not specify <span class="s1">'--add-root'</span><span class="p">;</span> the result might be removed by the garbage collector
+/nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv
+nix-instantiate long-running.nix  0.19s user 0.04s system 100% cpu 0.227 total
+
+❯ <span class="nb">time </span>nix-build <span class="nt">--no-out-link</span> long-running.nix
+these derivations will be built:
+  /nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv
+building <span class="s1">'/nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv'</span>...
+Sleeping!
+/nix/store/smw0a75w5h0hc2wxayh93gzv4nwlnzf9-long-running
+nix-build <span class="nt">--no-out-link</span> long-running.nix  0.25s user 0.07s system 2% cpu 15.356 total
+</code></pre></div></div>
+
+<p><strong>What if I use this derivation as a dependency of another derivation?</strong></p>
+
+<p>Let’s consider a simple case that uses the derivation within the builder script of another derivation. The derivation <em>basic-using-long-running</em> builder merely stores the <em>/nix/store</em> entry for <em>long-running</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{}}:</span>
+<span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nv">long-running</span> <span class="o">=</span> <span class="nv">runCommand</span> <span class="s2">"long-running"</span> <span class="p">{}</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    echo "Sleeping!"</span><span class="err">
+</span><span class="s2">    sleep 15</span><span class="err">
+</span><span class="s2">    echo "Finished sleeping" &gt; $out</span><span class="err">
+</span><span class="s2">''</span><span class="p">;</span>
+<span class="kn">in</span>
+<span class="nv">runCommand</span> <span class="s2">"basic-using-long-running"</span> <span class="p">{}</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    echo "</span><span class="si">${</span><span class="nv">long-running</span><span class="si">}</span><span class="s2">" &gt; $out</span><span class="err">
+</span><span class="s2">''</span>
+</code></pre></div></div>
+
+<p>Here we see that <em>nix-instantiate</em> continue to be <strong>instant</strong> and <em>nix-build</em> continues to be roughly 15 seconds to build both derivations.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">time </span>nix-instantiate uses-long-running-simple.nix
+warning: you did not specify <span class="s1">'--add-root'</span><span class="p">;</span> the result might be removed by the garbage collector
+/nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv
+nix-instantiate uses-long-running-simple.nix  0.20s user 0.02s system 94% cpu 0.238 total
+
+❯ <span class="nb">time </span>nix-build <span class="nt">--no-out-link</span> uses-long-running-simple.nix
+these derivations will be built:
+  /nix/store/5dqxa586rdb0hiw3d0sbv2xjx6w3wa4y-long-running.drv
+  /nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv
+building <span class="s1">'/nix/store/5dqxa586rdb0hiw3d0sbv2xjx6w3wa4y-long-running.drv'</span>...
+Sleeping!
+building <span class="s1">'/nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv'</span>...
+/nix/store/6jg8sa5wj8zbynnq5irvxazlcl6cd655-basic-using-long-running
+nix-build <span class="nt">--no-out-link</span> uses-long-running-simple.nix  0.42s user 0.12s system 3% cpu 16.933 total
+</code></pre></div></div>
+
+<p>However, if we access the derivation within a Nix expression itself, it forces the derivation to be built during <em>nix-instantiate</em>. 😞</p>
+
+<p>Consider this example, where we read the contents of the first derivation via <em>builtins.readFile</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{}}:</span>
+<span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span>
+<span class="kd">let</span> <span class="nv">long-running</span> <span class="o">=</span> <span class="nv">runCommand</span> <span class="s2">"long-running"</span> <span class="p">{}</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    echo "Sleeping!"</span><span class="err">
+</span><span class="s2">    sleep 15</span><span class="err">
+</span><span class="s2">    echo "Finished sleeping" &gt; $out</span><span class="err">
+</span><span class="s2">''</span><span class="p">;</span>
+    <span class="nv">contents</span> <span class="o">=</span> <span class="kr">builtins</span><span class="o">.</span><span class="nv">readFile</span> <span class="nv">long-running</span><span class="p">;</span>
+<span class="kn">in</span>
+<span class="nv">runCommand</span> <span class="s2">"basic-using-long-running"</span> <span class="p">{}</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    echo "</span><span class="si">${</span><span class="nv">contents</span><span class="si">}</span><span class="s2">" &gt; $out</span><span class="err">
+</span><span class="s2">''</span>
+</code></pre></div></div>
+
+<p>In this case, <em>nix-instantiate</em> takes roughly 16 seconds!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">time </span>nix-instantiate uses-long-running-complex.nix
+building <span class="s1">'/nix/store/7fwqhzlnd7z21n63s2qrisvd5mjwpyji-long-running.drv'</span>...
+Sleeping!
+warning: you did not specify <span class="s1">'--add-root'</span><span class="p">;</span> the result might be removed by the garbage collector
+/nix/store/n7jiryhhcik4ps26p4ml4r27c5rc0sdn-basic-using-long-running.drv
+nix-instantiate uses-long-running-complex.nix  0.40s user 0.06s system 2% cpu 16.273 total
+
+</code></pre></div></div>
+
+<p><em>nix-instantiate</em> is designed to evaluate quickly and is done serially. Parallelism in Nix enters during realisation of derivations; therefore, any slowing down <em>nix-instantiate</em> simply head-of-line blocks the subsequent building and is no longer eligible to build concurrently potentially.</p>
+
+<p>This was somewhat frustrating since I  prefer to do certain logic in the Nix language than Bash, which I find difficult to read. Helping understand the problem at hand, though, makes it an easier pill to swallow.</p>
+
+<p>=)</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-10-20-nix-parallelism-import-from-derivation.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

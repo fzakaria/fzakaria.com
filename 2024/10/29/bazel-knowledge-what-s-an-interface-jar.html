@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bazel Knowledge: What’s an Interface JAR? | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Bazel Knowledge: What’s an Interface JAR?" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I spent the day working through an upgrade of our codebase at $DAYJOB$ to Java21 and hit Bazel issue#24138 as a result of an incorrectly produced hjar. 🤨 WTF is an hjar ? ☝️ It is the newer version of ijar ! 😠 WTF is an ijar ? Let’s discover what an ijar (Interface JAR) is and how it’s the magic sauce that makes Bazel so fast for Java." />
+<meta property="og:description" content="I spent the day working through an upgrade of our codebase at $DAYJOB$ to Java21 and hit Bazel issue#24138 as a result of an incorrectly produced hjar. 🤨 WTF is an hjar ? ☝️ It is the newer version of ijar ! 😠 WTF is an ijar ? Let’s discover what an ijar (Interface JAR) is and how it’s the magic sauce that makes Bazel so fast for Java." />
+<link rel="canonical" href="https://fzakaria.com/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-10-29T19:34:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bazel Knowledge: What’s an Interface JAR?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-10-29T19:34:00-07:00","datePublished":"2024-10-29T19:34:00-07:00","description":"I spent the day working through an upgrade of our codebase at $DAYJOB$ to Java21 and hit Bazel issue#24138 as a result of an incorrectly produced hjar. 🤨 WTF is an hjar ? ☝️ It is the newer version of ijar ! 😠 WTF is an ijar ? Let’s discover what an ijar (Interface JAR) is and how it’s the magic sauce that makes Bazel so fast for Java.","headline":"Bazel Knowledge: What’s an Interface JAR?","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html"},"url":"https://fzakaria.com/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Bazel Knowledge: What's an Interface JAR?
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-10-29
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/10/29/bazel-knowledge-what-s-an-interface-jar.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I spent the day working through an upgrade of our codebase at <em>$DAYJOB$</em> to Java21 and hit Bazel <a href="https://github.com/bazelbuild/bazel/issues/24138">issue#24138</a> as a result of an incorrectly produced <code class="language-plaintext highlighter-rouge">hjar</code>.</p>
+
+<p>🤨
+<em>WTF is an <code class="language-plaintext highlighter-rouge">hjar</code> ?</em></p>
+
+<p>☝️ <em>It is the newer version of <code class="language-plaintext highlighter-rouge">ijar</code> !</em></p>
+
+<p>😠
+<em>WTF is an <code class="language-plaintext highlighter-rouge">ijar</code> ?</em></p>
+
+<p>Let’s discover what an <code class="language-plaintext highlighter-rouge">ijar</code> (Interface JAR) is and how it’s the <em>magic sauce</em> that makes Bazel so fast for Java.</p>
+
+<!--more-->
+
+<p>Let’s consider a simple Makefile</p>
+
+<div class="language-make highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nl">program</span><span class="o">:</span> <span class="nf">main.o utils.o</span>
+	<span class="nv">$(CC)</span> <span class="nt">-o</span> program main.o utils.o
+
+<span class="nl">main.o</span><span class="o">:</span> <span class="nf">main.c utils.h</span>
+	<span class="nv">$(CC)</span> <span class="nt">-c</span> main.c
+
+<span class="nl">utils.o</span><span class="o">:</span> <span class="nf">utils.c utils.h</span>
+	<span class="nv">$(CC)</span> <span class="nt">-c</span> utils.c
+</code></pre></div></div>
+
+<p>We’ve been taught to make use of <em>header files</em>, especially in C/C++ so that we can avoid recompilation as a form of <em>early cutoff optimization</em>.</p>
+
+<p>☝️ If we change <code class="language-plaintext highlighter-rouge">utils.c</code> solely, we do not have to recompile <code class="language-plaintext highlighter-rouge">main.o</code>.</p>
+
+<p>We can visualize this Makefile in the following graph.</p>
+
+<p><img src="/assets/images/makefile_as_graph.svg" alt="Makefile as a graph" /></p>
+
+<p>Ok, great! What does this have to do with Java &amp; Bazel ?</p>
+
+<p>Well, let’s remember back to my previous post on <a href="/2024/09/26/bazel-knowledge-reproducible-outputs.html">reproducible outputs</a>.</p>
+
+<p>Bazel constructs a similar graph to determine when to do <em>early cutoff optimization</em> through the “Action Key”. Bazel computes a hash for each action, that takes dependencies for instance, and if the hash hasn’t changed it can memoize the work.</p>
+
+<p><img src="/assets/images/action_graph_bazel.png" alt="Bazel Action Graph" /></p>
+
+<p>In Java-world, dependencies are expressed as JARs.</p>
+
+<p>Wouldn’t private-only changes to a dependency (i.e. renaming a private variable) cause the Action Key HASH to change (since it produced a different JAR) ?</p>
+
+<p>🤓 YES! That is why we need an <code class="language-plaintext highlighter-rouge">ijar</code> !</p>
+
+<p><code class="language-plaintext highlighter-rouge">ijar</code> is a tool found within the Bazel repository <a href="https://github.com/bazelbuild/bazel/blob/master/third_party/ijar/README.txt">bazel/third_party/ijar</a>.</p>
+
+<p>You can build and run it fairly simple with Bazel</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel run //third_party/ijar
+Usage: ijar <span class="o">[</span><span class="nt">-v</span><span class="o">]</span> <span class="o">[</span><span class="nt">--</span><span class="o">[</span>no]strip_jar] <span class="o">[</span><span class="nt">--target</span> label label] <span class="o">[</span><span class="nt">--injecting_rule_kind</span> kind] x.jar <span class="o">[</span>x_interface.j
+ar&gt;]
+Creates an interface jar from the specified jar file.
+</code></pre></div></div>
+
+<p>It’s purpose is straightforward. The tool strips all non-public information from the JAR. For example, it throws away:</p>
+<ul>
+  <li>Files whose name does not end in “.class”.</li>
+  <li>All executable method code.</li>
+  <li>All private methods and fields.</li>
+  <li>All constants and attributes except the minimal set necessary to describe the class interface.</li>
+  <li>All debugging information
+(LineNumberTable, SourceFile, LocalVariableTables attributes).</li>
+</ul>
+
+<p>The end result is something in spirit to a C/C++ header file.</p>
+
+<p>Let’s see it in practice. 🕵️</p>
+
+<p>Let’s now create an incredibly simple JAR. It will have a single class file within it.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Banana</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">peel</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Peeling the banana..."</span><span class="o">);</span>
+        <span class="n">squish</span><span class="o">();</span>
+    <span class="o">}</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">squish</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Squish! The banana got squashed."</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>We compile it like usual.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>javac Banana.java
+<span class="nv">$ </span>jar cf banana.jar Banana.class
+</code></pre></div></div>
+
+<p>When we run <code class="language-plaintext highlighter-rouge">ijar</code> on it we get the hash <em>e18e0ae82bdc4deb04f04aa</em></p>
+
+<p>⚠️ I shortened the hashes to make them more legible.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel-bin/third_party/ijar/ijar banana.jar
+
+<span class="nv">$ </span><span class="nb">sha256sum </span>banana.jar
+f813749013ea6aba2e00876  banana.jar
+
+<span class="nv">$ </span><span class="nb">sha256sum </span>banana-interface.jar
+e18e0ae82bdc4deb04f04aa  banana-interface.jar
+</code></pre></div></div>
+
+<p>Let’s now change the internals of the <em>Banana</em> class; let’s rename the method <code class="language-plaintext highlighter-rouge">squish()</code> -&gt; <code class="language-plaintext highlighter-rouge">squash()</code>.</p>
+
+<p>Let’s recompute the new sha256.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span><span class="nb">sha256sum </span>banana.jar
+9278282827ddb55c68eb370 banana.jar
+
+<span class="nv">$ </span><span class="nb">sha256sum </span>banana-interface.jar
+e18e0ae82bdc4deb04f04aa  banana-interface.jar
+</code></pre></div></div>
+
+<p>🤯 Although the hash of <em>banana.jar</em> had changed, we still get <em>e18e0ae82bdc4deb04f04aa</em> for the ijar.</p>
+
+<p>We now the equivalent of a header file for Java code.  🙌</p>
+
+<p>Bazel will use the <code class="language-plaintext highlighter-rouge">ijar</code> when computing the Action Key hash in lieu of the JAR for the dependencies you may depend on; thus avoiding costly rebuilds when only private information changes within your dependency.</p>
+
+<p>This is the amazing lesser known tool that makes Bazel super-powered 🦸 for JVM languages.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-10-29-bazel-knowledge-what-s-an-interface-jar.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

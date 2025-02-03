@@ -1,0 +1,311 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bazel Knowledge: Protobuf is the worst when it should be the best | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Bazel Knowledge: Protobuf is the worst when it should be the best" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Bazel has always had support for protocol buffers (protobuf) since the beginning. Both being a Google product, one would think that their integration would be seamless and the best experience. Unfortunately, it’s some of the worst part of the user experience with Bazel I’ve found. 😔" />
+<meta property="og:description" content="Bazel has always had support for protocol buffers (protobuf) since the beginning. Both being a Google product, one would think that their integration would be seamless and the best experience. Unfortunately, it’s some of the worst part of the user experience with Bazel I’ve found. 😔" />
+<link rel="canonical" href="https://fzakaria.com/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-11-28T14:07:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bazel Knowledge: Protobuf is the worst when it should be the best" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-11-28T14:07:00-08:00","datePublished":"2024-11-28T14:07:00-08:00","description":"Bazel has always had support for protocol buffers (protobuf) since the beginning. Both being a Google product, one would think that their integration would be seamless and the best experience. Unfortunately, it’s some of the worst part of the user experience with Bazel I’ve found. 😔","headline":"Bazel Knowledge: Protobuf is the worst when it should be the best","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html"},"url":"https://fzakaria.com/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Bazel Knowledge: Protobuf is the worst when it should be the best
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-11-28
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/11/28/bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>Bazel has always had support for <a href="https://protobuf.dev/">protocol buffers (protobuf)</a> since the beginning.
+Both being a Google product, one would think that their integration would be seamless and the best experience.
+Unfortunately, it’s some of the worst part of the user experience with Bazel I’ve found. 😔</p>
+
+<!--more-->
+
+<p>Let’s start with the basics; <em>What rule should I adopt for protobufs?</em></p>
+
+<p>Well first I Google <em>“Bazel protobuf”</em> and land on the <a href="https://bazel.build/reference/be/protocol-buffer">protobuf reference page</a> for Bazel
+which states:</p>
+
+<blockquote>
+  <p>If using Bazel, please load the rule from https://github.com/bazelbuild/rules_proto.</p>
+</blockquote>
+
+<p>One may think the sensible <a href="https://github.com/bazelbuild/rules_proto">rules_proto</a> is a good starting
+point but the <em>README.md</em> states:</p>
+
+<blockquote>
+  <p>This repository is <strong>deprecated</strong>…we decided to move the implementation of
+the rules together with proto compiler into protobuf repository.</p>
+</blockquote>
+
+<p>OK…🤔</p>
+
+<p>Let’s go check <a href="https://github.com/protocolbuffers/protobuf">protobuf</a>.</p>
+
+<p>The <em>README.md</em> claims one can install one of two ways by inserting the following
+into your <em>MODULE.bazel</em> without much explanation as to the difference. 🤷‍♂️</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">bazel_dep</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"protobuf"</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">VERSION</span><span class="o">&gt;</span><span class="p">)</span>
+<span class="c1">#
+# or
+#
+</span><span class="n">bazel_dep</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"protobuf"</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">VERSION</span><span class="o">&gt;</span><span class="p">,</span>
+          <span class="n">repo_name</span> <span class="o">=</span> <span class="s">"com_google_protobuf"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>I decide to audit the source to see what’s going on.
+You quickly land on the <a href="https://github.com/protocolbuffers/protobuf/blob/cbecd9d2fa1d7187cca63a8c18838e87a4f613ec/bazel/private/bazel_proto_library_rule.bzl#L239">rule definition</a>
+for <em>proto_library</em> and see the following documentation for the rule. 🤦</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">proto_library</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
+    <span class="n">_proto_library_impl</span><span class="p">,</span>
+    <span class="c1"># TODO: proto_common docs are missing
+</span>    <span class="c1"># TODO: ProtoInfo link doesn't work and docs are missing
+</span>    <span class="n">doc</span> <span class="o">=</span> <span class="s">"""
+&lt;p&gt;If using Bazel, please load the rule from
+&lt;a href="https://github.com/bazelbuild/rules_proto"&gt;
+https://github.com/bazelbuild/rules_proto&lt;/a&gt;.
+</span></code></pre></div></div>
+
+<p>Where is the <strong>protoc</strong> (protobuf compiler) ultimately coming from for the rule?
+I notice these interesting snippets in the rule.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">toolchains</span><span class="p">.</span><span class="n">if_legacy_toolchain</span><span class="p">({</span>
+        <span class="s">"_proto_compiler"</span><span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label</span><span class="p">(</span>
+            <span class="n">cfg</span> <span class="o">=</span> <span class="s">"exec"</span><span class="p">,</span>
+            <span class="n">executable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="n">allow_files</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="n">configuration_field</span><span class="p">(</span><span class="s">"proto"</span><span class="p">,</span> <span class="s">"proto_compiler"</span><span class="p">),</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">_incompatible_toolchain_resolution</span> <span class="o">=</span>
+    <span class="nb">getattr</span><span class="p">(</span><span class="n">native_proto_common</span><span class="p">,</span>
+            <span class="s">"INCOMPATIBLE_ENABLE_PROTO_TOOLCHAIN_RESOLUTION"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_if_legacy_toolchain</span><span class="p">(</span><span class="n">legacy_attr_dict</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">_incompatible_toolchain_resolution</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">{}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">legacy_attr_dict</span>
+</code></pre></div></div>
+
+<p>Turns out that <em>INCOMPATIBLE_ENABLE_PROTO_TOOLCHAIN_RESOLUTION</em> is set from the command line <a href="https://bazel.build/reference/command-line-reference#flag--incompatible_enable_proto_toolchain_resolution">ref</a>.</p>
+
+<blockquote>
+  <p>–[no]incompatible_enable_proto_toolchain_resolution default: “false”
+If true, proto lang rules define toolchains from protobuf repository.
+Tags: loading_and_analysis, incompatible_change</p>
+</blockquote>
+
+<p>I don’t have that in my <code class="language-plaintext highlighter-rouge">.bazelrc</code> so let’s ignore it.
+That means our <code class="language-plaintext highlighter-rouge">_proto_compiler</code> is coming from <code class="language-plaintext highlighter-rouge">configuration_field("proto", "proto_compiler")</code>.</p>
+
+<p>You then search the <a href="https://github.com/bazelbuild/bazel/blob/a3f0cebd35989e120d5cdaf7882b4e93df82e590/src/main/java/com/google/devtools/build/lib/rules/proto/ProtoConfiguration.java#L68">bazelbuild/bazel</a> source to find where it’s defined.</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@Option</span><span class="o">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"proto_compiler"</span><span class="o">,</span>
+    <span class="n">defaultValue</span> <span class="o">=</span> <span class="nc">ProtoConstants</span><span class="o">.</span><span class="na">DEFAULT_PROTOC_LABEL</span><span class="o">,</span>
+    <span class="n">converter</span> <span class="o">=</span> <span class="nc">CoreOptionConverters</span><span class="o">.</span><span class="na">LabelConverter</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+    <span class="n">documentationCategory</span> <span class="o">=</span> <span class="nc">OptionDocumentationCategory</span><span class="o">.</span><span class="na">UNCATEGORIZED</span><span class="o">,</span>
+    <span class="n">effectTags</span> <span class="o">=</span> <span class="o">{</span><span class="nc">OptionEffectTag</span><span class="o">.</span><span class="na">AFFECTS_OUTPUTS</span><span class="o">,</span> <span class="nc">OptionEffectTag</span><span class="o">.</span><span class="na">LOADING_AND_ANALYSIS</span><span class="o">},</span>
+    <span class="n">help</span> <span class="o">=</span> <span class="s">"The label of the proto-compiler."</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Label</span> <span class="n">protoCompiler</span><span class="o">;</span>
+</code></pre></div></div>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// The flags need to point to @bazel_tools, because this is a canonical repo</span>
+<span class="c1">// name when either bzlmod or WORKSPACE mode is used.</span>
+<span class="cm">/** Default label for proto compiler.*/</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">DEFAULT_PROTOC_LABEL</span>
+        <span class="o">=</span> <span class="s">"@bazel_tools//tools/proto:protoc"</span><span class="o">;</span>
+</code></pre></div></div>
+
+<p>Chasing down the ultimate target in the defining <a href="https://github.com/bazelbuild/bazel/blob/3d528ac42cce1a71d8358b57cdbe4b3e743bd307/tools/proto/BUILD#L15">BUILD</a>
+file you discover it’s an alias to <code class="language-plaintext highlighter-rouge">"@com_google_protobuf//:protoc"</code>.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Those aliases are needed to resolve the repository name correctly in both
+# bzlmod and WORKSPACE mode. They are resolved in the namespace of MODULE.tools
+</span>
+<span class="n">alias</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"protoc"</span><span class="p">,</span>
+    <span class="n">actual</span> <span class="o">=</span> <span class="s">"@com_google_protobuf//:protoc"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>😲 So we discovered why <code class="language-plaintext highlighter-rouge">com_google_protobuf</code> may want to be the <code class="language-plaintext highlighter-rouge">repo_name</code> in the <code class="language-plaintext highlighter-rouge">bazel_dep</code> rule.
+The repository name <code class="language-plaintext highlighter-rouge">com_google_protobuf</code> is <em>hard-coded</em> within the Bazel source code for the location
+to discover the protoc compiler.</p>
+
+<blockquote>
+  <p>You’ll have to trust me that the resolution to the compiler for the language toolchains
+such as <em>java_proto_library</em> is the same as well; just way more obfuscated.</p>
+</blockquote>
+
+<p>The rabbit hole only goes deeper if you consider <a href="https://grpc.io/">gRPC</a>, other languages and then having to manage
+various runtimes (compatibility matrix) for your language across your codebases if they leave source of truth.</p>
+
+<p>I feel like we discovered a lot but didn’t really learn or accomplish anything. 😩</p>
+
+<h3 id="brighter-future">Brighter Future?</h3>
+
+<p>Lots of interesting work is being done by the <a href="https://bazel-contrib.github.io/SIG-rules-authors/proto-grpc.html">rule-authors SIG</a> (Special Interest Group).</p>
+
+<blockquote>
+  <p>That doc has a great in-depth overview of the current <em>state of affairs</em>.</p>
+</blockquote>
+
+<p>The most notable changes on the horizon are migrating protocol buffers to Bazel’s toolchain mechanism.
+This should make binding to <code class="language-plaintext highlighter-rouge">protoc</code> look like other toolchains in Bazel and no longer special case
+<code class="language-plaintext highlighter-rouge">com_google_protobuf</code>.</p>
+
+<blockquote>
+  <p>What are toolchains? In my mind effectively the capability to late bind a label to a target.</p>
+</blockquote>
+
+<p>To me, a simple immediate improvement would be fixing the documentation around <em>rules_proto</em> and
+having a more clear path on how to adopt Bazel given some constraint (i.e. Bazel &gt;= 7.0).</p>
+
+<blockquote>
+  <p>The <a href="https://blog.bazel.build/2017/02/27/protocol-buffers.html">latest blog post</a> from Bazel on protobuf
+is from 2017!</p>
+</blockquote>
+
+<p>The work <a href="https://www.aspect.build/">Aspect Build</a> is doing to improve the protobuf ecosystem is great as well.
+Their video series on <a href="https://www.youtube.com/watch?v=s0i_Ra_mG9U"><em>“Never Compile Protoc Again”</em></a> is excellent
+and served as a great resource for my previous post on <a href="/2024/10/23/bazel-knowledge-mind-your-path.html">minding your PATH</a>.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-11-28-bazel-knowledge-protobuf-is-the-worst-when-it-should-be-the-best.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

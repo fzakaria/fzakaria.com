@@ -1,0 +1,175 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Chrome Download Extension API | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Chrome Download Extension API" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Can&#39;t Wait Ever since work began on my HypeMachine Chrome Extension one of the biggest requests from people was to make the arrow button launch a &#39;Save As&#39; download box rather than playing the mp3 in the browser. How the browser handles files is determined by it&#39;s Internet Media Type (MIME) which is set by the server. Mp3&#39;s for instance have the MIME &#39;audio/mpeg&#39; in the header Whenever Chromium notices a file with the audio/mpeg MIME it automatically loads the file in the webplayer present in the browser, leading to people having to right click the button and select &#39;Save As&#39; manually. I was hoping that there was functionality in the Chrome Extension API to cause downloads given URL however it turned out it was not the case. Until now. Sorta. chrome.experimental.downloads Looks like work has begun on a new API (experimental) to offer the functionality I was hoping for! The issues and code can be tracked as follows: Issue 68201: (Downloads grouping issue) Extension API Downloads Extension API Proposal Changelist 7192016: chrome.experimental.downloads Although the changelist is supposedly several weeks away from being committed and usable, discussions regarding the API and feedback are ongoing. Once the changelist is submitted, I can begin to tinker with adding it to my extension, however I will have to wait for it to be no longer under experimental before updating it in the Chrome Store. I&#39;m curious to see what other extensions will benefit from this API." />
+<meta property="og:description" content="Can&#39;t Wait Ever since work began on my HypeMachine Chrome Extension one of the biggest requests from people was to make the arrow button launch a &#39;Save As&#39; download box rather than playing the mp3 in the browser. How the browser handles files is determined by it&#39;s Internet Media Type (MIME) which is set by the server. Mp3&#39;s for instance have the MIME &#39;audio/mpeg&#39; in the header Whenever Chromium notices a file with the audio/mpeg MIME it automatically loads the file in the webplayer present in the browser, leading to people having to right click the button and select &#39;Save As&#39; manually. I was hoping that there was functionality in the Chrome Extension API to cause downloads given URL however it turned out it was not the case. Until now. Sorta. chrome.experimental.downloads Looks like work has begun on a new API (experimental) to offer the functionality I was hoping for! The issues and code can be tracked as follows: Issue 68201: (Downloads grouping issue) Extension API Downloads Extension API Proposal Changelist 7192016: chrome.experimental.downloads Although the changelist is supposedly several weeks away from being committed and usable, discussions regarding the API and feedback are ongoing. Once the changelist is submitted, I can begin to tinker with adding it to my extension, however I will have to wait for it to be no longer under experimental before updating it in the Chrome Store. I&#39;m curious to see what other extensions will benefit from this API." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-06-28-chrome-download-extension-api.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-06-28-chrome-download-extension-api.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-06-28T13:10:05-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Chrome Download Extension API" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-06-28T13:10:05-07:00","datePublished":"2011-06-28T13:10:05-07:00","description":"Can&#39;t Wait Ever since work began on my HypeMachine Chrome Extension one of the biggest requests from people was to make the arrow button launch a &#39;Save As&#39; download box rather than playing the mp3 in the browser. How the browser handles files is determined by it&#39;s Internet Media Type (MIME) which is set by the server. Mp3&#39;s for instance have the MIME &#39;audio/mpeg&#39; in the header Whenever Chromium notices a file with the audio/mpeg MIME it automatically loads the file in the webplayer present in the browser, leading to people having to right click the button and select &#39;Save As&#39; manually. I was hoping that there was functionality in the Chrome Extension API to cause downloads given URL however it turned out it was not the case. Until now. Sorta. chrome.experimental.downloads Looks like work has begun on a new API (experimental) to offer the functionality I was hoping for! The issues and code can be tracked as follows: Issue 68201: (Downloads grouping issue) Extension API Downloads Extension API Proposal Changelist 7192016: chrome.experimental.downloads Although the changelist is supposedly several weeks away from being committed and usable, discussions regarding the API and feedback are ongoing. Once the changelist is submitted, I can begin to tinker with adding it to my extension, however I will have to wait for it to be no longer under experimental before updating it in the Chrome Store. I&#39;m curious to see what other extensions will benefit from this API.","headline":"Chrome Download Extension API","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-06-28-chrome-download-extension-api.html"},"url":"https://fzakaria.com/old_blog/2011-06-28-chrome-download-extension-api.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Chrome Download Extension API
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-06-28
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-06-28-chrome-download-extension-api.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Can't Wait </h2>
+<p>
+Ever since work began on my <a href="https://chrome.google.com/webstore/detail/imbbbpnnjeljfopnjohfoieconfedbhh">HypeMachine Chrome Extension</a> one of the biggest requests from people was to make the arrow button launch a 'Save As' download box rather than playing the mp3 in the browser. How the browser handles files is determined by it's <a href="http://en.wikipedia.org/wiki/Internet_media_type">Internet Media Type</a> (MIME) which is set by the server.</p>
+<blockquote><p> Mp3's for instance have the MIME 'audio/mpeg' in the header</p></blockquote>
+<p>Whenever Chromium notices a file with the audio/mpeg MIME it automatically loads the file in the webplayer present in the browser, leading to people having to right click the button and select 'Save As' manually. I was hoping that there was functionality in the Chrome Extension API to cause downloads given URL however it turned out it was not the case. <strong>Until now. <em>Sorta</em>.</strong></p>
+<h2>chrome.experimental.downloads</h2>
+<p>
+Looks like work has begun on a new API (experimental) to offer the functionality I was hoping for!  The issues and code can be tracked as follows:</p>
+<ul>
+<li><a href="http://code.google.com/p/chromium/issues/detail?id=68201">Issue 68201:	(Downloads grouping issue) Extension API</a></li>
+<li><a href="http://goo.gl/6hO1n">Downloads Extension API Proposal</a></li>
+<li><a href="http://codereview.chromium.org/7192016">Changelist 7192016: chrome.experimental.downloads</a></li>
+</ul>
+<p>Although the changelist is supposedly several weeks away from being committed and usable, discussions regarding the API and feedback are ongoing. Once the changelist is submitted, I can begin to tinker with adding it to my extension, however I will have to wait for it to be no longer under <em>experimental</em> before updating it in the Chrome Store. </p>
+<blockquote><p>I'm curious to see what other extensions will benefit from this API.</p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-06-28-chrome-download-extension-api.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

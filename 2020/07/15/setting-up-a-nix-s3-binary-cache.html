@@ -1,0 +1,282 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>setting up a Nix S3 binary cache | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="setting up a Nix S3 binary cache" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="If you just want a very easy-to-use binary cache, consider using cachix. Nix is an amazing tool, however the learning curve can be very high. The online wiki has a lot of great documentation however I find it is often very geared towards NixOS specifically. I wanted to better understand how to setup my own binary cache." />
+<meta property="og:description" content="If you just want a very easy-to-use binary cache, consider using cachix. Nix is an amazing tool, however the learning curve can be very high. The online wiki has a lot of great documentation however I find it is often very geared towards NixOS specifically. I wanted to better understand how to setup my own binary cache." />
+<link rel="canonical" href="https://fzakaria.com/2020/07/15/setting-up-a-nix-s3-binary-cache.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/07/15/setting-up-a-nix-s3-binary-cache.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-15T21:13:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="setting up a Nix S3 binary cache" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-07-15T21:13:00-07:00","datePublished":"2020-07-15T21:13:00-07:00","description":"If you just want a very easy-to-use binary cache, consider using cachix. Nix is an amazing tool, however the learning curve can be very high. The online wiki has a lot of great documentation however I find it is often very geared towards NixOS specifically. I wanted to better understand how to setup my own binary cache.","headline":"setting up a Nix S3 binary cache","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/07/15/setting-up-a-nix-s3-binary-cache.html"},"url":"https://fzakaria.com/2020/07/15/setting-up-a-nix-s3-binary-cache.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    setting up a Nix S3 binary cache
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-07-15
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/07/15/setting-up-a-nix-s3-binary-cache.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>If you just want a very easy-to-use binary cache, consider using <a href="https://cachix.org/">cachix</a>.</p>
+</blockquote>
+
+<p><a href="https://nixos.org/">Nix</a> is an amazing tool, however the learning curve can be <del>very</del> high. The online wiki has a lot of great documentation however I find it is often very geared towards NixOS specifically.</p>
+
+<p>I wanted to better understand how to setup my own <strong>binary cache</strong>.</p>
+
+<!--more-->
+
+<blockquote>
+  <p>A binary cache builds Nix packages and caches the result for other machines. Any machine with Nix installed can be a binary cache for another one, no matter the operating system.</p>
+</blockquote>
+
+<p>As mentioned above, there are a few solutions already offered in Nix:</p>
+<ul>
+  <li>cache.nixos.org: The default binary cache included with all Nix installations</li>
+  <li><a href="https://cachix.org/">cachix</a>: A <em>sass</em> product that has a great free tier as long as your caches are public.</li>
+  <li><a href="https://github.com/edolstra/nix-serve">nix-serve</a>: A <em>perl</em> standalone HTTP binary cache implementation.</li>
+  <li>Any machine can be used as a cache through SSH protocol</li>
+</ul>
+
+<p>I specifically wanted to document &amp; explore Nix support for binary caching using <a href="https://aws.amazon.com/s3/">AWS S3</a>.</p>
+
+<blockquote>
+  <p>The following guide assumes you have an AWS account &amp; have setup CLI credentials .</p>
+</blockquote>
+
+<h3 id="our-custom-derivation">Our custom derivation</h3>
+
+<p>In order to test our new cache; we’ll create a derivation that is <strong>definitely</strong> not on <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a>; especially the default cache service.</p>
+
+<p>Let’s create a <em>slightly</em> modified version of the <a href="https://www.gnu.org/software/hello/">GNU hello</a> program.</p>
+
+<p>Let’s save the below derivation in a file <em>lolhello.nix</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{</span> <span class="p">},</span> <span class="nv">stdenv</span> <span class="o">?</span> <span class="nv">pkgs</span><span class="o">.</span><span class="nv">stdenv</span><span class="p">,</span> <span class="nv">fetchurl</span> <span class="o">?</span> <span class="nv">pkgs</span><span class="o">.</span><span class="nv">fetchurl</span> <span class="p">}:</span>
+<span class="nv">stdenv</span><span class="o">.</span><span class="nv">mkDerivation</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"lolhello"</span><span class="p">;</span>
+
+  <span class="nv">src</span> <span class="o">=</span> <span class="nv">fetchurl</span> <span class="p">{</span>
+    <span class="nv">url</span> <span class="o">=</span> <span class="s2">"mirror://gnu/hello/hello-2.3.tar.bz2"</span><span class="p">;</span>
+    <span class="nv">sha256</span> <span class="o">=</span> <span class="s2">"0c7vijq8y68bpr7g6dh1gny0bff8qq81vnp4ch8pjzvg56wb3js1"</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="nv">patchPhase</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">    sed -i 's/Hello, world!/hello, Nix!/g' src/hello.c</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>This guide isn’t meant to cover on how to write derivations, however hopefully this one is simple enough to follow along.</p>
+</blockquote>
+
+<p>Since Nix is <strong>reproducible</strong>, the <em>/nix/store</em> path for the output of this derivation will always be <strong>/nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello</strong>.</p>
+
+<h3 id="create-a-bucket">Create a bucket</h3>
+
+<p>Le’s create a bucket at the moment to act as the root of our <em>/nix/store</em>.</p>
+
+<p>I chose <em>s3://fmzakari-nixcache</em></p>
+
+<h2 id="generate-binary-cache-key">Generate Binary Cache Key</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-store <span class="nt">--generate-binary-cache-key</span> fmzakari-nixcache <span class="se">\</span>
+ cache-priv-key.pem cache-pub-key.pem
+</code></pre></div></div>
+
+<p>We will be utilizing Nix’s ability to validate that the contents of cached paths in the store through a cryptographic signature.</p>
+
+<h2 id="build--sign">Build &amp; Sign</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># build it locally so it's present in /nix/store</span>
+nix-build <span class="nt">--no-out-link</span> lolhello.nix
+<span class="c"># sign the /nix/store path</span>
+nix sign-paths <span class="nt">--key-file</span> cache-priv-key.pem <span class="se">\</span>
+    <span class="si">$(</span>nix-build <span class="nt">--no-out-link</span> lolhello.nix<span class="si">)</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">$(nix-build --no-out-link lolhello.nix)</code> is just a quick way to return the <em>nix/store/</em> output path <em>/nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello</em>.</p>
+
+<h2 id="upload">Upload</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># upload the contents to your S3</span>
+nix copy <span class="nt">--to</span> s3://fmzakari-nixcache <span class="si">$(</span>nix-build <span class="nt">--no-out-link</span> lolhello.nix<span class="si">)</span>
+</code></pre></div></div>
+
+<h2 id="purge-the-local-store">Purge the local store</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># This deletes the /nix/store paths &amp; the database entries</span>
+nix-store <span class="nt">--delete</span> <span class="si">$(</span>nix-build <span class="nt">--no-out-link</span> lolhello.nix<span class="si">)</span>
+</code></pre></div></div>
+
+<h2 id="build-from-the-cache">Build (from the cache!)</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-build <span class="nt">--no-out-link</span> lolhello.nix
+these paths will be fetched <span class="o">(</span>0.03 MiB download, 0.18 MiB unpacked<span class="o">)</span>:
+<span class="o">&gt;</span>   /nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello
+<span class="o">&gt;</span> copying path <span class="s1">'/nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello'</span> from <span class="s1">'s3://fmzakari-nixcache'</span>...
+<span class="o">&gt;</span> /nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello
+
+<span class="c"># run the modified hello after it was pulled from the cache</span>
+/nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello
+<span class="o">&gt;</span> hello, Nix!
+
+</code></pre></div></div>
+
+<p>If you wanted to avoid having to add the <code class="language-plaintext highlighter-rouge">--option</code> for <em>nix-store</em> or even have the caching work with <em>nix-build</em>, the <strong>~/.config/nix/nix.conf</strong> file will have to updated.</p>
+
+<p>Here are the contents for the same s3 cache used above however placed within the <em>nix.conf</em>.</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>substituters = https://cache.nixos.org https://looker.cachix.org s3://fmzakari-nixcache
+
+trusted-public-keys = cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY= looker.cachix.org-1:9iVdEFDyfK4uFDz54S51bBuTPCSKly1PmY/tScSbja0=
+</code></pre></div></div>
+
+<blockquote>
+  <p>There doesn’t seem to be a simple programmatic way to update <em>nix.conf</em>; so you’ll have to hand edit or sed :)</p>
+</blockquote>
+
+<p>Using S3 was surprising a pretty straightforward way to achieve a personal binary cache; although distributing the public keys are a bit of a hassle.</p>
+
+<p>Biggest pain points though seem to be:</p>
+<ol>
+  <li>Not a simple way to programmatically update the <strong>nix.conf</strong> file for the new binary caches.</li>
+  <li>Somewhat scary if you’d like to have multiple contributors to your new binary cache by sharing the single private key.</li>
+</ol>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-07-15-setting-up-a-nix-s3-binary-cache.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

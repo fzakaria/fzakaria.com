@@ -1,0 +1,243 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>HypeMachine Cocoa Win | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="HypeMachine Cocoa Win" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Quick Background I had made an earlier post regarding how specifically I have been having trouble porting over my python hypemachine script into Objective-C. Being new to Objective-C and Cocoa development specifically I wasn&#39;t sure whether I was doing something stupidly wrong or that the hypemachine guys were doing something to thwart my pet project. Turns out it was the latter, so with a new resolve to figure out the web I moved on! Hello Wireshark As mentioned many times already, I rarely do web development or anything involving networks. Therefore figuring out what was happening was a great way to get some new exposure to some tools and re-familiarize myself with how things are done. (It&#39;s been a while since my networks course). A good place to start I knew was to inspect the TCP/IP packets using Wireshark. Wireshark is a network protocol analyzer. It lets you capture and interactively browse the traffic running on a computer network. With Wireshark all setup, I began to inspect the HTTP packets. Knowing that obviously requests through the browser work and those from my python script work I stored the HTTPHeaders of all 3 to scan for differences. ~Python~ Severity level : chat Group: Sequence Request Method: GET Request Version: HTTP/1.1 Accept-Encoding: identity Host: hypem.com Connection: close User-Agent: Python-urllib/2.7&lt;/p&gt; ~Chrome Browser~ Host: hypem.com Connection: keep-alive Referer: http://hypem.com X-Prototype-Version: 1.7 X-Requested-With: XMLHttpRequest User-Agent: Accept: text/javascript, text/html, application/xml, text/xml, */* Accept-Encoding: gzip deflate, sdch Accept-Language: en-US, en; q=0.8&lt;/p&gt; ~Cocoa~ Host: hypem.com Connection: keep-alive Referer: http://hypem.com User-Agent: Accept: */* Accept-Encoding: identify Cookie: &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt; At first I thought it must&#39;ve been the User-Agent however changing that to be that of a web-browser accomplished nothing. The only real difference happened to be the Cookie field. Sure enough, removing the cookie from the Cocoa request caused the site to start returning me valid keys! Grabbing that Sweet Sweet Music Attempt 1 Now that I can successfully grab the proper keys, I began to attempt to use NSURLDownload to try to download the song. It did not happen to be so easy however... Turns out that the site is performing many redirects to soundcloud and although NSURLDownload follows the redirects appropriately, when the time comes to attempt to write the data to disk it fails with an error &quot;NSURLError Domain 3001&quot;. It&#39;s a shame I couldn&#39;t figure out how to solve the problem for NSURLDownload because it affords me asynchronous downloading and writing to file together. If someone knows what I may be doing incorrectly please let me know. All that was needed was a switch to NSURLConnection instead (performing it synchronously currently) and I was able to grab the data! //lets choose where we&#39;d like to store our song NSURL * directory = [self getDownloadDirectory]; //lets choose the savingURL to be the songname at the chosen directory NSURL * savingURL = [NSURL URLWithString:[song mp3Name] relativeToURL:directory]; //create the request using: &#39;http://hypem.com/serve/play/&rsquo; + id + &lsquo;/&rsquo; + key + &lsquo;.mp3&prime; NSMutableURLRequest * songRequest = [NSMutableURLRequest requestWithURL:[song songUrl] ]; //grab the data (synchronously currently...) NSData * songData = [NSURLConnection sendSynchronousRequest:songRequest returningResponse:nil error:nil]; //write to file if (songData) { [songData writeToURL:savingURL atomically:YES]; } Successs! I was properly creating a file to disk, not getting any errors...however the file size was 0! Redo Attempt 1 I got to the point where I can make the GET request for the song however there was one final piece of the puzzle missing. Ultimately, I had solved the similar problem in my python script. I had to set the Cookie in the download GET request to the cookie received from the response of the initial request of grabbing the HTML file. Set-Cookie: &quot;AUTH=03%3A430aaa119c1852924ef832bbaf5fa989%3A1301502627%3A2170648814%3AON-CA; expires=Fri, 26-Mar-2027 16:30:27 GMT; path=/; domain=hypem.com&quot; Setting the Cookie value to the one initially retrieved solved the problem and the music started to flow! The missing line to the code above is the following right after the request is created: [songRequest setValue:[hypeController cookie] forHTTPHeaderField:@&quot;Cookie&quot;]; Cute Easter Egg What was amusing was that while inspecting the packets of those sent/received from HypeMachine I noticed an easter egg embedded inside. Here is one of the HTTPHeader fields given in the response packet given back by the site: X-hacker: Hey, if you&#39;re reading this, you should drop us an email at hypem.com/contact, maybe we can work together!rn" />
+<meta property="og:description" content="Quick Background I had made an earlier post regarding how specifically I have been having trouble porting over my python hypemachine script into Objective-C. Being new to Objective-C and Cocoa development specifically I wasn&#39;t sure whether I was doing something stupidly wrong or that the hypemachine guys were doing something to thwart my pet project. Turns out it was the latter, so with a new resolve to figure out the web I moved on! Hello Wireshark As mentioned many times already, I rarely do web development or anything involving networks. Therefore figuring out what was happening was a great way to get some new exposure to some tools and re-familiarize myself with how things are done. (It&#39;s been a while since my networks course). A good place to start I knew was to inspect the TCP/IP packets using Wireshark. Wireshark is a network protocol analyzer. It lets you capture and interactively browse the traffic running on a computer network. With Wireshark all setup, I began to inspect the HTTP packets. Knowing that obviously requests through the browser work and those from my python script work I stored the HTTPHeaders of all 3 to scan for differences. ~Python~ Severity level : chat Group: Sequence Request Method: GET Request Version: HTTP/1.1 Accept-Encoding: identity Host: hypem.com Connection: close User-Agent: Python-urllib/2.7&lt;/p&gt; ~Chrome Browser~ Host: hypem.com Connection: keep-alive Referer: http://hypem.com X-Prototype-Version: 1.7 X-Requested-With: XMLHttpRequest User-Agent: Accept: text/javascript, text/html, application/xml, text/xml, */* Accept-Encoding: gzip deflate, sdch Accept-Language: en-US, en; q=0.8&lt;/p&gt; ~Cocoa~ Host: hypem.com Connection: keep-alive Referer: http://hypem.com User-Agent: Accept: */* Accept-Encoding: identify Cookie: &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt; At first I thought it must&#39;ve been the User-Agent however changing that to be that of a web-browser accomplished nothing. The only real difference happened to be the Cookie field. Sure enough, removing the cookie from the Cocoa request caused the site to start returning me valid keys! Grabbing that Sweet Sweet Music Attempt 1 Now that I can successfully grab the proper keys, I began to attempt to use NSURLDownload to try to download the song. It did not happen to be so easy however... Turns out that the site is performing many redirects to soundcloud and although NSURLDownload follows the redirects appropriately, when the time comes to attempt to write the data to disk it fails with an error &quot;NSURLError Domain 3001&quot;. It&#39;s a shame I couldn&#39;t figure out how to solve the problem for NSURLDownload because it affords me asynchronous downloading and writing to file together. If someone knows what I may be doing incorrectly please let me know. All that was needed was a switch to NSURLConnection instead (performing it synchronously currently) and I was able to grab the data! //lets choose where we&#39;d like to store our song NSURL * directory = [self getDownloadDirectory]; //lets choose the savingURL to be the songname at the chosen directory NSURL * savingURL = [NSURL URLWithString:[song mp3Name] relativeToURL:directory]; //create the request using: &#39;http://hypem.com/serve/play/&rsquo; + id + &lsquo;/&rsquo; + key + &lsquo;.mp3&prime; NSMutableURLRequest * songRequest = [NSMutableURLRequest requestWithURL:[song songUrl] ]; //grab the data (synchronously currently...) NSData * songData = [NSURLConnection sendSynchronousRequest:songRequest returningResponse:nil error:nil]; //write to file if (songData) { [songData writeToURL:savingURL atomically:YES]; } Successs! I was properly creating a file to disk, not getting any errors...however the file size was 0! Redo Attempt 1 I got to the point where I can make the GET request for the song however there was one final piece of the puzzle missing. Ultimately, I had solved the similar problem in my python script. I had to set the Cookie in the download GET request to the cookie received from the response of the initial request of grabbing the HTML file. Set-Cookie: &quot;AUTH=03%3A430aaa119c1852924ef832bbaf5fa989%3A1301502627%3A2170648814%3AON-CA; expires=Fri, 26-Mar-2027 16:30:27 GMT; path=/; domain=hypem.com&quot; Setting the Cookie value to the one initially retrieved solved the problem and the music started to flow! The missing line to the code above is the following right after the request is created: [songRequest setValue:[hypeController cookie] forHTTPHeaderField:@&quot;Cookie&quot;]; Cute Easter Egg What was amusing was that while inspecting the packets of those sent/received from HypeMachine I noticed an easter egg embedded inside. Here is one of the HTTPHeader fields given in the response packet given back by the site: X-hacker: Hey, if you&#39;re reading this, you should drop us an email at hypem.com/contact, maybe we can work together!rn" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-03-30-hypemachine-cocoa-win.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-03-30-hypemachine-cocoa-win.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-03-30T13:09:23-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="HypeMachine Cocoa Win" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-03-30T13:09:23-07:00","datePublished":"2011-03-30T13:09:23-07:00","description":"Quick Background I had made an earlier post regarding how specifically I have been having trouble porting over my python hypemachine script into Objective-C. Being new to Objective-C and Cocoa development specifically I wasn&#39;t sure whether I was doing something stupidly wrong or that the hypemachine guys were doing something to thwart my pet project. Turns out it was the latter, so with a new resolve to figure out the web I moved on! Hello Wireshark As mentioned many times already, I rarely do web development or anything involving networks. Therefore figuring out what was happening was a great way to get some new exposure to some tools and re-familiarize myself with how things are done. (It&#39;s been a while since my networks course). A good place to start I knew was to inspect the TCP/IP packets using Wireshark. Wireshark is a network protocol analyzer. It lets you capture and interactively browse the traffic running on a computer network. With Wireshark all setup, I began to inspect the HTTP packets. Knowing that obviously requests through the browser work and those from my python script work I stored the HTTPHeaders of all 3 to scan for differences. ~Python~ Severity level : chat Group: Sequence Request Method: GET Request Version: HTTP/1.1 Accept-Encoding: identity Host: hypem.com Connection: close User-Agent: Python-urllib/2.7&lt;/p&gt; ~Chrome Browser~ Host: hypem.com Connection: keep-alive Referer: http://hypem.com X-Prototype-Version: 1.7 X-Requested-With: XMLHttpRequest User-Agent: Accept: text/javascript, text/html, application/xml, text/xml, */* Accept-Encoding: gzip deflate, sdch Accept-Language: en-US, en; q=0.8&lt;/p&gt; ~Cocoa~ Host: hypem.com Connection: keep-alive Referer: http://hypem.com User-Agent: Accept: */* Accept-Encoding: identify Cookie: &lt;/code&gt;&lt;/pre&gt;&lt;/p&gt; At first I thought it must&#39;ve been the User-Agent however changing that to be that of a web-browser accomplished nothing. The only real difference happened to be the Cookie field. Sure enough, removing the cookie from the Cocoa request caused the site to start returning me valid keys! Grabbing that Sweet Sweet Music Attempt 1 Now that I can successfully grab the proper keys, I began to attempt to use NSURLDownload to try to download the song. It did not happen to be so easy however... Turns out that the site is performing many redirects to soundcloud and although NSURLDownload follows the redirects appropriately, when the time comes to attempt to write the data to disk it fails with an error &quot;NSURLError Domain 3001&quot;. It&#39;s a shame I couldn&#39;t figure out how to solve the problem for NSURLDownload because it affords me asynchronous downloading and writing to file together. If someone knows what I may be doing incorrectly please let me know. All that was needed was a switch to NSURLConnection instead (performing it synchronously currently) and I was able to grab the data! //lets choose where we&#39;d like to store our song NSURL * directory = [self getDownloadDirectory]; //lets choose the savingURL to be the songname at the chosen directory NSURL * savingURL = [NSURL URLWithString:[song mp3Name] relativeToURL:directory]; //create the request using: &#39;http://hypem.com/serve/play/&rsquo; + id + &lsquo;/&rsquo; + key + &lsquo;.mp3&prime; NSMutableURLRequest * songRequest = [NSMutableURLRequest requestWithURL:[song songUrl] ]; //grab the data (synchronously currently...) NSData * songData = [NSURLConnection sendSynchronousRequest:songRequest returningResponse:nil error:nil]; //write to file if (songData) { [songData writeToURL:savingURL atomically:YES]; } Successs! I was properly creating a file to disk, not getting any errors...however the file size was 0! Redo Attempt 1 I got to the point where I can make the GET request for the song however there was one final piece of the puzzle missing. Ultimately, I had solved the similar problem in my python script. I had to set the Cookie in the download GET request to the cookie received from the response of the initial request of grabbing the HTML file. Set-Cookie: &quot;AUTH=03%3A430aaa119c1852924ef832bbaf5fa989%3A1301502627%3A2170648814%3AON-CA; expires=Fri, 26-Mar-2027 16:30:27 GMT; path=/; domain=hypem.com&quot; Setting the Cookie value to the one initially retrieved solved the problem and the music started to flow! The missing line to the code above is the following right after the request is created: [songRequest setValue:[hypeController cookie] forHTTPHeaderField:@&quot;Cookie&quot;]; Cute Easter Egg What was amusing was that while inspecting the packets of those sent/received from HypeMachine I noticed an easter egg embedded inside. Here is one of the HTTPHeader fields given in the response packet given back by the site: X-hacker: Hey, if you&#39;re reading this, you should drop us an email at hypem.com/contact, maybe we can work together!rn","headline":"HypeMachine Cocoa Win","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-03-30-hypemachine-cocoa-win.html"},"url":"https://fzakaria.com/old_blog/2011-03-30-hypemachine-cocoa-win.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    HypeMachine Cocoa Win
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-03-30
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-03-30-hypemachine-cocoa-win.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h3> Quick Background </h3>
+<p>
+I had made an earlier <a href="http://www.blog.fzakaria.com/2011/03/hypemachine-cocoa-woes/">post</a> regarding how specifically I have been having trouble porting over my python hypemachine script into Objective-C. Being new to Objective-C and Cocoa development specifically I wasn't sure whether I was doing something <del datetime="2011-03-30T16:32:20+00:00">stupidly</del> wrong or that the <a href="www.hypem.com">hypemachine</a> guys were doing something to thwart my pet project. Turns out it was the latter, so with a new resolve to figure out the web I moved on!</p>
+<h3>Hello Wireshark</h3>
+<p>
+As mentioned many times already, I <em>rarely</em> do web development or anything involving networks. Therefore figuring out what was happening was a great way to get some new exposure to some tools and re-familiarize myself with how things are done. (It's been a while since my networks course). A good place to start I knew was to inspect the TCP/IP packets using <a href="http://www.wireshark.org/">Wireshark</a>.</p>
+<blockquote><p>Wireshark is a network protocol analyzer. It lets you capture and interactively browse the traffic running on a computer network.</p></blockquote>
+<p>
+With Wireshark all setup, I began to inspect the HTTP packets. Knowing that obviously requests through the browser work and those from my python script work I stored the HTTPHeaders of all 3 to scan for differences.</p>
+<p><pre><code><br />
+~Python~<br />
+Severity level : chat<br />
+Group: Sequence<br />
+Request Method: GET<br />
+Request Version: HTTP/1.1<br />
+Accept-Encoding: identity<br />
+Host: hypem.com<br />
+Connection: close<br />
+User-Agent: Python-urllib/2.7</p>
+<p>~Chrome Browser~<br />
+Host: hypem.com<br />
+Connection: keep-alive<br />
+Referer: http://hypem.com<br />
+X-Prototype-Version: 1.7<br />
+X-Requested-With: XMLHttpRequest<br />
+User-Agent: <some long stuff involving my browser name><br />
+Accept: text/javascript, text/html, application/xml, text/xml, */*<br />
+Accept-Encoding: gzip deflate, sdch<br />
+Accept-Language: en-US, en; q=0.8</p>
+<p>~Cocoa~<br />
+Host: hypem.com<br />
+Connection: keep-alive<br />
+Referer: http://hypem.com<br />
+User-Agent: <my laptop><br />
+Accept: */*<br />
+Accept-Encoding: identify<br />
+Cookie: <some long stuff><br />
+</code></pre></p>
+<p>
+At first I thought it must've been the <strong>User-Agent </strong>however changing that to be that of a web-browser accomplished nothing. The only real difference happened to be the <strong>Cookie</strong> field. Sure enough, removing the cookie from the Cocoa request caused the site to start returning me <em>valid</em> keys!</p>
+<h2> Grabbing that Sweet Sweet Music </h2>
+<h3> Attempt 1 </h3>
+<p>
+Now that I can successfully grab the proper keys, I began to attempt to use <a href="http://developer.apple.com/library/mac/#documentation/cocoa/reference/Foundation/Classes/NSURLDownload_Class/Reference/Reference.html">NSURLDownload</a> to try to download the song. <em>It did not happen to be so easy however...</em></p>
+<p>
+Turns out that the site is performing many redirects to <a href="http://soundcloud.com/">soundcloud</a> and although NSURLDownload follows the redirects appropriately, when the time comes to attempt to write the data to disk it fails with an error "NSURLError Domain 3001".</p>
+<blockquote><p>It's a shame I couldn't figure out how to solve the problem for NSURLDownload because it affords me asynchronous downloading and writing to file together. If someone knows what I may be doing incorrectly please let me know.</p></blockquote>
+<p>All that was needed was a switch to NSURLConnection instead (performing it synchronously currently) and I was able to grab the data!</p>
+<pre>
+<code>
+//lets choose where we'd like to store our song
+NSURL * directory = [self getDownloadDirectory];
+//lets choose the savingURL to be the songname at the chosen directory
+NSURL * savingURL = [NSURL URLWithString:[song mp3Name] relativeToURL:directory];
+//create the request using: 'http://hypem.com/serve/play/&rsquo; + id + &lsquo;/&rsquo; + key + &lsquo;.mp3&prime;
+NSMutableURLRequest * songRequest = [NSMutableURLRequest requestWithURL:[song songUrl] ];
+//grab the data (synchronously currently...) 
+NSData * songData = [NSURLConnection sendSynchronousRequest:songRequest returningResponse:nil error:nil];
+//write to file
+if (songData)
+{
+    [songData writeToURL:savingURL atomically:YES];
+}
+</code>
+</pre>
+<p><strong>Successs!</strong> I was properly creating a file to disk, not getting any errors...<em>however</em> the file size was 0!</p>
+<h3> Redo Attempt 1 </h3>
+<p>
+I got to the point where  I can make the GET request for the song however there was <strong>one</strong> final piece of the puzzle missing. Ultimately, I had solved the similar problem in my python script. I had to set the <em>Cookie</em> in the download GET request to the cookie received from the response of the initial request of grabbing the HTML file.</p>
+<p><pre><code><br />
+Set-Cookie: "AUTH=03%3A430aaa119c1852924ef832bbaf5fa989%3A1301502627%3A2170648814%3AON-CA; expires=Fri, 26-Mar-2027 16:30:27 GMT; path=/; domain=hypem.com"<br />
+</code></pre></p>
+<p>Setting the <em>Cookie</em> value to the one initially retrieved solved the problem and the music started to flow!<br />
+The missing line to the code above is the following right after the request is created:</p>
+<pre>
+<code>
+[songRequest setValue:[hypeController cookie] forHTTPHeaderField:@"Cookie"];
+</code>
+</pre>
+<h2> Cute Easter Egg </h2>
+<p>
+What was amusing was that while inspecting the packets of those sent/received from <a href="hypem.com">HypeMachine</a> I noticed an easter egg embedded inside. Here is one of the HTTPHeader fields given in the response packet given back by the site:</p>
+<blockquote><p><strong>X-hacker</strong>: Hey, if you're reading this, you should drop us an email at hypem.com/contact, maybe we can work together!rn</p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-03-30-hypemachine-cocoa-win.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

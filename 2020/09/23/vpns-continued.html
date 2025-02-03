@@ -1,0 +1,378 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>VPNs continued | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="VPNs continued" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is part 2 of a post regarding VPNs. Please see here for part 1. In the previous post, we discussed the basics of setting up a virtual private network; the goal of which was bridging two distinct private subnets. This gave us the alluring property of treating separate networks as they were colocated and can be accessed easily. However most people are first introduced into VPNs for other features such as: anonymity, secrecy &amp; privacy. A common example may be to tunnel traffic through a host in another country to disguise the origin. For instance, maybe you are in Canada but want to browse the American Netflix catalog. How can we extend lametun to do this? I’ll present a few alternatives. The main goal however will to forward all traffic, including ones destined for the Internet, through the tunnel." />
+<meta property="og:description" content="This is part 2 of a post regarding VPNs. Please see here for part 1. In the previous post, we discussed the basics of setting up a virtual private network; the goal of which was bridging two distinct private subnets. This gave us the alluring property of treating separate networks as they were colocated and can be accessed easily. However most people are first introduced into VPNs for other features such as: anonymity, secrecy &amp; privacy. A common example may be to tunnel traffic through a host in another country to disguise the origin. For instance, maybe you are in Canada but want to browse the American Netflix catalog. How can we extend lametun to do this? I’ll present a few alternatives. The main goal however will to forward all traffic, including ones destined for the Internet, through the tunnel." />
+<link rel="canonical" href="https://fzakaria.com/2020/09/23/vpns-continued.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/23/vpns-continued.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-23T21:46:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="VPNs continued" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-23T21:46:00-07:00","datePublished":"2020-09-23T21:46:00-07:00","description":"This is part 2 of a post regarding VPNs. Please see here for part 1. In the previous post, we discussed the basics of setting up a virtual private network; the goal of which was bridging two distinct private subnets. This gave us the alluring property of treating separate networks as they were colocated and can be accessed easily. However most people are first introduced into VPNs for other features such as: anonymity, secrecy &amp; privacy. A common example may be to tunnel traffic through a host in another country to disguise the origin. For instance, maybe you are in Canada but want to browse the American Netflix catalog. How can we extend lametun to do this? I’ll present a few alternatives. The main goal however will to forward all traffic, including ones destined for the Internet, through the tunnel.","headline":"VPNs continued","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/23/vpns-continued.html"},"url":"https://fzakaria.com/2020/09/23/vpns-continued.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    VPNs continued
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-23
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/23/vpns-continued.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is <em>part 2</em> of a post regarding VPNs. Please see <a href="/2020/09/20/vpns-from-first-principles.html">here</a> for part 1.</p>
+</blockquote>
+
+<p>In the <a href="/2020/09/20/vpns-from-first-principles.html">previous post</a>, we discussed the basics of setting up a virtual private network; the goal of which was bridging two distinct private subnets.</p>
+
+<p>This gave us the alluring property of treating separate networks as they were colocated and can be accessed easily. However most people are first introduced into VPNs for other features such as: <em>anonymity</em>, <em>secrecy</em> &amp; <em>privacy</em>.</p>
+
+<blockquote>
+  <p>A common example may be to tunnel traffic through a host in another country to disguise the origin. For instance, maybe you are in Canada but want to browse the American Netflix catalog.</p>
+</blockquote>
+
+<p><em>How can we extend <a href="https://github.com/fzakaria/lametun">lametun</a> to do this?</em></p>
+
+<p>I’ll present a few alternatives. The main goal however will to forward all traffic, including ones destined for the Internet, through the tunnel.</p>
+
+<!--more-->
+<h3 id="common-setup">Common Setup</h3>
+
+<p>In both alternatives, we will want to make some adjustments to our server. We will want to <strong>enable</strong> <em>ip_forward</em> &amp; <strong>disable</strong> <em>rp_filter</em>. <sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> We also want to create an <em>iptable</em> rule to setup a NAT.</p>
+
+<dl>
+  <dt><em>ip_forward</em></dt>
+  <dd>IP forwarding is the ability for an operating system to accept incoming network packets on one interface, recognize that it is not meant for the system itself, but that it should be passed on to another network, and then forwards it accordingly.</dd>
+  <dt><em>rp_filter</em></dt>
+  <dd>Reverse Path filtering is a mechanism to check whether a receiving packet source address is routable. The machine will first check whether the source of the received packet is reachable through the interface it came in. If it is not routable, it will *drop the packet.</dd>
+</dl>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sysctl <span class="nt">-w</span> <span class="s2">"net.ipv4.conf.all.rp_filter=0"</span>
+sysctl <span class="nt">-w</span> <span class="s2">"net.ipv4.ip_forward=1"</span>
+</code></pre></div></div>
+
+<p>Now on <strong>the server</strong>, we will introduce an <em>iptable</em> rule to forward all incoming packets from our <em>tun0</em> device to <em>eth0</em>, or whatever our physical device is.
+Furthermore, we will set the target to <em>MASQUERADE</em>.</p>
+
+<dl>
+  <dt><em>MASQUERADE</em></dt>
+  <dd>Masks requests from LAN nodes with the IP address of the physical device; it is used in conjunction with NAT.</dd>
+</dl>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># The -j MASQUERADE target is specified to mask the private IP address of a node</span>
+<span class="c"># with the external IP address of the firewall/gateway</span>
+<span class="c"># POSTROUTING allows packets to be altered as they are leaving the device</span>
+<span class="c"># The -t nat creates the rule on the NAT table for address translation</span>
+<span class="nb">sudo </span>iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-o</span> eth0 <span class="nt">-s</span> 172.31.255.7 <span class="nt">-j</span> MASQUERADE
+</code></pre></div></div>
+
+<p><em>The reason why the NAT is necessary?</em></p>
+
+<p>Well if the packets destined for the Internet were sent off with the <em>source IP</em> of our new private CIDR (i.e. 172.31.255.7 for tun0), how would they ever route back to the machine?</p>
+
+<blockquote>
+  <p>It’s not clear yet to me whether you can fake or respond to ARP requests to have the other private IP route back. I’d love to hear <a href="mailto:farid.m.zakaria@gmail.com">from you</a> if you think it can!</p>
+</blockquote>
+
+<h3 id="approach-1-routing-rules">Approach #1: routing rules</h3>
+
+<p>Now that our server is setup to forward all traffic to <em>eth0</em> using the <em>iptable rule</em>, our remaining action is to make sure our public traffic flows through our <em>tun0</em> device.</p>
+
+<p>We will use Linux’s support for multiple routing tables,<sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> to accomplish this goal. We will create a new routing table <em>lametun</em>, which is referred to when the <em>source IP</em> of the packet is that of our <em>tun0</em> device.</p>
+
+<p>The route table <em>lametun</em>, only needs a <strong>single</strong> entry. Route everything through the <em>tun0</em> device!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Add the rule if the src address is our tun0 addr then</span>
+<span class="c"># lookup the lametun routing table</span>
+❯ <span class="nb">sudo </span>ip rule add from 172.31.255.7 lookup lametun
+
+❯ <span class="nb">sudo </span>ip rule show table lametun
+5209:   from 172.31.255.7 lookup lametun
+
+<span class="c"># Add the single route to send all traffic to our "gateway" (the tunnel)</span>
+❯ <span class="nb">sudo </span>ip route add default via 172.31.255.7 dev tun0 table lametun
+
+❯ <span class="nb">sudo </span>ip route show table lametun
+default via 172.31.255.7 dev tun0
+
+</code></pre></div></div>
+
+<p>Now let’s try to use <em>ping</em> but have it select the <em>source IP</em> to that of our <em>tun0</em> device; let’s <code class="language-plaintext highlighter-rouge">ping 8.8.8.8</code>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ ping <span class="nt">-I</span> tun0 8.8.8.8
+PING 8.8.8.8 <span class="o">(</span>8.8.8.8<span class="o">)</span> from 172.31.255.7 tun0: 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+64 bytes from 8.8.8.8: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>112 <span class="nb">time</span><span class="o">=</span>9.09 ms
+64 bytes from 8.8.8.8: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>112 <span class="nb">time</span><span class="o">=</span>9.03 ms
+</code></pre></div></div>
+
+<p>Let’s prove though that this traffic is going through our tunnel by using <a href="https://www.wireshark.org/docs/man-pages/tshark.html">tshark</a>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Running this on the laptop</span>
+❯ <span class="nb">sudo </span>tshark <span class="nt">-i</span> tun0 icmp
+Running as user <span class="s2">"root"</span> and group <span class="s2">"root"</span><span class="nb">.</span> This could be dangerous.
+Capturing on <span class="s1">'tun0'</span>
+    1 0.000000000 172.31.255.7 ? 8.8.8.8      ICMP 84 Echo <span class="o">(</span>ping<span class="o">)</span> request  <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>17/4352, <span class="nv">ttl</span><span class="o">=</span>64
+    2 0.008801187      8.8.8.8 ? 172.31.255.7 ICMP 84 Echo <span class="o">(</span>ping<span class="o">)</span> reply    <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>17/4352, <span class="nv">ttl</span><span class="o">=</span>112 <span class="o">(</span>request <span class="k">in </span>1<span class="o">)</span>
+    3 1.000493576 172.31.255.7 ? 8.8.8.8      ICMP 84 Echo <span class="o">(</span>ping<span class="o">)</span> request  <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>18/4608, <span class="nv">ttl</span><span class="o">=</span>64
+    4 1.009073436      8.8.8.8 ? 172.31.255.7 ICMP 84 Echo <span class="o">(</span>ping<span class="o">)</span> reply    <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>18/4608, <span class="nv">ttl</span><span class="o">=</span>112 <span class="o">(</span>request <span class="k">in </span>3<span class="o">)</span>
+
+<span class="c"># Running this on the server</span>
+❯ <span class="nb">sudo </span>tshark <span class="nt">-i</span> tun0 icmp
+Running as user <span class="s2">"root"</span> and group <span class="s2">"root"</span><span class="nb">.</span> This could be dangerous.
+Capturing on <span class="s1">'tun0'</span>
+    1 0.000000000 172.31.255.7 → 8.8.8.8      ICMP 84 Echo <span class="o">(</span>ping<span class="o">)</span> request  <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>88/22528, <span class="nv">ttl</span><span class="o">=</span>64
+    2 0.002077891      8.8.8.8 → 172.31.255.7 ICMP 84 Echo <span class="o">(</span>ping<span class="o">)</span> reply    <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>88/22528, <span class="nv">ttl</span><span class="o">=</span>112 <span class="o">(</span>request <span class="k">in </span>1<span class="o">)</span>
+❯ <span class="nb">sudo </span>tshark icmp
+Running as user <span class="s2">"root"</span> and group <span class="s2">"root"</span><span class="nb">.</span> This could be dangerous.
+Capturing on <span class="s1">'eth0'</span>
+    1 0.000000000 172.31.9.116 → 8.8.8.8      ICMP 98 Echo <span class="o">(</span>ping<span class="o">)</span> request  <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>110/28160, <span class="nv">ttl</span><span class="o">=</span>63
+    2 0.002246902      8.8.8.8 → 172.31.9.116 ICMP 98 Echo <span class="o">(</span>ping<span class="o">)</span> reply    <span class="nb">id</span><span class="o">=</span>0x3f0d, <span class="nb">seq</span><span class="o">=</span>110/28160, <span class="nv">ttl</span><span class="o">=</span>113 <span class="o">(</span>request <span class="k">in </span>1<span class="o">)</span>
+</code></pre></div></div>
+
+<p>Sweet! <em>Validated</em>.</p>
+
+<p>We even can see the IP being <em>masqueraded</em> from <em>172.31.255.7</em> -&gt; <em>172.31.9.116</em> as it leaves the server.</p>
+
+<p>Since my server is in AWS, ultimately the <em>public IP</em> seen by the Internet will be that attached to my server. With this setup, we now can conceal our source physical location by having a server masquerade as us :)</p>
+
+<h3 id="approach-2-network-namespace">Approach #2: network namespace</h3>
+
+<p>Routing tables work great, however they rely on the ability to tell the desired process what <em>source IP</em> to use when opening the socket; that is not always plausible.</p>
+
+<p>Consider an application like Chrome or Firefox, it does not expose a method in which to control which <em>source IP</em> it uses.</p>
+
+<p>For such cases, we will rely on a more thorough setup using <em>network namespaces</em>.</p>
+
+<blockquote>
+  <p>A network namespace is logically another copy of the network stack,
+with its own routes, firewall rules, and network devices.</p>
+</blockquote>
+
+<p>First let’s setup the network namespace using a <em>virtual ethernet device</em> that we will use to bridge the network namespace &amp; the host namespace.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create a new network namespace</span>
+❯ <span class="nb">sudo </span>ip netns add lametun
+
+<span class="c"># Create a virtual ethernet device which will help move traffic</span>
+<span class="c"># from the netns to the host namespace</span>
+<span class="c"># Consider this like a wire connecting our network namespcae &amp;</span>
+<span class="c"># the host namespace.</span>
+❯ <span class="nb">sudo </span>ip <span class="nb">link </span>add veth0 <span class="nb">type </span>veth peer name veth1
+❯ <span class="nb">sudo </span>ip <span class="nb">link set </span>up dev veth0
+<span class="c"># Let's give it it's own subnet for simplicity</span>
+❯ <span class="nb">sudo </span>ip addr add 10.0.0.7/24 dev veth0
+
+<span class="c"># Move the veth1 to the lametun network namespace</span>
+❯ <span class="nb">sudo </span>ip <span class="nb">link set </span>veth1 netns lametun
+<span class="c"># Make sure to give it in an address in the same subnet</span>
+<span class="c"># and set all the devices up!</span>
+❯ <span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip addr add 10.0.0.3/24 dev veth1
+❯ <span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip <span class="nb">link set </span>up dev veth1
+
+<span class="c"># Let's verify we can ping our virtual ethernet devices!</span>
+❯ <span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ping 10.0.0.7
+PING 10.0.0.7 <span class="o">(</span>10.0.0.7<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+64 bytes from 10.0.0.7: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.070 ms
+64 bytes from 10.0.0.7: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>64 <span class="nb">time</span><span class="o">=</span>0.147 ms
+</code></pre></div></div>
+
+<p>Now let’s add Internet access!</p>
+
+<blockquote>
+  <p>If there is a simpler approach using bridges, macvlan or ipvlan <a href="mailto:farid.m.zakaria@gmail.com">let me know</a>. I didn’t want to move the IP address from my main ethernet device to the bridge, so this approach seemed easy enough but it needs <em>iptables</em>.</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Let's add our default route to go the other veth which will act</span>
+<span class="c"># as our router</span>
+<span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip route add default via 10.0.0.7
+
+<span class="c"># It's not 100% clear this is needed since we have enabled ip_forward,</span>
+<span class="c"># however for now it's enabled to help send the packets up/down the physical</span>
+<span class="c"># device</span>
+❯ <span class="nb">sudo </span>iptables <span class="nt">-A</span> FORWARD <span class="nt">-o</span> eth0 <span class="nt">-i</span> veth0 <span class="nt">-j</span> ACCEPT
+❯ <span class="nb">sudo </span>iptables <span class="nt">-A</span> FORWARD <span class="nt">-i</span> eth0 <span class="nt">-o</span> veth0 <span class="nt">-j</span> ACCEPT
+
+<span class="c"># We then need to NAT the veth IP similar to how we did in the server.</span>
+<span class="c"># Here however we make sure we just set the source to be the whole subnet.</span>
+❯ <span class="nb">sudo </span>iptables <span class="nt">-t</span> nat <span class="nt">-A</span> POSTROUTING <span class="nt">-o</span> eth0 <span class="nt">-s</span> 10.0.0.0/24 <span class="nt">-j</span> MASQUERADE
+
+<span class="c"># Test out we can ping from inside the namespace</span>
+❯ <span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ping 8.8.8.8
+PING 8.8.8.8 <span class="o">(</span>8.8.8.8<span class="o">)</span> 56<span class="o">(</span>84<span class="o">)</span> bytes of data.
+64 bytes from 8.8.8.8: <span class="nv">icmp_seq</span><span class="o">=</span>1 <span class="nv">ttl</span><span class="o">=</span>115 <span class="nb">time</span><span class="o">=</span>6.28 ms
+64 bytes from 8.8.8.8: <span class="nv">icmp_seq</span><span class="o">=</span>2 <span class="nv">ttl</span><span class="o">=</span>115 <span class="nb">time</span><span class="o">=</span>5.77 ms
+</code></pre></div></div>
+
+<p>Great! We have Internet traffic but it’s just going through the typical flow.</p>
+
+<p>We can now start <strong>lametun</strong> inside this network namespace and all <em>default traffic</em> will go through our VPN!</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Create the TUN device in the namespace &amp; set it up</span>
+<span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip tuntap add dev tun0 mode tun user <span class="nv">$USER</span>
+<span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip <span class="nb">link set </span>dev tun0 up
+<span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip addr add 172.31.255.7/24 dev tun0
+<span class="c"># Set the default route to be sending all traffic to the tun0 device</span>
+<span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip route add default via 172.31.255.7
+
+<span class="c"># This is super important so we don't create a closed loop.</span>
+<span class="c"># We need to make sure to send the tunnel not through itself.</span>
+<span class="c"># We route the VPN IP route directly to our veth1 address</span>
+<span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ip route add 54.219.126.112 via 10.0.0.7
+
+<span class="c"># Start the tunnel and enjoy!</span>
+<span class="nb">sudo </span>ip netns <span class="nb">exec </span>lametun ./lametun <span class="nt">-server</span> 54.219.126.112
+listen:false server:54.219.126.112 dev:tun0 port:1234
+</code></pre></div></div>
+
+<p>The final <em>cherry on top</em>, is to make sure DNS works inside the namespace.
+For that let’s create a file <strong>/etc/netns/lametun/resolv.conf</strong> with the following contents:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">cat</span> /etc/netns/lametun/resolv.conf
+nameserver 8.8.8.8
+</code></pre></div></div>
+
+<p>We now have a <em>really lame</em> VPN that you can use to try and add some level of indirection to your requests. Just make sure to star the desired process within the network namespace.</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt">https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p><a href="http://linux-ip.net/html/routing-tables.html">http://linux-ip.net/html/routing-tables.html</a> <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-23-vpns-continued.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

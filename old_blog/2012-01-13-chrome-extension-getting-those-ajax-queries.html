@@ -1,0 +1,207 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Chrome Extension: Getting Those Ajax Queries | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Chrome Extension: Getting Those Ajax Queries" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Warning: I am relatively new to Javascript. If the solution presented below seems trivial, please forgive. Once again, I&#39;m isolated I remember the frustration of hacking things into a web page due to Chrome&#39;s Isolated World for their extensions. The problem I originally faced was that HypeMachine was storing the info for their tracks in variables that are restricted to the content scripts loaded by the extension. Isolated worlds completely separate the JavaScript on the page from the JavaScript in extensions. The second time around, my problem was not with accessing local data but getting access to jQuery instance used to make Ajax requests on the web page. The webpage for which I am writing the extension, refreshes its page via Ajax requests; after which it reconstructs the DOM programmatically. I could load jQuery myself into my extension however it would be a different instance! Any attempt to hook into the global Ajax event handlers would do no such good... Isolated worlds allow each content script to make changes to its JavaScript environment without worrying about conflicting with the page or with other content scripts. Breaking Free It was pretty easy how I circumvented the issue the first time around,byinjecting the whole content script right into the web page! This let me write the script and have access to all the goodies of the page. This time however the solution is not doable for the new extension since I also wanted to make cross domain browser requests. My new solution would have to allow me to write the code in the extension&#39;s script but be notified of all Ajax requests... Javascript on the main page are bound to make requests only to the original domain from where they came (Same Origin Policy), however scripts in the extension are allowed to make cross domain requests. var main = function() {" />
+<meta property="og:description" content="Warning: I am relatively new to Javascript. If the solution presented below seems trivial, please forgive. Once again, I&#39;m isolated I remember the frustration of hacking things into a web page due to Chrome&#39;s Isolated World for their extensions. The problem I originally faced was that HypeMachine was storing the info for their tracks in variables that are restricted to the content scripts loaded by the extension. Isolated worlds completely separate the JavaScript on the page from the JavaScript in extensions. The second time around, my problem was not with accessing local data but getting access to jQuery instance used to make Ajax requests on the web page. The webpage for which I am writing the extension, refreshes its page via Ajax requests; after which it reconstructs the DOM programmatically. I could load jQuery myself into my extension however it would be a different instance! Any attempt to hook into the global Ajax event handlers would do no such good... Isolated worlds allow each content script to make changes to its JavaScript environment without worrying about conflicting with the page or with other content scripts. Breaking Free It was pretty easy how I circumvented the issue the first time around,byinjecting the whole content script right into the web page! This let me write the script and have access to all the goodies of the page. This time however the solution is not doable for the new extension since I also wanted to make cross domain browser requests. My new solution would have to allow me to write the code in the extension&#39;s script but be notified of all Ajax requests... Javascript on the main page are bound to make requests only to the original domain from where they came (Same Origin Policy), however scripts in the extension are allowed to make cross domain requests. var main = function() {" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-01-13-chrome-extension-getting-those-ajax-queries.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-01-13-chrome-extension-getting-those-ajax-queries.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-01-13T13:36:25-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Chrome Extension: Getting Those Ajax Queries" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-01-13T13:36:25-08:00","datePublished":"2012-01-13T13:36:25-08:00","description":"Warning: I am relatively new to Javascript. If the solution presented below seems trivial, please forgive. Once again, I&#39;m isolated I remember the frustration of hacking things into a web page due to Chrome&#39;s Isolated World for their extensions. The problem I originally faced was that HypeMachine was storing the info for their tracks in variables that are restricted to the content scripts loaded by the extension. Isolated worlds completely separate the JavaScript on the page from the JavaScript in extensions. The second time around, my problem was not with accessing local data but getting access to jQuery instance used to make Ajax requests on the web page. The webpage for which I am writing the extension, refreshes its page via Ajax requests; after which it reconstructs the DOM programmatically. I could load jQuery myself into my extension however it would be a different instance! Any attempt to hook into the global Ajax event handlers would do no such good... Isolated worlds allow each content script to make changes to its JavaScript environment without worrying about conflicting with the page or with other content scripts. Breaking Free It was pretty easy how I circumvented the issue the first time around,byinjecting the whole content script right into the web page! This let me write the script and have access to all the goodies of the page. This time however the solution is not doable for the new extension since I also wanted to make cross domain browser requests. My new solution would have to allow me to write the code in the extension&#39;s script but be notified of all Ajax requests... Javascript on the main page are bound to make requests only to the original domain from where they came (Same Origin Policy), however scripts in the extension are allowed to make cross domain requests. var main = function() {","headline":"Chrome Extension: Getting Those Ajax Queries","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-01-13-chrome-extension-getting-those-ajax-queries.html"},"url":"https://fzakaria.com/old_blog/2012-01-13-chrome-extension-getting-those-ajax-queries.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Chrome Extension: Getting Those Ajax Queries
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-01-13
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-01-13-chrome-extension-getting-those-ajax-queries.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <br />
+<blockquote><p><strong>Warning</strong>: I am relatively new to Javascript. If the solution presented below seems trivial, please forgive.</p></blockquote>
+<h2> Once again, I'm isolated </h2>
+<p>
+I remember the frustration of hacking things into a web page due to Chrome's Isolated World for their extensions. The problem I originally faced was that <a href="http://www.hypemachine.com">HypeMachine </a>was storing the info for their tracks in variables that are restricted to the content scripts loaded by the extension.</p>
+<blockquote><p>Isolated worlds completely separate the JavaScript on the page from the JavaScript in extensions.</p></blockquote>
+<p>
+The second time around, my problem was not with accessing local data but getting access to jQuery instance used to make Ajax requests on the web page. <a href="http://www.beatport.com/">The webpage</a> for which I am writing the extension, refreshes its page via Ajax requests; after which it reconstructs the DOM programmatically. I could load jQuery myself into my extension however it would be a <strong>different </strong>instance! Any attempt to hook into the global Ajax event handlers would do no such good...</p>
+<blockquote><p>Isolated worlds allow each content script to make changes to its JavaScript environment without worrying about conflicting with the page or with other content scripts. </p></blockquote>
+<h2> Breaking Free </h2>
+<p>
+It was pretty easy how I circumvented the issue the first time around,by<strong>injecting</strong> the whole content script right into the web page! This let me write the script and have access to all the <em>goodies </em>of the page. This time however the solution is not doable for the new extension since I also wanted to make <strong>cross domain browser requests</strong>. <em>My new solution would have to allow me to write the code in the extension's script but be notified of all Ajax requests...<br />
+</em></p>
+<blockquote><p>Javascript on the main page are bound to make requests only to the original domain from where they came (<a href="http://en.wikipedia.org/wiki/Same_origin_policy">Same Origin Policy</a>), however scripts in the extension are allowed to make cross domain requests.</p></blockquote>
+<pre>
+<code>
+var main = function() {
+
+   		var myEvent= document.createEvent('Event');
+   		myEvent.initEvent('CustomEvent', true, true);
+
+   		function fireCustomEvent() {
+   			document.body.dispatchEvent(myEvent);
+   		};
+
+   		jQuery(document).ajaxComplete(function(event,request, settings){
+			console.log("Ajax complete.");
+			fireCustomEvent();
+   		});
+
+};
+
+// Lets create the script objects
+var injectedScript = document.createElement('script');
+injectedScript.type = 'text/javascript';
+injectedScript.text = '('+main+')("");';
+(document.body || document.head).appendChild(injectedScript);
+
+document.body.addEventListener('CustomEvent', function() {
+	console.log("Received event!");
+});
+</code>
+</pre>
+<p>
+The solution above (somewhat described by Google <a href="http://code.google.com/chrome/extensions/content_scripts.html">here</a>) demonstrates that the common denominator between the content scripts and the web page is the DOM. Though modification of the DOM you can pass data & propagate events. In the example above, I've injected my personal .ajaxComplete() handler which fires my custom event. The extension then listens for my custom event which is now technically a wrapper for the ajaxComplete event!</p>
+<p>
+<em>I know you can pass data through InnerText and by user jQuery's data method. However is it possible to serialize the actual jQuery instance from the web page and pass it to the extension?</em></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-01-13-chrome-extension-getting-those-ajax-queries.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

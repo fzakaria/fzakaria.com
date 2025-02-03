@@ -1,0 +1,492 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Page 2 of 7 for Farid Zakaria’s Blog | I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Farid Zakaria’s Blog" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<meta property="og:description" content="I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed." />
+<link rel="canonical" href="https://fzakaria.com/page2/" />
+<meta property="og:url" content="https://fzakaria.com/page2/" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="website" />
+<link rel="prev" href="https://fzakaria.com/" />
+<link rel="next" href="https://fzakaria.com/page3" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Farid Zakaria’s Blog" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebPage","description":"I’m a software engineer, father and wishful amateur surfer. If you’ve come seeking my political views; you’ve found the wrong Fareed.","headline":"Farid Zakaria’s Blog","url":"https://fzakaria.com/page2/"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Farid Zakaria's Blog
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/page2/">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <div class="media">
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-09-25
+      </span>
+      <span class="title">
+        
+        <a href="/2024/09/25/bazel-knowledge-secret-external-directory.html">Bazel Knowledge: Secret //external directory</a>
+        
+      </span>
+    </h2>
+    
+    <p>Did you know Bazel has a <em>secret</em> <code class="language-plaintext highlighter-rouge">//external</code> package that is created that contains
+all the external repositories that are you added to <em>WORKSPACE.bazel</em> or <em>MODULE.bazel</em> ? 🤓</p>
+
+<p>Let’s start with a very minimal <em>WORKSPACE</em> that pulls in the <a href="https://www.gnu.org/software/hello/">GNU Hello</a> codebase.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:http.bzl"</span><span class="p">,</span> <span class="s">"http_archive"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"gnu_hello"</span><span class="p">,</span>
+    <span class="n">urls</span> <span class="o">=</span> <span class="p">[</span><span class="s">"https://ftp.gnu.org/gnu/hello/hello-2.10.tar.gz"</span><span class="p">],</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"hello-2.10"</span><span class="p">,</span>
+    <span class="n">sha256</span> <span class="o">=</span> <span class="s">"31e066137a962676e89f69d1b65382de95a7ef7d914b8cb956f41ea72e0f516b"</span><span class="p">,</span>
+    <span class="n">build_file</span> <span class="o">=</span> <span class="s">"//third_party:gnu_hello.BUILD"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-09-23
+      </span>
+      <span class="title">
+        
+        <a href="/2024/09/23/bazel-knowledge-reference-targets-by-output-name.html">Bazel Knowledge: Reference targets by output name</a>
+        
+      </span>
+    </h2>
+    
+    <p>In an attempt to try and record some of the smaller knowledge brain gains on using Bazel, I’m hoping to write a few smaller article. 🤓</p>
+
+<p>Did you know you can reference an output file directly by name or the target name that produced it?</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_skylib//rules:diff_test.bzl"</span><span class="p">,</span> <span class="s">"diff_test"</span><span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"src_file"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"file.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"echo 'Hello, Bazel!' &gt; $@"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">diff_test</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"test_equality"</span><span class="p">,</span>
+    <span class="n">file1</span> <span class="o">=</span> <span class="s">":src_file"</span><span class="p">,</span>
+    <span class="n">file2</span> <span class="o">=</span> <span class="s">":file.txt"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>⚠️ If the output is the same name as the rule Bazel will give you a <strong>warning</strong> but everything still seems to work.</p>
+
+<p>I tend to prefer matching by rule name. I’m not yet aware of any reason to
+prefer one over the other.</p>
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-08-29
+      </span>
+      <span class="title">
+        
+        <a href="/2024/08/29/bazel-overlay-pattern.html">Bazel Overlay Pattern</a>
+        
+      </span>
+    </h2>
+    
+    <p>Do you have an internal fork of a codebase you’ve added Bazel <code class="language-plaintext highlighter-rouge">BUILD</code> files to?</p>
+
+<p>Do you want to open-source the BUILD files (+ additional files) but doing so into the upstream project might be a bit too onerous to start? 🤔</p>
+
+<p>Continuing with my dive 🤿 into <a href="https://bazel.build/">Bazel</a> for <code class="language-plaintext highlighter-rouge">$DAYJOB$</code>, I wanted to touch on a pattern I’ve only ever seen employed by Google for <a href="https://github.com/llvm/llvm-project">LLVM</a> but I’m finding very powerful: <em>Bazel Overlay Pattern</em>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-08-29
+      </span>
+      <span class="title">
+        
+        <a href="/2024/08/29/bazel-workspace-chunking.html">Bazel WORKSPACE chunking</a>
+        
+      </span>
+    </h2>
+    
+    <p>I have been doing quite a lot of <a href="https://bazel.build/">Bazel</a> for <code class="language-plaintext highlighter-rouge">$DAYJOB$</code>; and it’s definitely got it’s <em>fair share of warts</em>.</p>
+
+<blockquote>
+  <p>I have my own misgivings of it’s migration to <em>bzlmod</em> and it converging to a standard-issue dependency-management style tool.</p>
+</blockquote>
+
+<p>We have yet to transition to <code class="language-plaintext highlighter-rouge">MODULE.bazel</code> and our codebase is quite large. As you’d expect, we hit quite a lot of <em>diamond dependency</em> issues &amp; specifically with external repositories in our <code class="language-plaintext highlighter-rouge">WORKSPACE</code> file.</p>
+
+<p>A surprising implementation detail I recently learned was how Bazel does dependency resolution for external repositories in WORKSPACE.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-08-13
+      </span>
+      <span class="title">
+        
+        <a href="/2024/08/13/nixos-raspberry-pi-me.html">NixOS, Raspberry Pi & Me</a>
+        
+      </span>
+    </h2>
+    
+    <p>I have written <a href="/archive">a lot</a> about <a href="https://nixos.org/">NixOS</a>, so it’s no surprise that when I went to go
+dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine.</p>
+
+<p>Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh.</p>
+
+<p>I have had always a positive experience with <a href="https://www.ui.com/introduction">Ubiquiti</a> line of products. I installed two new AP (access points) and setup a <em>beautiful</em> home rack server that is <em>completely unnecessary</em> since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-07-31
+      </span>
+      <span class="title">
+        
+        <a href="/2024/07/31/automatic-nix-flake-follows.html">Automatic Nix flake follows</a>
+        
+      </span>
+    </h2>
+    
+    <p>If you have used <a href="https://nixos.org">Nix</a> flakes, you likely encountered something like the following. 🤢</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">std</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:divnix/std"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">devshell</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"devshell"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixago</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixago"</span><span class="p">;</span>
+<span class="nv">std</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixpkgs"</span><span class="p">;</span>
+
+<span class="nv">hive</span><span class="o">.</span><span class="nv">url</span> <span class="o">=</span> <span class="s2">"github:divnix/hive"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">colmena</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"colmena"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">disko</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"disko"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixos-generators</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixos-generators"</span><span class="p">;</span>
+<span class="nv">hive</span><span class="o">.</span><span class="nv">inputs</span><span class="o">.</span><span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">follows</span> <span class="o">=</span> <span class="s2">"nixpkgs"</span><span class="p">;</span>
+</code></pre></div></div>
+
+<p>Why is this follows necessary? 🤔</p>
+
+<p>It’s in fact <strong>not necessary</strong> but it makes the Nix evaluation simpler and as a result faster. 🤓</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-07-29
+      </span>
+      <span class="title">
+        
+        <a href="/2024/07/29/import-but-don-t-import-your-nixos-modules.html">Import but don't import your NixOS modules</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p>This is a follow-up post to my prior one <a href="/2024/07/28/nixos-option-inspection.html">NixOS Option Inspection</a>. Many thanks to <a href="https://github.com/roberth">@roberth</a> who followed up on my <a href="https://github.com/NixOS/nix/issues/11210">issue</a> and helped explain it. 🙏</p>
+</blockquote>
+
+<p>If you are using <a href="https://nixos.org">NixOS</a>, you’ve likely encountered the <em>module system</em>. It’s NixOS’s super-power and what makes it incredibly easy to share, reuse and configure systems based on Nix</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span> <span class="sx">./hello.nix</span> <span class="p">];</span>
+  
+  <span class="nv">services</span><span class="o">.</span><span class="nv">hello</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">greeter</span> <span class="o">=</span> <span class="s2">"Bob"</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>In a <a href="/2024/07/28/nixos-option-inspection.html">prior post</a>, I wrote about how it can be challenging to work backwards ⏪ from a NixOS option’s value to where it was defined.</p>
+
+<p>Turns out, the answer in the post was <em>relatively simple</em> and Nixpkgs has a gesture for discovering the answer via <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code>.</p>
+
+<p>Turns out, in order to get <code class="language-plaintext highlighter-rouge">definitionsWithLocations</code> to play nice, you have to avoid a surprisingly common <a href="https://notes.rmhogervorst.nl/post/2022/11/21/what-is-a-footgun/">footgun</a> 🥵.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-07-28
+      </span>
+      <span class="title">
+        
+        <a href="/2024/07/28/nixos-option-inspection.html">NixOS Option Inspection</a>
+        
+      </span>
+    </h2>
+    
+    <p><a href="https://nixos.org">NixOS</a> modules are great; and it’s one of the <em>superpowers</em> of NixOS.
+They’re so great, there was a <a href="https://discourse.nixos.org/t/working-group-member-search-module-system-for-packages/26574">working group</a> to look into how to apply the concept to Nixpkgs itself.</p>
+
+<blockquote>
+  <p>For those uninitiated, there are plenty of guides online describing it’s value and purpose such as
+<a href="https://nixos-and-flakes.thiscute.world/other-usage-of-flakes/module-system">this one</a> or on <a href="https://nix.dev/tutorials/module-system/deep-dive.html">nix.dev</a>.</p>
+</blockquote>
+
+<p>My <em>largest complaint</em> thus far with it was that it’s hard to go backwards. ⏪</p>
+
+<p><em>“Who and what defined a particular option?”</em> 🕵️</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-07-24
+      </span>
+      <span class="title">
+        
+        <a href="/2024/07/24/management-time.html">Management Time</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p><strong>Note</strong><br />
+This is the third (<a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">part1</a> &amp; <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">part2</a>) installment on my series of improving ELF symbol relocation processing.
+Consider reading them if this post interests you. 📖</p>
+</blockquote>
+
+<p>I have written <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">previously</a> about <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">improvements</a> to the dynamic linking process, specifically processing relocations for entries with symbols.</p>
+
+<p>The key insight into the improvements, that have let the dynamic linking process scale to 1 million relocation entries and up to <strong>22x</strong> speedup compared to the traditional methadology, is memoizing the relocation entries.</p>
+
+<p>This memoization is possible since the linking order of the loader is <em>deterministic</em> and in store-based systems such as <a href="https://nixos.org/">NixOS</a> the libraries to be loaded are <em>fixed &amp; static</em>.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+		<div class="post-stub">
+    <h2>
+      <span class="date hidden-xs">
+        2024-07-21
+      </span>
+      <span class="title">
+        
+        <a href="/2024/07/21/scaling-past-1-million-elf-symbol-relocations.html">Scaling past 1 million ELF symbol relocations</a>
+        
+      </span>
+    </h2>
+    
+    <blockquote>
+  <p><strong>Note</strong><br />
+This is a follow up to my previous post on <a href="/2024/05/03/speeding-up-elf-relocations-for-store-based-systems.html">speeding up elf relocations for store based systems</a>.</p>
+</blockquote>
+
+<p>I wrote earlier about some impressive speedups that can be achieved by foregoing the typical dynamic linking that can be applied to systems such as Nix where the dependencies for a given application are static.</p>
+
+
+    
+</div>
+
+		<hr>
+	
+
+	
+	    <div class="pull-left">
+	        <a href="/" class="btn btn-primary">
+	            <span class="icon">
+	              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M192 127.338v257.324c0 17.818-21.543 26.741-34.142 14.142L29.196 270.142c-7.81-7.81-7.81-20.474 0-28.284l128.662-128.662c12.599-12.6 34.142-3.676 34.142 14.142z"/></svg>
+	            </span>
+	            Page 1
+	        </a>
+	    </div>
+	
+
+	
+    <div class="pull-right">
+        <a href="/page3" class="btn btn-primary">
+            Page 3
+            <span class="icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 512"><path d="M0 384.662V127.338c0-17.818 21.543-26.741 34.142-14.142l128.662 128.662c7.81 7.81 7.81 20.474 0 28.284L34.142 398.804C21.543 411.404 0 402.48 0 384.662z"/></svg>
+            </span>
+        </a>
+    </div>
+    
+</div>
+<div class="clearfix"></div>
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/page2/index.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

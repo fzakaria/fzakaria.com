@@ -1,0 +1,268 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>NixOS; what’s in a rebuild? | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="NixOS; what’s in a rebuild?" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I have been using Nix but mainly through home-manager on my Debian system; finally I made the plunge into running NixOS on an AWS server for my side-projects. There’s a lot of information on how to configure &amp; setup an already created NixOS machine but not much advice for workflows, best practices &amp; multiple machines. Here I’ll document what I found useful and pulling back the veil on some of the NixOS tooling. Feel free to check my Nix repository for home-manager &amp; NixOS https://github.com/fzakaria/nix-home" />
+<meta property="og:description" content="I have been using Nix but mainly through home-manager on my Debian system; finally I made the plunge into running NixOS on an AWS server for my side-projects. There’s a lot of information on how to configure &amp; setup an already created NixOS machine but not much advice for workflows, best practices &amp; multiple machines. Here I’ll document what I found useful and pulling back the veil on some of the NixOS tooling. Feel free to check my Nix repository for home-manager &amp; NixOS https://github.com/fzakaria/nix-home" />
+<link rel="canonical" href="https://fzakaria.com/2020/09/06/nixos-what-s-in-a-rebuild.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/06/nixos-what-s-in-a-rebuild.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-06T08:59:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="NixOS; what’s in a rebuild?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-06T08:59:00-07:00","datePublished":"2020-09-06T08:59:00-07:00","description":"I have been using Nix but mainly through home-manager on my Debian system; finally I made the plunge into running NixOS on an AWS server for my side-projects. There’s a lot of information on how to configure &amp; setup an already created NixOS machine but not much advice for workflows, best practices &amp; multiple machines. Here I’ll document what I found useful and pulling back the veil on some of the NixOS tooling. Feel free to check my Nix repository for home-manager &amp; NixOS https://github.com/fzakaria/nix-home","headline":"NixOS; what’s in a rebuild?","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/06/nixos-what-s-in-a-rebuild.html"},"url":"https://fzakaria.com/2020/09/06/nixos-what-s-in-a-rebuild.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    NixOS; what's in a rebuild?
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-06
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/06/nixos-what-s-in-a-rebuild.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I have been using Nix but mainly through <a href="https://github.com/rycee/home-manager">home-manager</a> on my Debian system; finally I made the plunge into running NixOS on an AWS server for my <em>side-projects</em>.</p>
+
+<p>There’s a lot of information on how to configure &amp; setup an already created NixOS machine but not much advice for workflows, best practices &amp; multiple machines.</p>
+
+<p>Here I’ll document what I found useful and pulling back the veil on some of the NixOS tooling.</p>
+
+<blockquote>
+  <p>Feel free to check my Nix repository for home-manager &amp; NixOS
+<a href="https://github.com/fzakaria/nix-home">https://github.com/fzakaria/nix-home</a></p>
+</blockquote>
+
+<!--more-->
+
+<h3 id="configurationnix">configuration.nix</h3>
+
+<p>NixOS documentation outlines that the entry-point to the NixOS setup is a file <em>configuration.nix</em>; why?</p>
+
+<p>Well, NixOS configuration is primarily driven by <strong>nixos-rebuild</strong>; let’s take a look at the <a href="https://github.com/NixOS/nixpkgs/blob/02590c96209d374d7f720293fcb8337e17104bc9/nixos/modules/installer/tools/nixos-rebuild.sh#L419-L421">source</a>.</p>
+
+<p>One of the first things it does when running <code class="language-plaintext highlighter-rouge">switch</code> is the following.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+<span class="nv">pathToConfig</span><span class="o">=</span><span class="s2">"</span><span class="si">$(</span>nixBuild <span class="s1">'&lt;nixpkgs/nixos&gt;'</span> <span class="se">\</span>
+<span class="nt">--no-out-link</span> <span class="nt">-A</span> system <span class="s2">"</span><span class="k">${</span><span class="nv">extraBuildFlags</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span><span class="si">)</span><span class="s2">"</span>
+...
+</code></pre></div></div>
+
+<p>Interesting so it’s building a <em>system</em> &amp; fetching the <em>/nix/store/</em> path for it; what’s that?</p>
+
+<p>You can find the <em>system</em> attribute in <a href="https://github.com/NixOS/nixpkgs/blob/ce6bc4dbc7821bc271e6ae5d25b57075c4ce877f/nixos/default.nix#L33">nixos/default.nix</a>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">configuration</span> <span class="o">?</span> <span class="kr">import</span> <span class="sx">./lib/from-env.nix</span> <span class="s2">"NIXOS_CONFIG"</span> <span class="o">&lt;</span><span class="nv">nixos-config</span><span class="o">&gt;</span>
+<span class="p">,</span> <span class="nv">system</span> <span class="o">?</span> <span class="kr">builtins</span><span class="o">.</span><span class="nv">currentSystem</span>
+<span class="p">}:</span> <span class="p">{</span>
+  <span class="o">...</span>
+  <span class="nv">system</span> <span class="o">=</span> <span class="nv">eval</span><span class="o">.</span><span class="nv">config</span><span class="o">.</span><span class="nv">system</span><span class="o">.</span><span class="nv">build</span><span class="o">.</span><span class="nv">toplevel</span><span class="p">;</span>
+  <span class="o">...</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>This is in fact the <strong>entry-point</strong> for NixOS; and we can see here that the <em>configuration</em> defaults to <nixos-config> if not given.</nixos-config></p>
+
+<blockquote>
+  <p>On NixOS <em>&lt;nixos-config&gt;</em> is set in <em>NIX_PATH</em> to <code class="language-plaintext highlighter-rouge">nixos-config=/etc/nixos/configuration.nix</code></p>
+</blockquote>
+
+<p>Let’s write the most basic <em>configuration.nix</em></p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="o">...</span><span class="p">}:{</span>
+  <span class="c"># We need no bootloader, because we aren't booting yet</span>
+  <span class="nv">boot</span><span class="o">.</span><span class="nv">loader</span><span class="o">.</span><span class="nv">grub</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+  <span class="nv">fileSystems</span> <span class="o">=</span> <span class="p">{</span>
+     <span class="s2">"/"</span><span class="o">.</span><span class="nv">label</span> <span class="o">=</span> <span class="s2">"nixos-root"</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">$ nix-build -I nixos-config=./configuration.nix --no-out-link '&lt;nixpkgs/nixos&gt;' -A system</code></p>
+
+<p>We can also inline and build the <em>system</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nv">nixos</span> <span class="o">=</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="sx">nixpkgs/nixos</span><span class="o">&gt;</span> <span class="p">{</span> <span class="nv">configuration</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="c"># We need no bootloader, because we aren't booting yet</span>
+      <span class="nv">boot</span><span class="o">.</span><span class="nv">loader</span><span class="o">.</span><span class="nv">grub</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+
+      <span class="nv">fileSystems</span> <span class="o">=</span> <span class="p">{</span>
+         <span class="s2">"/"</span><span class="o">.</span><span class="nv">label</span> <span class="o">=</span> <span class="s2">"nixos-root"</span><span class="p">;</span>
+      <span class="p">};</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+<span class="kn">in</span> <span class="nv">nixos</span><span class="o">.</span><span class="nv">system</span>
+</code></pre></div></div>
+
+<p>The output will be the <em>/nix/store</em> system closure; this is a <em>somewhat</em> typical Linux filesystem including <em>/etc</em>.</p>
+
+<blockquote>
+  <p>comment from <a href="https://github.com/Infinisil">infinisil</a>: <em>/bin</em> &amp; <em>/lib</em> are purposefully left out to avoid programs depending on them; forcing purer Nix builds. They can be found nested within the <em>/sw</em> directory.</p>
+</blockquote>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ tree /nix/store/x0nbdy16myi7y72vy02nw8hywr3fnv7d-nixos-system-nixos-20.09pre237891.f9eba87bf03
+
+/nix/store/x0nbdy16myi7y72vy02nw8hywr3fnv7d-nixos-system-nixos-20.09pre237891.f9eba87bf03
+├── activate
+├── append-initrd-secrets -&gt; /nix/store/vy8lxijna11za631r54gb9gl099qn7by-append-initrd-secrets/bin/append-initrd-secrets
+├── bin
+│   └── switch-to-configuration
+├── configuration-name
+├── etc -&gt; /nix/store/cbg97bmc5jhid2hn0xxgs5ggd75xcibb-etc/etc
+├── extra-dependencies
+├── firmware -&gt; /nix/store/76n4kcg49px9wqha2d9lpfsj5cccwj0h-firmware/lib/firmware
+├── init
+...
+</code></pre></div></div>
+
+<p>Cool! <em>nixos-rebuild</em> will change <em>/run/current-system</em> pointing to this entry afterwards.</p>
+
+<h3 id="vmnix">vm.nix</h3>
+
+<p>A little fun <em>tip</em>; there is a top level attribute alongside <em>system</em> that can make building a virtual machine very easy.</p>
+
+<p>We simply need to change the attribute to <strong>nixos.vm</strong></p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">nixos</span> <span class="o">=</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="sx">nixpkgs/nixos</span><span class="o">&gt;</span> <span class="p">{</span> <span class="nv">configuration</span> <span class="o">=</span> <span class="kr">import</span> <span class="sx">./configuration.nix</span> <span class="p">};</span>
+<span class="kn">in</span> <span class="nv">nixos</span><span class="o">.</span><span class="nv">vm</span>
+</code></pre></div></div>
+
+<p>You can then start the <strong>vm</strong> by running <code class="language-plaintext highlighter-rouge">./result/bin/run-nixos-vm</code>.</p>
+
+<blockquote>
+  <p>The virtual machine setup will override the hardware configuration to setup sane defaults for QEMU</p>
+</blockquote>
+
+<p>I tend to keep a <em>vm.nix</em> alongside each of my machine configurations to test quickly in an isolated environment.</p>
+
+<p>If you prefer a <em>nix-build</em> one-liner rather the explicit file above; you can do <code class="language-plaintext highlighter-rouge">nix-build '&lt;nixpkgs/nixos&gt;' -A vm -I nixos-config=./configuration.nix</code> which accomplishes the same thing.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-06-nixos-what-s-in-a-rebuild.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

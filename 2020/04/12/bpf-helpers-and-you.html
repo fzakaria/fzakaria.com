@@ -1,0 +1,274 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>bpf_helpers and you… | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="bpf_helpers and you…" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a republishing of a e-mail I sent out to xdp-newbies mailing list which you can find here originally published on Wed, 30 Oct 2019 This is my attempt of a continuation of David Miller’s prior e-mail bpf.h and you…. I was curious about how ebpf filters are wired and work. The heavy use of C macros makes the source code difficult for me to comprehend. Maybe there’s an online pre-processed version of the Linux kernel? I’m hoping others may find this exploratory-dive insightful – hopefully, it’s accurate enough." />
+<meta property="og:description" content="This is a republishing of a e-mail I sent out to xdp-newbies mailing list which you can find here originally published on Wed, 30 Oct 2019 This is my attempt of a continuation of David Miller’s prior e-mail bpf.h and you…. I was curious about how ebpf filters are wired and work. The heavy use of C macros makes the source code difficult for me to comprehend. Maybe there’s an online pre-processed version of the Linux kernel? I’m hoping others may find this exploratory-dive insightful – hopefully, it’s accurate enough." />
+<link rel="canonical" href="https://fzakaria.com/2020/04/12/bpf-helpers-and-you.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/04/12/bpf-helpers-and-you.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-04-12T12:55:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="bpf_helpers and you…" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-04-12T12:55:00-07:00","datePublished":"2020-04-12T12:55:00-07:00","description":"This is a republishing of a e-mail I sent out to xdp-newbies mailing list which you can find here originally published on Wed, 30 Oct 2019 This is my attempt of a continuation of David Miller’s prior e-mail bpf.h and you…. I was curious about how ebpf filters are wired and work. The heavy use of C macros makes the source code difficult for me to comprehend. Maybe there’s an online pre-processed version of the Linux kernel? I’m hoping others may find this exploratory-dive insightful – hopefully, it’s accurate enough.","headline":"bpf_helpers and you…","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/04/12/bpf-helpers-and-you.html"},"url":"https://fzakaria.com/2020/04/12/bpf-helpers-and-you.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    bpf_helpers and you...
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-04-12
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/04/12/bpf-helpers-and-you.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a republishing of a e-mail I sent out to <em>xdp-newbies</em> mailing list which you can find <a href="https://www.spinics.net/lists/xdp-newbies/msg01422.html">here</a> originally published on Wed, 30 Oct 2019</p>
+</blockquote>
+
+<p>This is my attempt of a continuation of David Miller’s prior e-mail
+<a href="https://www.spinics.net/lists/xdp-newbies/msg00179.html">bpf.h and you…</a>.</p>
+
+<p>I was curious about how ebpf filters are wired and work. The heavy use of C
+macros makes the source code difficult for me to comprehend.</p>
+
+<blockquote>
+  <p>Maybe there’s an online pre-processed version of the Linux kernel?</p>
+</blockquote>
+
+<p>I’m hoping others may find this exploratory-dive insightful – hopefully,
+it’s accurate enough.</p>
+
+<!--more-->
+
+<p>Let’s write a very trivial ebpf filter <code class="language-plaintext highlighter-rouge">hello_world_kern.c</code> and have
+it print “hello world”</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;linux/bpf.h&gt;</span><span class="cp">
+</span>
+<span class="cp">#define __section(NAME) __attribute__((section(NAME), used))
+</span>
+<span class="k">static</span> <span class="kt">char</span> <span class="n">_license</span><span class="p">[]</span> <span class="n">__section</span><span class="p">(</span><span class="s">"license"</span><span class="p">)</span> <span class="o">=</span> <span class="s">"GPL"</span><span class="p">;</span>
+
+<span class="cm">/* helper functions called from eBPF programs written in C */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">bpf_trace_printk</span><span class="p">)(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fmt_size</span><span class="p">,</span>
+                            <span class="p">...)</span> <span class="o">=</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">BPF_FUNC_trace_printk</span><span class="p">;</span>
+
+<span class="n">__section</span><span class="p">(</span><span class="s">"hello_world"</span><span class="p">)</span> <span class="kt">int</span> <span class="nf">hello_world_filter</span><span class="p">(</span><span class="k">struct</span> <span class="n">__sk_buff</span> <span class="o">*</span><span class="n">skb</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="n">msg</span><span class="p">[]</span> <span class="o">=</span> <span class="s">"hello world"</span><span class="p">;</span>
+    <span class="n">bpf_debug_printk</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">msg</span><span class="p">));</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>If we compile the above using the below, we can inspect the LLVM IR.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>clang <span class="nt">-c</span> <span class="nt">-o</span> hello_world_kern.ll <span class="nt">-x</span> c <span class="nt">-S</span> <span class="nt">-emit-llvm</span> hello_world_kern.c
+</code></pre></div></div>
+
+<p>The few lines that stand out are:</p>
+
+<div class="language-llvm highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="vg">@bpf_trace_printk</span> <span class="p">=</span> <span class="k">internal</span> <span class="k">global</span> <span class="kt">i32</span> <span class="p">(</span><span class="kt">i8</span><span class="p">*,</span> <span class="kt">i32</span><span class="p">,</span> <span class="p">...)*</span> <span class="k">inttoptr</span> <span class="p">(</span><span class="kt">i64</span> <span class="m">6</span> <span class="k">to</span> <span class="kt">i32</span> <span class="p">(</span><span class="kt">i8</span><span class="p">*,</span> <span class="kt">i32</span><span class="p">,</span> <span class="p">...)*),</span> <span class="k">align</span> <span class="m">8</span>
+<span class="p">....</span>
+<span class="nv">%6</span> <span class="p">=</span> <span class="k">load</span> <span class="kt">i32</span> <span class="p">(</span><span class="kt">i8</span><span class="p">*,</span> <span class="kt">i32</span><span class="p">,</span> <span class="p">...)*,</span> <span class="kt">i32</span> <span class="p">(</span><span class="kt">i8</span><span class="p">*,</span> <span class="kt">i32</span><span class="p">,</span> <span class="p">...)**</span> <span class="vg">@bpf_trace_printk</span><span class="p">,</span> <span class="k">align</span> <span class="m">8</span>
+<span class="nv">%7</span> <span class="p">=</span> <span class="k">getelementptr</span> <span class="k">inbounds</span> <span class="p">[</span><span class="m">13</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">],</span> <span class="p">[</span><span class="m">13</span> <span class="p">x</span> <span class="kt">i8</span><span class="p">]*</span> <span class="nv">%3</span><span class="p">,</span> <span class="kt">i32</span> <span class="m">0</span><span class="p">,</span> <span class="kt">i32</span> <span class="m">0</span>
+<span class="nv">%8</span> <span class="p">=</span> <span class="k">call</span> <span class="kt">i32</span> <span class="p">(</span><span class="kt">i8</span><span class="p">*,</span> <span class="kt">i32</span><span class="p">,</span> <span class="p">...)</span> <span class="nv">%6</span><span class="p">(</span><span class="kt">i8</span><span class="p">*</span> <span class="nv">%7</span><span class="p">,</span> <span class="kt">i32</span> <span class="m">13</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The above demonstrates that the value of <code class="language-plaintext highlighter-rouge">BPF_FUNC_trace_printk</code> is
+simply the integer <code class="language-plaintext highlighter-rouge">i64 6</code> and it is being cast to the function pointer (<code class="language-plaintext highlighter-rouge">i32 (i8*, i32, ...)*)</code>)</p>
+
+<p>Sure enough, we can confirm that <code class="language-plaintext highlighter-rouge">bpf_trace_printk</code> is the 6th value
+in the enumeration of known bpf bpf_helpers in <a href="https://elixir.bootlin.com/linux/v5.3.7/source/include/uapi/linux/bpf.h#L2724">bpf.h</a></p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#define __BPF_FUNC_MAPPER(FN)       \
+    FN(unspec),                     \
+    FN(map_lookup_elem),            \
+    FN(map_update_elem),            \
+    FN(map_delete_elem),            \
+    FN(probe_read),                 \
+    FN(ktime_get_ns),               \
+    FN(trace_printk),               \
+</span></code></pre></div></div>
+
+<p>We can go even further and take this LLVM IR and generate human-readable eBPF assembly using <code class="language-plaintext highlighter-rouge">llc</code></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>llc hello_world_kern.ll -march=bpf
+</code></pre></div></div>
+
+<p>Depending on the optimization level of the earlier <code class="language-plaintext highlighter-rouge">clang</code> call you
+may see different results however using <code class="language-plaintext highlighter-rouge">-O3</code> we can see</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>call 6
+</code></pre></div></div>
+
+<p>Great! So we know that the call to <code class="language-plaintext highlighter-rouge">bpf_trace_printk</code> gets translated
+into a call instruction with an immediate value of 6.</p>
+
+<p>How does it end up calling code within the kernel, though?
+Once the Verifier verifies the bytecode it calls <a href="https://elixir.bootlin.com/linux/v5.3.8/source/kernel/bpf/verifier.c#L8869">fixup_bpf_calls</a>
+which goes through all the instructions and makes the necessary
+adjustment to the immediate value</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">fixup_bpf_calls</span><span class="p">(...)</span> <span class="p">{</span>
+    <span class="p">...</span>
+    <span class="nl">patch_call_imm:</span>
+        <span class="n">fn</span> <span class="o">=</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">ops</span><span class="o">-&gt;</span><span class="n">get_func_proto</span><span class="p">(</span><span class="n">insn</span><span class="o">-&gt;</span><span class="n">imm</span><span class="p">,</span> <span class="n">env</span><span class="o">-&gt;</span><span class="n">prog</span><span class="p">);</span>
+        <span class="cm">/* all functions that have prototype and verifier allowed
+        * programs to call them, must be real in-kernel functions
+        */</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">fn</span><span class="o">-&gt;</span><span class="n">func</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">verbose</span><span class="p">(</span><span class="n">env</span><span class="p">,</span>
+                <span class="s">"kernel subsystem misconfigured func %s#%d</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span>
+                <span class="n">func_id_name</span><span class="p">(</span><span class="n">insn</span><span class="o">-&gt;</span><span class="n">imm</span><span class="p">),</span> <span class="n">insn</span><span class="o">-&gt;</span><span class="n">imm</span><span class="p">);</span>
+            <span class="k">return</span> <span class="o">-</span><span class="n">EFAULT</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">insn</span><span class="o">-&gt;</span><span class="n">imm</span> <span class="o">=</span> <span class="n">fn</span><span class="o">-&gt;</span><span class="n">func</span> <span class="o">-</span> <span class="n">__bpf_call_base</span><span class="p">;</span>
+</code></pre></div></div>
+<p>N.B. I haven’t deciphered how <em>__bpf_call_base</em> is used / works</p>
+
+<p>The <code class="language-plaintext highlighter-rouge">get_func_proto</code> will return the function prototypes registered by
+every subsystem, such as in <a href="https://elixir.bootlin.com/linux/v5.3.8/source/net/core/filter.c#L5991">net/core/filter.c</a>.
+At this point in the method, it’s a simple switch statement to get the
+matching function prototype given the numeric value.</p>
+
+<p>I’d love to see more on the code path of how the non-JIT vs JIT
+instructions get handled.</p>
+
+<p>For instance, for the net subsystem, I can see where the ebpf prog is <a href="https://elixir.bootlin.com/linux/v5.3.8/source/net/core/filter.c#L119">invoked</a>.
+Still, it’s challenging to work out how the choice of executing the
+function directly (in the case of JIT) vs. running it through the
+interpreter is handled.</p>
+
+<p>eBPF is impressive, but the toolchain requires some technical depth of the Linux kernel. If you have similar posts of explaining eBPF from the ground up, <a href="mailto:farid.m.zakaria@gmail.com">share it with me</a>.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-04-12-bpf-helpers-and-you.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

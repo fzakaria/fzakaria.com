@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Python is not == | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Python is not ==" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Tricky semantics Getting back into Python for work, I&#39;ve been writing a Django application. When you write Python, I tend to always want to try and write it in the most &#39;Pythonic&#39; way. To me, the word represents at it&#39;s basic form writing Python code in a way that reads itself easily; nearly as English. I&#39;m sure I&#39;m completely wrong and that it only represents awesome crazy list comprehensions... A common neologism in the Python community is pythonic, which can have a wide range of meanings related to program style. To say that code is pythonic is to say that it uses Python idioms well, that it is natural or shows fluency in the language. With the prerequisite of a perhaps faulty state of mind, I tend to use the keywords not and is abundantly in my boolean expressions. The is keyword however stumped me when used on Strings. The following two if statements are not identical. In fact, using the is keyword will likely fail the boolean expression. #Test1 if a is &quot;test&quot;: print &quot;Is Found&quot; #Test2 if a == &quot;test&quot;: print &quot;Equality Found&quot; Why was this tricky however? Once I noticed the condition failing, I did my favourite thing to do when debugging Python, I launched the console! C:Developmentdrone&gt;python Python 2.7.2 (default, Jun 12 2011, 15:08:59) [MSC v.1500 32 bit (Intel)] on win32 Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information. &gt;&gt;&gt; a = &quot;test&quot; &gt;&gt;&gt; if a is &quot;test&quot;: ... print &quot;Is matched&quot; ... Is matched &gt;&gt;&gt; Didn&#39;t take too long Googling to get to the bottom of this however, and as always Stackoverflow provided a nice answer. The Python is keyword tests object identity. You should NOT use it to test for string equality. It may seem to work frequently because Python implementations, like those of many very high level languages, performs &quot;interning&quot; of strings. That is to say that string literals and values are internally kept in a hashed list and those which are identical are rendered as references to the same object. (This is possible because Python strings are immutable). I put the header as tricky, however I guess at the end of the day it&#39;s my fault for not knowing the language better." />
+<meta property="og:description" content="Tricky semantics Getting back into Python for work, I&#39;ve been writing a Django application. When you write Python, I tend to always want to try and write it in the most &#39;Pythonic&#39; way. To me, the word represents at it&#39;s basic form writing Python code in a way that reads itself easily; nearly as English. I&#39;m sure I&#39;m completely wrong and that it only represents awesome crazy list comprehensions... A common neologism in the Python community is pythonic, which can have a wide range of meanings related to program style. To say that code is pythonic is to say that it uses Python idioms well, that it is natural or shows fluency in the language. With the prerequisite of a perhaps faulty state of mind, I tend to use the keywords not and is abundantly in my boolean expressions. The is keyword however stumped me when used on Strings. The following two if statements are not identical. In fact, using the is keyword will likely fail the boolean expression. #Test1 if a is &quot;test&quot;: print &quot;Is Found&quot; #Test2 if a == &quot;test&quot;: print &quot;Equality Found&quot; Why was this tricky however? Once I noticed the condition failing, I did my favourite thing to do when debugging Python, I launched the console! C:Developmentdrone&gt;python Python 2.7.2 (default, Jun 12 2011, 15:08:59) [MSC v.1500 32 bit (Intel)] on win32 Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information. &gt;&gt;&gt; a = &quot;test&quot; &gt;&gt;&gt; if a is &quot;test&quot;: ... print &quot;Is matched&quot; ... Is matched &gt;&gt;&gt; Didn&#39;t take too long Googling to get to the bottom of this however, and as always Stackoverflow provided a nice answer. The Python is keyword tests object identity. You should NOT use it to test for string equality. It may seem to work frequently because Python implementations, like those of many very high level languages, performs &quot;interning&quot; of strings. That is to say that string literals and values are internally kept in a hashed list and those which are identical are rendered as references to the same object. (This is possible because Python strings are immutable). I put the header as tricky, however I guess at the end of the day it&#39;s my fault for not knowing the language better." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-10-13-python-is-not.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-10-13-python-is-not.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-10-13T10:32:58-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Python is not ==" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-10-13T10:32:58-07:00","datePublished":"2011-10-13T10:32:58-07:00","description":"Tricky semantics Getting back into Python for work, I&#39;ve been writing a Django application. When you write Python, I tend to always want to try and write it in the most &#39;Pythonic&#39; way. To me, the word represents at it&#39;s basic form writing Python code in a way that reads itself easily; nearly as English. I&#39;m sure I&#39;m completely wrong and that it only represents awesome crazy list comprehensions... A common neologism in the Python community is pythonic, which can have a wide range of meanings related to program style. To say that code is pythonic is to say that it uses Python idioms well, that it is natural or shows fluency in the language. With the prerequisite of a perhaps faulty state of mind, I tend to use the keywords not and is abundantly in my boolean expressions. The is keyword however stumped me when used on Strings. The following two if statements are not identical. In fact, using the is keyword will likely fail the boolean expression. #Test1 if a is &quot;test&quot;: print &quot;Is Found&quot; #Test2 if a == &quot;test&quot;: print &quot;Equality Found&quot; Why was this tricky however? Once I noticed the condition failing, I did my favourite thing to do when debugging Python, I launched the console! C:Developmentdrone&gt;python Python 2.7.2 (default, Jun 12 2011, 15:08:59) [MSC v.1500 32 bit (Intel)] on win32 Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information. &gt;&gt;&gt; a = &quot;test&quot; &gt;&gt;&gt; if a is &quot;test&quot;: ... print &quot;Is matched&quot; ... Is matched &gt;&gt;&gt; Didn&#39;t take too long Googling to get to the bottom of this however, and as always Stackoverflow provided a nice answer. The Python is keyword tests object identity. You should NOT use it to test for string equality. It may seem to work frequently because Python implementations, like those of many very high level languages, performs &quot;interning&quot; of strings. That is to say that string literals and values are internally kept in a hashed list and those which are identical are rendered as references to the same object. (This is possible because Python strings are immutable). I put the header as tricky, however I guess at the end of the day it&#39;s my fault for not knowing the language better.","headline":"Python is not ==","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-10-13-python-is-not.html"},"url":"https://fzakaria.com/old_blog/2011-10-13-python-is-not.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Python is not ==
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-10-13
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-10-13-python-is-not.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Tricky semantics </h2>
+<p>
+Getting back into Python for work, I've been writing a <a href="https://www.djangoproject.com/">Django</a> application. When you write Python, I tend to always want to try and write it in the most '<em>Pythonic</em>' way. To me, the word represents at it's basic form writing Python code in a way that reads itself easily; nearly as English. <em>I'm sure I'm completely wrong and that it only represents awesome crazy list comprehensions...</em></p>
+<blockquote><p>A common neologism in the Python community is pythonic, which can have a wide range of meanings related to program style. To say that code is pythonic is to say that it uses Python idioms well, that it is natural or shows fluency in the language.</p></blockquote>
+<p>
+With the prerequisite of a perhaps faulty state of mind, I tend to use the keywords <strong>not </strong> and <strong>is</strong> abundantly in my boolean expressions. The <strong>is</strong> keyword however stumped me when used on Strings. The following two if statements are not identical. In fact, using the <strong>is</strong> keyword will likely fail the boolean expression.</p>
+<pre>
+<code>
+#Test1
+if a is "test":
+    print "Is Found"
+#Test2
+if a == "test":
+    print "Equality Found"
+</code>
+</pre>
+<p>Why was this tricky however? Once I noticed the condition failing, I did my favourite thing to do when debugging Python, I launched the console!<br />
+<code><br />
+C:Developmentdrone>python<br />
+Python 2.7.2 (default, Jun 12 2011, 15:08:59) [MSC v.1500 32 bit (Intel)] on win32<br />
+Type "help", "copyright", "credits" or "license" for more information.<br />
+>>> a = "test"<br />
+>>> if a is "test":<br />
+...     print "Is matched"<br />
+...<br />
+Is matched<br />
+>>><br />
+</code><br />
+Didn't take too long Googling to get to the bottom of this however, and as always Stackoverflow provided a nice <a href="http://stackoverflow.com/questions/2987958/how-is-the-is-keyword-implemented-in-python">answer</a>.</p>
+<blockquote><p>The Python is keyword tests object identity. You should NOT use it to test for string equality. It may seem to work frequently because Python implementations, like those of many very high level languages, performs "interning" of strings. That is to say that string literals and values are internally kept in a hashed list and those which are identical are rendered as references to the same object. (This is possible because Python strings are immutable).</p></blockquote>
+<p>I put the header as <em>tricky</em>, however I guess at the end of the day it's my fault for not knowing the language better.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-10-13-python-is-not.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

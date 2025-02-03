@@ -1,0 +1,343 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>NixOS, Raspberry Pi &amp; Me | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="NixOS, Raspberry Pi &amp; Me" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I have written a lot about NixOS, so it’s no surprise that when I went to go dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine. Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh. I have had always a positive experience with Ubiquiti line of products. I installed two new AP (access points) and setup a beautiful home rack server that is completely unnecessary since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲." />
+<meta property="og:description" content="I have written a lot about NixOS, so it’s no surprise that when I went to go dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine. Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh. I have had always a positive experience with Ubiquiti line of products. I installed two new AP (access points) and setup a beautiful home rack server that is completely unnecessary since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲." />
+<link rel="canonical" href="https://fzakaria.com/2024/08/13/nixos-raspberry-pi-me.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/08/13/nixos-raspberry-pi-me.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-08-13T08:52:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="NixOS, Raspberry Pi &amp; Me" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-13T08:52:00-07:00","datePublished":"2024-08-13T08:52:00-07:00","description":"I have written a lot about NixOS, so it’s no surprise that when I went to go dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine. Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh. I have had always a positive experience with Ubiquiti line of products. I installed two new AP (access points) and setup a beautiful home rack server that is completely unnecessary since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲.","headline":"NixOS, Raspberry Pi &amp; Me","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/08/13/nixos-raspberry-pi-me.html"},"url":"https://fzakaria.com/2024/08/13/nixos-raspberry-pi-me.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    NixOS, Raspberry Pi & Me
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-08-13
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/08/13/nixos-raspberry-pi-me.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I have written <a href="/archive">a lot</a> about <a href="https://nixos.org/">NixOS</a>, so it’s no surprise that when I went to go
+dust off my old Raspberry Pi 4, I looked to rebrand it as a new NixOS machine.</p>
+
+<p>Before I event went to play with my Pi, I was unhappy with my current home-networking setup and looked to give it a refresh.</p>
+
+<p>I have had always a positive experience with <a href="https://www.ui.com/introduction">Ubiquiti</a> line of products. I installed two new AP (access points) and setup a <em>beautiful</em> home rack server that is <em>completely unnecessary</em> since my Internet provider is Comcast with top upload speeds of 35 Mbps 🥲.</p>
+
+<!--more-->
+
+<p><a href="/assets/images/home_rack.jpg"><img src="/assets/images/home_rack_50p.jpg" alt="Image of my home rack" /></a></p>
+
+<blockquote>
+  <p>I’m currently building a home-server that will fill a few of the empty slots on the rack.</p>
+</blockquote>
+
+<p>If you are interested in the setup here is the list of materials I used:</p>
+<ul>
+  <li><a href="https://store.ui.com/us/en/collections/unifi-dream-machine/products/udm-se">Dream Machine Special Edition</a></li>
+  <li><a href="https://store.ui.com/us/en/collections/unifi-wifi-flagship-compact">U6 Access Point</a></li>
+  <li><a href="https://amzn.to/4fGP59A">9U Wall Mount Rack</a></li>
+  <li><a href="https://amzn.to/3AvYFMc">1U Universal Rack Shelf</a></li>
+  <li><a href="https://amzn.to/4fGcHLr">Cat6 Keystone Coupler 5-Pack</a></li>
+  <li><a href="https://amzn.to/4dnyo1a">Blank Keystone Jack Inserts</a></li>
+  <li><a href="https://amzn.to/3YHTLWr">Cat6 Ethernet Cable 0.5ft 5 Pack</a></li>
+  <li><a href="https://amzn.to/46OzalE">24-Port Blank Keystone 1U Patch Panel</a></li>
+  <li><a href="https://amzn.to/3yE1iv6">1U PDU Power Strip Surge Protector</a></li>
+</ul>
+
+<p>Now, getting back to the Raspberry Pi, there’s quite a few blogs online on how to run NixOS but they all vary slightly in their setup
+and few are set up to use <em>flake.nix</em>.</p>
+
+<p>Now I’m throwing mine to the mix 🥳.</p>
+
+<p>You can find below <a href="https://github.com/fzakaria/nix-home/blob/1a3aee1f2bf31bdeb638276bf2b6e8076e3413c1/machines/kuato/configuration.nix">my minimal configuration.nix</a> for my Raspberry Pi (the link goes to GitHub permalink).</p>
+
+<p>Notable points I had to do:</p>
+<ul>
+  <li>Feedback from the community on Matrix was to avoid <a href="https://github.com/NixOS/nixos-hardware">nixos-hardware</a> since the base image <em>should just work</em>.
+Unfortunately <code class="language-plaintext highlighter-rouge">nixos-hardware.nixosModules.raspberry-pi-4</code> was necessary, as was the vendored Linux kernel it installs.</li>
+  <li>Cross compiling NixOS I believe <em>is possible</em> but I couldn’t find a simple set up with <em>flake.nix</em> to work. The ultimate workaround is to add
+support for emulation on your build host. This also does let you use the NixOS cache but <strong>be warned</strong> that if you install custom software might come to a crawl.
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>binfmt.emulatedSystems = ["aarch64-linux"];
+</code></pre></div>    </div>
+  </li>
+  <li>I disabled ZFS to save a lot of time building my image.</li>
+  <li><code class="language-plaintext highlighter-rouge">compressImage</code> is disabled since it takes a long time with emulation.</li>
+  <li><code class="language-plaintext highlighter-rouge">makeModulesClosure</code> snippet below is needed since some Linux kernel modules fail to compile. 🤷</li>
+</ul>
+
+<p><em>Final thoughts</em> 🤔</p>
+
+<p>While it’s cathartic to have your Pi running NixOS and <em>“declarative”</em>, the whole experience left much to be desired.
+While cross-compiling feels tenable at the individual package level, it was confusing and challenging to setup (I gave up!) to build a complete image.</p>
+
+<p>Given the popularity of Raspberry Pi and the <em>Internet of things</em>, there is a strong opportunity to bring a simple setup for Pi’s into mainline Nixpkgs
+with clear support and guidance on how to cross-compile the image.</p>
+
+<p>❗ If you think my <em>configuration.nix</em> could be improved or you have the solution to cross-compiling, let me know!</p>
+
+<h3 id="configurationnix">configuration.nix</h3>
+
+<p>Having a starting NixOS configuration means you can avoid the base installer and 
+directly create the initial image via</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix build <span class="s1">'.#nixosConfigurations.kuato.config.system.build.sdImage'</span>
+</code></pre></div></div>
+
+<p>Subsequent updates can happen via <em>ssh</em>. I build the image on my <code class="language-plaintext highlighter-rouge">x86_64</code> machine via <em>emulation</em> using
+the following command which then copies the <em>/nix/store</em> closure and activates the new generation.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nixos-rebuild switch <span class="nt">--flake</span> .#kuato <span class="se">\</span>
+                       <span class="nt">--target-host</span> fmzakari@kuato <span class="se">\</span>
+                       <span class="nt">--use-remote-sudo</span>
+</code></pre></div></div>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">config</span><span class="p">,</span>
+  <span class="nv">pkgs</span><span class="p">,</span>
+  <span class="nv">inputs</span><span class="p">,</span>
+  <span class="nv">outputs</span><span class="p">,</span>
+  <span class="nv">lib</span><span class="p">,</span>
+  <span class="nv">modulesPath</span><span class="p">,</span>
+  <span class="o">...</span>
+<span class="p">}:</span> <span class="p">{</span>
+  <span class="nv">imports</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="c"># had a big discussion on Matrix on which to use for the Raspberry Pi 4</span>
+    <span class="c"># looks like there are pi specific modules but they told me to not use them.</span>
+    <span class="c"># Also don't use the vendored Linux kernel and just use the regular one.</span>
+    <span class="s2">"</span><span class="si">${</span><span class="nv">modulesPath</span><span class="si">}</span><span class="s2">/installer/sd-card/sd-image-aarch64.nix"</span>
+    <span class="sx">../../modules/nix.nix</span>
+    <span class="c"># Feedback from Matrix was to disable this and it's unnecessary unless you are using</span>
+    <span class="c"># some esoteric hardware.</span>
+    <span class="nv">inputs</span><span class="o">.</span><span class="nv">nixos-hardware</span><span class="o">.</span><span class="nv">nixosModules</span><span class="o">.</span><span class="nv">raspberry-pi-4</span>
+  <span class="p">];</span>
+
+  <span class="c"># let's not build ZFS for the Raspberry Pi 4</span>
+  <span class="nv">boot</span><span class="o">.</span><span class="nv">supportedFilesystems</span><span class="o">.</span><span class="nv">zfs</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkForce</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="c"># compressing image when using binfmt is very time consuming</span>
+  <span class="c"># disable it. Not sure why we want to compress anyways?</span>
+  <span class="nv">sdImage</span><span class="o">.</span><span class="nv">compressImage</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+  <span class="c"># enable the touch screen</span>
+  <span class="nv">hardware</span><span class="o">.</span><span class="nv">raspberry-pi</span><span class="o">.</span><span class="s2">"4"</span><span class="o">.</span><span class="nv">touch-ft5406</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+  <span class="c"># we don't import ../../modules/nixpkgs.nix since we don't want the overlay</span>
+  <span class="c"># rebuilding for the Raspberry Pi 4 is expensive; try to stick to what is in the cache.</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">hostPlatform</span> <span class="o">=</span> <span class="nv">lib</span><span class="o">.</span><span class="nv">mkDefault</span> <span class="s2">"aarch64-linux"</span><span class="p">;</span>
+    <span class="nv">config</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">allowUnfree</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="nv">overlays</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="c"># Workaround: https://github.com/NixOS/nixpkgs/issues/154163</span>
+      <span class="c"># modprobe: FATAL: Module sun4i-drm not found in directory</span>
+      <span class="p">(</span><span class="nv">final</span><span class="p">:</span> <span class="nv">super</span><span class="p">:</span> <span class="p">{</span>
+        <span class="nv">makeModulesClosure</span> <span class="o">=</span> <span class="nv">x</span><span class="p">:</span>
+          <span class="nv">super</span><span class="o">.</span><span class="nv">makeModulesClosure</span> <span class="p">(</span><span class="nv">x</span> <span class="o">//</span> <span class="p">{</span><span class="nv">allowMissing</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;});</span>
+      <span class="p">})</span>
+    <span class="p">];</span>
+  <span class="p">};</span>
+
+  <span class="nv">fileSystems</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"/"</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">device</span> <span class="o">=</span> <span class="s2">"/dev/disk/by-label/NIXOS_SD"</span><span class="p">;</span>
+      <span class="nv">fsType</span> <span class="o">=</span> <span class="s2">"ext4"</span><span class="p">;</span>
+      <span class="nv">options</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"noatime"</span><span class="p">];</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="nv">networking</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">networkmanager</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">hostName</span> <span class="o">=</span> <span class="s2">"kuato"</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="c"># Set your time zone.</span>
+  <span class="nv">time</span><span class="o">.</span><span class="nv">timeZone</span> <span class="o">=</span> <span class="s2">"America/Los_Angeles"</span><span class="p">;</span>
+
+  <span class="nv">environment</span><span class="o">.</span><span class="nv">systemPackages</span> <span class="o">=</span> <span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span> <span class="p">[</span>
+    <span class="nv">libraspberrypi</span>
+    <span class="nv">raspberrypi-eeprom</span>
+  <span class="p">];</span>
+
+  <span class="nv">services</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c"># Enable the X11 windowing system.</span>
+    <span class="nv">xserver</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="nv">desktopManager</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nv">gnome</span><span class="o">.</span><span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="p">};</span>
+      <span class="nv">displayManager</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c"># Enable the GNOME Desktop Environment</span>
+        <span class="nv">gdm</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+
+          <span class="c"># FIXME: I want to disable wayland but the touch screen seems</span>
+          <span class="c"># to not work otherwise.</span>
+          <span class="c"># wayland = false;</span>
+        <span class="p">};</span>
+      <span class="p">};</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="c"># Normally we would re-use the same user configurations in the users directory</span>
+  <span class="c"># but since this is a Raspberry Pi 4, lets make a much smaller closure.</span>
+  <span class="nv">users</span><span class="o">.</span><span class="nv">users</span><span class="o">.</span><span class="nv">fmzakari</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">isNormalUser</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="nv">shell</span> <span class="o">=</span> <span class="nv">pkgs</span><span class="o">.</span><span class="nv">bash</span><span class="p">;</span>
+    <span class="nv">extraGroups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"wheel"</span> <span class="s2">"networkmanager"</span><span class="p">];</span>
+    <span class="nv">description</span> <span class="o">=</span> <span class="s2">"Farid Zakaria"</span><span class="p">;</span>
+    <span class="nv">openssh</span><span class="o">.</span><span class="nv">authorizedKeys</span><span class="o">.</span><span class="nv">keyFiles</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="sx">../../users/fmzakari/keys</span>
+    <span class="p">];</span>
+    <span class="c"># Allow the graphical user to login without password</span>
+    <span class="nv">initialHashedPassword</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+  <span class="p">};</span>
+
+  <span class="c"># simplify sudo</span>
+  <span class="nv">security</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">sudo</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">enable</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+      <span class="nv">wheelNeedsPassword</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="c"># Allow the user to log in as root without a password.</span>
+  <span class="nv">users</span><span class="o">.</span><span class="nv">users</span><span class="o">.</span><span class="nv">root</span><span class="o">.</span><span class="nv">initialHashedPassword</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+
+  <span class="nv">hardware</span><span class="o">.</span><span class="nv">enableRedistributableFirmware</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+  <span class="nv">system</span><span class="o">.</span><span class="nv">stateVersion</span> <span class="o">=</span> <span class="s2">"23.11"</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-08-13-nixos-raspberry-pi-me.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

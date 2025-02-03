@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Play! Framework with Akka actors on Heroku | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Play! Framework with Akka actors on Heroku" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Play! Framework Recently for a project I&#39;ve gotten to know the Play! framework and really the Scala language. The introduction into Scala was a very interesting curve, as I feel like I&#39;m constantly flipping back and forth between having a solid understanding and a complete wtf confusion as I learn deeper pragmatic/idiomatic scala code. I have grown to love functional programming and can&#39;t wait to flex some of the map / Option / fold / reduce in the new Java 8 language. Working with the Play! framework was a great first choice as there seems to be a good community and documentation however with any project the more complex it becomes the farther you go from being able to find good examples and into &#39;icky&#39; situations&#39; Akka I think you can&#39;t get far into learning Scala with at least hearing about Akka and how cool it is. You read the introduction about Akka in plenty of Play!/Scala books and start to imagine how you&#39;r architecture will look when everything is this beautiful encapsulated Actor. I&#39;ve found however some nifty roadblocks setting it up and this blog post will pretty much be a brain dump on some of the issues I&#39;ve resolved; namely cause of non-interoptiability with Heroku So you want to use Akka with Play! ? You want to use Akka with Play! ? Great! Play! actually bundles an Actor system already defined which is managed by the lifetime of the web server (whatever that really means) and come preconfigured to do some X thing which isn&#39;t very clear. The first issue I ran into however is that I wanted to have Akka Actors to perform general book-keeping which meant they would have to be somewhat managed so that only a single instance is running every interval (i.e. Singleton). This sounds like it should be doable with Akka thanks to their SingletonClusterManager however you quickly learn that remote actors are not possible on Heroku. Bummer! There is a blog post from Heroku on how to setup an Akka cluster using RabbitMQ as their event bus but it just seemed like way to much overhead for my simple use case. Here is some general steps to get Singleton Actors working in Heroku. The overall plan will be to nest a sub-project within your Play! application which contains it&#39;s own Main class that will launch all singleton actors. This sub-application should then be launched only on a single dyno. Setup a sub-module Understanding the need for a sub-module is important or at least why I chose to do it this way. The way in which Heroku launches a Play! application is via a start script which is created from the SBT Native package installer when the stage command is executed. You can view the file for your application by opening up target/universal/stage/bin/&lt;/strong&gt; and you can see that is launches a NettyServer.scala class.&lt;/p&gt; We could have easily included additional Main methods within our Play! project and included a worker in the Procfile which executes a java target (like what is happening within the run script) however I wanted to leverage the script which meant a new module/project has to be created (limitation of the SBT packager is that it only supports one main method per project). Much of the steps are followed idential from http://www.playframework.com/documentation/2.2.x/SBTSubProjects Here are some interesting notes: Don&#39;t forget to set that the sub-project is an aggregate so that commands waterfall down to the inner project If you want to re-use the configuration file from the higher project, make sure you reference the path now accordingly Procfile entry: actors/target/universal/stage/bin/actors -Dconfig.file=../conf/application.conf -Dprocess.type=actors &lt;/li&gt; &lt;/ul&gt; package actors.singleton" />
+<meta property="og:description" content="Play! Framework Recently for a project I&#39;ve gotten to know the Play! framework and really the Scala language. The introduction into Scala was a very interesting curve, as I feel like I&#39;m constantly flipping back and forth between having a solid understanding and a complete wtf confusion as I learn deeper pragmatic/idiomatic scala code. I have grown to love functional programming and can&#39;t wait to flex some of the map / Option / fold / reduce in the new Java 8 language. Working with the Play! framework was a great first choice as there seems to be a good community and documentation however with any project the more complex it becomes the farther you go from being able to find good examples and into &#39;icky&#39; situations&#39; Akka I think you can&#39;t get far into learning Scala with at least hearing about Akka and how cool it is. You read the introduction about Akka in plenty of Play!/Scala books and start to imagine how you&#39;r architecture will look when everything is this beautiful encapsulated Actor. I&#39;ve found however some nifty roadblocks setting it up and this blog post will pretty much be a brain dump on some of the issues I&#39;ve resolved; namely cause of non-interoptiability with Heroku So you want to use Akka with Play! ? You want to use Akka with Play! ? Great! Play! actually bundles an Actor system already defined which is managed by the lifetime of the web server (whatever that really means) and come preconfigured to do some X thing which isn&#39;t very clear. The first issue I ran into however is that I wanted to have Akka Actors to perform general book-keeping which meant they would have to be somewhat managed so that only a single instance is running every interval (i.e. Singleton). This sounds like it should be doable with Akka thanks to their SingletonClusterManager however you quickly learn that remote actors are not possible on Heroku. Bummer! There is a blog post from Heroku on how to setup an Akka cluster using RabbitMQ as their event bus but it just seemed like way to much overhead for my simple use case. Here is some general steps to get Singleton Actors working in Heroku. The overall plan will be to nest a sub-project within your Play! application which contains it&#39;s own Main class that will launch all singleton actors. This sub-application should then be launched only on a single dyno. Setup a sub-module Understanding the need for a sub-module is important or at least why I chose to do it this way. The way in which Heroku launches a Play! application is via a start script which is created from the SBT Native package installer when the stage command is executed. You can view the file for your application by opening up target/universal/stage/bin/&lt;/strong&gt; and you can see that is launches a NettyServer.scala class.&lt;/p&gt; We could have easily included additional Main methods within our Play! project and included a worker in the Procfile which executes a java target (like what is happening within the run script) however I wanted to leverage the script which meant a new module/project has to be created (limitation of the SBT packager is that it only supports one main method per project). Much of the steps are followed idential from http://www.playframework.com/documentation/2.2.x/SBTSubProjects Here are some interesting notes: Don&#39;t forget to set that the sub-project is an aggregate so that commands waterfall down to the inner project If you want to re-use the configuration file from the higher project, make sure you reference the path now accordingly Procfile entry: actors/target/universal/stage/bin/actors -Dconfig.file=../conf/application.conf -Dprocess.type=actors &lt;/li&gt; &lt;/ul&gt; package actors.singleton" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2014-05-05-play-framework-with-akka-actors-on-heroku.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2014-05-05-play-framework-with-akka-actors-on-heroku.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-05-05T18:03:08-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Play! Framework with Akka actors on Heroku" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2014-05-05T18:03:08-07:00","datePublished":"2014-05-05T18:03:08-07:00","description":"Play! Framework Recently for a project I&#39;ve gotten to know the Play! framework and really the Scala language. The introduction into Scala was a very interesting curve, as I feel like I&#39;m constantly flipping back and forth between having a solid understanding and a complete wtf confusion as I learn deeper pragmatic/idiomatic scala code. I have grown to love functional programming and can&#39;t wait to flex some of the map / Option / fold / reduce in the new Java 8 language. Working with the Play! framework was a great first choice as there seems to be a good community and documentation however with any project the more complex it becomes the farther you go from being able to find good examples and into &#39;icky&#39; situations&#39; Akka I think you can&#39;t get far into learning Scala with at least hearing about Akka and how cool it is. You read the introduction about Akka in plenty of Play!/Scala books and start to imagine how you&#39;r architecture will look when everything is this beautiful encapsulated Actor. I&#39;ve found however some nifty roadblocks setting it up and this blog post will pretty much be a brain dump on some of the issues I&#39;ve resolved; namely cause of non-interoptiability with Heroku So you want to use Akka with Play! ? You want to use Akka with Play! ? Great! Play! actually bundles an Actor system already defined which is managed by the lifetime of the web server (whatever that really means) and come preconfigured to do some X thing which isn&#39;t very clear. The first issue I ran into however is that I wanted to have Akka Actors to perform general book-keeping which meant they would have to be somewhat managed so that only a single instance is running every interval (i.e. Singleton). This sounds like it should be doable with Akka thanks to their SingletonClusterManager however you quickly learn that remote actors are not possible on Heroku. Bummer! There is a blog post from Heroku on how to setup an Akka cluster using RabbitMQ as their event bus but it just seemed like way to much overhead for my simple use case. Here is some general steps to get Singleton Actors working in Heroku. The overall plan will be to nest a sub-project within your Play! application which contains it&#39;s own Main class that will launch all singleton actors. This sub-application should then be launched only on a single dyno. Setup a sub-module Understanding the need for a sub-module is important or at least why I chose to do it this way. The way in which Heroku launches a Play! application is via a start script which is created from the SBT Native package installer when the stage command is executed. You can view the file for your application by opening up target/universal/stage/bin/&lt;/strong&gt; and you can see that is launches a NettyServer.scala class.&lt;/p&gt; We could have easily included additional Main methods within our Play! project and included a worker in the Procfile which executes a java target (like what is happening within the run script) however I wanted to leverage the script which meant a new module/project has to be created (limitation of the SBT packager is that it only supports one main method per project). Much of the steps are followed idential from http://www.playframework.com/documentation/2.2.x/SBTSubProjects Here are some interesting notes: Don&#39;t forget to set that the sub-project is an aggregate so that commands waterfall down to the inner project If you want to re-use the configuration file from the higher project, make sure you reference the path now accordingly Procfile entry: actors/target/universal/stage/bin/actors -Dconfig.file=../conf/application.conf -Dprocess.type=actors &lt;/li&gt; &lt;/ul&gt; package actors.singleton","headline":"Play! Framework with Akka actors on Heroku","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2014-05-05-play-framework-with-akka-actors-on-heroku.html"},"url":"https://fzakaria.com/old_blog/2014-05-05-play-framework-with-akka-actors-on-heroku.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Play! Framework with Akka actors on Heroku
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2014-05-05
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2014-05-05-play-framework-with-akka-actors-on-heroku.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Play! Framework </h2>
+<p> Recently for a project I've gotten to know the Play! framework and really the Scala language. The introduction into Scala was a very interesting curve, as I feel like I'm constantly flipping back and forth between having a solid understanding and a complete <del datetime="2014-05-05T21:24:54+00:00">wtf</del> confusion as I learn deeper pragmatic/idiomatic scala code. I have grown to love functional programming and can't wait to flex some of the map / Option / fold / reduce in the new Java 8 language. Working with the Play! framework was a great first choice as there seems to be a good community and documentation however with any project the more complex it becomes the farther you go from being able to find good examples and into 'icky' situations' </p>
+<h2> Akka </h2>
+<p> I think you can't get far into learning Scala with at least hearing about Akka and how <em>cool</em> it is. You read the introduction about Akka in plenty of Play!/Scala books and start to imagine how you'r architecture will look when everything is this beautiful encapsulated Actor. I've found however some nifty roadblocks setting it up and this blog post will pretty much be a brain dump on some of the issues I've resolved; namely cause of non-interoptiability with Heroku </p>
+<h2> So you want to use Akka with Play! ? </h2>
+<p> You want to use Akka with Play! ? Great! Play! actually bundles an Actor system already defined which is managed by the lifetime of the web server (<em>whatever that really means</em>) and come preconfigured to do some X thing which isn't very clear. The first issue I ran into however is that I wanted to have Akka Actors to perform general book-keeping which meant they would have to be somewhat managed so that only a single instance is running every interval (i.e. Singleton). This sounds like it should be doable with Akka thanks to their <a href="http://doc.akka.io/docs/akka/snapshot/contrib/cluster-singleton.html" title="SingletonClusterManager">SingletonClusterManager</a> however you quickly learn that remote actors are not possible on <a href="http://heroku.com">Heroku</a>. <strong>Bummer!</strong></p>
+<p> There is a <a href="https://devcenter.heroku.com/articles/scaling-out-with-scala-and-akka">blog post</a> from Heroku on how to setup an Akka cluster using RabbitMQ as their event bus but it just seemed like way to much overhead for my simple use case. Here is some general steps to get Singleton Actors working in Heroku. The overall plan will be to nest a sub-project within your Play! application which contains it's own Main class that will launch all singleton actors. This sub-application should then be launched only on a <strong>single</strong> dyno.</p>
+<h3>Setup a sub-module </h3>
+<p> Understanding the need for a sub-module is important or at least why I chose to do it this way. The way in which Heroku launches a Play! application is via a <em>start script</em> which is created from the <a href="https://github.com/sbt/sbt-native-packager">SBT Native package installer</a> when the <strong>stage</strong> command is executed. You can view the file for your application by opening up <strong>target/universal/stage/bin/<application_name></strong> and you can see that is launches a NettyServer.scala class.</p>
+<p> We could have easily included additional Main methods within our Play! project and included a worker in the Procfile which executes a java target (like what is happening within the run script) however I wanted to leverage the script which meant a new module/project has to be created (limitation of the SBT packager is that it only supports one main method per project). Much of the steps are followed idential from <a href="http://www.playframework.com/documentation/2.2.x/SBTSubProjects">http://www.playframework.com/documentation/2.2.x/SBTSubProjects</a> </p>
+<p> Here are some interesting notes:</p>
+<ul>
+<li> Don't forget to set that the sub-project is an aggregate so that commands waterfall down to the inner project </li>
+<li> If you want to re-use the configuration file from the higher project, make sure you reference the path now accordingly </li>
+<li> Procfile entry: <code>actors/target/universal/stage/bin/actors -Dconfig.file=../conf/application.conf -Dprocess.type=actors </li>
+</ul>
+<pre>
+<code>
+package actors.singleton
+
+import play.api._
+import java.io.File
+import play.api.libs.concurrent.Akka
+import play.api.Play.current
+import akka.actor._
+import scala.concurrent.duration._
+import scala.concurrent.ExecutionContext.Implicits.global
+
+/**
+ * The purpose of this class is to start singleton Akka workers.
+ * Anything that can be written in a distributed manner can be placed directly in the Global.scala
+ * class to be distributed alongside the normal Play application
+ **/
+object SingletonMain {
+  
+   def main(args: Array[String]) {
+     args.headOption
+     .orElse(Option(System.getProperty("user.dir")))
+     .map {
+       applicationPath =>
+         println(s"Reading application path:$applicationPath")
+         val applicationFile = new File(applicationPath)
+         if (!(applicationFile.exists && applicationFile.isDirectory)) {
+           println("Bad application path: " + applicationPath)
+         }else {
+           val application = new DefaultApplication(applicationFile, this.getClass.getClassLoader, None, Mode.Dev	);
+           Play.start(application)
+           val impactPointsActor = Akka.system.actorOf(Props[ImpactPointsActor], name = "impactPointsActor")
+           Akka.system.scheduler.schedule(0 seconds, 5 seconds, impactPointsActor, "test" )
+        }
+     } getOrElse {
+       println("No application path supplied!")
+     }
+     
+   }
+}
+</code>
+</pre>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2014-05-05-play-framework-with-akka-actors-on-heroku.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

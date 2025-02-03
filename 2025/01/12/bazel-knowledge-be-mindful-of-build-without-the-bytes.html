@@ -1,0 +1,367 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bazel Knowledge: Be mindful of Build Without the Bytes (bwob) | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Bazel is a pretty amazing tool but it’s definitely full of it’s warts, sharp edges and arcane knowledge. The appeal to most who adopt Bazel is the ability to memoize much of the build graph if nothing has changed. Furthermore, while leveraging remote caches, build results can be shared across machines making memoization even more effective. This was a pretty compelling reason to adopt Bazel but pretty soon many noticed, especially on their CI systems, lots of unecessary data transfers for larger codebases. 😲 If the network is poor, the benefits of remote caching (memoization) can be outweighed by the cost to download the artifacts." />
+<meta property="og:description" content="Bazel is a pretty amazing tool but it’s definitely full of it’s warts, sharp edges and arcane knowledge. The appeal to most who adopt Bazel is the ability to memoize much of the build graph if nothing has changed. Furthermore, while leveraging remote caches, build results can be shared across machines making memoization even more effective. This was a pretty compelling reason to adopt Bazel but pretty soon many noticed, especially on their CI systems, lots of unecessary data transfers for larger codebases. 😲 If the network is poor, the benefits of remote caching (memoization) can be outweighed by the cost to download the artifacts." />
+<link rel="canonical" href="https://fzakaria.com/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html" />
+<meta property="og:url" content="https://fzakaria.com/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-01-12T13:14:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2025-01-12T13:14:00-08:00","datePublished":"2025-01-12T13:14:00-08:00","description":"Bazel is a pretty amazing tool but it’s definitely full of it’s warts, sharp edges and arcane knowledge. The appeal to most who adopt Bazel is the ability to memoize much of the build graph if nothing has changed. Furthermore, while leveraging remote caches, build results can be shared across machines making memoization even more effective. This was a pretty compelling reason to adopt Bazel but pretty soon many noticed, especially on their CI systems, lots of unecessary data transfers for larger codebases. 😲 If the network is poor, the benefits of remote caching (memoization) can be outweighed by the cost to download the artifacts.","headline":"Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html"},"url":"https://fzakaria.com/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2025-01-12
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p><a href="https://bazel.build/">Bazel</a> is a pretty amazing tool but it’s definitely full of it’s warts, sharp edges and arcane knowledge.</p>
+
+<p>The appeal to most who adopt Bazel is the ability to memoize much of the build graph if nothing has changed. Furthermore, while leveraging remote caches, build results can be shared across machines making memoization even more effective.</p>
+
+<p>This was a pretty compelling reason to adopt Bazel but pretty soon many noticed, especially on their CI systems, lots of unecessary data transfers for larger codebases.</p>
+
+<p>😲 If the network is poor, the benefits of remote caching (memoization) can be outweighed by the cost to download the artifacts.</p>
+
+<!--more-->
+
+<p>Let’s take a really simple example of transfering <em>1GiB</em> of data.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Network (Mbps)</th>
+      <th>Transfer (seconds)</th>
+      <th>Transfer (minutes)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>10</td>
+      <td>858.99</td>
+      <td>14.32</td>
+    </tr>
+    <tr>
+      <td>50</td>
+      <td>171.80</td>
+      <td>2.86</td>
+    </tr>
+    <tr>
+      <td>100</td>
+      <td>85.90</td>
+      <td>1.43</td>
+    </tr>
+    <tr>
+      <td>1000</td>
+      <td>8.59</td>
+      <td>0.14</td>
+    </tr>
+    <tr>
+      <td>10000</td>
+      <td>0.86</td>
+      <td>0.01</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Bazel typically will download every output file of every action executed (or cached) to the host machine. The total size of all output files in a build can be extremely large especially if you are building OCI images.</p>
+
+<p>Large repos may create more than 1GiB of total output files, and it’s easy to see that on a limited network it may be more cost-effective to rebuild them locally.</p>
+
+<p>Most developers however, only care about a subset of the output files and even more likely the top-level binary they want to run. On CI systems, the output files are of no interest at all.</p>
+
+<p>As of Bazel 7, the feature <a href="https://blog.bazel.build/2023/10/06/bwob-in-bazel-7.html">build without the bytes</a> (bwob) was enabled by default to solve this very problem.</p>
+
+<p>The feature allows you to download only a subset of the output files, thus reducing the amount of data transferred between Bazel and the remote cache. You can enable BwoB by setting either <code class="language-plaintext highlighter-rouge">--remote_download_minimal</code> or <code class="language-plaintext highlighter-rouge">--remote_download_toplevel</code>.</p>
+
+<p>Now for the suprising part, when <em>bwob</em> is enabled, Bazel can have suprising outcomes when you expect files to be present but are no longer. 🕵️</p>
+
+<blockquote>
+  <p>This is something we stumble a few times at <code class="language-plaintext highlighter-rouge">$DAYJOB$</code> alongside my colleague <a href="https://www.linkedin.com/in/vincerose/">Vince Rose</a>.</p>
+</blockquote>
+
+<p>Let’s build a really simple executable <code class="language-plaintext highlighter-rouge">genrule</code></p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"write_file"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"a.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"echo 'hello, world!' &gt; $@"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"echo"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">":a.txt"</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"echo.sh"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"""
+cat &gt; $@ &lt;&lt; 'EOF'
+#!/usr/bin/env bash
+set -e
+cat $(location :a.txt)
+EOF
+    """</span><span class="p">,</span>
+    <span class="n">executable</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>We will enable a local <em>disk_cache</em> in our <code class="language-plaintext highlighter-rouge">.bazelrc</code> and <em>bwob</em> toplevel.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>common --disk_cache=~/.cache/bazel-disk-cache
+common --remote_download_outputs=toplevel
+</code></pre></div></div>
+
+<p>Let’s run our command!</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel run //:echo
+INFO: Invocation ID: e5b66438-9b71-4fc3-97a7-5446ecf7759d
+INFO: Analyzed target //:echo <span class="o">(</span>0 packages loaded, 3 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:echo up-to-date:
+  bazel-bin/echo.sh
+INFO: Elapsed <span class="nb">time</span>: 0.051s, Critical Path: 0.00s
+INFO: 2 processes: 1 disk cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/echo.sh
+hello, world!
+</code></pre></div></div>
+
+<p>Great that works! Let’s now <code class="language-plaintext highlighter-rouge">bazel clean</code> and re-run the target.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel clean
+INFO: Invocation ID: 84292a54-30d4-42f6-aa83-0978a3355383
+INFO: Starting clean <span class="o">(</span>this may take a <span class="k">while</span><span class="o">)</span><span class="nb">.</span> Consider using <span class="nt">--async</span> <span class="k">if </span>the clean takes more than several minutes.
+
+<span class="nv">$ </span>bazel run //:echo
+INFO: Invocation ID: 85680e76-b9c8-456b-81ca-03835023191b
+INFO: Analyzed target //:echo <span class="o">(</span>6 packages loaded, 11 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:echo up-to-date:
+  bazel-bin/echo.sh
+INFO: Elapsed <span class="nb">time</span>: 0.185s, Critical Path: 0.00s
+INFO: 3 processes: 2 disk cache hit, 1 internal.
+INFO: Build completed successfully, 3 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/echo.sh
+<span class="nb">cat</span>: bazel-out/k8-fastbuild/bin/a.txt: No such file or directory
+</code></pre></div></div>
+
+<p>Looks like our <code class="language-plaintext highlighter-rouge">genrule</code> can no longer find <em>a.txt</em> 🤦‍♂️</p>
+
+<p>Thankfully the fix is relatively simple, you can either <a href="https://bazel.build/reference/command-line-reference#flag--remote_download_outputs">–remote_download_outputs=all</a> as a quick solution or be more selective with <a href="https://bazel.build/reference/command-line-reference#flag--remote_download_regex">–remote_download_regex</a></p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel run //:echo <span class="nt">--remote_download_regex</span><span class="o">=</span><span class="s1">'.*/a\.txt'</span>
+INFO: Invocation ID: 01911793-d17a-435d-9503-a551f56a4cc3
+INFO: Analyzed target //:echo <span class="o">(</span>0 packages loaded, 0 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:echo up-to-date:
+  bazel-bin/echo.sh
+INFO: Elapsed <span class="nb">time</span>: 0.040s, Critical Path: 0.00s
+INFO: 2 processes: 1 disk cache hit, 1 internal.
+INFO: Build completed successfully, 2 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/echo.sh
+hello, world!
+</code></pre></div></div>
+
+<p>Looks like the issue has been raised a few times on GitHub issues (i.e, <a href="https://github.com/bazelbuild/bazel/issues/11920">#11920</a>) or on the Bazel slack but it’s unclear if it’s <em>working as intended</em> or a <em>bug</em> 🐛.</p>
+
+<p>This outcome though can be very confusing for yourself or engineers whom are using Bazel.</p>
+
+<p>My understanding is that this may be a current <em>bug</em> specifically of <code class="language-plaintext highlighter-rouge">genrule</code> at the moment.</p>
+
+<p>Consider this alternative:</p>
+
+<div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span>
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">*</span> <span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+    <span class="kt">FILE</span><span class="o">*</span> <span class="n">file</span> <span class="o">=</span> <span class="n">fopen</span><span class="p">(</span><span class="s">"a.txt"</span><span class="p">,</span> <span class="s">"r"</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">file</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">perror</span><span class="p">(</span><span class="s">"Error opening file"</span><span class="p">);</span>
+        <span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">char</span> <span class="n">ch</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">((</span><span class="n">ch</span> <span class="o">=</span> <span class="n">fgetc</span><span class="p">(</span><span class="n">file</span><span class="p">))</span> <span class="o">!=</span> <span class="n">EOF</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">putchar</span><span class="p">(</span><span class="n">ch</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">fclose</span><span class="p">(</span><span class="n">file</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">cc_binary</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"hello_world"</span><span class="p">,</span>
+    <span class="n">srcs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"hello_world.cc"</span><span class="p">],</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">":a.txt"</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">genrule</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"write_file"</span><span class="p">,</span>
+    <span class="n">outs</span> <span class="o">=</span> <span class="p">[</span><span class="s">"a.txt"</span><span class="p">],</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="s">"echo 'hello, world!' &gt; $@"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>In this case, the output of the <code class="language-plaintext highlighter-rouge">genrule</code> <em>a.txt</em> is present as a <em>runfile</em> and correctly present during a <code class="language-plaintext highlighter-rouge">bazel run</code> invocation.</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>bazel clean <span class="nt">--expunge</span>
+
+<span class="nv">$ </span>bazel run //:hello_world <span class="nt">--remote_download_minimal</span>
+Starting <span class="nb">local </span>Bazel server and connecting to it...
+INFO: Invocation ID: ff279c3c-ed12-4395-9d15-12611ca927b5
+INFO: Analyzed target //:hello_world <span class="o">(</span>87 packages loaded, 454 targets configured<span class="o">)</span><span class="nb">.</span>
+INFO: Found 1 target...
+Target //:hello_world up-to-date:
+  bazel-bin/hello_world
+INFO: Elapsed <span class="nb">time</span>: 2.646s, Critical Path: 0.03s
+INFO: 8 processes: 3 disk cache hit, 5 internal.
+INFO: Build completed successfully, 8 total actions
+INFO: Running <span class="nb">command </span>line: bazel-bin/hello_world
+hello, world!
+</code></pre></div></div>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">ls </span>bazel-bin/hello_world.runfiles/_main/
+a.txt  hello_world
+</code></pre></div></div>
+
+<p>I have included this additional information on an issue to Bazel; let’s see what comes of it. 🤷</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2025-01-12-bazel-knowledge-be-mindful-of-build-without-the-bytes.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

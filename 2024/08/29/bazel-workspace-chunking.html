@@ -1,0 +1,285 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Bazel WORKSPACE chunking | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Bazel WORKSPACE chunking" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I have been doing quite a lot of Bazel for $DAYJOB$; and it’s definitely got it’s fair share of warts. I have my own misgivings of it’s migration to bzlmod and it converging to a standard-issue dependency-management style tool. We have yet to transition to MODULE.bazel and our codebase is quite large. As you’d expect, we hit quite a lot of diamond dependency issues &amp; specifically with external repositories in our WORKSPACE file. A surprising implementation detail I recently learned was how Bazel does dependency resolution for external repositories in WORKSPACE." />
+<meta property="og:description" content="I have been doing quite a lot of Bazel for $DAYJOB$; and it’s definitely got it’s fair share of warts. I have my own misgivings of it’s migration to bzlmod and it converging to a standard-issue dependency-management style tool. We have yet to transition to MODULE.bazel and our codebase is quite large. As you’d expect, we hit quite a lot of diamond dependency issues &amp; specifically with external repositories in our WORKSPACE file. A surprising implementation detail I recently learned was how Bazel does dependency resolution for external repositories in WORKSPACE." />
+<link rel="canonical" href="https://fzakaria.com/2024/08/29/bazel-workspace-chunking.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/08/29/bazel-workspace-chunking.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-08-29T10:36:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Bazel WORKSPACE chunking" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-08-29T10:36:00-07:00","datePublished":"2024-08-29T10:36:00-07:00","description":"I have been doing quite a lot of Bazel for $DAYJOB$; and it’s definitely got it’s fair share of warts. I have my own misgivings of it’s migration to bzlmod and it converging to a standard-issue dependency-management style tool. We have yet to transition to MODULE.bazel and our codebase is quite large. As you’d expect, we hit quite a lot of diamond dependency issues &amp; specifically with external repositories in our WORKSPACE file. A surprising implementation detail I recently learned was how Bazel does dependency resolution for external repositories in WORKSPACE.","headline":"Bazel WORKSPACE chunking","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/08/29/bazel-workspace-chunking.html"},"url":"https://fzakaria.com/2024/08/29/bazel-workspace-chunking.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Bazel WORKSPACE chunking
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-08-29
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/08/29/bazel-workspace-chunking.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>I have been doing quite a lot of <a href="https://bazel.build/">Bazel</a> for <code class="language-plaintext highlighter-rouge">$DAYJOB$</code>; and it’s definitely got it’s <em>fair share of warts</em>.</p>
+
+<blockquote>
+  <p>I have my own misgivings of it’s migration to <em>bzlmod</em> and it converging to a standard-issue dependency-management style tool.</p>
+</blockquote>
+
+<p>We have yet to transition to <code class="language-plaintext highlighter-rouge">MODULE.bazel</code> and our codebase is quite large. As you’d expect, we hit quite a lot of <em>diamond dependency</em> issues &amp; specifically with external repositories in our <code class="language-plaintext highlighter-rouge">WORKSPACE</code> file.</p>
+
+<p>A surprising implementation detail I recently learned was how Bazel does dependency resolution for external repositories in WORKSPACE.</p>
+
+<!--more-->
+
+<p>To demonstrate, let’s see a quick example. I have two sample workspaces that export a single target <code class="language-plaintext highlighter-rouge">//:version</code> that will either have 1.0 or 2.0.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:http.bzl"</span><span class="p">,</span> <span class="s">"http_archive"</span><span class="p">,</span> <span class="s">"http_file"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-1.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-1.0"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:git.bzl"</span><span class="p">,</span> <span class="s">"git_repository"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-2.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-2.0"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>What is the version of <code class="language-plaintext highlighter-rouge">@workspace//:version</code> you expect ? 🤔</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>bazel build @workspace//:version
+<span class="go">INFO: Analyzed target @workspace//:version (1 packages loaded, 1 target configured).
+INFO: Found 1 target...
+Target @workspace//:version up-to-date:
+  bazel-bin/external/workspace/VERSION
+INFO: Elapsed time: 0.078s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat  </span>bazel-bin/external/workspace/VERSION
+<span class="go">1.0
+</span></code></pre></div></div>
+
+<p>Huh. 😳. Okay.</p>
+
+<p>So in this example it looks like it’s <em>first version wins</em>.</p>
+
+<p>Let’s try another slightly different example.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:http.bzl"</span><span class="p">,</span> <span class="s">"http_archive"</span><span class="p">,</span> <span class="s">"http_file"</span><span class="p">)</span>
+
+<span class="n">load</span><span class="p">(</span><span class="s">"@bazel_tools//tools/build_defs/repo:git.bzl"</span><span class="p">,</span> <span class="s">"git_repository"</span><span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-1.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-1.0"</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">http_archive</span><span class="p">(</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s">"workspace"</span><span class="p">,</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="s">"file:///tmp/example-workspace/workspace-2.0.tar.gz"</span><span class="p">,</span>
+    <span class="n">strip_prefix</span> <span class="o">=</span> <span class="s">"workspace-2.0"</span><span class="p">,</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>What is the version of <code class="language-plaintext highlighter-rouge">@workspace//:version</code> you expect now ? 🤔</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>bazel build @workspace//:version
+<span class="go">INFO: Analyzed target @workspace//:version (1 packages loaded, 2 targets configured).
+INFO: Found 1 target...
+Target @workspace//:version up-to-date:
+  bazel-bin/external/workspace/VERSION
+INFO: Elapsed time: 0.145s, Critical Path: 0.02s
+INFO: 2 processes: 1 internal, 1 linux-sandbox.
+INFO: Build completed successfully, 2 total actions
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat  </span>bazel-bin/external/workspace/VERSION
+<span class="go">2.0
+</span></code></pre></div></div>
+
+<p>😳 2.0</p>
+
+<p>So now it looks like it’s last one wins? 🤨</p>
+
+<p>Turns out the version selection in Bazel is a little more <em>complex</em>.</p>
+
+<p>🕵️ The WORKSPACE file into <em>chunks</em> separated by load statements. For a repo named X (<code class="language-plaintext highlighter-rouge">@workspace//</code> in our case), the <em>last</em> definition of X in the <em>first</em> chunk that contains a definition of X is the winner</p>
+
+<p>If you ever face an issue of having the wrong version of an external repoitory, the thing to do is move it up <code class="language-plaintext highlighter-rouge">load</code> statements until you find the <em>chunk</em> that is defining it.</p>
+
+<p>I found references to this on some GitHub issues &amp; was helped out by <a href="https://github.com/Wyverald">@Wyverald</a> on Slack but thought a clear concise example to demonstrate it was interesting.</p>
+
+<p>If you want to play with the example above, I’ve uploaded it to <a href="https://github.com/fzakaria/bazel-workspace-chunking">bazel-workspace-chunking</a> on GitHub.</p>
+
+<p>❗ Don’t trust <code class="language-plaintext highlighter-rouge">bazel query //external:workspace --output build</code> to see the version.</p>
+
+<p>You might be tempted to run the above query but it gives <strong>incorrect</strong> results.</p>
+
+<div class="language-console highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="gp">$</span><span class="w"> </span>bazel build @workspace//:version
+<span class="go">INFO: Analyzed target @workspace//:version (0 packages loaded, 0 targets configured).
+INFO: Found 1 target...
+Target @workspace//:version up-to-date:
+  bazel-bin/external/workspace/VERSION
+INFO: Elapsed time: 0.057s, Critical Path: 0.00s
+INFO: 1 process: 1 internal.
+INFO: Build completed successfully, 1 total action
+
+</span><span class="gp">$</span><span class="w"> </span><span class="nb">cat  </span>bazel-bin/external/workspace/VERSION
+<span class="go">1.0
+
+</span><span class="gp">$</span><span class="w"> </span>bazel query //external:workspace <span class="nt">--output</span> build
+<span class="gp">#</span><span class="w"> </span>/tmp/example-workspace/WORKSPACE.bazel:13:13
+<span class="go">http_archive(
+  name = "workspace",
+  url = "file:///tmp/example-workspace/workspace-2.0.tar.gz",
+  strip_prefix = "workspace-2.0",
+)
+</span><span class="gp">#</span><span class="w"> </span>Rule workspace instantiated at <span class="o">(</span>most recent call last<span class="o">)</span>:
+<span class="gp">#</span><span class="w">   </span>/tmp/example-workspace/WORKSPACE.bazel:13:13 <span class="k">in</span> &lt;toplevel&gt;
+<span class="gp">#</span><span class="w"> </span>Rule http_archive defined at <span class="o">(</span>most recent call last<span class="o">)</span>:
+<span class="gp">#</span><span class="w">   </span>/home/fmzakari/.cache/bazel/_bazel_fmzakari/c72d1df8de0701fb5f44d35dec4b70b5/external/bazel_tools/tools/build_defs/repo/http.bzl:372:31 <span class="k">in</span> &lt;toplevel&gt;
+<span class="go">
+Loading: 0 packages loaded
+</span></code></pre></div></div>
+
+<p>Even when the <code class="language-plaintext highlighter-rouge">VERSION</code> was still <strong>1.0</strong>, the query simply gives back the last version cited in the <code class="language-plaintext highlighter-rouge">WORKSPACE</code> file.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-08-29-bazel-workspace-chunking.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

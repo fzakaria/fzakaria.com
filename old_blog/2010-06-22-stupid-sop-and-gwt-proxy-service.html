@@ -1,0 +1,211 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Stupid SOP and GWT Proxy Service | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Stupid SOP and GWT Proxy Service" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="So for our fourth year design project, our team is building a tournament management system using Ruby on Rails. However part of the rails application is the design of a RESTFul API that can accommdate the addition of plugins so developers can customize perhaps the look &amp; feel of their own tournament type. In order to support plugins that are not published/offered on our web-server, we&#39;ve had to circumvent the SOP (same origin policy). This is my real first foray into web development and I&#39;ve been pulling my hair almost the whole way, including having to work around SOP. Since we allow plugins to perform POST as well GET, using JSONP was not a suitable solution to the problem. In development of one of the plugins built using GWT, we&#39;ve decided to build a proxy server using the Remote Procedure Calls provided by GWT. Essentially GWT has functionality for creating RemoteServices that perform RPC from the client to the server, however it is the server with respect to the plugin and not the server they&#39;d like to perform the HTTP requests. Essentially, we&#39;d created a ProxyService RPC which when in the server performs the necessary HTTP request (since no longer in client, they are not subject to SOP). private HttpURLConnection connect(String path, EnumSet&lt;Connect&gt; opts, String method) { URL url = null; HttpURLConnection connection = null;" />
+<meta property="og:description" content="So for our fourth year design project, our team is building a tournament management system using Ruby on Rails. However part of the rails application is the design of a RESTFul API that can accommdate the addition of plugins so developers can customize perhaps the look &amp; feel of their own tournament type. In order to support plugins that are not published/offered on our web-server, we&#39;ve had to circumvent the SOP (same origin policy). This is my real first foray into web development and I&#39;ve been pulling my hair almost the whole way, including having to work around SOP. Since we allow plugins to perform POST as well GET, using JSONP was not a suitable solution to the problem. In development of one of the plugins built using GWT, we&#39;ve decided to build a proxy server using the Remote Procedure Calls provided by GWT. Essentially GWT has functionality for creating RemoteServices that perform RPC from the client to the server, however it is the server with respect to the plugin and not the server they&#39;d like to perform the HTTP requests. Essentially, we&#39;d created a ProxyService RPC which when in the server performs the necessary HTTP request (since no longer in client, they are not subject to SOP). private HttpURLConnection connect(String path, EnumSet&lt;Connect&gt; opts, String method) { URL url = null; HttpURLConnection connection = null;" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2010-06-22-stupid-sop-and-gwt-proxy-service.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2010-06-22-stupid-sop-and-gwt-proxy-service.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2010-06-22T18:33:25-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Stupid SOP and GWT Proxy Service" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2010-06-22T18:33:25-07:00","datePublished":"2010-06-22T18:33:25-07:00","description":"So for our fourth year design project, our team is building a tournament management system using Ruby on Rails. However part of the rails application is the design of a RESTFul API that can accommdate the addition of plugins so developers can customize perhaps the look &amp; feel of their own tournament type. In order to support plugins that are not published/offered on our web-server, we&#39;ve had to circumvent the SOP (same origin policy). This is my real first foray into web development and I&#39;ve been pulling my hair almost the whole way, including having to work around SOP. Since we allow plugins to perform POST as well GET, using JSONP was not a suitable solution to the problem. In development of one of the plugins built using GWT, we&#39;ve decided to build a proxy server using the Remote Procedure Calls provided by GWT. Essentially GWT has functionality for creating RemoteServices that perform RPC from the client to the server, however it is the server with respect to the plugin and not the server they&#39;d like to perform the HTTP requests. Essentially, we&#39;d created a ProxyService RPC which when in the server performs the necessary HTTP request (since no longer in client, they are not subject to SOP). private HttpURLConnection connect(String path, EnumSet&lt;Connect&gt; opts, String method) { URL url = null; HttpURLConnection connection = null;","headline":"Stupid SOP and GWT Proxy Service","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2010-06-22-stupid-sop-and-gwt-proxy-service.html"},"url":"https://fzakaria.com/old_blog/2010-06-22-stupid-sop-and-gwt-proxy-service.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Stupid SOP and GWT Proxy Service
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2010-06-22
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2010-06-22-stupid-sop-and-gwt-proxy-service.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>So for our fourth year design project, our team is building a tournament management system using Ruby on Rails. However part of the rails application is the design of a RESTFul API that can accommdate the addition of plugins so developers can customize perhaps the look & feel of their own tournament type.</p>
+<p>In order to support plugins that are not published/offered on our web-server, we've had to circumvent the SOP (same origin policy). This is my real first foray into web development and I've been pulling my hair almost the whole way, including having to work around SOP. Since we allow plugins to perform POST as well GET, using JSONP was not a suitable solution to the problem. In development of one of the plugins built using GWT, we've decided to build a proxy server using the Remote Procedure Calls provided by GWT.</p>
+<p>Essentially GWT has functionality for creating RemoteServices that perform RPC from the client to the server, however it is the server with respect to the plugin and not the server they'd like to perform the HTTP requests.</p>
+<p>Essentially, we'd created a ProxyService RPC which when in the server performs the necessary HTTP request (since no longer in client, they are not subject to SOP).</p>
+<pre>
+<code>
+private HttpURLConnection connect(String path, EnumSet&lt;Connect&gt; opts,
+			String method) {
+		URL url = null;
+		HttpURLConnection connection = null;
+
+		try {
+			url = new URL(DOMAIN + path);
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+		try {
+			connection = (HttpURLConnection) url.openConnection();
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+
+		if (opts.contains(Connect.DO_INPUT)) {
+			connection.setDoInput(true);
+		}
+		if (opts.contains(Connect.DO_OUTPUT)) {
+			connection.setDoOutput(true);
+		}
+
+		try {
+			connection.setRequestMethod(method);
+		} catch (ProtocolException e) {
+			throw new RuntimeException(e);
+		}
+
+		return connection;
+	}
+
+public String post(String path, String data) {
+		HttpURLConnection connection = connect(path, EnumSet.of(
+				Connect.DO_OUTPUT, Connect.DO_INPUT), "POST");
+		connection.setRequestProperty("Content-Type", "application/json");
+		List&lt;String&gt; response = writeTo(connection,
+				HttpURLConnection.HTTP_CREATED, data);
+		return concat(response);
+	}
+</code>
+</pre>
+<p>Essentially, although the RemoteServices by GWT are Async, we've included a synchronous call using Java's HttpURLConnection class. The reading/writing returned by the server happen to be JSON which we've wrapped in Strings, which are automatically Serializable to the RPC in GWT, making the overall design of the proxy server pretty straightforward. We found a lot of missing (hard to find) documentation on what to set the request properties for each HTTP request. We ultimately found the proper one's, through trial and error.</p>
+<h2>In other news...</h2>
+<p>I'm going to Burnaby, BC to work on an upcoming video game title for <a href="http://www.bluecastlegames.com/">Blue Castle Games</a>, which is a independent video game studio. I've also seen great GDC videos I hope to comment on through some upcoming posts as well as through my previous term at Digital Extremes.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2010-06-22-stupid-sop-and-gwt-proxy-service.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

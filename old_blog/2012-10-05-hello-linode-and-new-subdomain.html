@@ -1,0 +1,215 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hello Linode and New Subdomain | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Hello Linode and New Subdomain" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="All Aboard Linode I&#39;ve just finished transferring my blog and files in general from my previous shared hosting solution at bluehost.com to linode.com. The amount of freedom and boostrapping needed to move my website from bluehost to linode has been amazing and annoying... Linode offers amazing beginner guides which were invaluable to the migration however this blog post this blog post outlines a lot of information on moving a WordPress blog. New subdomain! You might also notice that my blog is now hosted on a new &#39;blog&#39; subdomain. I hope I&#39;ve fixed a lot of the links however if you notice some broken ones, please send me an e-mail! Notes on Migrating Wordpress to Linode Tips Change group of wordpress files to www-data (the group apache2 runes under) Change ownership of wp-content to be 755 so that you can upload photos and it can access them. Update your .htacccess file (see below). Update your database with records pointing to your new domain! .htaccess file &lt;files .htaccess&gt; order allow,deny deny from all &lt;/files&gt;&lt;/p&gt; # disable the server signature ServerSignature Off order allow,deny deny from all # who has access, who doesn&#39;t order allow,deny allow from all # disable directory browsing Options All -Indexes # set the canonical url RewriteEngine On RewriteCond %{HTTP_HOST} ^ryourdomain.com$ [NC] RewriteRule ^(.*)$ http://www.yourdomain.com/$1 [R=301,L] RewriteEngine On RewriteBase / RewriteRule ^index.php$ - [L] RewriteCond %{REQUEST_FILENAME} !-f RewriteCond %{REQUEST_FILENAME} !-d RewriteRule . /index.php [L] &lt;/code&gt; Update database UPDATE wp_options SET option_value = replace(option_value, &#39;http://www.old-domain.com&#39;, &#39;http://www.new-domain.com&#39;) WHERE option_name = &#39;home&#39; OR option_name = &#39;siteurl&#39;;&lt;/p&gt; UPDATE wp_posts SET guid = replace(guid, &#39;http://www.old-domain.com&#39;,&#39;http://www.new-domain.com&#39;); UPDATE wp_posts SET post_content = replace(post_content, &#39;http://www.old-domain.com&#39;, &#39;http://www.new-domain.com&#39;); &lt;/code&gt;" />
+<meta property="og:description" content="All Aboard Linode I&#39;ve just finished transferring my blog and files in general from my previous shared hosting solution at bluehost.com to linode.com. The amount of freedom and boostrapping needed to move my website from bluehost to linode has been amazing and annoying... Linode offers amazing beginner guides which were invaluable to the migration however this blog post this blog post outlines a lot of information on moving a WordPress blog. New subdomain! You might also notice that my blog is now hosted on a new &#39;blog&#39; subdomain. I hope I&#39;ve fixed a lot of the links however if you notice some broken ones, please send me an e-mail! Notes on Migrating Wordpress to Linode Tips Change group of wordpress files to www-data (the group apache2 runes under) Change ownership of wp-content to be 755 so that you can upload photos and it can access them. Update your .htacccess file (see below). Update your database with records pointing to your new domain! .htaccess file &lt;files .htaccess&gt; order allow,deny deny from all &lt;/files&gt;&lt;/p&gt; # disable the server signature ServerSignature Off order allow,deny deny from all # who has access, who doesn&#39;t order allow,deny allow from all # disable directory browsing Options All -Indexes # set the canonical url RewriteEngine On RewriteCond %{HTTP_HOST} ^ryourdomain.com$ [NC] RewriteRule ^(.*)$ http://www.yourdomain.com/$1 [R=301,L] RewriteEngine On RewriteBase / RewriteRule ^index.php$ - [L] RewriteCond %{REQUEST_FILENAME} !-f RewriteCond %{REQUEST_FILENAME} !-d RewriteRule . /index.php [L] &lt;/code&gt; Update database UPDATE wp_options SET option_value = replace(option_value, &#39;http://www.old-domain.com&#39;, &#39;http://www.new-domain.com&#39;) WHERE option_name = &#39;home&#39; OR option_name = &#39;siteurl&#39;;&lt;/p&gt; UPDATE wp_posts SET guid = replace(guid, &#39;http://www.old-domain.com&#39;,&#39;http://www.new-domain.com&#39;); UPDATE wp_posts SET post_content = replace(post_content, &#39;http://www.old-domain.com&#39;, &#39;http://www.new-domain.com&#39;); &lt;/code&gt;" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-10-05-hello-linode-and-new-subdomain.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-10-05-hello-linode-and-new-subdomain.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-10-05T22:55:32-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hello Linode and New Subdomain" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-10-05T22:55:32-07:00","datePublished":"2012-10-05T22:55:32-07:00","description":"All Aboard Linode I&#39;ve just finished transferring my blog and files in general from my previous shared hosting solution at bluehost.com to linode.com. The amount of freedom and boostrapping needed to move my website from bluehost to linode has been amazing and annoying... Linode offers amazing beginner guides which were invaluable to the migration however this blog post this blog post outlines a lot of information on moving a WordPress blog. New subdomain! You might also notice that my blog is now hosted on a new &#39;blog&#39; subdomain. I hope I&#39;ve fixed a lot of the links however if you notice some broken ones, please send me an e-mail! Notes on Migrating Wordpress to Linode Tips Change group of wordpress files to www-data (the group apache2 runes under) Change ownership of wp-content to be 755 so that you can upload photos and it can access them. Update your .htacccess file (see below). Update your database with records pointing to your new domain! .htaccess file &lt;files .htaccess&gt; order allow,deny deny from all &lt;/files&gt;&lt;/p&gt; # disable the server signature ServerSignature Off order allow,deny deny from all # who has access, who doesn&#39;t order allow,deny allow from all # disable directory browsing Options All -Indexes # set the canonical url RewriteEngine On RewriteCond %{HTTP_HOST} ^ryourdomain.com$ [NC] RewriteRule ^(.*)$ http://www.yourdomain.com/$1 [R=301,L] RewriteEngine On RewriteBase / RewriteRule ^index.php$ - [L] RewriteCond %{REQUEST_FILENAME} !-f RewriteCond %{REQUEST_FILENAME} !-d RewriteRule . /index.php [L] &lt;/code&gt; Update database UPDATE wp_options SET option_value = replace(option_value, &#39;http://www.old-domain.com&#39;, &#39;http://www.new-domain.com&#39;) WHERE option_name = &#39;home&#39; OR option_name = &#39;siteurl&#39;;&lt;/p&gt; UPDATE wp_posts SET guid = replace(guid, &#39;http://www.old-domain.com&#39;,&#39;http://www.new-domain.com&#39;); UPDATE wp_posts SET post_content = replace(post_content, &#39;http://www.old-domain.com&#39;, &#39;http://www.new-domain.com&#39;); &lt;/code&gt;","headline":"Hello Linode and New Subdomain","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-10-05-hello-linode-and-new-subdomain.html"},"url":"https://fzakaria.com/old_blog/2012-10-05-hello-linode-and-new-subdomain.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Hello Linode and New Subdomain
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-10-05
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-10-05-hello-linode-and-new-subdomain.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2>All Aboard Linode</h2>
+<p>
+I've just finished transferring my blog and <em>files in general</em> from my previous shared hosting solution at <a href="http://bluehost.com">bluehost.com</a> to <a href="http://linode.com">linode.com</a>. The amount of freedom and boostrapping needed to move my website from bluehost to linode has been amazing and <em>annoying</em>...</p>
+<p>
+Linode offers amazing beginner guides which were invaluable to the migration however this blog post <a href="http://www.raywenderlich.com/812/how-to-move-your-wordpress-blog-to-linode">this blog post</a> outlines a lot of information on moving a WordPress blog.</p>
+<h2>New subdomain!</h2>
+<p>
+You might also notice that my blog is now hosted on a new '<em>blog</em>' subdomain. I hope I've fixed a lot of the links however if you notice some broken ones, please send me an e-mail!</p>
+<p><!--more--></p>
+<h2> Notes on Migrating Wordpress to Linode </h2>
+<h3> Tips </h3>
+<ul>
+<li>Change group of wordpress files to <em>www-data</em> (the group apache2 runes under)</li>
+<li>Change ownership of wp-content to be 755 so that you can upload photos and it can access them.</li>
+<li>Update your .htacccess file (see below).</li>
+<li>Update your database with records pointing to your new domain!</li>
+</ul>
+<h3>.htaccess file </h3>
+<p>
+<code><br />
+<files .htaccess><br />
+order allow,deny<br />
+deny from all<br />
+</files></p>
+<p># disable the server signature<br />
+ServerSignature Off</p>
+<p><files wp-config.php><br />
+order allow,deny<br />
+deny from all<br />
+</files></p>
+<p># who has access, who doesn't<br />
+order allow,deny<br />
+allow from all</p>
+<p># disable directory browsing<br />
+Options All -Indexes</p>
+<p># set the canonical url<br />
+RewriteEngine On<br />
+RewriteCond %{HTTP_HOST} ^ryourdomain.com$ [NC]<br />
+RewriteRule ^(.*)$ http://www.yourdomain.com/$1 [R=301,L]</p>
+<p><IfModule mod_rewrite.c><br />
+RewriteEngine On<br />
+RewriteBase /<br />
+RewriteRule ^index.php$ - [L]<br />
+RewriteCond %{REQUEST_FILENAME} !-f<br />
+RewriteCond %{REQUEST_FILENAME} !-d<br />
+RewriteRule . /index.php [L]<br />
+</IfModule><br />
+</code></p>
+<h3>Update database</h3>
+<p>
+<code><br />
+UPDATE wp_options SET option_value = replace(option_value, 'http://www.old-domain.com', 'http://www.new-domain.com') WHERE option_name = 'home' OR option_name = 'siteurl';</p>
+<p>UPDATE wp_posts SET guid = replace(guid, 'http://www.old-domain.com','http://www.new-domain.com');</p>
+<p>UPDATE wp_posts SET post_content = replace(post_content, 'http://www.old-domain.com', 'http://www.new-domain.com');<br />
+</code></p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-10-05-hello-linode-and-new-subdomain.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

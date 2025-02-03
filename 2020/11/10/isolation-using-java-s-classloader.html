@@ -1,0 +1,304 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Isolation using Java’s ClassLoader | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Isolation using Java’s ClassLoader" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is a small write-up of one I sent to my team to help disseminate some knowledge regarding Java’s ClassLoader mechanism. A codebase I’m working on uses Java ClassLoader to help load multiple JDBC drivers with their complete dependencies. Typically, using Maven or Gradle, a project would have to pin to common dependencies due to the diamond dependency problem at the cost of potential unforeseen bugs due to drift in versions. Can we do better? Let’s dig into ClassLoaders." />
+<meta property="og:description" content="This is a small write-up of one I sent to my team to help disseminate some knowledge regarding Java’s ClassLoader mechanism. A codebase I’m working on uses Java ClassLoader to help load multiple JDBC drivers with their complete dependencies. Typically, using Maven or Gradle, a project would have to pin to common dependencies due to the diamond dependency problem at the cost of potential unforeseen bugs due to drift in versions. Can we do better? Let’s dig into ClassLoaders." />
+<link rel="canonical" href="https://fzakaria.com/2020/11/10/isolation-using-java-s-classloader.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/11/10/isolation-using-java-s-classloader.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-11-10T10:32:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Isolation using Java’s ClassLoader" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-11-10T10:32:00-08:00","datePublished":"2020-11-10T10:32:00-08:00","description":"This is a small write-up of one I sent to my team to help disseminate some knowledge regarding Java’s ClassLoader mechanism. A codebase I’m working on uses Java ClassLoader to help load multiple JDBC drivers with their complete dependencies. Typically, using Maven or Gradle, a project would have to pin to common dependencies due to the diamond dependency problem at the cost of potential unforeseen bugs due to drift in versions. Can we do better? Let’s dig into ClassLoaders.","headline":"Isolation using Java’s ClassLoader","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/11/10/isolation-using-java-s-classloader.html"},"url":"https://fzakaria.com/2020/11/10/isolation-using-java-s-classloader.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Isolation using Java's ClassLoader
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-11-10
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/11/10/isolation-using-java-s-classloader.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is a small write-up of one I sent to my team to help disseminate some knowledge regarding Java’s ClassLoader mechanism.</p>
+</blockquote>
+
+<p>A codebase I’m working on uses Java <a href="https://docs.oracle.com/javase/7/docs/api/java/lang/ClassLoader.html">ClassLoader</a> to help load multiple JDBC drivers with their <em>complete</em> dependencies.</p>
+
+<p>Typically, using Maven or Gradle, a project would have to pin to common dependencies due to the diamond dependency problem at the cost of potential unforeseen bugs due to drift in versions.</p>
+
+<p>Can we do better? Let’s dig into ClassLoaders.</p>
+
+<!--more-->
+
+<p>Java uses the <em>CLASS_PATH</em>, similar to your shell’s <em>PATH</em> when searching to resolve classes.</p>
+
+<p>It’s important to understand though that the <em>CLASS_PATH</em> is used during <strong>compilation</strong> and during <strong>runtime</strong>.</p>
+
+<blockquote>
+  <p>Did you know JAR files are just zip files ?</p>
+</blockquote>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ file some-jar.jar
+some-jar.jar: Zip archive data, at least v1.0 to extract
+</code></pre></div></div>
+
+<p>Let’s consider a trivial example where I have three files:</p>
+
+<p><em>Dog.java</em></p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">Dog</span> <span class="o">{</span>
+  <span class="kt">void</span> <span class="nf">bark</span><span class="o">();</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p><em>Rottweiler.java</em></p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Rottweiler</span> <span class="kd">implements</span> <span class="nc">Dog</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">bark</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Woof!"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p><em>Main.java</em></p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Dog</span> <span class="n">moose</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Rottweiler</span><span class="o">();</span>
+    <span class="n">moose</span><span class="o">.</span><span class="na">bark</span><span class="o">();</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>I can go ahead and compile these classes &amp; run it.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ javac Main.java
+❯ java Main
+Woof!
+</code></pre></div></div>
+
+<blockquote>
+  <p>Java searches the current directory automatically as part of the <em>CLASS_PATH</em></p>
+</blockquote>
+
+<p>I can however go ahead and change <em>Rottweiler.java</em> to now emit <em>meow</em> instead.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Rottweiler</span> <span class="kd">implements</span> <span class="nc">Dog</span> <span class="o">{</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">bark</span><span class="o">()</span> <span class="o">{</span>
+    <span class="nc">System</span><span class="o">.</span><span class="na">out</span><span class="o">.</span><span class="na">println</span><span class="o">(</span><span class="s">"Meow!"</span><span class="o">);</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ javac Dog.java
+❯ java Main
+Starting application!
+Meow!
+</code></pre></div></div>
+
+<p>I <strong>did not</strong> have to recompile <em>Main.java</em> however.</p>
+
+<p>This distinguishes that a class file or dependency can be compiled against a certain version of a class but run using a different version ultimately.</p>
+
+<p>This gets at the heart of <em>dependency management</em> &amp; why we use tools like Gradle.</p>
+
+<p>When you perform <strong>compilation</strong>, Java resolves classes to validate the public API (public classes &amp; methods) are present, however at <strong>runtime</strong> you can use a different implementation.</p>
+
+<blockquote>
+  <p>If you are familiar with C/C++ this is similar in concept to header &amp; object files. In fact Google has a neat tool <a href="https://github.com/bazelbuild/bazel/tree/master/third_party/ijar">ijar</a> that turns class files into only their public signatures, resembling even more closer to header files.</p>
+</blockquote>
+
+<p>A common problem though is what if I am pulling in two libraries that both require the same dependency but were built (compiled) using different versions – this is known as the “<em>diamond dependency problem</em>”.</p>
+
+<p><img src="/assets/images/version-sat.svg" alt="Diamond Dependency" /></p>
+
+<p>Oftentimes “code just works”, especially if the dependency is properly following semantic versioning, you are hopefully not likely to encounter a <em>ClassNotFoundException</em> or <em>MethodNotFoundException</em>.</p>
+
+<p>There’s <strong>no guarantee</strong> that internal logic hasn’t changed enough to make the different versions meaningful such as in the case of the Dog example above (woof vs meow).</p>
+
+<p>The best you can do for classes A, B &amp; C is to make sure they were both built &amp; run with the same version (Google’s raison d’etre for the mono repo) or extensive testing to make sure there’s no meaningful drift in implementation when pinning to a single version.</p>
+
+<p>Let’s change our Dog example to resemble the following:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ tree
+<span class="nb">.</span>
+├── Dog.class
+├── Dog.java
+├── Main.class
+├── Main.java
+├── v1
+│   ├── Rottweiler.class
+│   └── Rottweiler.java
+└── v2
+    ├── Rottweiler.class
+    └── Rottweiler.java
+</code></pre></div></div>
+
+<p>We now have a V1 and V2 of the Rottweiler class (V1 has the incorrect <em>Meow!</em>)</p>
+
+<p>We can load both versions of the Rottweiler class using a custom <em>ClassLoader</em> for each version.</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">java.io.File</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.URL</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.net.URLClassLoader</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="kd">final</span> <span class="nc">ClassLoader</span> <span class="n">v1Loader</span> <span class="o">=</span>
+                <span class="k">new</span> <span class="nf">URLClassLoader</span><span class="o">(</span>
+                        <span class="k">new</span> <span class="no">URL</span><span class="o">[]</span> <span class="o">{</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"v1/"</span><span class="o">).</span><span class="na">toURL</span><span class="o">()</span> <span class="o">},</span>
+                        <span class="nc">ClassLoader</span><span class="o">.</span><span class="na">getSystemClassLoader</span><span class="o">());</span>
+        <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazzV1</span> <span class="o">=</span> <span class="n">v1Loader</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"Rottweiler"</span><span class="o">);</span>
+        <span class="nc">Dog</span> <span class="n">mooseV1</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Dog</span><span class="o">)</span> <span class="n">clazzV1</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="n">mooseV1</span><span class="o">.</span><span class="na">bark</span><span class="o">();</span>
+
+        <span class="kd">final</span> <span class="nc">ClassLoader</span> <span class="n">v2Loader</span> <span class="o">=</span>
+                <span class="k">new</span> <span class="nf">URLClassLoader</span><span class="o">(</span>
+                        <span class="k">new</span> <span class="no">URL</span><span class="o">[]</span> <span class="o">{</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="s">"v2/"</span><span class="o">).</span><span class="na">toURL</span><span class="o">()</span> <span class="o">},</span>
+                        <span class="nc">ClassLoader</span><span class="o">.</span><span class="na">getSystemClassLoader</span><span class="o">());</span>
+        <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">clazzV2</span> <span class="o">=</span> <span class="n">v2Loader</span><span class="o">.</span><span class="na">loadClass</span><span class="o">(</span><span class="s">"Rottweiler"</span><span class="o">);</span>
+        <span class="nc">Dog</span> <span class="n">mooseV2</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Dog</span><span class="o">)</span> <span class="n">clazzV2</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="n">mooseV2</span><span class="o">.</span><span class="na">bark</span><span class="o">();</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ java Main
+Woof!
+Meow!
+</code></pre></div></div>
+
+<p>Ultimately, we used <em>ClassLoader</em> as a way to create <strong>isolation</strong> between the classes so we can resolve to multiple versions at a time.</p>
+
+<p>For this to work though, we must have used an <em>interface</em> (Dog) otherwise there would be no way to perform the casting to the <em>Rottweiler</em> implementation, since that would need to be resolved at compile time!</p>
+
+<p>You can do a lot of fancier stuff with <em>ClassLoaders</em>, such as even creating classes dynamically at runtime. Wow! I’ll leave that as a follow-up exercise :)</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-11-10-isolation-using-java-s-classloader.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Scalatron Build.sbt file to the rescue | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Scalatron Build.sbt file to the rescue" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Scalatron I&#39;ve been recently playing around with writing a bot for Scalatron however I didn&#39;t find any great explanation on how to setup a nice development process with SBT. The closest I could find was this blog post but it left a lot to the imagination. I hope you find my annotated Build.sbt below better and more clear! If you launch sbt and run play you should see the Scalatron server start up and pickup your Bot! organization := &quot;com.fzakaria&quot; libraryDependencies ++= { Seq( &quot;ch.qos.logback&quot; % &quot;logback-classic&quot; % &quot;1.1.2&quot;, &quot;org.slf4j&quot; % &quot;slf4j-api&quot; % &quot;1.7.7&quot;, &quot;org.scalatest&quot; %% &quot;scalatest&quot; % &quot;1.9.2&quot; % &quot;test&quot; ) } val copyBot = TaskKey[Unit](&quot;copyBot&quot;, &quot;Copies your bot over!&quot;) copyBot &lt;&lt;= (botDirectoryTask, name, (Keys.`package` in Compile)) map { (botDirectory, name, botJar) =&gt; IO createDirectory (botDirectory / name) //Scalatron explicitly requires &quot;ScalatronBot.jar&quot; IO copyFile (botJar, botDirectory / name / &quot;ScalatronBot.jar&quot;) } val play = TaskKey[Unit](&quot;play&quot;, &quot;Runs your scalatron bot!&quot;) val botDirectoryTask = SettingKey[File](&quot;bot-directory&quot;) botDirectoryTask := file(&quot;bots&quot;) play &lt;&lt;= (botDirectoryTask,(dependencyClasspath in Compile),(unmanagedClasspath in Compile),(Keys. `package` in Compile) ) map { (botDirectory,dependencyClasspath,unmanagedClasspath, botJar) =&gt; val cmd = &quot;java&quot; :: &quot;-cp&quot; :: Seq(Seq(botJar),dependencyClasspath.files,unmanagedClasspath.files). flatten.absString :: &quot;scalatron.main.Main&quot; :: &quot;-plugins&quot; :: botDirectory.absolutePath :: Nil println(cmd) cmd ! } play &lt;&lt;= play.dependsOn(copyBot)" />
+<meta property="og:description" content="Scalatron I&#39;ve been recently playing around with writing a bot for Scalatron however I didn&#39;t find any great explanation on how to setup a nice development process with SBT. The closest I could find was this blog post but it left a lot to the imagination. I hope you find my annotated Build.sbt below better and more clear! If you launch sbt and run play you should see the Scalatron server start up and pickup your Bot! organization := &quot;com.fzakaria&quot; libraryDependencies ++= { Seq( &quot;ch.qos.logback&quot; % &quot;logback-classic&quot; % &quot;1.1.2&quot;, &quot;org.slf4j&quot; % &quot;slf4j-api&quot; % &quot;1.7.7&quot;, &quot;org.scalatest&quot; %% &quot;scalatest&quot; % &quot;1.9.2&quot; % &quot;test&quot; ) } val copyBot = TaskKey[Unit](&quot;copyBot&quot;, &quot;Copies your bot over!&quot;) copyBot &lt;&lt;= (botDirectoryTask, name, (Keys.`package` in Compile)) map { (botDirectory, name, botJar) =&gt; IO createDirectory (botDirectory / name) //Scalatron explicitly requires &quot;ScalatronBot.jar&quot; IO copyFile (botJar, botDirectory / name / &quot;ScalatronBot.jar&quot;) } val play = TaskKey[Unit](&quot;play&quot;, &quot;Runs your scalatron bot!&quot;) val botDirectoryTask = SettingKey[File](&quot;bot-directory&quot;) botDirectoryTask := file(&quot;bots&quot;) play &lt;&lt;= (botDirectoryTask,(dependencyClasspath in Compile),(unmanagedClasspath in Compile),(Keys. `package` in Compile) ) map { (botDirectory,dependencyClasspath,unmanagedClasspath, botJar) =&gt; val cmd = &quot;java&quot; :: &quot;-cp&quot; :: Seq(Seq(botJar),dependencyClasspath.files,unmanagedClasspath.files). flatten.absString :: &quot;scalatron.main.Main&quot; :: &quot;-plugins&quot; :: botDirectory.absolutePath :: Nil println(cmd) cmd ! } play &lt;&lt;= play.dependsOn(copyBot)" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2014-11-14-scalatron-build-sbt-file-to-the-rescue.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2014-11-14-scalatron-build-sbt-file-to-the-rescue.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2014-11-14T01:47:35-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Scalatron Build.sbt file to the rescue" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2014-11-14T01:47:35-08:00","datePublished":"2014-11-14T01:47:35-08:00","description":"Scalatron I&#39;ve been recently playing around with writing a bot for Scalatron however I didn&#39;t find any great explanation on how to setup a nice development process with SBT. The closest I could find was this blog post but it left a lot to the imagination. I hope you find my annotated Build.sbt below better and more clear! If you launch sbt and run play you should see the Scalatron server start up and pickup your Bot! organization := &quot;com.fzakaria&quot; libraryDependencies ++= { Seq( &quot;ch.qos.logback&quot; % &quot;logback-classic&quot; % &quot;1.1.2&quot;, &quot;org.slf4j&quot; % &quot;slf4j-api&quot; % &quot;1.7.7&quot;, &quot;org.scalatest&quot; %% &quot;scalatest&quot; % &quot;1.9.2&quot; % &quot;test&quot; ) } val copyBot = TaskKey[Unit](&quot;copyBot&quot;, &quot;Copies your bot over!&quot;) copyBot &lt;&lt;= (botDirectoryTask, name, (Keys.`package` in Compile)) map { (botDirectory, name, botJar) =&gt; IO createDirectory (botDirectory / name) //Scalatron explicitly requires &quot;ScalatronBot.jar&quot; IO copyFile (botJar, botDirectory / name / &quot;ScalatronBot.jar&quot;) } val play = TaskKey[Unit](&quot;play&quot;, &quot;Runs your scalatron bot!&quot;) val botDirectoryTask = SettingKey[File](&quot;bot-directory&quot;) botDirectoryTask := file(&quot;bots&quot;) play &lt;&lt;= (botDirectoryTask,(dependencyClasspath in Compile),(unmanagedClasspath in Compile),(Keys. `package` in Compile) ) map { (botDirectory,dependencyClasspath,unmanagedClasspath, botJar) =&gt; val cmd = &quot;java&quot; :: &quot;-cp&quot; :: Seq(Seq(botJar),dependencyClasspath.files,unmanagedClasspath.files). flatten.absString :: &quot;scalatron.main.Main&quot; :: &quot;-plugins&quot; :: botDirectory.absolutePath :: Nil println(cmd) cmd ! } play &lt;&lt;= play.dependsOn(copyBot)","headline":"Scalatron Build.sbt file to the rescue","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2014-11-14-scalatron-build-sbt-file-to-the-rescue.html"},"url":"https://fzakaria.com/old_blog/2014-11-14-scalatron-build-sbt-file-to-the-rescue.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Scalatron Build.sbt file to the rescue
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2014-11-14
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2014-11-14-scalatron-build-sbt-file-to-the-rescue.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Scalatron </h2>
+<p>
+I've been recently playing around with writing a bot for <a href="http://scalatron.github.io/">Scalatron</a> however I didn't find any great explanation on how to setup a nice development process with SBT. The closest I could find was <a href="http://jmhofer.johoop.de/?p=292">this blog post</a> but it left a lot to the imagination. I hope you find my annotated Build.sbt below better and more clear!</p>
+<p>
+If you launch sbt and run <code>play</code> you should see the Scalatron server start up and pickup your Bot!</p>
+<pre class="lang:scala decode:true " > organization := "com.fzakaria"
+ 
+ libraryDependencies ++= {
+     Seq(
+         "ch.qos.logback" % "logback-classic" % "1.1.2",
+         "org.slf4j"       %   "slf4j-api"     % "1.7.7",
+         "org.scalatest" %% "scalatest" % "1.9.2" % "test"
+     )
+ }
+ 
+ val copyBot = TaskKey[Unit]("copyBot", "Copies your bot over!")
+ 
+ copyBot <<= (botDirectoryTask, name, (Keys.`package` in Compile)) map { (botDirectory, name, botJar)   =>
+     IO createDirectory (botDirectory / name)
+     //Scalatron explicitly requires "ScalatronBot.jar"
+     IO copyFile (botJar, botDirectory / name / "ScalatronBot.jar")
+ }
+ 
+ val play  = TaskKey[Unit]("play", "Runs your scalatron bot!")
+ 
+ val botDirectoryTask = SettingKey[File]("bot-directory")
+ 
+ botDirectoryTask := file("bots")
+ 
+ play <<= (botDirectoryTask,(dependencyClasspath in Compile),(unmanagedClasspath in Compile),(Keys.     `package` in Compile) ) map { (botDirectory,dependencyClasspath,unmanagedClasspath, botJar) =>
+     val cmd = "java" :: "-cp" :: Seq(Seq(botJar),dependencyClasspath.files,unmanagedClasspath.files).  flatten.absString :: "scalatron.main.Main" :: "-plugins" :: botDirectory.absolutePath :: Nil
+     println(cmd)
+     cmd !
+ }
+ 
+ play <<= play.dependsOn(copyBot)
+ </pre>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2014-11-14-scalatron-build-sbt-file-to-the-rescue.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

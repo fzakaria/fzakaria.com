@@ -1,0 +1,302 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>what is bundlerEnv doing? | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="what is bundlerEnv doing?" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The Nix wiki is pretty great for a lot of technical content however it sometimes fails to gently walk users through how something works. I’ve been doing some Ruby work as part of my day-to-day job and wanted to better understand Nix’s approach to Ruby." />
+<meta property="og:description" content="The Nix wiki is pretty great for a lot of technical content however it sometimes fails to gently walk users through how something works. I’ve been doing some Ruby work as part of my day-to-day job and wanted to better understand Nix’s approach to Ruby." />
+<link rel="canonical" href="https://fzakaria.com/2020/07/18/what-is-bundlerenv-doing.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/07/18/what-is-bundlerenv-doing.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-07-18T22:41:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="what is bundlerEnv doing?" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-07-18T22:41:00-07:00","datePublished":"2020-07-18T22:41:00-07:00","description":"The Nix wiki is pretty great for a lot of technical content however it sometimes fails to gently walk users through how something works. I’ve been doing some Ruby work as part of my day-to-day job and wanted to better understand Nix’s approach to Ruby.","headline":"what is bundlerEnv doing?","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/07/18/what-is-bundlerenv-doing.html"},"url":"https://fzakaria.com/2020/07/18/what-is-bundlerenv-doing.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    what is bundlerEnv doing?
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-07-18
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/07/18/what-is-bundlerenv-doing.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>The <a href="https://nixos.wiki/">Nix wiki</a> is <em>pretty great</em> for a lot of technical content however it sometimes fails to gently walk users through how something works.</p>
+
+<p>I’ve been doing some Ruby work as part of my day-to-day job and wanted to better understand Nix’s approach to Ruby.</p>
+
+<!--more-->
+
+<p>If you Google “Nix Ruby”, you’ll inevitably find the <a href="https://nixos.wiki/wiki/Packaging/Ruby">Packaging/Ruby</a> Nix wiki page.</p>
+
+<p>The page walks the reader quickly through some <em>Nix incantations</em>, including calling a utility <em>bundix</em> without much explanation. I hope the remaining portion of this post serves as a better guide &amp; deeper understanding of what’s happening.</p>
+
+<h2 id="setup">Setup</h2>
+
+<p>First let’s setup the most simple bundler project, using only a single gem: <a href="https://rubygems.org/gems/hello-world/versions/1.2.0">hello-world</a>.</p>
+
+<p>Let’s initialize our directory to create the <em>Gemfile</em> &amp; add our <em>hello-world</em> dependency.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>bundle init
+bundle add hello-world
+</code></pre></div></div>
+
+<p>Create an extremely <em>minimal</em> Ruby script <strong>main.rb</strong>.</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">require</span> <span class="s1">'rubygems'</span>
+<span class="nb">require</span> <span class="s1">'bundler/setup'</span>
+
+<span class="nb">require</span> <span class="s1">'hello-world'</span>
+</code></pre></div></div>
+
+<p>Finally let’s run the utility <a href="https://github.com/nix-community/bundix">bundix</a>; with more explanation to follow. You may not have <em>bundix</em> in your current environment, I found it useful just to run it directly from the <em>nix-shell</em>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-shell <span class="nt">-p</span> bundix <span class="nt">--run</span> <span class="s1">'bundix -l'</span>
+</code></pre></div></div>
+
+<p><strong>Bundix’s</strong> role is very simple. It traverses your <em>Gemfile.lock</em>, and generates a file <em>gemset.nix</em> to be consumed by the subsequent Nix Ruby functions.</p>
+
+<blockquote>
+  <p><em>gemset.nix</em> should be seen simply as the Nix transformation of the _Gemfile.lock_in the Nix language.</p>
+</blockquote>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span>
+  <span class="nv">hello-world</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nv">groups</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"default"</span><span class="p">];</span>
+    <span class="nv">platforms</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="nv">source</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="nv">remotes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"https://rubygems.org"</span><span class="p">];</span>
+      <span class="nv">sha256</span> <span class="o">=</span> <span class="s2">"141r6pafbwjf8aczsilxxhdrdbbmdhimgbsq8m9qsvjm522ln15p"</span><span class="p">;</span>
+      <span class="nv">type</span> <span class="o">=</span> <span class="s2">"gem"</span><span class="p">;</span>
+    <span class="p">};</span>
+    <span class="nv">version</span> <span class="o">=</span> <span class="s2">"1.2.0"</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>With all that <em>fanfare</em> out of the way, time to write the  <em>shell.nix</em> file.
+Below is an extremely minimal <em>shell.nix</em> to get started.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span> <span class="nv">pkgs</span> <span class="o">?</span> <span class="kr">import</span> <span class="o">&lt;</span><span class="nv">nixpkgs</span><span class="o">&gt;</span> <span class="p">{</span> <span class="p">}</span> <span class="p">}:</span>
+<span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span>
+<span class="kn">with</span> <span class="nv">stdenv</span><span class="p">;</span>
+<span class="kd">let</span>
+  <span class="nv">app</span> <span class="o">=</span> <span class="nv">bundlerEnv</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"my-app"</span><span class="p">;</span>
+    <span class="nv">ruby</span> <span class="o">=</span> <span class="nv">ruby</span><span class="p">;</span>
+    <span class="nv">gemdir</span> <span class="o">=</span> <span class="sx">./.</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="kn">in</span> <span class="nv">mkShell</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"bundler-shell"</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span><span class="nv">app</span> <span class="nv">bundix</span> <span class="nv">ruby</span><span class="p">];</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p>You can change the assignment of Ruby to any version you want.</p>
+</blockquote>
+
+<p>At this point, things worked. Great! However I was pretty confused as to what was going on. Let’s dig in!</p>
+
+<p><strong>bundlerEnv</strong> is defined in <a href="https://github.com/NixOS/nixpkgs/blob/master/pkgs/development/ruby-modules/bundled-common/default.nix">ruby-modules/bundled-common/default.nix</a> in <a href="https://github.com/NixOS/nixpkgs">nixpkgs</a>.</p>
+
+<p>One of the first thing the derivation does, is call a function to determine the <em>3</em> important files: <em>Gemfile</em>, <em>Gemfile.lock</em> &amp; <em>gemset.nix</em>.</p>
+
+<p>Our example above didn’t mention anything of the sort, so by <a href="https://github.com/NixOS/nixpkgs/blob/98c9ae41de70a724517f64c0a39d4c5f68373a7c/pkgs/development/ruby-modules/bundled-common/functions.nix#L17-L27">default</a>, it will find them according to the <em>gemdir</em>.</p>
+
+<h3 id="gemsetnix">gemset.nix</h3>
+
+<p>The <em>gemset.nix</em> file is used to create <em>derivations</em> for each gem referenced by downloading the source files into the <em>/nix/store</em>.</p>
+
+<h3 id="bundleenv">bundleEnv</h3>
+
+<p>With all the gems downloaded, a <em>buildEnv</em> (symlink of multiple derivations) is created.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/nix/store/ygzpgzxm25j6lfyad3zxr6rm2psahjlz-fzakaria.com/
+|-- bin
+|   |-- bundle
+|   |-- bundler
+|   <span class="sb">`</span><span class="nt">--</span> hello-world
+<span class="sb">`</span><span class="nt">--</span> lib
+    <span class="sb">`</span><span class="nt">--</span> ruby
+        <span class="sb">`</span><span class="nt">--</span> gems
+            <span class="sb">`</span><span class="nt">--</span> 2.6.0
+                |-- bin
+                |   |-- bundle -&gt; /nix/store/niy7ivnph74z02kf8cvh9c4kz0i70nqp-bundler-2.1.4/lib/ruby/gems/2.6.0/bin/bundle
+                |   |-- bundler -&gt; /nix/store/niy7ivnph74z02kf8cvh9c4kz0i70nqp-bundler-2.1.4/lib/ruby/gems/2.6.0/bin/bundler
+                |   <span class="sb">`</span><span class="nt">--</span> hello-world -&gt; /nix/store/hym2fy3yiy706rm5hmwg6gmyrg8zipqm-ruby2.6.6-hello-world-1.2.0/lib/ruby/gems/2.6.0/bin/hello-world
+                |-- build_info
+                |-- doc
+                |-- extensions
+                |-- gems
+                |   |-- bundler-2.1.4 -&gt; /nix/store/niy7ivnph74z02kf8cvh9c4kz0i70nqp-bundler-2.1.4/lib/ruby/gems/2.6.0/gems/bundler-2.1.4
+                |   <span class="sb">`</span><span class="nt">--</span> hello-world-1.2.0 -&gt; /nix/store/hym2fy3yiy706rm5hmwg6gmyrg8zipqm-ruby2.6.6-hello-world-1.2.0/lib/ruby/gems/2.6.0/gems/hello-world-1.2.0
+                <span class="sb">`</span><span class="nt">--</span> specifications
+                    |-- bundler-2.1.4.gemspec -&gt; /nix/store/niy7ivnph74z02kf8cvh9c4kz0i70nqp-bundler-2.1.4/lib/ruby/gems/2.6.0/specifications/bundler-2.1.4.gemspec
+                    <span class="sb">`</span><span class="nt">--</span> hello-world-1.2.0.gemspec -&gt; /nix/store/hym2fy3yiy706rm5hmwg6gmyrg8zipqm-ruby2.6.6-hello-world-1.2.0/lib/ruby/gems/2.6.0/specifications/hello-world-1.2.0.gemspec
+</code></pre></div></div>
+
+<p>The <strong>gems</strong> directory, has the symlinks to every gem declared in the Gemfile through the <em>gemset.nix</em>.</p>
+
+<p>Finally a custom <em>bundler</em> script is provided which makes sure to setup the correct <em>GEM_HOME</em> and <em>Gemfile</em> path.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#!/nix/store/arz0swkk693spw100q9d472816krr6x6-ruby-2.6.6/bin/ruby
+#
+# This file was generated by Nix.
+#
+# The application 'bundler' is installed as part of a gem, and
+# this file is here to facilitate running it.
+#
+
+ENV["BUNDLE_GEMFILE"] = "/nix/store/czr32qd8zl96yzcpmdjik8malfnzfhdp-gemfile-and-lockfile/Gemfile"
+ENV.delete 'BUNDLE_PATH'
+ENV['BUNDLE_FROZEN'] = '1'
+
+Gem.paths = { 'GEM_HOME' =&gt; "/nix/store/ygzpgzxm25j6lfyad3zxr6rm2psahjlz-fzakaria.com/lib/ruby/gems/2.6.0" }
+
+$LOAD_PATH.unshift "/nix/store/niy7ivnph74z02kf8cvh9c4kz0i70nqp-bundler-2.1.4/lib/ruby/gems/2.6.0/gems/bundler-2.1.4/lib"
+
+require 'bundler'
+Bundler.setup()
+
+load Gem.bin_path("bundler", "bundler")
+</code></pre></div></div>
+
+<p>Voila! You can run the Ruby application.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-shell <span class="nt">--pure</span>
+
+bundle <span class="nb">exec </span>ruby main.rb
+<span class="o">&gt;</span> hello world!
+<span class="o">&gt;</span> this is hello world library
+</code></pre></div></div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-07-18-what-is-bundlerenv-doing.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

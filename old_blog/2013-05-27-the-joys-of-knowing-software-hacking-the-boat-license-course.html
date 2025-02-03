@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>The joys of knowing Software - Hacking the Boat License Course | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="The joys of knowing Software - Hacking the Boat License Course" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Boat Licenses NOTE: June 17th 2016 - I received a cease and desist letter from boat-ed.com and they have fixed the way in which the script in this post circumvents the wait. I am not aware of any other way to bypass it. Summer is fast approaching and me and a group of friends decided to take the water on some ridiculously fun jet skis. In the state of Washington, a boat license is required to operate any PWC (personal watercraft) which thankfully can be done online. As a procrastinator I put aside 30 minutes of my time the night before the excursion to do the online exam on www.boat-ed.com. I was in for a large shock when I discovered that you had to sit through all the course material on the website prior to attempting the exam; average time for completion 6-8 hours. Time is precious Time is precious. It&#39;s constantly fleeting and the last thing I wanted to do was sit through 6-8 hours of instructions that I knew and are largely common sense. The final exam should be indicative of whether you know the material or not, therefore it is not necessary to force people to sit through the course (all though you can Google the answers to the exam...). As my roomate decided to sit through the course material blindly hitting next when the button becomes available as he watched tv shows on Netflix, I decided to investigate if my knowledge of Computer Science can save me! Chrome Extensions FTW tl;dr; Install this Chrome Extension, which will enable you to skip any State Boat License course on www.boat-ed.com Having some prior experience to writing Chrome Extensions and knowing more than my fair share of web services, I was able to dig into their JavaScript source files and find how they were forcing the users to sit through the course material. I will leave future blog posts perhaps detailing how one might go about &quot;hacking&quot; websites to reverse engineer their web services and fiddle around with it, briefly the steps were: Reverse obfuscate their JavaScript Find the offending timer code Figure out how to diable the timer (was a server call Fake the code in a Chrome Extension" />
+<meta property="og:description" content="Boat Licenses NOTE: June 17th 2016 - I received a cease and desist letter from boat-ed.com and they have fixed the way in which the script in this post circumvents the wait. I am not aware of any other way to bypass it. Summer is fast approaching and me and a group of friends decided to take the water on some ridiculously fun jet skis. In the state of Washington, a boat license is required to operate any PWC (personal watercraft) which thankfully can be done online. As a procrastinator I put aside 30 minutes of my time the night before the excursion to do the online exam on www.boat-ed.com. I was in for a large shock when I discovered that you had to sit through all the course material on the website prior to attempting the exam; average time for completion 6-8 hours. Time is precious Time is precious. It&#39;s constantly fleeting and the last thing I wanted to do was sit through 6-8 hours of instructions that I knew and are largely common sense. The final exam should be indicative of whether you know the material or not, therefore it is not necessary to force people to sit through the course (all though you can Google the answers to the exam...). As my roomate decided to sit through the course material blindly hitting next when the button becomes available as he watched tv shows on Netflix, I decided to investigate if my knowledge of Computer Science can save me! Chrome Extensions FTW tl;dr; Install this Chrome Extension, which will enable you to skip any State Boat License course on www.boat-ed.com Having some prior experience to writing Chrome Extensions and knowing more than my fair share of web services, I was able to dig into their JavaScript source files and find how they were forcing the users to sit through the course material. I will leave future blog posts perhaps detailing how one might go about &quot;hacking&quot; websites to reverse engineer their web services and fiddle around with it, briefly the steps were: Reverse obfuscate their JavaScript Find the offending timer code Figure out how to diable the timer (was a server call Fake the code in a Chrome Extension" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2013-05-27-the-joys-of-knowing-software-hacking-the-boat-license-course.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2013-05-27-the-joys-of-knowing-software-hacking-the-boat-license-course.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2013-05-27T16:28:54-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="The joys of knowing Software - Hacking the Boat License Course" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2013-05-27T16:28:54-07:00","datePublished":"2013-05-27T16:28:54-07:00","description":"Boat Licenses NOTE: June 17th 2016 - I received a cease and desist letter from boat-ed.com and they have fixed the way in which the script in this post circumvents the wait. I am not aware of any other way to bypass it. Summer is fast approaching and me and a group of friends decided to take the water on some ridiculously fun jet skis. In the state of Washington, a boat license is required to operate any PWC (personal watercraft) which thankfully can be done online. As a procrastinator I put aside 30 minutes of my time the night before the excursion to do the online exam on www.boat-ed.com. I was in for a large shock when I discovered that you had to sit through all the course material on the website prior to attempting the exam; average time for completion 6-8 hours. Time is precious Time is precious. It&#39;s constantly fleeting and the last thing I wanted to do was sit through 6-8 hours of instructions that I knew and are largely common sense. The final exam should be indicative of whether you know the material or not, therefore it is not necessary to force people to sit through the course (all though you can Google the answers to the exam...). As my roomate decided to sit through the course material blindly hitting next when the button becomes available as he watched tv shows on Netflix, I decided to investigate if my knowledge of Computer Science can save me! Chrome Extensions FTW tl;dr; Install this Chrome Extension, which will enable you to skip any State Boat License course on www.boat-ed.com Having some prior experience to writing Chrome Extensions and knowing more than my fair share of web services, I was able to dig into their JavaScript source files and find how they were forcing the users to sit through the course material. I will leave future blog posts perhaps detailing how one might go about &quot;hacking&quot; websites to reverse engineer their web services and fiddle around with it, briefly the steps were: Reverse obfuscate their JavaScript Find the offending timer code Figure out how to diable the timer (was a server call Fake the code in a Chrome Extension","headline":"The joys of knowing Software - Hacking the Boat License Course","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2013-05-27-the-joys-of-knowing-software-hacking-the-boat-license-course.html"},"url":"https://fzakaria.com/old_blog/2013-05-27-the-joys-of-knowing-software-hacking-the-boat-license-course.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    The joys of knowing Software - Hacking the Boat License Course
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2013-05-27
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2013-05-27-the-joys-of-knowing-software-hacking-the-boat-license-course.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Boat Licenses </h2>
+<blockquote><p> NOTE: June 17th 2016 - I received a cease and desist letter from boat-ed.com and they have fixed the way in which the script in this post circumvents the wait. I am not aware of any other way to bypass it.</p></blockquote>
+<p>
+Summer is fast approaching and me and a group of friends decided to take the water on some <em>ridiculously fun jet skis</em>. In the state of Washington, a boat license <a href="http://www.boat-ed.com/wa/handbook/pwc.htm">is required</a> to operate any PWC (personal watercraft) which thankfully can be done online. As a procrastinator I put aside 30 minutes of my time the night before the excursion to do the online exam on <a href="http://www.boat-ed.com">www.boat-ed.com</a>. I was in for a large shock when I discovered that you had to sit through all the course material on the website prior to attempting the exam; average time for completion<em> 6-8 hours</em>.</p>
+<h2> Time is precious </h2>
+<p>
+Time is precious. It's constantly fleeting and the last thing I wanted to do was sit through 6-8 hours of instructions that I knew and are largely common sense. The final exam should be indicative of whether you know the material or not, therefore it is not necessary to force people to sit through the course (all though you can Google the answers to the exam...). As my roomate decided to sit through the course material blindly hitting next when the button becomes available as he watched tv shows on Netflix, I decided to investigate if my knowledge of Computer Science can save me!</p>
+<h2> Chrome Extensions FTW </h2>
+<blockquote><p>tl;dr; Install this <a href=" https://chrome.google.com/webstore/detail/boat-license-time-extensi/jabekedhfnccpjpjlhlmgfikammmlggb">Chrome Extension</a>, which will enable you to skip <strong>any</strong> State Boat License course on <a href="http://www.boat-ed.com">www.boat-ed.com</a></p></blockquote>
+<p>Having some prior experience to writing Chrome Extensions and knowing more than my fair share of web services, I was able to dig into their JavaScript source files and find how they were forcing the users to sit through the course material. I will leave future blog posts perhaps detailing how one might go about <em>"hacking"</em> websites to reverse engineer their web services and fiddle around with it, briefly the steps were:</p>
+<ol>
+<li>Reverse obfuscate their JavaScript</li>
+<li>Find the offending timer code</li>
+<li>Figure out how to diable the timer (was a server call</li>
+<li>Fake the code in a Chrome Extension</li>
+</ol>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2013-05-27-the-joys-of-knowing-software-hacking-the-boat-license-course.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

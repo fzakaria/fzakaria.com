@@ -1,0 +1,170 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Colour spaces and NV12 to RGB | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Colour spaces and NV12 to RGB" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="For those curious It&#39;s funny that I never questioned why whenever a video playback was corrupted or malfunctioned it displayed a green screen.Even at my current job, having learned about color space conversion and the different ways to represent color it still never clicked. To be fair I think it&#39;s because we are taught in school how to think with the RGB color space and not YUV. The answer though is really simple, but just found it interesting I had never connected the dots. The conversion of a YUV value of 0 to RGB is the dull green color! [caption id=&quot;attachment_1073&quot; align=&quot;aligncenter&quot; width=&quot;256&quot; caption=&quot;YUV value of 0 produces this green color.&quot;][/caption] Converting NV12 I work with a lot of YUV (NV12) files. Found a few neat tools online to convert them to RGB and decide to roll my own. It&#39;s pretty straightforward. There are a bunch of different ways to grab the y, u , v data and this one is a bit more intricate as it moves the cursor constantly to get the appropriate UV position for the current Y value. To get a better understanding of conversions from YUV to RGB and about colour spaces in general, I found that the MSDN was a great place. Check out this link. I would like to rewrite this so that it is more generic for all YUV formats depending on their sample period." />
+<meta property="og:description" content="For those curious It&#39;s funny that I never questioned why whenever a video playback was corrupted or malfunctioned it displayed a green screen.Even at my current job, having learned about color space conversion and the different ways to represent color it still never clicked. To be fair I think it&#39;s because we are taught in school how to think with the RGB color space and not YUV. The answer though is really simple, but just found it interesting I had never connected the dots. The conversion of a YUV value of 0 to RGB is the dull green color! [caption id=&quot;attachment_1073&quot; align=&quot;aligncenter&quot; width=&quot;256&quot; caption=&quot;YUV value of 0 produces this green color.&quot;][/caption] Converting NV12 I work with a lot of YUV (NV12) files. Found a few neat tools online to convert them to RGB and decide to roll my own. It&#39;s pretty straightforward. There are a bunch of different ways to grab the y, u , v data and this one is a bit more intricate as it moves the cursor constantly to get the appropriate UV position for the current Y value. To get a better understanding of conversions from YUV to RGB and about colour spaces in general, I found that the MSDN was a great place. Check out this link. I would like to rewrite this so that it is more generic for all YUV formats depending on their sample period." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-04-23-colour-spaces-and-nv12-to-rgb.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-04-23-colour-spaces-and-nv12-to-rgb.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-04-23T14:54:07-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Colour spaces and NV12 to RGB" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-04-23T14:54:07-07:00","datePublished":"2012-04-23T14:54:07-07:00","description":"For those curious It&#39;s funny that I never questioned why whenever a video playback was corrupted or malfunctioned it displayed a green screen.Even at my current job, having learned about color space conversion and the different ways to represent color it still never clicked. To be fair I think it&#39;s because we are taught in school how to think with the RGB color space and not YUV. The answer though is really simple, but just found it interesting I had never connected the dots. The conversion of a YUV value of 0 to RGB is the dull green color! [caption id=&quot;attachment_1073&quot; align=&quot;aligncenter&quot; width=&quot;256&quot; caption=&quot;YUV value of 0 produces this green color.&quot;][/caption] Converting NV12 I work with a lot of YUV (NV12) files. Found a few neat tools online to convert them to RGB and decide to roll my own. It&#39;s pretty straightforward. There are a bunch of different ways to grab the y, u , v data and this one is a bit more intricate as it moves the cursor constantly to get the appropriate UV position for the current Y value. To get a better understanding of conversions from YUV to RGB and about colour spaces in general, I found that the MSDN was a great place. Check out this link. I would like to rewrite this so that it is more generic for all YUV formats depending on their sample period.","headline":"Colour spaces and NV12 to RGB","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-04-23-colour-spaces-and-nv12-to-rgb.html"},"url":"https://fzakaria.com/old_blog/2012-04-23-colour-spaces-and-nv12-to-rgb.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Colour spaces and NV12 to RGB
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-04-23
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-04-23-colour-spaces-and-nv12-to-rgb.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> For those curious </h2>
+<p>
+It's funny that I never questioned why whenever a video playback was corrupted or malfunctioned it displayed a green screen.Even at my current job, having learned about color space conversion and the different ways to represent color it still never clicked. To be fair I think it's because we are taught in school how to think with the RGB color space and not YUV. The answer though is really simple, but just found it interesting <strong>I had never connected the dots</strong>. <em>The conversion of a YUV value of 0 to RGB is the dull green color!</em><br />
+[caption id="attachment_1073" align="aligncenter" width="256" caption="YUV value of 0 produces this green color."]<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2012/04/yuv-00-00-00.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2012/04/yuv-00-00-00.png" alt="YUV value of 0" title="yuv-00-00-00" width="256" height="32" class="size-full wp-image-1073" /></a>[/caption]</p>
+<p><!--more--></p>
+<h2> Converting NV12 </h2>
+<p>
+I work with a lot of YUV (NV12) files. Found a few neat tools online to convert them to RGB and decide to roll my own. It's pretty straightforward. There are a bunch of different ways to grab the y, u , v data and this one is a bit more intricate as it moves the cursor constantly to get the appropriate UV position for the current Y value. To get a better understanding of conversions from YUV to RGB and about colour spaces in general, I found that the MSDN was a great place. Check out this <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/dd206750(v=vs.85).aspx">link</a>.</p>
+<p><script src="https://gist.github.com/2472889.js?file=yuv2rgb.py"></script></p>
+<blockquote><p>I would like to rewrite this so that it is more generic for all YUV formats depending on their sample period. </p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-04-23-colour-spaces-and-nv12-to-rgb.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

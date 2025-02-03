@@ -1,0 +1,194 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Dropwizard Reservoir Concurrency | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Dropwizard Reservoir Concurrency" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Dropwizard Metrics A senior colleague was recently writing some code that required some sliding window book-keeping. Worried about throughput and concurrency, the colleague opted for a home-grown solution following the single-writer principle. From prior experience with Dropwizard Metrics, my quick quip was &quot;meh, just use Dropwizard&#39;s SlidingTimeWindowReservoir&quot;, as I had come to expect the library to provide robust &amp; highly concurrent data structures for metrics. He ended up diving into the implementation and sure enough -- found it to be quite ingenious. It took me a little bit of understanding so I thought I would explain it here for my future self. Underlying Datastructure When drumming up ways to implement a SlidingTimeWindowReservoir, various data structures could be used however Dropwizard opt&#39;s for a ConcurrentSkipListMap, which is a lock free NavigableMap. The map is sorted on tick (time), and the interface NavigableMap, allows for easy trimming. private void trim() { measurements.headMap(getTick() - window).clear(); } Concurrency The key to the ConcurrentSkipListMap is the clock tick. How do we solve the scenario where multiple writers try to record a value at the same clock granularity? This is where the implementation is quite neat, by introducing a COLLISION_BUFFER. Original source // allow for this many duplicate ticks before overwriting measurements private static final int COLLISION_BUFFER = 256; private long getTick() { for (; ; ) { final long oldTick = lastTick.get(); final long tick = clock.getTick() * COLLISION_BUFFER; // ensure the tick is strictly incrementing even if there are duplicate ticks final long newTick = tick - oldTick &gt; 0 ? tick : oldTick + 1; if (lastTick.compareAndSet(oldTick, newTick)) { return newTick; } } } In the unlikely case where multiple writers are trying to add to the Map in the same clock granularity (i.e. clock.getTick() returns the same exact value) the use of a CAS allows the code to keep looping incrementing the tick value by 1 within a COLLISION_BUFFER. Consider the simple case where clock.getTick() returns 2 &amp; oldTick returns 256 (1 * 256). The first writer does: tick - oldTick and assigns newTick as tick. The compareAndSet is successful and lastTick is set as 512. The second writer fails the CAS and loops again but now lastTick is 512. newTick will now be 513 and be set." />
+<meta property="og:description" content="Dropwizard Metrics A senior colleague was recently writing some code that required some sliding window book-keeping. Worried about throughput and concurrency, the colleague opted for a home-grown solution following the single-writer principle. From prior experience with Dropwizard Metrics, my quick quip was &quot;meh, just use Dropwizard&#39;s SlidingTimeWindowReservoir&quot;, as I had come to expect the library to provide robust &amp; highly concurrent data structures for metrics. He ended up diving into the implementation and sure enough -- found it to be quite ingenious. It took me a little bit of understanding so I thought I would explain it here for my future self. Underlying Datastructure When drumming up ways to implement a SlidingTimeWindowReservoir, various data structures could be used however Dropwizard opt&#39;s for a ConcurrentSkipListMap, which is a lock free NavigableMap. The map is sorted on tick (time), and the interface NavigableMap, allows for easy trimming. private void trim() { measurements.headMap(getTick() - window).clear(); } Concurrency The key to the ConcurrentSkipListMap is the clock tick. How do we solve the scenario where multiple writers try to record a value at the same clock granularity? This is where the implementation is quite neat, by introducing a COLLISION_BUFFER. Original source // allow for this many duplicate ticks before overwriting measurements private static final int COLLISION_BUFFER = 256; private long getTick() { for (; ; ) { final long oldTick = lastTick.get(); final long tick = clock.getTick() * COLLISION_BUFFER; // ensure the tick is strictly incrementing even if there are duplicate ticks final long newTick = tick - oldTick &gt; 0 ? tick : oldTick + 1; if (lastTick.compareAndSet(oldTick, newTick)) { return newTick; } } } In the unlikely case where multiple writers are trying to add to the Map in the same clock granularity (i.e. clock.getTick() returns the same exact value) the use of a CAS allows the code to keep looping incrementing the tick value by 1 within a COLLISION_BUFFER. Consider the simple case where clock.getTick() returns 2 &amp; oldTick returns 256 (1 * 256). The first writer does: tick - oldTick and assigns newTick as tick. The compareAndSet is successful and lastTick is set as 512. The second writer fails the CAS and loops again but now lastTick is 512. newTick will now be 513 and be set." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2018-06-06-dropwizard-reservoir-concurrency.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2018-06-06-dropwizard-reservoir-concurrency.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-06T19:42:47-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Dropwizard Reservoir Concurrency" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2018-06-06T19:42:47-07:00","datePublished":"2018-06-06T19:42:47-07:00","description":"Dropwizard Metrics A senior colleague was recently writing some code that required some sliding window book-keeping. Worried about throughput and concurrency, the colleague opted for a home-grown solution following the single-writer principle. From prior experience with Dropwizard Metrics, my quick quip was &quot;meh, just use Dropwizard&#39;s SlidingTimeWindowReservoir&quot;, as I had come to expect the library to provide robust &amp; highly concurrent data structures for metrics. He ended up diving into the implementation and sure enough -- found it to be quite ingenious. It took me a little bit of understanding so I thought I would explain it here for my future self. Underlying Datastructure When drumming up ways to implement a SlidingTimeWindowReservoir, various data structures could be used however Dropwizard opt&#39;s for a ConcurrentSkipListMap, which is a lock free NavigableMap. The map is sorted on tick (time), and the interface NavigableMap, allows for easy trimming. private void trim() { measurements.headMap(getTick() - window).clear(); } Concurrency The key to the ConcurrentSkipListMap is the clock tick. How do we solve the scenario where multiple writers try to record a value at the same clock granularity? This is where the implementation is quite neat, by introducing a COLLISION_BUFFER. Original source // allow for this many duplicate ticks before overwriting measurements private static final int COLLISION_BUFFER = 256; private long getTick() { for (; ; ) { final long oldTick = lastTick.get(); final long tick = clock.getTick() * COLLISION_BUFFER; // ensure the tick is strictly incrementing even if there are duplicate ticks final long newTick = tick - oldTick &gt; 0 ? tick : oldTick + 1; if (lastTick.compareAndSet(oldTick, newTick)) { return newTick; } } } In the unlikely case where multiple writers are trying to add to the Map in the same clock granularity (i.e. clock.getTick() returns the same exact value) the use of a CAS allows the code to keep looping incrementing the tick value by 1 within a COLLISION_BUFFER. Consider the simple case where clock.getTick() returns 2 &amp; oldTick returns 256 (1 * 256). The first writer does: tick - oldTick and assigns newTick as tick. The compareAndSet is successful and lastTick is set as 512. The second writer fails the CAS and loops again but now lastTick is 512. newTick will now be 513 and be set.","headline":"Dropwizard Reservoir Concurrency","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2018-06-06-dropwizard-reservoir-concurrency.html"},"url":"https://fzakaria.com/old_blog/2018-06-06-dropwizard-reservoir-concurrency.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Dropwizard Reservoir Concurrency
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2018-06-06
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2018-06-06-dropwizard-reservoir-concurrency.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h3>Dropwizard Metrics</h3>
+<p>A senior colleague was recently writing some code that required some sliding window book-keeping. Worried about throughput and concurrency, the colleague opted for a home-grown solution following the <a href="https://mechanical-sympathy.blogspot.com/2011/09/single-writer-principle.html">single-writer principle</a>.</p>
+<p>From prior experience with <a href="https://metrics.dropwizard.io/4.0.0/">Dropwizard Metrics</a>, my quick quip was "meh, just use Dropwizard's SlidingTimeWindowReservoir", as I had come to expect the library to provide <em>robust &amp; highly concurrent</em> data structures for metrics.</p>
+<p>He ended up diving into the implementation and sure enough -- found it to be quite ingenious. It took me a little bit of understanding so I thought I would explain it here for my future self.</p>
+<h4>Underlying Datastructure</h4>
+<p>When drumming up ways to implement a SlidingTimeWindowReservoir, various data structures could be used however Dropwizard opt's for a <em>ConcurrentSkipListMap</em>, which is a <em>lock free</em> <em>NavigableMap</em>.</p>
+<p>The map is sorted on <strong>tick</strong> (time), and the interface <em>NavigableMap</em>, allows for easy trimming.</p>
+<pre class="lang:java decode:true " >private void trim() {
+    measurements.headMap(getTick() - window).clear();
+}</pre>
+<h4>Concurrency</h4>
+<p>The key to the <em>ConcurrentSkipListMap</em> is the <em>clock tick</em>. </p>
+<blockquote><p>How do we solve the scenario where multiple writers try to record a value at the same clock granularity?</p></blockquote>
+<p>This is where the implementation is quite neat, by introducing a <em>COLLISION_BUFFER</em>.</p>
+<p><a href="https://github.com/dropwizard/metrics/blob/1fe4585e296ec4c5b6706012b808b6dfbb908af6/metrics-core/src/main/java/com/codahale/metrics/SlidingTimeWindowReservoir.java">Original source</a></p>
+<pre class="lang:java decode:true" title="Relevant portion from SlidingTimeWindowReservoir">    // allow for this many duplicate ticks before overwriting measurements
+    private static final int COLLISION_BUFFER = 256;
+   
+    private long getTick() {
+        for (; ; ) {
+            final long oldTick = lastTick.get();
+            final long tick = clock.getTick() * COLLISION_BUFFER;
+            // ensure the tick is strictly incrementing even if there are duplicate ticks
+            final long newTick = tick - oldTick > 0 ? tick : oldTick + 1;
+            if (lastTick.compareAndSet(oldTick, newTick)) {
+                return newTick;
+            }
+        }
+    }</pre>
+<p>In the unlikely case where multiple writers are trying to add to the Map in the same clock granularity (i.e. <code>clock.getTick()</code> returns the same exact value)  the use of a <a href="https://en.wikipedia.org/wiki/Compare-and-swap">CAS</a> allows the code to keep looping incrementing the tick value by 1 within a <em>COLLISION_BUFFER</em>.</p>
+<p>Consider the simple case where <code>clock.getTick()</code> returns <strong>2</strong> & oldTick returns <strong>256</strong> (1 * 256).</p>
+<p>The first writer does: <code>tick - oldTick</code> and assigns <em>newTick</em> as <em>tick</em>. The <code>compareAndSet</code> is successful and <em>lastTick</em> is set as <strong>512</strong>.</p>
+<p>The second writer fails the CAS and loops again but now lastTick is <strong>512</strong>.<br />
+<code>newTick</code> will now be <strong>513</strong> and be set.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2018-06-06-dropwizard-reservoir-concurrency.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

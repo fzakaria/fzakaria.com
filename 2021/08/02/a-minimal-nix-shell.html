@@ -1,0 +1,288 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>A minimal nix-shell | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="A minimal nix-shell" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="We are currently using nix-shell to create a reproducible environment for our developers and CI infrastructure. Can we minimize the dependency closure to make our CI jobs faster?" />
+<meta property="og:description" content="We are currently using nix-shell to create a reproducible environment for our developers and CI infrastructure. Can we minimize the dependency closure to make our CI jobs faster?" />
+<link rel="canonical" href="https://fzakaria.com/2021/08/02/a-minimal-nix-shell.html" />
+<meta property="og:url" content="https://fzakaria.com/2021/08/02/a-minimal-nix-shell.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-08-02T10:35:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="A minimal nix-shell" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2021-08-02T10:35:00-07:00","datePublished":"2021-08-02T10:35:00-07:00","description":"We are currently using nix-shell to create a reproducible environment for our developers and CI infrastructure. Can we minimize the dependency closure to make our CI jobs faster?","headline":"A minimal nix-shell","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2021/08/02/a-minimal-nix-shell.html"},"url":"https://fzakaria.com/2021/08/02/a-minimal-nix-shell.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    A minimal nix-shell
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2021-08-02
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2021/08/02/a-minimal-nix-shell.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p>We are currently using <em>nix-shell</em> to create a reproducible environment for our developers and CI infrastructure. Can we minimize the dependency closure to make our CI jobs faster?</p>
+
+<!--more-->
+
+<p>If you are familiar with <em>Nix</em>, undoubtedly you have come across <a href="https://nixos.org/manual/nix/unstable/command-ref/nix-shell.html">nix-shell</a>. Originally designed to help debug a failing deriviation by entering the user into a shell, it has quickly become a beloved way to create reproducible developer environments via <a href="https://nixos.org/manual/nixpkgs/stable/#sec-pkgs-mkShell">mkShell</a>.</p>
+
+<blockquote>
+  <p>mkShell is a special kind of derivation that is only useful when using it combined with nix-shell. It will in fact fail to instantiate when invoked with nix-build.</p>
+</blockquote>
+
+<p><em>mkShell</em> however comes with a predefined set of dependencies via the <a href="https://nixos.org/manual/nixpkgs/stable/#chap-stdenv">standard build environment (stdenv)</a>.</p>
+
+<p>Let’s look at an <em>empty mkShell</em> and explore the transitive closure.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">builtins</span><span class="o">.</span><span class="kr">fetchTarball</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"nixos-unstable-2020-09-24"</span><span class="p">;</span>
+    <span class="nv">url</span> <span class="o">=</span>
+      <span class="s2">"https://github.com/nixos/nixpkgs/archive/8ecc61c91a596df7d3293603a9c2384190c1b89a.tar.gz"</span><span class="p">;</span>
+    <span class="nv">sha256</span> <span class="o">=</span> <span class="s2">"0vhajylsmipjkm5v44n2h0pglcmpvk4mkyvxp7qfvkjdxw21dyml"</span><span class="p">;</span>
+  <span class="p">})</span> <span class="p">{</span> <span class="p">};</span>
+<span class="kn">in</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">mkShell</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"basic-shell"</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="p">];</span>
+  <span class="nv">shellHook</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>We can even visualize the dependency closure using <a href="https://graphviz.org/">graphviz</a>.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nix-store <span class="nt">--query</span> <span class="nt">--graph</span> <span class="si">$(</span>nix-build <span class="nt">--no-out-link</span> <span class="nt">-A</span> inputDerivation basic-shell.nix<span class="si">)</span> 
+</code></pre></div></div>
+
+<p><img src="/assets/images/basic-shell-graph.svg" alt="basic nix-shell" /></p>
+
+<p>There is quite a lot there including GCC and we see the total closure size is <strong>~270MiB</strong>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix path-info <span class="nt">--closure-size</span> <span class="nt">--human-readable</span> <span class="si">$(</span>nix-build <span class="nt">--no-out-link</span> <span class="nt">-A</span> inputDerivation basic-shell.nix<span class="si">)</span>
+
+/nix/store/zg33vr1apaq341c9bdfbhlwbp8l22qm6-basic-shell	 268.3M
+</code></pre></div></div>
+
+<p>Let’s see how much better we can do with <a href="https://github.com/NixOS/nixpkgs/commit/9b3091a94cad63ebd0bd7aafbcfed7c133ef899d">mkShellNoCC</a>.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">builtins</span><span class="o">.</span><span class="kr">fetchTarball</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"nixos-unstable-2020-09-24"</span><span class="p">;</span>
+    <span class="nv">url</span> <span class="o">=</span>
+      <span class="s2">"https://github.com/nixos/nixpkgs/archive/8ecc61c91a596df7d3293603a9c2384190c1b89a.tar.gz"</span><span class="p">;</span>
+    <span class="nv">sha256</span> <span class="o">=</span> <span class="s2">"0vhajylsmipjkm5v44n2h0pglcmpvk4mkyvxp7qfvkjdxw21dyml"</span><span class="p">;</span>
+  <span class="p">})</span> <span class="p">{</span> <span class="p">};</span>
+<span class="kn">in</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">mkShellNoCC</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"shell-no-cc"</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="p">];</span>
+  <span class="nv">shellHook</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/shell-no-cc-graph.svg" alt="nix-shell without compiler" /></p>
+
+<p>Looks like we are down to <strong>~53MiB</strong></p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix path-info <span class="nt">--closure-size</span> <span class="nt">--human-readable</span> <span class="si">$(</span>nix-build <span class="nt">--no-out-link</span> <span class="nt">-A</span> inputDerivation shell-no-cc.nix<span class="si">)</span><span class="nb">.</span>
+/nix/store/7afg0p2kyc8qb5a0nv7mlvpf1mbpqkdx-shell-no-cc	  53.5M
+</code></pre></div></div>
+
+<p>🕵️ Can we do better?</p>
+
+<blockquote>
+  <p>Thank you to <a href="https://github.com/siraben">siraben</a> via Matrix to help share some of the following derivation.</p>
+</blockquote>
+
+<p>Let’s strip everything in <strong>nix-shell</strong> aside from <em>coreutils</em>.</p>
+
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span>
+  <span class="nv">nixpkgs</span> <span class="o">=</span> <span class="kr">import</span> <span class="p">(</span><span class="kr">builtins</span><span class="o">.</span><span class="kr">fetchTarball</span> <span class="p">{</span>
+    <span class="nv">name</span> <span class="o">=</span> <span class="s2">"nixos-unstable-2020-09-24"</span><span class="p">;</span>
+    <span class="nv">url</span> <span class="o">=</span>
+      <span class="s2">"https://github.com/nixos/nixpkgs/archive/8ecc61c91a596df7d3293603a9c2384190c1b89a.tar.gz"</span><span class="p">;</span>
+    <span class="nv">sha256</span> <span class="o">=</span> <span class="s2">"0vhajylsmipjkm5v44n2h0pglcmpvk4mkyvxp7qfvkjdxw21dyml"</span><span class="p">;</span>
+  <span class="p">})</span> <span class="p">{</span> <span class="p">};</span>
+  <span class="nv">stdenvMinimal</span> <span class="o">=</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">stdenvNoCC</span><span class="o">.</span><span class="nv">override</span> <span class="p">{</span>
+    <span class="nv">cc</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="nv">preHook</span> <span class="o">=</span> <span class="s2">""</span><span class="p">;</span>
+    <span class="nv">allowedRequisites</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="nv">initialPath</span> <span class="o">=</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">lib</span><span class="o">.</span><span class="nv">filter</span>
+      <span class="p">(</span><span class="nv">a</span><span class="p">:</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">lib</span><span class="o">.</span><span class="nv">hasPrefix</span> <span class="s2">"coreutils"</span> <span class="nv">a</span><span class="o">.</span><span class="nv">name</span><span class="p">)</span>
+      <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">stdenvNoCC</span><span class="o">.</span><span class="nv">initialPath</span><span class="p">;</span>
+    <span class="nv">extraNativeBuildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="p">];</span>
+  <span class="p">};</span>
+  <span class="nv">minimalMkShell</span> <span class="o">=</span> <span class="nv">nixpkgs</span><span class="o">.</span><span class="nv">mkShell</span><span class="o">.</span><span class="nv">override</span> <span class="p">{</span>
+    <span class="nv">stdenv</span> <span class="o">=</span> <span class="nv">stdenvMinimal</span><span class="p">;</span>
+  <span class="p">};</span>
+<span class="kn">in</span> <span class="nv">minimalMkShell</span> <span class="p">{</span>
+  <span class="nv">name</span> <span class="o">=</span> <span class="s2">"minimal-shell"</span><span class="p">;</span>
+  <span class="nv">buildInputs</span> <span class="o">=</span> <span class="p">[</span> <span class="p">];</span>
+  <span class="nv">shellHook</span> <span class="o">=</span> <span class="s2">''</span><span class="err">
+</span><span class="s2">  ''</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p><img src="/assets/images/shell-minimal-graph.svg" alt="nix-shell without compiler" /></p>
+
+<p>💥 Looks like it’s down to <strong>34MiB</strong>  💥</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix path-info <span class="nt">--closure-size</span> <span class="nt">--human-readable</span> <span class="si">$(</span>nix-build <span class="nt">--no-out-link</span> <span class="nt">-A</span> inputDerivation minimal-shell.nix<span class="si">)</span>
+/nix/store/2msg7r8gd7ydwmr33a9nrrjnar7wywxh-minimal-shell	  34.9M
+</code></pre></div></div>
+
+<p>Awesome, we’ve just reduced the closure-size by <strong>~7.7x</strong> !</p>
+
+<p>🧐 Most of that space is due to <strong>glibc</strong> i8n &amp; locales.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ <span class="nb">du</span> <span class="nt">-h</span> /nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47 | <span class="nb">sort</span> <span class="nt">-rh</span> | <span class="nb">head</span> <span class="nt">-n</span> 10
+33M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47
+17M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/share/i18n
+17M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/share
+16M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/lib
+13M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/share/i18n/locales
+8.7M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/lib/gconv
+3.4M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/share/i18n/charmaps
+1.8M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/lib/locale
+304K	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/share/locale
+128K	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/libexec
+</code></pre></div></div>
+
+<p>Can we do <em>even</em> better?</p>
+
+<p>Unfortunately <strong>not at this time</strong>. Removing <em>coreutils</em> from the closure, causes the <a href="https://github.com/NixOS/nixpkgs/blob/c464dc811babfe316ed4ab7bbc12351122e69dd7/pkgs/stdenv/generic/builder.sh#L7">basic builder</a> to fail since it no longer can find <em>mkdir</em>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ nix-shell minimal-shell.nix <span class="nt">--pure</span>
+these derivations will be built:
+  /nix/store/4gw7ly8hicaw5895370ylmrdhz9l4y9d-stdenv-linux.drv
+building <span class="s1">'/nix/store/4gw7ly8hicaw5895370ylmrdhz9l4y9d-stdenv-linux.drv'</span>...
+/nix/store/dsyj1sp3h8q2wwi8m6z548rvn3bmm3vc-builder.sh: line 7: <span class="nb">mkdir</span>: <span class="nb">command </span>not found
+builder <span class="k">for</span> <span class="s1">'/nix/store/4gw7ly8hicaw5895370ylmrdhz9l4y9d-stdenv-linux.drv'</span> failed with <span class="nb">exit </span>code 127
+</code></pre></div></div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2021-08-02-a-minimal-nix-shell.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

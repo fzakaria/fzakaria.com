@@ -1,0 +1,200 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Investigation into Compile time and Linking time optimizations | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Investigation into Compile time and Linking time optimizations" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Brief Intro With the onset of C++ and object-oriented design, code has become seemingly more complex although arguably simpler to read (compared to assembly). As a software project (specifically c++) grows, the ability to test, update, refactor and compile/link the code begins to increase dramatically without proper care. This was to me personally a very new problem, given that in academia (i.e. assignments in my undergrad), the software never gets to size I&#39;ve seen throughout my co-ops (millions of lines) and although strong logical design is pushed; physical design is not. It is the physical design of the code that can help reduce some of the issues mentioned above specifically compiling and linking times. How long really can compile/linking take? I&#39;ve heard of some code bases requiring more than a full day running in parallel on multiple machines. Although never that bad in the co-ops I&#39;ve worked for, fast compilation and linking was something to strive for especially since the development cycle for game development is very fast (i.e. may be constantly tuning the codebase rapidly). Throughout my internships, I&#39;ve come to encounter different/specific ways of combating these issues to help smooth out the development cycle and to hopefully allow for more maintainable code. In an attempt to somewhat turn that information into a work report, I decided to perform some additional work on my own and reading. Most of the information I gleamed referred to or was from the following book: Large-Scale C++ Software Design Compilation and Linking In order to link and create the final executable, the compiler will recursively include the headers in the source files to create an intermediate object file. These object files are finally linked together (by the linker) together to create the final executable. The whole process is a bit more complicated than I&#39;ve explained (there is external/internal linking); read the book above for more in depth info. One of the early major problems, not so much anymore due to the preprocessor macro #pragma once and managed code, was including the same header more than once during the recursive inclusion of header files (leads to multiple define errors). This issue however is still of importance in the video game industry since the compilers for certain platforms *cough* PS3 *cough* aren&#39;t as great as current day PC compilers. Header Guards &amp; Redundant Header Guards The time honored way of solving this issue in C++ is to wrap the header files in a unique header guard. The recursive includes aren&#39;t the result of cyclic dependencies (see below) but rather simply the recursive includes which can exist in an acyclic structured program Further optimizations are used by also including redundant header guards around the include statements. The addition of the redundant guards are simply an optimization to help naive compilers so that they don&#39;t keep reopening files that have already been included to only find out that they have already been included. The use of redundant include guards however is extremely unpleasant as it binds you to external defines, can hide wrong #include statements and adds an additional two lines for every #include. These factors are what prompted my current employer to begin looking into other means of optimization for the compiler/linker. How useful is redundant guards for it to be a necessary evil? Well if you take a look at pg87 of Large-Scale C++ Software Design, includes some benchmark numbers. Essentially, by not using redundant header guards you run the risk of a quadratic O(n^2) compile times, where N are the number of #include statements. Wow. CyclicCircular Dependencies AKA &quot;Dependancy Hell&quot; Time can either be spent attacking compile time dependencies or linking ones. One of the biggest problems I&#39;ve personally seen either unmanaged or attacked with a zealot faith that would impress the most religious people are cyclic dependencies. Easy to explain, difficult to find, and harder to remove, cyclic dependncies are simply when you have the following relationship: At my last co-op, I began investigation of the current state of dependencies of the code base by building a dependably graph. Starting off by using the following perl script (modified slightly to work in our environment and some additional options) would create a .dot file which is an input file for software within the GraphViz programs that output directed/undirected graphs. An example of the output that can be achieved can be seen from that of the script being run on the ToirtoiseCVS codebase: Easier than it seems... as always Running the script on the source code resulted pretty much as what could be described by a black dot. There were so many interdependencies that nothing was visible and the final file was enormous (100s of MB). Edit the script and started cutting out files to comb through as well as to include in the dependency chart, starting with the internal libraries. Didn&#39;t work. Running the script on individual components, such as AI, Core, Gameplay or Animation. Didn&#39;t work. The final graph was still too intertwined. running the script on individual files, &quot;manage files&quot; (manage a specific functionality such as inventory) and only recurse to a certain depth. I finally ended up with the third try with a graph and resulting image that were sizable, legible and useful. The images did demonstrate many unnecessary #includes as well as some intricate circular dependencies...wonderful. More to come." />
+<meta property="og:description" content="Brief Intro With the onset of C++ and object-oriented design, code has become seemingly more complex although arguably simpler to read (compared to assembly). As a software project (specifically c++) grows, the ability to test, update, refactor and compile/link the code begins to increase dramatically without proper care. This was to me personally a very new problem, given that in academia (i.e. assignments in my undergrad), the software never gets to size I&#39;ve seen throughout my co-ops (millions of lines) and although strong logical design is pushed; physical design is not. It is the physical design of the code that can help reduce some of the issues mentioned above specifically compiling and linking times. How long really can compile/linking take? I&#39;ve heard of some code bases requiring more than a full day running in parallel on multiple machines. Although never that bad in the co-ops I&#39;ve worked for, fast compilation and linking was something to strive for especially since the development cycle for game development is very fast (i.e. may be constantly tuning the codebase rapidly). Throughout my internships, I&#39;ve come to encounter different/specific ways of combating these issues to help smooth out the development cycle and to hopefully allow for more maintainable code. In an attempt to somewhat turn that information into a work report, I decided to perform some additional work on my own and reading. Most of the information I gleamed referred to or was from the following book: Large-Scale C++ Software Design Compilation and Linking In order to link and create the final executable, the compiler will recursively include the headers in the source files to create an intermediate object file. These object files are finally linked together (by the linker) together to create the final executable. The whole process is a bit more complicated than I&#39;ve explained (there is external/internal linking); read the book above for more in depth info. One of the early major problems, not so much anymore due to the preprocessor macro #pragma once and managed code, was including the same header more than once during the recursive inclusion of header files (leads to multiple define errors). This issue however is still of importance in the video game industry since the compilers for certain platforms *cough* PS3 *cough* aren&#39;t as great as current day PC compilers. Header Guards &amp; Redundant Header Guards The time honored way of solving this issue in C++ is to wrap the header files in a unique header guard. The recursive includes aren&#39;t the result of cyclic dependencies (see below) but rather simply the recursive includes which can exist in an acyclic structured program Further optimizations are used by also including redundant header guards around the include statements. The addition of the redundant guards are simply an optimization to help naive compilers so that they don&#39;t keep reopening files that have already been included to only find out that they have already been included. The use of redundant include guards however is extremely unpleasant as it binds you to external defines, can hide wrong #include statements and adds an additional two lines for every #include. These factors are what prompted my current employer to begin looking into other means of optimization for the compiler/linker. How useful is redundant guards for it to be a necessary evil? Well if you take a look at pg87 of Large-Scale C++ Software Design, includes some benchmark numbers. Essentially, by not using redundant header guards you run the risk of a quadratic O(n^2) compile times, where N are the number of #include statements. Wow. CyclicCircular Dependencies AKA &quot;Dependancy Hell&quot; Time can either be spent attacking compile time dependencies or linking ones. One of the biggest problems I&#39;ve personally seen either unmanaged or attacked with a zealot faith that would impress the most religious people are cyclic dependencies. Easy to explain, difficult to find, and harder to remove, cyclic dependncies are simply when you have the following relationship: At my last co-op, I began investigation of the current state of dependencies of the code base by building a dependably graph. Starting off by using the following perl script (modified slightly to work in our environment and some additional options) would create a .dot file which is an input file for software within the GraphViz programs that output directed/undirected graphs. An example of the output that can be achieved can be seen from that of the script being run on the ToirtoiseCVS codebase: Easier than it seems... as always Running the script on the source code resulted pretty much as what could be described by a black dot. There were so many interdependencies that nothing was visible and the final file was enormous (100s of MB). Edit the script and started cutting out files to comb through as well as to include in the dependency chart, starting with the internal libraries. Didn&#39;t work. Running the script on individual components, such as AI, Core, Gameplay or Animation. Didn&#39;t work. The final graph was still too intertwined. running the script on individual files, &quot;manage files&quot; (manage a specific functionality such as inventory) and only recurse to a certain depth. I finally ended up with the third try with a graph and resulting image that were sizable, legible and useful. The images did demonstrate many unnecessary #includes as well as some intricate circular dependencies...wonderful. More to come." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2010-12-22-investigation-into-compile-time-and-linking-time-optimizations.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2010-12-22-investigation-into-compile-time-and-linking-time-optimizations.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2010-12-22T17:03:24-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Investigation into Compile time and Linking time optimizations" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2010-12-22T17:03:24-08:00","datePublished":"2010-12-22T17:03:24-08:00","description":"Brief Intro With the onset of C++ and object-oriented design, code has become seemingly more complex although arguably simpler to read (compared to assembly). As a software project (specifically c++) grows, the ability to test, update, refactor and compile/link the code begins to increase dramatically without proper care. This was to me personally a very new problem, given that in academia (i.e. assignments in my undergrad), the software never gets to size I&#39;ve seen throughout my co-ops (millions of lines) and although strong logical design is pushed; physical design is not. It is the physical design of the code that can help reduce some of the issues mentioned above specifically compiling and linking times. How long really can compile/linking take? I&#39;ve heard of some code bases requiring more than a full day running in parallel on multiple machines. Although never that bad in the co-ops I&#39;ve worked for, fast compilation and linking was something to strive for especially since the development cycle for game development is very fast (i.e. may be constantly tuning the codebase rapidly). Throughout my internships, I&#39;ve come to encounter different/specific ways of combating these issues to help smooth out the development cycle and to hopefully allow for more maintainable code. In an attempt to somewhat turn that information into a work report, I decided to perform some additional work on my own and reading. Most of the information I gleamed referred to or was from the following book: Large-Scale C++ Software Design Compilation and Linking In order to link and create the final executable, the compiler will recursively include the headers in the source files to create an intermediate object file. These object files are finally linked together (by the linker) together to create the final executable. The whole process is a bit more complicated than I&#39;ve explained (there is external/internal linking); read the book above for more in depth info. One of the early major problems, not so much anymore due to the preprocessor macro #pragma once and managed code, was including the same header more than once during the recursive inclusion of header files (leads to multiple define errors). This issue however is still of importance in the video game industry since the compilers for certain platforms *cough* PS3 *cough* aren&#39;t as great as current day PC compilers. Header Guards &amp; Redundant Header Guards The time honored way of solving this issue in C++ is to wrap the header files in a unique header guard. The recursive includes aren&#39;t the result of cyclic dependencies (see below) but rather simply the recursive includes which can exist in an acyclic structured program Further optimizations are used by also including redundant header guards around the include statements. The addition of the redundant guards are simply an optimization to help naive compilers so that they don&#39;t keep reopening files that have already been included to only find out that they have already been included. The use of redundant include guards however is extremely unpleasant as it binds you to external defines, can hide wrong #include statements and adds an additional two lines for every #include. These factors are what prompted my current employer to begin looking into other means of optimization for the compiler/linker. How useful is redundant guards for it to be a necessary evil? Well if you take a look at pg87 of Large-Scale C++ Software Design, includes some benchmark numbers. Essentially, by not using redundant header guards you run the risk of a quadratic O(n^2) compile times, where N are the number of #include statements. Wow. CyclicCircular Dependencies AKA &quot;Dependancy Hell&quot; Time can either be spent attacking compile time dependencies or linking ones. One of the biggest problems I&#39;ve personally seen either unmanaged or attacked with a zealot faith that would impress the most religious people are cyclic dependencies. Easy to explain, difficult to find, and harder to remove, cyclic dependncies are simply when you have the following relationship: At my last co-op, I began investigation of the current state of dependencies of the code base by building a dependably graph. Starting off by using the following perl script (modified slightly to work in our environment and some additional options) would create a .dot file which is an input file for software within the GraphViz programs that output directed/undirected graphs. An example of the output that can be achieved can be seen from that of the script being run on the ToirtoiseCVS codebase: Easier than it seems... as always Running the script on the source code resulted pretty much as what could be described by a black dot. There were so many interdependencies that nothing was visible and the final file was enormous (100s of MB). Edit the script and started cutting out files to comb through as well as to include in the dependency chart, starting with the internal libraries. Didn&#39;t work. Running the script on individual components, such as AI, Core, Gameplay or Animation. Didn&#39;t work. The final graph was still too intertwined. running the script on individual files, &quot;manage files&quot; (manage a specific functionality such as inventory) and only recurse to a certain depth. I finally ended up with the third try with a graph and resulting image that were sizable, legible and useful. The images did demonstrate many unnecessary #includes as well as some intricate circular dependencies...wonderful. More to come.","headline":"Investigation into Compile time and Linking time optimizations","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2010-12-22-investigation-into-compile-time-and-linking-time-optimizations.html"},"url":"https://fzakaria.com/old_blog/2010-12-22-investigation-into-compile-time-and-linking-time-optimizations.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Investigation into Compile time and Linking time optimizations
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2010-12-22
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2010-12-22-investigation-into-compile-time-and-linking-time-optimizations.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> Brief Intro </h2>
+<p>
+With the onset of C++ and object-oriented design, code has become seemingly more complex although arguably simpler to read (compared to assembly). As a software project (specifically c++) grows, the ability to test, update, refactor and compile/link the code begins to increase dramatically without proper care. This was to me personally a very new problem, given that in academia (i.e. assignments in my undergrad), the software never gets to size I've seen throughout my co-ops (millions of lines) and although strong logical design is pushed; physical design is not. It is the physical design of the code that can help reduce some of the issues mentioned above specifically compiling and linking times.</p>
+<p>
+How long really can compile/linking take? I've heard of some code bases requiring more than a full day running in parallel on multiple machines. Although never that bad in the co-ops I've worked for, fast compilation and linking was something to strive for especially since the development cycle for game development is very fast (i.e. may be constantly tuning the codebase rapidly). Throughout my internships, I've come to encounter different/specific ways of combating these issues to help smooth out the development cycle and to hopefully allow for more maintainable code. In an attempt to somewhat turn that information into a work report, I decided to perform some additional work on my own and reading. Most of the information I gleamed referred to or was from the following book: </p>
+<blockquote><p><a href="http://www.amazon.ca/gp/product/0201633620/ref=cm_sw_r_fa_dp/183-0148047-3219139">Large-Scale C++ Software Design</a> </p></blockquote>
+<p><!--more--></p>
+<h2> Compilation and Linking </h2>
+<p>
+In order to link and create the final executable, the compiler will <strong>recursively</strong> include the headers in the source files to create an intermediate object file. These object files are finally linked together (by the linker) together to create the final executable. The whole process is a bit more complicated than I've explained (there is external/internal linking); read the book above for more in depth info.</p>
+<p>
+One of the early major problems, not so much anymore due to the preprocessor macro #pragma once and managed code, was including the same header more than once during the recursive inclusion of header files (leads to multiple define errors). This issue however is still of importance in the video game industry since the compilers for certain platforms <em>*cough* PS3 *cough*</em> aren't as great as current day PC compilers.</p>
+<h2> Header Guards & Redundant Header Guards </h2>
+<p>
+The time honored way of solving this issue in C++ is to wrap the header files in a unique <a href="http://en.wikipedia.org/wiki/Include_guard">header guard</a>. </p>
+<blockquote><p>The recursive includes aren't the result of cyclic dependencies (see below) but rather simply the recursive includes which can exist in an acyclic structured program</p></blockquote>
+<p>Further optimizations are used by also including <a href="http://c2.com/cgi/wiki?RedundantIncludeGuards">redundant header</a> guards around the include statements. The addition of the redundant guards are simply an optimization to help naive compilers so that they don't keep reopening files that have already been included to only find out that they have already been included.</p>
+<p>
+The use of redundant include guards however is extremely unpleasant as it binds you to external defines, can hide wrong #include statements and adds an additional two lines for every #include. These factors are what prompted my current employer to begin looking into other means of optimization for the compiler/linker.</p>
+<p>How useful is redundant guards for it to be a necessary evil? Well if you take a look at pg87 of <a href="http://www.amazon.ca/gp/product/0201633620/ref=cm_sw_r_fa_dp/183-0148047-3219139">Large-Scale C++ Software Design</a>, includes some benchmark numbers. Essentially, by not using redundant header guards you run the risk of a <strong>quadratic O(n^2)</strong> compile times, where N are the number of #include statements. <strong>Wow.</strong></p>
+<h2> CyclicCircular Dependencies </h2>
+<blockquote><p>AKA "Dependancy Hell"</p></blockquote>
+<p>
+Time can either be spent attacking compile time dependencies or linking ones. One of the biggest problems I've personally seen either unmanaged or attacked with a zealot faith that would impress the most religious people are cyclic dependencies.</p>
+<p>
+Easy to explain, difficult to find, and harder to remove, cyclic dependncies are simply when you have the following relationship:<br />
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2010/12/circular_dependency.png"><img src="http://www.blog.fzakaria.com/wp-content/uploads/2010/12/circular_dependency-300x133.png" alt="" title="circular_dependency" width="300" height="133" class="aligncenter size-medium wp-image-359" /></a></p>
+<p>
+At my last co-op, I began investigation of the current state of dependencies of the code base by building a dependably graph. Starting off by using the following <a href="/Downloadable/Scripts/cinclude2dot.txt">perl script</a> (modified slightly to work in our environment and some additional options) would create a .dot file which is an input file for software within the <a href="http://www.graphviz.org/">GraphViz </a>programs that output directed/undirected graphs. An <a href="http://flourish.org/cinclude2dot/">example </a>of the output that can be achieved can be seen from that of the script being run on the ToirtoiseCVS codebase:<br />
+<a href="http://flourish.org/cinclude2dot/TortoiseCVS-small.png"><img alt="" src="http://flourish.org/cinclude2dot/TortoiseCVS-small.png" class="aligncenter" width="400" height="400" /></a></p>
+<h3> Easier than it seems... as always </h3>
+<p>
+Running the script on the source code resulted pretty much as what could be described by a black dot. There were so many interdependencies that nothing was visible and the final file was enormous (100s of MB). </p>
+<ol>
+<li>Edit the script and started cutting out files to comb through as well as to include in the dependency chart, starting with the internal libraries. <strong>Didn't work.</strong></li>
+<li>Running the script on individual components, such as AI, Core, Gameplay or Animation. <strong>Didn't work.</strong> The final graph was still too intertwined.</li>
+<li>running the script on individual files, "manage files" (manage a specific functionality such as inventory) and only recurse to a certain depth.</li>
+</ol>
+<p> I finally ended up with the third try with a graph and resulting image that were sizable, legible and useful. The images did demonstrate many unnecessary #includes as well as some intricate circular dependencies...<em>wonderful</em>.</p>
+<blockquote><p>More to come.</p></blockquote>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2010-12-22-investigation-into-compile-time-and-linking-time-optimizations.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

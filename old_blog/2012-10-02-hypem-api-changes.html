@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Hypem API Changes | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Hypem API Changes" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A constant rat race Honestly, I don&#39;t even use hypem.com anymore since my music taste has changed, however I am constantly trying to keep my hypem chrome extension and python download script up to date with the changes to the site. People have been overall extremely generous in their compliments which is why I keep updating the script. Although I may not use the site anymore, I am finding their constant attempts to thwart similar extensions interesting and have enjoyed the constant rate race. I&#39;ve documented on my blog already several of their numerous attempts to thwart similar projects and looks like they released their latest incarnation. I hope this post will serve those who are attempting to enjoy their music beyond the confines of the site helpful. So, What&#39;s Changed? Previously, the link to the mp3 file was very easy to generate and scrape from their HTML page. Every song use to contain it&#39;s unique identifiers right in the &#39;div&#39; element of that song. One simply had to parse out the &#39;key&#39; and &#39;id&#39; and construct a URL to http://hypem.com/serve/play/id/key.mp3 and your content was served on a platter. They&#39;ve now added a few more tricks to their sleeve but it&#39;s still trivial getting access to the mp3. Firstly, they&#39;ve moved where the &#39;key&#39; is stored for each song. They&#39;ve embedded the &#39;keys&#39; of the current page in a &#39;script&#39; object on the site. The interior of the script object is simply JSON. Example import urllib2 import urllib from time import time data = {&#39;ax&#39;:1, &#39;ts&#39;:time()} data_encoded = urllib.urlencode(data) complete_url = &quot;http://hypem.com/track/1q7nf?{}&quot;.format(data_encoded) request = urllib2.Request(complete_url) response = urllib2.urlopen(request) html = response.read() html_file = open(&quot;hype.html&quot;, &quot;w&quot;) html_file.write(html) html_file.close() After the page loads, they read the JSON data into a javascript variable and remove the script tag from the HTML body. So you won&#39;t be able to inspect a current page and find the code Secondly, they&#39;ve changed the whole request mechanism for serving songs. Before as I mentioned, the /serve/play url immediately served up the Mp3. This is no longer the case. There is now an intermediate request which returns some JSON data and then finally the URL to the Mp3 is retrieved and served! Relevant Code from hype_functions_min.js var req_url = &#39;/serve/source/&#39; + window.playList[&#39;tracks&#39;][track].id + &#39;/&#39; + window.playList[&#39;tracks&#39;][track].key; var source_data; var r = $.ajax({url: req_url,data: req_data,type: &#39;get&#39;,async: false,cache: false,dataType: &#39;json&#39;,error: function() { log(&#39;playTrack /source/ request FAILED&#39;); return false; }}); try { response = jQuery.parseJSON(r.responseText); } catch (err) { log(&quot;FAILED to parse JSON data&quot;); return false; } Thirdly, this hasn&#39;t changed but don&#39;t forget about setting the cookie! Hypemachine checks for a AUTH cookie and without it will not authorize your get request for the song data! Simply store the cookie when you retrieve the HTML and use the same one when you make further requests. Voila!" />
+<meta property="og:description" content="A constant rat race Honestly, I don&#39;t even use hypem.com anymore since my music taste has changed, however I am constantly trying to keep my hypem chrome extension and python download script up to date with the changes to the site. People have been overall extremely generous in their compliments which is why I keep updating the script. Although I may not use the site anymore, I am finding their constant attempts to thwart similar extensions interesting and have enjoyed the constant rate race. I&#39;ve documented on my blog already several of their numerous attempts to thwart similar projects and looks like they released their latest incarnation. I hope this post will serve those who are attempting to enjoy their music beyond the confines of the site helpful. So, What&#39;s Changed? Previously, the link to the mp3 file was very easy to generate and scrape from their HTML page. Every song use to contain it&#39;s unique identifiers right in the &#39;div&#39; element of that song. One simply had to parse out the &#39;key&#39; and &#39;id&#39; and construct a URL to http://hypem.com/serve/play/id/key.mp3 and your content was served on a platter. They&#39;ve now added a few more tricks to their sleeve but it&#39;s still trivial getting access to the mp3. Firstly, they&#39;ve moved where the &#39;key&#39; is stored for each song. They&#39;ve embedded the &#39;keys&#39; of the current page in a &#39;script&#39; object on the site. The interior of the script object is simply JSON. Example import urllib2 import urllib from time import time data = {&#39;ax&#39;:1, &#39;ts&#39;:time()} data_encoded = urllib.urlencode(data) complete_url = &quot;http://hypem.com/track/1q7nf?{}&quot;.format(data_encoded) request = urllib2.Request(complete_url) response = urllib2.urlopen(request) html = response.read() html_file = open(&quot;hype.html&quot;, &quot;w&quot;) html_file.write(html) html_file.close() After the page loads, they read the JSON data into a javascript variable and remove the script tag from the HTML body. So you won&#39;t be able to inspect a current page and find the code Secondly, they&#39;ve changed the whole request mechanism for serving songs. Before as I mentioned, the /serve/play url immediately served up the Mp3. This is no longer the case. There is now an intermediate request which returns some JSON data and then finally the URL to the Mp3 is retrieved and served! Relevant Code from hype_functions_min.js var req_url = &#39;/serve/source/&#39; + window.playList[&#39;tracks&#39;][track].id + &#39;/&#39; + window.playList[&#39;tracks&#39;][track].key; var source_data; var r = $.ajax({url: req_url,data: req_data,type: &#39;get&#39;,async: false,cache: false,dataType: &#39;json&#39;,error: function() { log(&#39;playTrack /source/ request FAILED&#39;); return false; }}); try { response = jQuery.parseJSON(r.responseText); } catch (err) { log(&quot;FAILED to parse JSON data&quot;); return false; } Thirdly, this hasn&#39;t changed but don&#39;t forget about setting the cookie! Hypemachine checks for a AUTH cookie and without it will not authorize your get request for the song data! Simply store the cookie when you retrieve the HTML and use the same one when you make further requests. Voila!" />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2012-10-02-hypem-api-changes.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2012-10-02-hypem-api-changes.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2012-10-02T18:26:21-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hypem API Changes" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2012-10-02T18:26:21-07:00","datePublished":"2012-10-02T18:26:21-07:00","description":"A constant rat race Honestly, I don&#39;t even use hypem.com anymore since my music taste has changed, however I am constantly trying to keep my hypem chrome extension and python download script up to date with the changes to the site. People have been overall extremely generous in their compliments which is why I keep updating the script. Although I may not use the site anymore, I am finding their constant attempts to thwart similar extensions interesting and have enjoyed the constant rate race. I&#39;ve documented on my blog already several of their numerous attempts to thwart similar projects and looks like they released their latest incarnation. I hope this post will serve those who are attempting to enjoy their music beyond the confines of the site helpful. So, What&#39;s Changed? Previously, the link to the mp3 file was very easy to generate and scrape from their HTML page. Every song use to contain it&#39;s unique identifiers right in the &#39;div&#39; element of that song. One simply had to parse out the &#39;key&#39; and &#39;id&#39; and construct a URL to http://hypem.com/serve/play/id/key.mp3 and your content was served on a platter. They&#39;ve now added a few more tricks to their sleeve but it&#39;s still trivial getting access to the mp3. Firstly, they&#39;ve moved where the &#39;key&#39; is stored for each song. They&#39;ve embedded the &#39;keys&#39; of the current page in a &#39;script&#39; object on the site. The interior of the script object is simply JSON. Example import urllib2 import urllib from time import time data = {&#39;ax&#39;:1, &#39;ts&#39;:time()} data_encoded = urllib.urlencode(data) complete_url = &quot;http://hypem.com/track/1q7nf?{}&quot;.format(data_encoded) request = urllib2.Request(complete_url) response = urllib2.urlopen(request) html = response.read() html_file = open(&quot;hype.html&quot;, &quot;w&quot;) html_file.write(html) html_file.close() After the page loads, they read the JSON data into a javascript variable and remove the script tag from the HTML body. So you won&#39;t be able to inspect a current page and find the code Secondly, they&#39;ve changed the whole request mechanism for serving songs. Before as I mentioned, the /serve/play url immediately served up the Mp3. This is no longer the case. There is now an intermediate request which returns some JSON data and then finally the URL to the Mp3 is retrieved and served! Relevant Code from hype_functions_min.js var req_url = &#39;/serve/source/&#39; + window.playList[&#39;tracks&#39;][track].id + &#39;/&#39; + window.playList[&#39;tracks&#39;][track].key; var source_data; var r = $.ajax({url: req_url,data: req_data,type: &#39;get&#39;,async: false,cache: false,dataType: &#39;json&#39;,error: function() { log(&#39;playTrack /source/ request FAILED&#39;); return false; }}); try { response = jQuery.parseJSON(r.responseText); } catch (err) { log(&quot;FAILED to parse JSON data&quot;); return false; } Thirdly, this hasn&#39;t changed but don&#39;t forget about setting the cookie! Hypemachine checks for a AUTH cookie and without it will not authorize your get request for the song data! Simply store the cookie when you retrieve the HTML and use the same one when you make further requests. Voila!","headline":"Hypem API Changes","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2012-10-02-hypem-api-changes.html"},"url":"https://fzakaria.com/old_blog/2012-10-02-hypem-api-changes.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Hypem API Changes
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2012-10-02
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2012-10-02-hypem-api-changes.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2>A constant rat race</h2>
+<p>
+Honestly, I don't even use <a href="http://www.hypem.com">hypem.com</a> anymore since my music taste has changed, however I am constantly trying to keep my <a href="https://github.com/fzakaria/HypeMachine-Extension">hypem chrome extension</a> and <a href="https://github.com/fzakaria/HypeScript">python download script</a> up to date with the changes to the site. People have been overall extremely generous in their compliments which is why I keep updating the script.</p>
+<p>
+Although I may not use the site anymore, I am finding their constant attempts to thwart similar extensions interesting and have enjoyed the <strong>constant rate race</strong>. I've documented on my blog already several of their numerous attempts to thwart similar projects and looks like they released their latest incarnation. I hope this post will serve those who are attempting to enjoy their music beyond the confines of the site helpful.</p>
+<h2> So, What's Changed?</h2>
+<p>
+Previously, the link to the mp3 file was very easy to generate and scrape from their HTML page. Every song use to contain it's unique identifiers right in the <em>'div'</em> element of that song. One simply had to parse out the 'key' and 'id' and construct a URL to <em>http://hypem.com/serve/play/id/key.mp3</em> and your content was served on a platter. <em>They've now added a few more tricks to their sleeve but it's still trivial getting access to the mp3.</em></p>
+<ol>
+<li>Firstly, they've moved where the 'key' is stored for each song. They've embedded the 'keys' of the current page in a 'script' object on the site. The interior of the script object is simply JSON. </li>
+<p><strong>Example</strong><br />
+<code><br />
+<script type="application/json" id="displayList-data"><br/>    {"page_cur":"/track/1q7nf?ax=1&amp;ts=1349217708.87","page_num":1,"tracks":[{"type":"normal","id":"1q7nf","time":372,"ts":{"sec":1349210330,"usec":0},"postid":1950767,"posturl":"http://stereogum.com/1167152/wooden-wand-southern-colorado-song/mp3s/","fav":0,"key":"55b57f34d3774ecc94ff7360e02dc279","artist":"Wooden Wand","song":"So. Colorado Song","thumb_url_large":""}],"page_name":"item","title":"Wooden Wand - So. Colorado Song, posted on music blogs / The Hype Machine","page_next":"/track/1q7nf/2.87","page_mode":"1q7nf"}    </script><br />
+</code></p>
+<pre>
+<code>
+ import urllib2
+ import urllib
+ from time import time
+ data = {'ax':1, 'ts':time()}
+ data_encoded = urllib.urlencode(data)
+ complete_url = "http://hypem.com/track/1q7nf?{}".format(data_encoded)
+ request = urllib2.Request(complete_url)
+ response = urllib2.urlopen(request)
+ html = response.read()
+ html_file = open("hype.html", "w")
+ html_file.write(html)
+ html_file.close()
+</code>
+</pre>
+<p>After the page loads, they read the JSON data into a javascript variable and <strong>remove</strong> the script tag from the HTML body. So you won't be able to inspect a current page and find the code</p>
+<li>
+Secondly, they've changed the whole request mechanism for serving songs. Before as I mentioned, the /serve/play url immediately served up the Mp3. <strong>This is no longer the case</strong>. There is now an intermediate request which returns some JSON data and then finally the URL to the Mp3 is retrieved and served!
+</li>
+<p><strong>Relevant Code from hype_functions_min.js</strong></p>
+<pre>
+<code>
+var req_url = '/serve/source/' + window.playList['tracks'][track].id + '/' + window.playList['tracks'][track].key;
+var source_data;
+var r = $.ajax({url: req_url,data: req_data,type: 'get',async: false,cache: false,dataType: 'json',error: function() {
+    log('playTrack /source/ request FAILED');
+    return false;
+    }});
+try {
+    response = jQuery.parseJSON(r.responseText);
+} catch (err) {
+    log("FAILED to parse JSON data");
+    return false;
+}
+</code>
+</pre>
+<li>Thirdly, this hasn't changed but don't forget about setting the cookie! Hypemachine checks for a AUTH cookie and without it will not authorize your get request for the song data! Simply store the cookie when you retrieve the HTML and use the same one when you make further requests. <em>Voila!</em></li>
+</ol>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2012-10-02-hypem-api-changes.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

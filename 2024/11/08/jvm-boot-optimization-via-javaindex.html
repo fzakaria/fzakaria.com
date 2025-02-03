@@ -1,0 +1,255 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>JVM boot optimization via JavaIndex | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="JVM boot optimization via JavaIndex" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn’t. Read on to discover what it is and how it can speedup your compilation and boot time. 🤓 After having worked on Shrinkwrap and publishing our results in Mapping Out the HPC Dependency Chaos, you start to see the Linux environment as a bit of an oddball. Everything in Linux is structured around O(n) or O(n^2) search and lookup. This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. LD_LIBRARY_PATH, RUN_PATH). This idiom however is even more pervasive and has bled into all of our language. The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the CLASS_PATH." />
+<meta property="og:description" content="Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn’t. Read on to discover what it is and how it can speedup your compilation and boot time. 🤓 After having worked on Shrinkwrap and publishing our results in Mapping Out the HPC Dependency Chaos, you start to see the Linux environment as a bit of an oddball. Everything in Linux is structured around O(n) or O(n^2) search and lookup. This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. LD_LIBRARY_PATH, RUN_PATH). This idiom however is even more pervasive and has bled into all of our language. The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the CLASS_PATH." />
+<link rel="canonical" href="https://fzakaria.com/2024/11/08/jvm-boot-optimization-via-javaindex.html" />
+<meta property="og:url" content="https://fzakaria.com/2024/11/08/jvm-boot-optimization-via-javaindex.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-11-08T14:01:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="JVM boot optimization via JavaIndex" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2024-11-08T14:01:00-08:00","datePublished":"2024-11-08T14:01:00-08:00","description":"Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn’t. Read on to discover what it is and how it can speedup your compilation and boot time. 🤓 After having worked on Shrinkwrap and publishing our results in Mapping Out the HPC Dependency Chaos, you start to see the Linux environment as a bit of an oddball. Everything in Linux is structured around O(n) or O(n^2) search and lookup. This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. LD_LIBRARY_PATH, RUN_PATH). This idiom however is even more pervasive and has bled into all of our language. The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the CLASS_PATH.","headline":"JVM boot optimization via JavaIndex","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2024/11/08/jvm-boot-optimization-via-javaindex.html"},"url":"https://fzakaria.com/2024/11/08/jvm-boot-optimization-via-javaindex.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    JVM boot optimization via JavaIndex
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2024-11-08
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2024/11/08/jvm-boot-optimization-via-javaindex.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <p><em>Ever heard of a JarIndex? I had been doing JVM development for 10+ years and I hadn’t. Read on to discover what it is and how it can speedup your compilation and boot time.</em> 🤓</p>
+
+<p>After having worked on <a href="https://github.com/fzakaria/shrinkwrap">Shrinkwrap</a> and publishing our results in <a href="https://arxiv.org/abs/2211.05118">Mapping Out the HPC Dependency Chaos</a>, you start
+to see the Linux environment as a bit of an oddball.</p>
+
+<p><em>Everything in Linux is structured around O(n) or O(n^2) search and lookup</em>.</p>
+
+<p>This feels now unsurprising given that everything in Linux searches across colon separate lists (i.e. <em>LD_LIBRARY_PATH</em>, <em>RUN_PATH</em>).
+This idiom however is even more pervasive and has bled into all of our language.</p>
+
+<p>The JVM for instance, must search for classes amongst a set of directories, files or JARs set on the <em>CLASS_PATH</em>.
+<!--more--></p>
+
+<p>Everytime the JVM needs to load a class file, it must perform a linear search along all entries in the <em>CLASS_PATH</em>.
+Thanksfully, if the entries are directories or JARs, no subsequent search must be performed since the package name of a class dictates the directory structure
+that must exist.</p>
+
+<p><code class="language-plaintext highlighter-rouge">io.fzakaria.Example</code> -&gt; <code class="language-plaintext highlighter-rouge">io/fzakaria/Example.class</code></p>
+
+<p>Nevertheless, the <em>CLASS_PATH</em> size can be large. 
+At <em>$DAY_JOB$</em>, almost all of our services launch with +300 entries (JARs) on the ClassPath.</p>
+
+<p>Large enterprise codebases may feature over a thousand ClassPath entries. 😮</p>
+
+<p>A large ClassPath means that the JavaVirtualMachine (JVM) needs to search entry for the desired class.
+This not only affects startup time for your application, <em>on every startup, repeatedly</em>, but also compilation as well via <code class="language-plaintext highlighter-rouge">javac</code>.</p>
+
+<p>The authors of the JVM already knew about this problem, especially when the idea of Java Applets were dominant. Each JAR on the ClassPath
+would have been fetched via HTTP and would cause unbearable slowdown for startup.</p>
+
+<p>The JDK has support for a <em>JarIndex</em>.</p>
+
+<p>A <em>JarIndex</em>, is a JAR which has a special file <code class="language-plaintext highlighter-rouge">INDEX.LIST</code> that effectively contains an index of all JARs on the ClassPath and the packages found within.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>JarIndex-Version: 1.0
+
+libMain.jar
+Main.class
+
+lib/libA.jar
+A.class
+
+lib/libB.jar
+B.class
+</code></pre></div></div>
+
+<p>Whenever a class must be searched rather than searching through the <em>CLASS_PATH</em>, the index file is used leading to constant-time lookup for classes.</p>
+
+<p>This seemingly powerful primitive confusingly has been deprecated and ultimately removed in JDK22 (<a href="https://bugs.openjdk.org/browse/JDK-8302819">JDK-8302819</a>) 🤔 – citing challenges when having to support a broad ranges of topics such as Multi-Version JARs.</p>
+
+<p>Unsuprisingly, I think this feature would be an easy fit into Bazel, Spack or Nix – as there are a lot more constraints on the type of JARs that need be supported.</p>
+
+<p>I put together a small <a href="https://gist.github.com/fzakaria/4e98f65be96cf7f8b13081e75d7a2bf8">gist</a> on what this support might look like.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">_jar_index_impl</span><span class="p">(</span><span class="n">ctx</span><span class="p">):</span>
+    <span class="n">java_info</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">src</span><span class="p">[</span><span class="n">JavaInfo</span><span class="p">]</span>
+    <span class="n">java_runtime</span> <span class="o">=</span> <span class="n">ctx</span><span class="p">.</span><span class="n">attr</span><span class="p">.</span><span class="n">_java_runtime</span><span class="p">[</span><span class="n">java_common</span><span class="p">.</span><span class="n">JavaRuntimeInfo</span><span class="p">]</span>
+    <span class="n">java_home</span> <span class="o">=</span> <span class="n">java_runtime</span><span class="p">.</span><span class="n">java_home</span>
+    <span class="n">jar_bin</span> <span class="o">=</span> <span class="s">"%s/bin/jar"</span> <span class="o">%</span> <span class="n">java_home</span>
+
+    <span class="n">runtime_jars</span> <span class="o">=</span> <span class="s">" "</span>
+    <span class="k">for</span> <span class="n">jar</span> <span class="ow">in</span> <span class="n">java_info</span><span class="p">.</span><span class="n">transitive_runtime_jars</span><span class="p">.</span><span class="n">to_list</span><span class="p">():</span>
+        <span class="n">runtime_jars</span> <span class="o">+=</span> <span class="n">jar</span><span class="p">.</span><span class="n">path</span> <span class="o">+</span> <span class="s">" "</span>
+
+    <span class="n">cmds</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s">"%s -i %s %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">jar_bin</span><span class="p">,</span> <span class="n">java_info</span><span class="p">.</span><span class="n">java_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">class_jar</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="n">runtime_jars</span><span class="p">),</span>
+        <span class="s">"cp %s %s"</span> <span class="o">%</span> <span class="p">(</span><span class="n">java_info</span><span class="p">.</span><span class="n">java_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">class_jar</span><span class="p">.</span><span class="n">path</span><span class="p">,</span> <span class="n">ctx</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">index</span><span class="p">.</span><span class="n">path</span><span class="p">),</span>
+    <span class="p">]</span>
+
+    <span class="n">ctx</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">run_shell</span><span class="p">(</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">java_info</span><span class="p">.</span><span class="n">java_outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">class_jar</span><span class="p">]</span> <span class="o">+</span> <span class="n">java_info</span><span class="p">.</span><span class="n">transitive_runtime_jars</span><span class="p">.</span><span class="n">to_list</span><span class="p">(),</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">ctx</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">index</span><span class="p">],</span>
+        <span class="n">tools</span> <span class="o">=</span> <span class="n">java_runtime</span><span class="p">.</span><span class="n">files</span><span class="p">,</span>
+        <span class="n">command</span> <span class="o">=</span> <span class="s">";</span><span class="se">\n</span><span class="s">"</span><span class="p">.</span><span class="n">join</span><span class="p">(</span><span class="n">cmds</span><span class="p">),</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">DefaultInfo</span><span class="p">(</span><span class="n">files</span> <span class="o">=</span> <span class="n">depset</span><span class="p">([</span><span class="n">ctx</span><span class="p">.</span><span class="n">outputs</span><span class="p">.</span><span class="n">index</span><span class="p">])),</span>
+    <span class="p">]</span>
+
+<span class="n">jar_index</span> <span class="o">=</span> <span class="n">rule</span><span class="p">(</span>
+    <span class="n">implementation</span> <span class="o">=</span> <span class="n">_jar_index_impl</span><span class="p">,</span>
+    <span class="n">attrs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s">"src"</span><span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label</span><span class="p">(</span>
+            <span class="n">mandatory</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+            <span class="n">providers</span> <span class="o">=</span> <span class="p">[</span><span class="n">JavaInfo</span><span class="p">],</span>
+        <span class="p">),</span>
+        <span class="s">"_java_runtime"</span><span class="p">:</span> <span class="n">attr</span><span class="p">.</span><span class="n">label</span><span class="p">(</span>
+            <span class="n">default</span> <span class="o">=</span> <span class="s">"@bazel_tools//tools/jdk:current_java_runtime"</span><span class="p">,</span>
+            <span class="n">providers</span> <span class="o">=</span> <span class="p">[</span><span class="n">java_common</span><span class="p">.</span><span class="n">JavaRuntimeInfo</span><span class="p">],</span>
+        <span class="p">),</span>
+    <span class="p">},</span>
+    <span class="n">outputs</span> <span class="o">=</span> <span class="p">{</span><span class="s">"index"</span><span class="p">:</span> <span class="s">"%{name}_index.jar"</span><span class="p">},</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>Further improvements can be made, to give this index-like support to the Java compiler itself and not only for <code class="language-plaintext highlighter-rouge">java_binary</code> targets.</p>
+
+<p>We’ve gone out of our way on these systems to define our inputs, enforce contraints and model our dependencies. Not taking advantage of
+this stability and regressing to the default search often found in our tooling is leaving easy performance improvements on the floor.</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2024-11-08-jvm-boot-optimization-via-javaindex.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

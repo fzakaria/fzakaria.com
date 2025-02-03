@@ -1,0 +1,78 @@
+<svg width="250" height="250" viewBox="0 0 206.00 188.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="translate(12.187334073101553,177.71066606396442) scale(0.9160317188161767)">
+<title>Makefile</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-184 202,-184 202,4 -4,4"/>
+<!-- program -->
+<g id="node1" class="node">
+<title>program</title>
+<ellipse fill="none" stroke="black" cx="98" cy="-162" rx="43.75" ry="18"/>
+<text text-anchor="middle" x="98" y="-157.8" font-family="Times,serif" font-size="14.00">program</text>
+</g>
+<!-- main.o -->
+<g id="node2" class="node">
+<title>main.c</title>
+<polygon fill="none" stroke="black" points="54,-36 0,-36 0,0 54,0 54,-36"/>
+<text text-anchor="middle" x="27" y="-13.8" font-family="Times,serif" font-size="14.00">main.c</text>
+</g>
+<!-- program&#45;&gt;main.o -->
+<g id="node4" class="node">
+<title>main.o</title>
+<ellipse fill="none" stroke="black" cx="53" cy="-90" rx="37.59" ry="18"/>
+<text text-anchor="middle" x="53" y="-85.8" font-family="Times,serif" font-size="14.00">main.o</text>
+</g>
+<!-- utils.o -->
+<g id="edge3" class="edge">
+<title>main.c-&gt;main.o</title>
+<path fill="none" stroke="black" d="M33.43,-36.3C36.23,-43.85 39.58,-52.88 42.72,-61.32"/>
+<polygon fill="black" stroke="black" points="39.36,-62.32 46.12,-70.48 45.92,-59.88 39.36,-62.32"/>
+</g>
+<!-- program&#45;&gt;utils.o -->
+<g id="node3" class="node">
+<title>utils.c</title>
+<polygon fill="none" stroke="black" points="198,-36 144,-36 144,0 198,0 198,-36"/>
+<text text-anchor="middle" x="171" y="-13.8" font-family="Times,serif" font-size="14.00">utils.c</text>
+</g>
+<!-- main.c -->
+<g id="node5" class="node">
+<title>utils.o</title>
+<ellipse fill="none" stroke="black" cx="144" cy="-90" rx="34.91" ry="18"/>
+<text text-anchor="middle" x="144" y="-85.8" font-family="Times,serif" font-size="14.00">utils.o</text>
+</g>
+<!-- main.o&#45;&gt;main.c -->
+<g id="edge5" class="edge">
+<title>utils.c-&gt;utils.o</title>
+<path fill="none" stroke="black" d="M164.33,-36.3C161.42,-43.85 157.93,-52.88 154.68,-61.32"/>
+<polygon fill="black" stroke="black" points="151.48,-59.89 151.14,-70.48 158.01,-62.41 151.48,-59.89"/>
+</g>
+<!-- utils.h -->
+<g id="edge1" class="edge">
+<title>main.o-&gt;program</title>
+<path fill="none" stroke="black" d="M63.66,-107.59C68.93,-115.78 75.41,-125.86 81.31,-135.05"/>
+<polygon fill="black" stroke="black" points="78.24,-136.74 86.59,-143.26 84.13,-132.95 78.24,-136.74"/>
+</g>
+<!-- main.o&#45;&gt;utils.h -->
+<g id="edge2" class="edge">
+<title>utils.o-&gt;program</title>
+<path fill="none" stroke="black" d="M133.1,-107.59C127.71,-115.78 121.09,-125.86 115.06,-135.05"/>
+<polygon fill="black" stroke="black" points="112.22,-132.99 109.65,-143.27 118.07,-136.83 112.22,-132.99"/>
+</g>
+<!-- utils.o&#45;&gt;utils.h -->
+<g id="node6" class="node">
+<title>utils.h</title>
+<polygon fill="none" stroke="black" points="126,-36 72,-36 72,0 126,0 126,-36"/>
+<text text-anchor="middle" x="99" y="-13.8" font-family="Times,serif" font-size="14.00">utils.h</text>
+</g>
+<!-- utils.c -->
+<g id="edge4" class="edge">
+<title>utils.h-&gt;main.o</title>
+<path fill="none" stroke="black" d="M87.63,-36.3C82.37,-44.3 76.01,-53.98 70.19,-62.85"/>
+<polygon fill="black" stroke="black" points="67.32,-60.83 64.75,-71.11 73.17,-64.68 67.32,-60.83"/>
+</g>
+<!-- utils.o&#45;&gt;utils.c -->
+<g id="edge6" class="edge">
+<title>utils.h-&gt;utils.o</title>
+<path fill="none" stroke="black" d="M110.12,-36.3C115.27,-44.3 121.49,-53.98 127.19,-62.85"/>
+<polygon fill="black" stroke="black" points="124.14,-64.59 132.5,-71.1 130.03,-60.8 124.14,-64.59"/>
+</g>
+</g>
+</svg>

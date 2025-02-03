@@ -1,0 +1,256 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>NixOS; what’s in a rebuild? Continued. | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="NixOS; what’s in a rebuild? Continued." />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This is part 2 of a series on nixos-rebuild. You can read part 1 here. We previously broke down that one of the first tasks done by nixos-rebuild is to build the system attribute. What happens next for switch ? Let’s go back to the source." />
+<meta property="og:description" content="This is part 2 of a series on nixos-rebuild. You can read part 1 here. We previously broke down that one of the first tasks done by nixos-rebuild is to build the system attribute. What happens next for switch ? Let’s go back to the source." />
+<link rel="canonical" href="https://fzakaria.com/2020/09/08/nixos-what-s-in-a-rebuild-continued.html" />
+<meta property="og:url" content="https://fzakaria.com/2020/09/08/nixos-what-s-in-a-rebuild-continued.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-09-08T16:17:00-07:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="NixOS; what’s in a rebuild? Continued." />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2020-09-08T16:17:00-07:00","datePublished":"2020-09-08T16:17:00-07:00","description":"This is part 2 of a series on nixos-rebuild. You can read part 1 here. We previously broke down that one of the first tasks done by nixos-rebuild is to build the system attribute. What happens next for switch ? Let’s go back to the source.","headline":"NixOS; what’s in a rebuild? Continued.","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/2020/09/08/nixos-what-s-in-a-rebuild-continued.html"},"url":"https://fzakaria.com/2020/09/08/nixos-what-s-in-a-rebuild-continued.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    NixOS; what's in a rebuild? Continued.
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2020-09-08
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/2020/09/08/nixos-what-s-in-a-rebuild-continued.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <blockquote>
+  <p>This is <em>part 2</em> of a series on <strong>nixos-rebuild</strong>. You can read part 1 <a href="/2020/09/06/nixos-what-s-in-a-rebuild.html">here</a>.</p>
+</blockquote>
+
+<p>We previously broke down that one of the first tasks done by <em>nixos-rebuild</em> is to build the <em>system</em> attribute.</p>
+
+<p>What happens next for <strong>switch</strong> ? Let’s go back to the <a href="https://github.com/NixOS/nixpkgs/blob/02590c96209d374d7f720293fcb8337e17104bc9/nixos/modules/installer/tools/nixos-rebuild.sh#L428-L429">source</a>.</p>
+
+<!--more-->
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+copyToTarget <span class="s2">"</span><span class="nv">$pathToConfig</span><span class="s2">"</span>
+targetHostCmd nix-env <span class="nt">-p</span> <span class="s2">"</span><span class="nv">$profile</span><span class="s2">"</span> <span class="nt">--set</span> <span class="s2">"</span><span class="nv">$pathToConfig</span><span class="s2">"</span>
+...
+</code></pre></div></div>
+
+<p>It will attempt to copy the <em>system</em> <em>/nix/store</em> path if a target host is set &amp; also change the profile (<em>/nix/var/nix/profiles/system</em>) to the new <em>system</em>.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ tree /nix/var/nix/profiles/
+/nix/var/nix/profiles/
+...
+├── system -&gt; system-18-link
+...
+├── system-8-link -&gt; /nix/store/3n0563wd5c0jxppaaj2y4nlw2ybvikl3-nixos-system-unnamed-20.03post-git
+└── system-9-link -&gt; /nix/store/9y3gp7llvinvra8qcx9n52s0kpvvyzh8-nixos-system-unnamed-20.03post-git
+</code></pre></div></div>
+
+<p>Finally the <em>system</em> is activated; by calling the generated <em>switch-to-configuration</em> script created within the system store entry.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>...
+<span class="k">if</span> <span class="o">!</span> targetHostCmd <span class="nv">$pathToConfig</span>/bin/switch-to-configuration <span class="s2">"</span><span class="nv">$action</span><span class="s2">"</span><span class="p">;</span>
+...
+</code></pre></div></div>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>❯ tree /nix/store/rpfin018i0s2bdvmsikkrdvd0wvwg287-nixos-system-altaria-20.03post-git/bin
+/nix/store/rpfin018i0s2bdvmsikkrdvd0wvwg287-nixos-system-altaria-20.03post-git/bin
+└── switch-to-configuration
+</code></pre></div></div>
+
+<p>These <strong>4</strong> tasks; are the basic steps that <em>nixos-rebuild</em> will perform.</p>
+
+<ol>
+  <li>Build the <em>system</em> attribute</li>
+  <li>Copy the <em>/nix/store</em> transitive closure</li>
+  <li>Set the <em>/nix/var/nix/profiles/system</em> to the new version</li>
+  <li>Run the <em>switch-to-configuration</em> script</li>
+</ol>
+
+<p>Many<sup id="fnref:1" role="doc-noteref"><a href="#fn:1" class="footnote" rel="footnote">1</a></sup> <sup id="fnref:2" role="doc-noteref"><a href="#fn:2" class="footnote" rel="footnote">2</a></sup> <sup id="fnref:3" role="doc-noteref"><a href="#fn:3" class="footnote" rel="footnote">3</a></sup> have already written about these simple steps; simple scripts can be found on GitHub or even simple wrappers such as <a href="https://github.com/misuzu/nix-simple-deploy">nix-simple-deploy</a>; however <em>nixos-rebuild</em> natively supports remote machines.</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nixos-rebuild switch <span class="nt">--target-host</span> <span class="nv">$REMOTE_HOST</span>
+</code></pre></div></div>
+
+<p>Is there a need for these small wrappers given that <em>nixos-rebuild</em> can do it?</p>
+
+<p>There is a simplicity to running the minimal number of commands needed for your workflow; avoiding <em>nixos-rebuild.sh</em> which is ~500 LOC.</p>
+
+<h3 id="linux--nixos">Linux 🎮 NixOS</h3>
+
+<p>I admitted earlier that I have just recently finally started running NixOS after having run Nix on my Debian system for a while now.</p>
+
+<p><em>I am only running NixOS on my personal server and not my laptop</em>; which continues to be Debian. The non-NixOS Nix distribution does not come with <em>nixos-rebuild</em>;</p>
+
+<blockquote>
+  <p>I use my laptop primarily for my work which does not support NixOS.</p>
+</blockquote>
+
+<p>I would like to however continue hacking on my laptop; building NixOS VMs or running <em>nixos-rebuild</em> with <code class="language-plaintext highlighter-rouge">--target-host</code> set to my server. Can this be achieved?</p>
+
+<p>With the help of <a href="https://github.com/Infinisil">Infinisil</a>; he helped demonstrate how I can easily install not only <em>nixos-rebuild</em>; but even the manpages.</p>
+
+<p>Here is an example of adding the two if you are using <a href="https://github.com/rycee/home-manager">home-manager</a>.</p>
+<div class="language-nix highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">home</span><span class="o">.</span><span class="nv">packages</span> <span class="o">=</span> <span class="kn">with</span> <span class="nv">pkgs</span><span class="p">;</span> <span class="p">[</span>
+  <span class="c"># I want the NixOS manpages even when not on nixos</span>
+  <span class="p">((</span><span class="kr">import</span> <span class="o">&lt;</span><span class="sx">nixpkgs/nixos</span><span class="o">&gt;</span> <span class="p">{</span>
+    <span class="nv">configuration</span> <span class="o">=</span> <span class="p">{</span> <span class="p">};</span>
+  <span class="p">})</span><span class="o">.</span><span class="nv">config</span><span class="o">.</span><span class="nv">system</span><span class="o">.</span><span class="nv">build</span><span class="o">.</span><span class="nv">manual</span><span class="o">.</span><span class="nv">manpages</span><span class="p">)</span>
+  <span class="c"># I want NixOS tooling even when not on NixOS</span>
+  <span class="p">(</span><span class="nv">nixos</span> <span class="p">{</span> <span class="p">})</span><span class="o">.</span><span class="nv">nixos-rebuild</span>
+<span class="p">];</span>
+</code></pre></div></div>
+
+<blockquote>
+  <p><em>Bonus</em>; the above actually includes all NixOS manpages including <code class="language-plaintext highlighter-rouge">configuration.nix</code></p>
+</blockquote>
+
+<p>Now I can continue to play around with NixOS even while on my Linux distribution! Hurray?</p>
+
+<p>I would love to dig deeper or understand the <em>active</em> &amp; <em>init</em> scripts within the <em>system</em> target that take care of making NixOS bootable; if you have a good write-up please share!</p>
+
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1" role="doc-endnote">
+      <p><a href="https://vaibhavsagar.com/blog/2019/08/22/industrial-strength-deployments/#fnref1">https://vaibhavsagar.com/blog/2019/08/22/industrial-strength-deployments/#fnref1</a> <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2" role="doc-endnote">
+      <p><a href="https://ixmatus.net/articles/deploy-software-nix-deploy.html">https://ixmatus.net/articles/deploy-software-nix-deploy.html</a> <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:3" role="doc-endnote">
+      <p><a href="http://www.haskellforall.com/2018/08/nixos-in-production.html">http://www.haskellforall.com/2018/08/nixos-in-production.html</a> <a href="#fnref:3" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_posts/2020-09-08-nixos-what-s-in-a-rebuild-continued.md">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>

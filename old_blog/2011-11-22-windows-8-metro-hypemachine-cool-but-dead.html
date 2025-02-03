@@ -1,0 +1,182 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Windows 8 Metro + HypeMachine Cool But Dead | Farid Zakaria’s Blog</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Windows 8 Metro + HypeMachine Cool But Dead" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The Spark I&#39;ve been doing a lot of work (developing multimedia device driver) for Windows 8 for my current job. As such, I had to watch and listen to a bunch of talks about Windows 8 new Metro style applications and thought it would be a pretty neat area to play around in. Windows 8 introduces a new Metro style interface, which shows the information important to you, embodies simplicity, and gives you control. The interface is a personalized layout with clean typography and animations to make interacting with your PC fluid and intuitive. What&#39;s really cool is that to build a Metro Application, you make use of the WindowsRT (windows Runtime) API. The best part is that the API is available in multiple languages including JavaScript, C++, C# and VB Since I always seem to use HypeMachine as my guinea pig for learning new technologies, I figured why stop now... Private API I have known for a while that HypeMachine was providing certain people access to their private API. However I just noticed recently that they&#39;ve been advertising it. I decided to ask for access thinking that in my opinion, my previous relationship with them had been generous and polite, explaining in my e-mail that I planned on using the API solely for my personal Windows 8 project. With high spirits, I waited for the response... Rejection Ultimately I received an e-mail back from HypeMachine explaining that they are rejecting my request to be included in the private API because I have been &quot;difficult to work with in the past&quot; and that &quot;we do not have the resources for it&quot;. At the end of the day, it is their sole discretion and right to grant access to whoever they&#39;d like to their private API, however I was hoping that due to my previous relationship (I removed both the Batch-Downloader and Chrome Extension when asked) that I wouldn&#39;t be seen as being difficult to work with. I guess back to hacking it...." />
+<meta property="og:description" content="The Spark I&#39;ve been doing a lot of work (developing multimedia device driver) for Windows 8 for my current job. As such, I had to watch and listen to a bunch of talks about Windows 8 new Metro style applications and thought it would be a pretty neat area to play around in. Windows 8 introduces a new Metro style interface, which shows the information important to you, embodies simplicity, and gives you control. The interface is a personalized layout with clean typography and animations to make interacting with your PC fluid and intuitive. What&#39;s really cool is that to build a Metro Application, you make use of the WindowsRT (windows Runtime) API. The best part is that the API is available in multiple languages including JavaScript, C++, C# and VB Since I always seem to use HypeMachine as my guinea pig for learning new technologies, I figured why stop now... Private API I have known for a while that HypeMachine was providing certain people access to their private API. However I just noticed recently that they&#39;ve been advertising it. I decided to ask for access thinking that in my opinion, my previous relationship with them had been generous and polite, explaining in my e-mail that I planned on using the API solely for my personal Windows 8 project. With high spirits, I waited for the response... Rejection Ultimately I received an e-mail back from HypeMachine explaining that they are rejecting my request to be included in the private API because I have been &quot;difficult to work with in the past&quot; and that &quot;we do not have the resources for it&quot;. At the end of the day, it is their sole discretion and right to grant access to whoever they&#39;d like to their private API, however I was hoping that due to my previous relationship (I removed both the Batch-Downloader and Chrome Extension when asked) that I wouldn&#39;t be seen as being difficult to work with. I guess back to hacking it...." />
+<link rel="canonical" href="https://fzakaria.com/old_blog/2011-11-22-windows-8-metro-hypemachine-cool-but-dead.html" />
+<meta property="og:url" content="https://fzakaria.com/old_blog/2011-11-22-windows-8-metro-hypemachine-cool-but-dead.html" />
+<meta property="og:site_name" content="Farid Zakaria’s Blog" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2011-11-22T12:13:00-08:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Windows 8 Metro + HypeMachine Cool But Dead" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2011-11-22T12:13:00-08:00","datePublished":"2011-11-22T12:13:00-08:00","description":"The Spark I&#39;ve been doing a lot of work (developing multimedia device driver) for Windows 8 for my current job. As such, I had to watch and listen to a bunch of talks about Windows 8 new Metro style applications and thought it would be a pretty neat area to play around in. Windows 8 introduces a new Metro style interface, which shows the information important to you, embodies simplicity, and gives you control. The interface is a personalized layout with clean typography and animations to make interacting with your PC fluid and intuitive. What&#39;s really cool is that to build a Metro Application, you make use of the WindowsRT (windows Runtime) API. The best part is that the API is available in multiple languages including JavaScript, C++, C# and VB Since I always seem to use HypeMachine as my guinea pig for learning new technologies, I figured why stop now... Private API I have known for a while that HypeMachine was providing certain people access to their private API. However I just noticed recently that they&#39;ve been advertising it. I decided to ask for access thinking that in my opinion, my previous relationship with them had been generous and polite, explaining in my e-mail that I planned on using the API solely for my personal Windows 8 project. With high spirits, I waited for the response... Rejection Ultimately I received an e-mail back from HypeMachine explaining that they are rejecting my request to be included in the private API because I have been &quot;difficult to work with in the past&quot; and that &quot;we do not have the resources for it&quot;. At the end of the day, it is their sole discretion and right to grant access to whoever they&#39;d like to their private API, however I was hoping that due to my previous relationship (I removed both the Batch-Downloader and Chrome Extension when asked) that I wouldn&#39;t be seen as being difficult to work with. I guess back to hacking it....","headline":"Windows 8 Metro + HypeMachine Cool But Dead","mainEntityOfPage":{"@type":"WebPage","@id":"https://fzakaria.com/old_blog/2011-11-22-windows-8-metro-hypemachine-cool-but-dead.html"},"url":"https://fzakaria.com/old_blog/2011-11-22-windows-8-metro-hypemachine-cool-but-dead.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+        <link type="application/atom+xml" rel="alternate" href="https://fzakaria.com/feed.xml" title="Farid Zakaria&apos;s Blog" />
+        <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+        <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+        <link rel="alternate" type="application/atom+xml" title="Farid Zakaria's Blog" href="/feed.xml">
+
+        <link ref="">
+
+        
+        
+        <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet" />
+        
+
+        
+            <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-35360900-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-35360900-1');
+</script>
+
+        
+
+    </head>
+    <body>
+        
+        <script src="/assets/js/highlight.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
+        
+
+        <div class="container">
+            <h1 class="page-title">
+    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+    Windows 8 Metro + HypeMachine Cool But Dead
+</h1>
+
+<div class="content">
+    
+    <p class="date">
+        Published 2011-11-22
+        on <a href="/">Farid Zakaria's Blog</a>
+        <span class="hidden-xs">
+          &mdash;
+          <a href="/old_blog/2011-11-22-windows-8-metro-hypemachine-cool-but-dead.html">
+            Permalink
+          </a>
+        </span>
+    </p>
+    
+    <article>
+      <h2> The Spark </h2>
+<p>
+I've been doing a lot of work (developing multimedia device driver) for Windows 8 for my current job. As such, I had to watch and listen to a bunch of talks about Windows 8 new <a href="http://www.youtube.com/watch?v=jqSNuLsLJR4">Metro style applications</a> and thought it would be a pretty neat area to play around in.</p>
+<blockquote><p>
+Windows 8 introduces a new Metro style interface, which shows the information important to you, embodies simplicity, and gives you control. The interface is a personalized layout with clean typography and animations to make interacting with your PC fluid and intuitive.
+</p></blockquote>
+<p>
+What's really cool is that to build a Metro Application, you make use of the <a href="http://msdn.microsoft.com/en-us/library/windows/apps/hh464942.aspx">WindowsRT </a>(windows Runtime) API. The best part is that the API is available in <strong>multiple </strong>languages including JavaScript, C++, C# and VB</p>
+<p>
+Since I always seem to use HypeMachine as my guinea pig for learning new technologies, <em>I figured why stop now...</em></p>
+<p><!--more--></p>
+<h2> Private API </h2>
+<p>
+I have known for a while that HypeMachine was providing certain people access to their private API. However I just noticed recently that they've been advertising it.<br />
+<a href="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/11/hypem_dev_access.png"><img src="http://fzakaria-blog.elasticbeanstalk.com/wp-content/uploads/2011/11/hypem_dev_access.png" alt="" title="HypeMachine Developer API Access" width="277" height="116" class="aligncenter size-full wp-image-956" style="border:1px solid black"  /></a></p>
+<p>I decided to ask for access thinking that in my opinion, my previous relationship with them had been <a href="http://www.blog.fzakaria.com/2011/07/removed-hypemachine-chrome-extension/">generous and polite</a>, explaining in my e-mail that I planned on using the API <strong>solely</strong> for my personal Windows 8 project. </p>
+<p>
+<em>With high spirits, I waited for the response...</em></p>
+<h2> Rejection </h2>
+<p>
+Ultimately I received an e-mail back from HypeMachine explaining that they are <strong>rejecting</strong> my request to be included in the private API because I have been "difficult to work with in the past" and that "we do not have the resources for it". At the end of the day, it is their sole discretion and right to grant access to whoever they'd like to their private API, however I was hoping that  due to my previous relationship (I removed both the Batch-Downloader and Chrome Extension when asked) that I wouldn't be seen as being difficult to work with.</p>
+<p>I guess back to <em>hacking </em>it....</p>
+
+
+<hr />
+    </article>
+</div>
+
+<div class="sidebar">
+    <hr class="visible-xs" />
+    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
+    <p>I'm a software engineer, father and wishful amateur surfer. If you've come seeking my political views; you've found the wrong <a href="https://fareedzakaria.com/">Fareed</a>.</p>
+    <div class="external-links">
+      <p>
+        <span class="context">linkedin</span>
+        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+      </p>
+      <p>
+        <span class="context">github</span>
+        <a href="https://github.com/fzakaria">fzakaria</a>
+      </p>
+      <p>
+        <span class="context">email</span>
+        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+      </p>
+      <p>
+        <span class="context">pgp</span>
+        <a href="/publickey.txt">D1B232E7</a>
+      </p>
+      <p>
+        <a href="/archive">Archive</a>
+      </p>
+      <p>
+        <a href="/old_blog/">Historic WordPress Blog</a>
+      </p>
+      <!--
+      <p>
+        Web friendly version of my <a href="/resume/index.html">resume</a>.
+      </p>
+    </div>
+    <h3>Projects</h3>
+    <p>
+      <a href="/projects/">Click here</a> for some personal
+      projects I've worked on.
+    </p>
+    <h3>Old Blog</h3>
+    <p>
+      <a href="/old_blog/">Click here</a> for the archive
+      of my old blog posts from Wordpress.
+    </p>
+    -->
+    
+    <h3>Recent Posts</h3>
+    
+    <div class="post-stub">
+      2025-02-02<br />
+      <a href="/2025/02/02/nix-string-interpolation-of-directories-gone-awry.html">Nix: string interpolation of directories gone awry</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-28<br />
+      <a href="/2025/01/28/bazel-build-event-protocol-viewer.html">Bazel: Build Event Protocol Viewer</a>
+    </div>
+    
+    <div class="post-stub">
+      2025-01-12<br />
+      <a href="/2025/01/12/bazel-knowledge-be-mindful-of-build-without-the-bytes.html">Bazel Knowledge: Be mindful of Build Without the Bytes (bwob)</a>
+    </div>
+    
+    
+    <h3>License</h3>
+    <p style="font-size: 10pt">
+    The content for this site is
+    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
+    © Drew Devault.
+    </p>
+    <div class="spacer" style="margin-top: 30px;"></div>
+    
+    <p><a href="https://github.com/fzakaria/fzakaria.com/edit/master/_old_blog/2011-11-22-windows-8-metro-hypemachine-cool-but-dead.html">
+      Improve this page @ 417ff2d
+    </a></p>
+
+</div>
+        </div>
+    </body>
+</html>
