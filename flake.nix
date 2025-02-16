@@ -58,14 +58,17 @@
         src = fs.toSource {
           root = ./.;
           fileset = fs.unions [
+            ./Gemfile
+            ./Gemfile.lock
             ./index.html
-            ./kebase.txt
+            ./keybase.txt
             ./old_blog.html
             ./publickey.txt
             ./archive.md
             ./_config.yml
             ./resume
             ./projects
+            ./_sass
             ./assets
             ./_posts
             ./_old_blog
@@ -75,6 +78,9 @@
         };
         env = {
           JEKYLL_ENV = "production";
+          PAGES_ENV = "production";
+          PAGES_REPO_NWO = "fzakaria/fzakaria.com";
+          JEKYLL_BUILD_REVISION = self.rev or self.dirtyRev or "dirty";
         };
         buildInputs = [
           gemsets.${system}.envMinimal
@@ -85,8 +91,22 @@
         '';
         installPhase = ''
           mkdir -p $out
-          cp -r _site $out
+          cp -r _site/* $out
         '';
+      };
+    });
+
+    apps = eachSystem ({
+      system,
+      pkgs,
+    }: let
+      server = pkgs.writeShellScriptBin "server" ''
+        ${pkgs.python3}/bin/python -m http.server 8080 -b 127.0.0.1 -d ${packages.${system}.default}
+      '';
+    in {
+      default = {
+        type = "app";
+        program = "${server}/bin/server";
       };
     });
 
