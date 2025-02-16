@@ -40,11 +40,55 @@
         gemConfig = {};
       in (rubyNix
         {
-          name = "fzakaria.com";
+          name = "fzakaria.com-gemset";
           inherit gemset ruby;
           gemConfig = pkgs.defaultGemConfig // gemConfig;
         })
     );
+
+    packages = eachSystem ({
+      pkgs,
+      system,
+    }: let
+      fs = pkgs.lib.fileset;
+    in rec {
+      default = pkgs.stdenv.mkDerivation {
+        name = "fzakaria.com";
+        version = "0.1.0";
+        src = fs.toSource {
+          root = ./.;
+          fileset = fs.unions [
+            ./index.html
+            ./kebase.txt
+            ./old_blog.html
+            ./publickey.txt
+            ./archive.md
+            ./_config.yml
+            ./resume
+            ./projects
+            ./assets
+            ./_posts
+            ./_old_blog
+            ./_layouts
+            ./_includes
+          ];
+        };
+        env = {
+          JEKYLL_ENV = "production";
+        };
+        buildInputs = [
+          gemsets.${system}.envMinimal
+          gemsets.${system}.ruby
+        ];
+        buildPhase = ''
+          jekyll build
+        '';
+        installPhase = ''
+          mkdir -p $out
+          cp -r _site $out
+        '';
+      };
+    });
 
     devShells = eachSystem ({
       pkgs,
