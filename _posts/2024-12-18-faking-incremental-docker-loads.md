@@ -192,7 +192,7 @@ individual large layers, perhaps they were squashed, we are back to square one.
 Here we see an example image whose single layer is 1.28GiB.
 ```bash
 > docker image history bad_example:0.1 --human \
-                    --format 'table {{.Size}}' | head
+                    --format 'table {{ "{{ .Size " }}}}' | head
 SIZE
 0B
 0B
