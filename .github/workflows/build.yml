@@ -3,10 +3,10 @@ name: Build and Test
 on:
   pull_request:
     branches:
-      - main
+      - master
   push:
     branches:
-      - main
+      - master
 jobs:
   nix-validate:
     runs-on: ubuntu-latest
