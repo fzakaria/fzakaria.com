@@ -107,6 +107,9 @@
       default = {
         type = "app";
         program = "${server}/bin/server";
+        meta = {
+          description = "Personal website of Farid Zakaria";
+        };
       };
     });
 
