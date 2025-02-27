@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "prettier": "prettier"
+    "prettier": "prettier --write '**/*.{ts,js,css,html,yml,scss}'"
   },
   "devDependencies": {
     "@shopify/prettier-plugin-liquid": "^1.8.3",
