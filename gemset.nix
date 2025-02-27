@@ -127,14 +127,24 @@
     groups = ["default" "jekyll_plugins"];
     platforms = [];
     source = null;
-    targets = [{
-      remotes = ["https://rubygems.org"];
-      sha256 = "1l03r43wyzxqdn2iqx1f7sg1apxf2vh5hfzyrhmngwqrblmdw2lc";
-      target = "x86_64-linux-gnu";
-      targetCPU = "x86_64";
-      targetOS = "linux";
-      type = "gem";
-    }];
+    targets = [
+      {
+        remotes = ["https://rubygems.org"];
+        sha256 = "0kbvwrcnafwd2a1b03pclh075f12815zz7vzxra2qx3msdwlzq58";
+        target = "arm64-darwin";
+        targetCPU = "arm64";
+        targetOS = "darwin";
+        type = "gem";
+      }
+      {
+        remotes = ["https://rubygems.org"];
+        sha256 = "1l03r43wyzxqdn2iqx1f7sg1apxf2vh5hfzyrhmngwqrblmdw2lc";
+        target = "x86_64-linux-gnu";
+        targetCPU = "x86_64";
+        targetOS = "linux";
+        type = "gem";
+      }
+    ];
     version = "1.17.1";
   };
   forwardable-extended = {
@@ -154,14 +164,24 @@
     groups = ["default" "jekyll_plugins"];
     platforms = [];
     source = null;
-    targets = [{
-      remotes = ["https://rubygems.org"];
-      sha256 = "03id9b74ibx1cpq5xzmwkl00xdb06z85f78xrrbr8mardjq99haa";
-      target = "x86_64-linux";
-      targetCPU = "x86_64";
-      targetOS = "linux";
-      type = "gem";
-    }];
+    targets = [
+      {
+        remotes = ["https://rubygems.org"];
+        sha256 = "01x4363wapq17kl321x20g5j4g4di1xy4r95y5r8ml3lwqrrmz60";
+        target = "arm64-darwin";
+        targetCPU = "arm64";
+        targetOS = "darwin";
+        type = "gem";
+      }
+      {
+        remotes = ["https://rubygems.org"];
+        sha256 = "03id9b74ibx1cpq5xzmwkl00xdb06z85f78xrrbr8mardjq99haa";
+        target = "x86_64-linux";
+        targetCPU = "x86_64";
+        targetOS = "linux";
+        type = "gem";
+      }
+    ];
     version = "4.29.3";
   };
   "http_parser.rb" = {
@@ -518,16 +538,28 @@
     version = "1.0.5";
   };
   sass-embedded = {
-    dependencies = ["google-protobuf" "rake"];
+    dependencies = ["google-protobuf"];
     groups = ["default" "jekyll_plugins"];
     platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "1cbvgvl24ki6jlxjccx2j1vwwcpg36bivksmx78i43m35j6nf8bz";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
+    source = null;
+    targets = [
+      {
+        remotes = ["https://rubygems.org"];
+        sha256 = "10j04kqf7f8fkxl2mpl2n9kmcymx4pynidqhl32kg9cap1llq8xs";
+        target = "x86_64-linux-gnu";
+        targetCPU = "x86_64";
+        targetOS = "linux";
+        type = "gem";
+      }
+      {
+        remotes = ["https://rubygems.org"];
+        sha256 = "1c68i866agvjvdxqqxgd0s6l29j147830977lqcziysp31fcplcq";
+        target = "arm64-darwin";
+        targetCPU = "arm64";
+        targetOS = "darwin";
+        type = "gem";
+      }
+    ];
     version = "1.85.1";
   };
   sawyer = {
