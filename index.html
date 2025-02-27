@@ -4,9 +4,8 @@ title: Farid Zakaria's Blog
 ---
 
 <div class="media">
-	{% for post in site.posts %}
-		{% include post-stub.html post=post %}
-		<hr>
-	{% endfor %}
+  {% for post in site.posts %} {% include post-stub.html post=post %}
+  <hr />
+  {% endfor %}
 </div>
 <div class="clearfix"></div>
