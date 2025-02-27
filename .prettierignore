@@ -6,3 +6,7 @@ _site
 .DS_Store
 result
 node_modules/
+projects/
+_old_blog/
+resume/
+vendor/

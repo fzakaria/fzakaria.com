@@ -1,93 +1,76 @@
 ---
 layout: base
 ---
-
 <h1 class="page-title">
-    <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
-    {{ page.title }}
+  <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
+  {{ page.title }}
 </h1>
 
 <div class="content">
-    {% if page.url != '/' %}
+  {% if page.url != '/' %}
     <p class="date">
-        {% if page.date %}Published {{ page.date | date: "%Y-%m-%d" }}{% endif %}
-        on <a href="/">{{ site.title }}</a>
-        <span class="hidden-xs">
-          &mdash;
-          <a href="{{ page.url }}">
-            Permalink
-          </a>
-        </span>
+      {% if page.date %}Published {{ page.date | date: '%Y-%m-%d' }}{% endif %} on
+      <a href="/">{{ site.title }}</a>
     </p>
-    {% endif %}
-    <article>
-      {{ content }}
-    </article>
+  {% endif %}
+
+  <article>{{ content }}</article>
 </div>
 
 <div class="sidebar">
-    <hr class="visible-xs" />
-    <img class="avatar" src="/assets/images/avatar-164.png" alt="A photo of my dog Moose" title="My dog Moose"/>
-    <p>{{ site.description }}</p>
-    <div class="external-links">
-      <p>
-        <span class="context">linkedin</span>
-        <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
-      </p>
-      <p>
-        <span class="context">github</span>
-        <a href="https://github.com/fzakaria">fzakaria</a>
-      </p>
-      <p>
-        <span class="context">email</span>
-        <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
-      </p>
-      <p>
-        <span class="context">pgp</span>
-        <a href="/publickey.txt">D1B232E7</a>
-      </p>
-      <p>
+  <hr class="visible-xs">
+  <img
+    class="avatar"
+    src="/assets/images/avatar-164.png"
+    alt="A photo of my dog Moose"
+    title="My dog Moose"
+  >
+  <p>{{ site.description }}</p>
+  <div class="external-links">
+    <p>
+      <span class="context">linkedin</span>
+      <a href="https://www.linkedin.com/in/fmzakari/">fmzakari</a>
+    </p>
+    <p>
+      <span class="context">github</span>
+      <a href="https://github.com/fzakaria">fzakaria</a>
+    </p>
+    <p>
+      <span class="context">email</span>
+      <a href="mailto:farid.m.zakaria@gmail.com">farid.m.zakaria@gmail.com</a>
+    </p>
+    <p>
+      <span class="context">pgp</span>
+      <a href="/publickey.txt">D1B232E7</a>
+    </p>
+    <div style="gap: 0.5rem; display: flex; flex-direction: column">
+      <div>
+        <a
+          href="https://docs.google.com/document/d/e/2PACX-1vSUUDuMWGe5YnUnHU6bxhFQfcrZEt2ulXD4kbaALq267eMfoy8WFHiMNDosJbJJQFluiZugkfsijd6o/pub"
+          >Resume</a
+        >
+      </div>
+      <div>
         <a href="{{ site.baseurl }}/archive">Archive</a>
-      </p>
-      <p>
+      </div>
+      <div>
         <a href="{{ site.baseurl }}{% link old_blog.html %}">Historic WordPress Blog</a>
-      </p>
-      <!--
-      <p>
-        Web friendly version of my <a href="/resume/index.html">resume</a>.
-      </p>
+      </div>
     </div>
-    <h3>Projects</h3>
-    <p>
-      <a href="{{ site.baseurl }}{% link projects/index.md %}">Click here</a> for some personal
-      projects I've worked on.
-    </p>
-    <h3>Old Blog</h3>
-    <p>
-      <a href="{{ site.baseurl }}{% link old_blog.html %}">Click here</a> for the archive
-      of my old blog posts from Wordpress.
-    </p>
-    -->
-    {% if page.url != '/' %}
-    <h3>Recent Posts</h3>
-    {% for post in site.posts limit: 3 %}
-    <div class="post-stub">
-      {{ post.date | date: "%Y-%m-%d" }}<br />
-      <a href="{{ post.url }}">{{ post.title }}</a>
-    </div>
-    {% endfor %}
-    {% endif %}
+  </div>
+  <div>
     <h3>License</h3>
     <p style="font-size: 10pt">
-    The content for this site is
-    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
-    The <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a> for this site is
-    © Drew Devault.
+      The content for this site is
+      <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>. The
+      <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a>
+      for this site is © Drew Devault.
     </p>
-    <div class="spacer" style="margin-top: 30px;"></div>
-    {% capture contribute_msg %}
-      Improve this page @ {{site.github.build_revision | slice: 0, 7}}
-    {% endcapture %}
-    <p><a href="{% github_edit_link %}">{{contribute_msg}}</a></p>
-
+    <div class="spacer" style="margin-top: 30px"></div>
+    {% capture contribute_msg %} Improve this page @
+    {{site.github.build_revision | slice: 0, 7}} {% endcapture %}
+    <p>
+      <a href="{% github_edit_link %}">{{ contribute_msg }}</a>
+    </p>
+  </div>
 </div>

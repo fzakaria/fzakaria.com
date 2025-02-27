@@ -3,26 +3,22 @@ layout: page
 title: Farid Zakaria's Old Blog
 permalink: /old_blog/
 ---
-
 <blockquote>
-These posts are from my original Wordpress blog.
-They are kept here as an archive; the formatting did not
-necessarily transition well.
+  These posts are from my original Wordpress blog. They are kept here as an archive; the formatting did not necessarily
+  transition well.
 </blockquote>
 
 <div class="media">
-	{% assign old_blog_posts = site.old_blog | reverse %}
-	{% for post in old_blog_posts %}
-		<div class="post-stub">
-		    <h2>
-		      <span class="date hidden-xs">
-		        {{ post.date | date: "%Y-%m-%d" }}
-		      </span>
-		      <span class="title">
-		        <a href="{{ post.url }}">{{ post.title }}</a>
-		      </span>
-		    </h2>
-		</div>
-	{% endfor %}
+  {% assign old_blog_posts = site.old_blog | reverse %}
+  {% for post in old_blog_posts %}
+    <div class="post-stub">
+      <h2>
+        <span class="date hidden-xs"> {{ post.date | date: '%Y-%m-%d' }} </span>
+        <span class="title">
+          <a href="{{ post.url }}">{{ post.title }}</a>
+        </span>
+      </h2>
+    </div>
+  {% endfor %}
 </div>
 <div class="clearfix"></div>
