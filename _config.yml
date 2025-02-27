@@ -25,7 +25,6 @@ url: "https://fzakaria.com" # the base hostname & protocol for your site, e.g. h
 markdown: kramdown
 sass:
   style: compressed
-paginate: 10
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.

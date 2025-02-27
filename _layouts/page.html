@@ -8,21 +8,16 @@ layout: base
 </h1>
 
 <div class="content">
-    {% if page.url != '/' %}
-    <p class="date">
-        {% if page.date %}Published {{ page.date | date: "%Y-%m-%d" }}{% endif %}
-        on <a href="/">{{ site.title }}</a>
-        <span class="hidden-xs">
-          &mdash;
-          <a href="{{ page.url }}">
-            Permalink
-          </a>
-        </span>
-    </p>
-    {% endif %}
-    <article>
-      {{ content }}
-    </article>
+  {% if page.url != '/' %}
+  <p class="date">
+      {% if page.date %}Published {{ page.date | date: "%Y-%m-%d" }}{% endif %}
+      on <a href="/">{{ site.title }}</a>
+  </p>
+  {% endif %}
+
+  <article>
+    {{ content }}
+  </article>
 </div>
 
 <div class="sidebar">
@@ -46,37 +41,19 @@ layout: base
         <span class="context">pgp</span>
         <a href="/publickey.txt">D1B232E7</a>
       </p>
-      <p>
-        <a href="{{ site.baseurl }}/archive">Archive</a>
-      </p>
-      <p>
-        <a href="{{ site.baseurl }}{% link old_blog.html %}">Historic WordPress Blog</a>
-      </p>
-      <!--
-      <p>
-        Web friendly version of my <a href="/resume/index.html">resume</a>.
-      </p>
+      <div style="gap: 0.5rem;display: flex;flex-direction: column;">
+        <div>
+          <a href="https://docs.google.com/document/d/e/2PACX-1vSUUDuMWGe5YnUnHU6bxhFQfcrZEt2ulXD4kbaALq267eMfoy8WFHiMNDosJbJJQFluiZugkfsijd6o/pub">Resume</a>
+        </div>
+        <div>
+          <a href="{{ site.baseurl }}/archive">Archive</a>
+        </div>
+        <div>
+          <a href="{{ site.baseurl }}{% link old_blog.html %}">Historic WordPress Blog</a>
+        </div>
+      </div>
     </div>
-    <h3>Projects</h3>
-    <p>
-      <a href="{{ site.baseurl }}{% link projects/index.md %}">Click here</a> for some personal
-      projects I've worked on.
-    </p>
-    <h3>Old Blog</h3>
-    <p>
-      <a href="{{ site.baseurl }}{% link old_blog.html %}">Click here</a> for the archive
-      of my old blog posts from Wordpress.
-    </p>
-    -->
-    {% if page.url != '/' %}
-    <h3>Recent Posts</h3>
-    {% for post in site.posts limit: 3 %}
-    <div class="post-stub">
-      {{ post.date | date: "%Y-%m-%d" }}<br />
-      <a href="{{ post.url }}">{{ post.title }}</a>
-    </div>
-    {% endfor %}
-    {% endif %}
+    <div>
     <h3>License</h3>
     <p style="font-size: 10pt">
     The content for this site is

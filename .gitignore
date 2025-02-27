@@ -5,3 +5,4 @@ _site
 .direnv/
 .DS_Store
 result
+node_modules/

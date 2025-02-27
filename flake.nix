@@ -122,6 +122,7 @@
           buildInputs = [
             bundix.packages.${system}.default
             gemsets.${system}.env
+            nodejs
           ];
           inputsFrom = [
           ];
