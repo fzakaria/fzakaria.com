@@ -15,16 +15,6 @@
     >
 
     <link ref="{{ date }}">
-
-    {% comment %}
-      All the posts imported from the old wordpress blog used just
-      simple HTML code blocks. We rely then on highlightjs to automatically try
-      and detect the language and syntax highlight. We check whether to link it
-      according to the presence of the wordpress_id frontmatter
-    {% endcomment %}
-    {% if page.wordpress_id %}
-      <link href="/assets/css/highlightjs-default-theme.css" rel="stylesheet">
-    {% endif %}
     {% if site.google_analytics and jekyll.environment == 'production' %}
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script
@@ -43,13 +33,6 @@
     {% endif %}
   </head>
   <body>
-    {% if page.wordpress_id %}
-      <script src="/assets/js/highlight.js"></script>
-      <script>
-        hljs.initHighlightingOnLoad();
-      </script>
-    {% endif %}
-
     <div class="container">{{ content }}</div>
   </body>
 </html>

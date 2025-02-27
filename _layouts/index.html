@@ -1,0 +1,14 @@
+---
+layout: page
+---
+<div class="media">
+  {% for post in site.posts %}
+    <div class="post-stub" style="padding-top: 1em;">
+      <div class="date">{{ post.date | date: '%B %d, %Y' }}</div>
+      <div class="title">
+        <a href="{{ post.url }}"> {{ post.title }} </a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+<div class="clearfix"></div>

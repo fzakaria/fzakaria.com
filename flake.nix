@@ -60,13 +60,11 @@
           fileset = fs.unions [
             ./Gemfile
             ./Gemfile.lock
-            ./index.html
+            ./index.md
             ./keybase.txt
-            ./old_blog.html
+            ./old_blog.md
             ./publickey.txt
-            ./archive.md
             ./_config.yml
-            ./resume
             ./projects
             ./_sass
             ./assets
