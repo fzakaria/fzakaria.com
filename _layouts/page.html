@@ -1,7 +1,6 @@
 ---
 layout: base
 ---
-
 <h1 class="page-title">
   <a class="rss pull-right" href="/feed.xml"><i class="fa fa-rss"></i></a>
   {{ page.title }}
@@ -9,23 +8,23 @@ layout: base
 
 <div class="content">
   {% if page.url != '/' %}
-  <p class="date">
-    {% if page.date %}Published {{ page.date | date: "%Y-%m-%d" }}{% endif %} on
-    <a href="/">{{ site.title }}</a>
-  </p>
+    <p class="date">
+      {% if page.date %}Published {{ page.date | date: '%Y-%m-%d' }}{% endif %} on
+      <a href="/">{{ site.title }}</a>
+    </p>
   {% endif %}
 
   <article>{{ content }}</article>
 </div>
 
 <div class="sidebar">
-  <hr class="visible-xs" />
+  <hr class="visible-xs">
   <img
     class="avatar"
     src="/assets/images/avatar-164.png"
     alt="A photo of my dog Moose"
     title="My dog Moose"
-  />
+  >
   <p>{{ site.description }}</p>
   <div class="external-links">
     <p>
@@ -55,9 +54,7 @@ layout: base
         <a href="{{ site.baseurl }}/archive">Archive</a>
       </div>
       <div>
-        <a href="{{ site.baseurl }}{% link old_blog.html %}"
-          >Historic WordPress Blog</a
-        >
+        <a href="{{ site.baseurl }}{% link old_blog.html %}">Historic WordPress Blog</a>
       </div>
     </div>
   </div>
@@ -65,16 +62,15 @@ layout: base
     <h3>License</h3>
     <p style="font-size: 10pt">
       The content for this site is
-      <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
-      The
-      <a href="https://github.com/SirCmpwn/ddjekyll"
-        >inspiration for the theme</a
-      >
+      <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>. The
+      <a href="https://github.com/SirCmpwn/ddjekyll">inspiration for the theme</a>
       for this site is © Drew Devault.
     </p>
     <div class="spacer" style="margin-top: 30px"></div>
     {% capture contribute_msg %} Improve this page @
     {{site.github.build_revision | slice: 0, 7}} {% endcapture %}
-    <p><a href="{% github_edit_link %}">{{contribute_msg}}</a></p>
+    <p>
+      <a href="{% github_edit_link %}">{{ contribute_msg }}</a>
+    </p>
   </div>
 </div>
