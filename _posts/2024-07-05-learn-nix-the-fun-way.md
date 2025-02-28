@@ -49,7 +49,7 @@ pkgs.writeShellScriptBin "what-is-my-ip" ''
 
 Here we are pinning our package to dependencies which come from NixOS/Nixpkgs release branch 24.05.
 
-If we build this, we get the the result:
+If we build this, we get the result:
 
   **/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip**
 

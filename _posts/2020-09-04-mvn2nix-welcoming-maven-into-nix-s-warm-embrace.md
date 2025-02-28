@@ -9,7 +9,7 @@ I wrote [previously]({% post_url 2020-07-20-packaging-a-maven-application-with-n
 
 I would like to announce a _beta release_ for [mvn2nix](https://github.com/fzakaria/mvn2nix).
 
-You find find the similar announcement on <https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751>
+You find the similar announcement on <https://discourse.nixos.org/t/mvn2nix-packaging-maven-application-made-easy/8751>
 
 > Easily package your Maven Java application with the Nix package manager.
 

@@ -67,7 +67,7 @@ What do we want ? We want the immediate _build-time_ dependencies of our derivat
 Let's first checkout the immediate dependencies by using _references_.
 
 > --references
-           Prints the set of references of the store paths paths, that is, their immediate dependencies. (For all
+           Prints the set of references of the store paths, that is, their immediate dependencies. (For all
            dependencies, use --requisites.)
 
 ```bash

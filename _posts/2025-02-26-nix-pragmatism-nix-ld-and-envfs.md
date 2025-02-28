@@ -59,7 +59,7 @@ Furthermore, the libraries necessary for a binary in a Nix application are speci
 
 This wreaks havoc with prebuilt binaries from other distributions on NixOS as the first thing the Linux kernel performs is `execve` into the interpreter set on the binary and find all the necessary shared libraries.
 
-_nix-ld_ places a special interpreter at this well known that that respects a special environment variable `NIX_LD_LIBRARY_PATH`. This interpreter then sets `LD_LIBRARY_PATH` to the same value before `execve` into a dynamic linker within the _/nix/store_.
+_nix-ld_ places a special interpreter at this well known that respects a special environment variable `NIX_LD_LIBRARY_PATH`. This interpreter then sets `LD_LIBRARY_PATH` to the same value before `execve` into a dynamic linker within the _/nix/store_.
 
 The `LD_LIBRARY_PATH` set, allows for these prebuilt binaries to find libraries on a NixOS system they would otherwise could not due to the lack of FHS.
 

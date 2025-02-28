@@ -140,7 +140,7 @@ We see a very similar concept in the `nix-store --query` CLI and it produces the
 ```
 
 > --references
->       Prints the set of references of the store paths paths, that is, their immediate dependencies.
+>       Prints the set of references of the store paths, that is, their immediate dependencies.
 >       (For all dependencies, use --requisites.)
 
 Looks like it just prints the **immediate dependencies**. 
