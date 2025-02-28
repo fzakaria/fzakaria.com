@@ -35,7 +35,7 @@ To illustrate this, let's walk through an example within the Python ecosystem ho
 
 We will build two Python packages **a** & **b**. Each package will have its own Python C extension which in turn depends on a C shared library **foo**. The idea here is that two distinct developers develop **a** & **b** but they rely on the same common **foo** C shared object library.
 
-Using these packages in a Bazel build system, would like like:
+Using these packages in a Bazel build system, would look like:
 ```starlark
 py_library(
     name = "example",

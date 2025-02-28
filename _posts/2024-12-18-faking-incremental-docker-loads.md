@@ -103,7 +103,7 @@ Let's break it down.
     ]}]
     ```
 
-2. Although our metadata outlines _4 different layers_, we can can omit the actual layer data.
+2. Although our metadata outlines _4 different layers_, we can omit the actual layer data.
 
     ```bash
     > tar tf testimage.tar.gz | tree --fromfile .
