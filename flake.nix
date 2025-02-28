@@ -65,7 +65,6 @@
             ./old_blog.md
             ./publickey.txt
             ./_config.yml
-            ./projects
             ./_sass
             ./assets
             ./_posts
