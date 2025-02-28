@@ -51,4 +51,24 @@ What are these two things? 🤨
 
 **nix-ld**
 
+Typically, ELF binaries set their dynamic linker / interpreter to a global path on the system that is usually `/lib64/ld-linux-x86-64.so.2`.
+
+On a NixOS system there is no standard `ld.so` (dynamic linker) and each ELF binary specifies an exact _/nix/store/_ entry instead.
+
+Furthermore, the libraries necessary for a binary in a Nix application are specified by the `RPATH` to entries as well within the _/nix/store_.
+
+This wreaks havoc with prebuilt binaries from other distributions on NixOS as the first thing the Linux kernel performs is `execve` into the interpreter set on the binary and find all the necessary shared libraries.
+
+_nix-ld_ places a special interpreter at this well known that that respects a special environment variable `NIX_LD_LIBRARY_PATH`. This interpreter then sets `LD_LIBRARY_PATH` to the same value before `execve` into a dynamic linker within the _/nix/store_.
+
+The `LD_LIBRARY_PATH` set, allows for these prebuilt binaries to find libraries on a NixOS system they would otherwise could not due to the lack of FHS.
+
 **envfs**
+
+Plenty of downloaded scripts and prebuild code _presume_ the presence of binaries at `/bin` or `/usr/bin`. The "correct" solution would be to patch the code to use `/usr/bin/env` or directly reference the _/nix/store_ we are pragmatists!
+
+[envfs](https://github.com/Mic92/envfs) sets up a FUSE filesystem (i.e. virtual filesystem) at `/bin` and `/usr/bin` that pretends every binary available at your `PATH` can be found at these directories.
+
+That means the values of these directories can change depending on your current `PATH`, such if you enter a new `nix shell` 😮.
+
+When life gives you lemons 🍋 make lemonade 🥤. Nix is great but not at the cost of your sanity. Ease yourself in and become a pragmatist.
