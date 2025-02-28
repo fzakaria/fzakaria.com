@@ -8,9 +8,10 @@ pre {
   border-radius: 5px;
   background: transparent;
   line-height: 1.2;
-  max-width: 600px;
+  max-width: 100%;
   overflow-x: auto;
   padding: 0 0.5rem;
+  display: inline-block;
 }
 
 // add more spacing surrounding
@@ -270,10 +271,27 @@ hr {
     }
   }
 }
+.container.blog-content {
+  display: block;
+  .sidebar {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+    .avatar {
+      height: auto;
+      object-fit: contain;
+    }
+  }
+}
 
 @media (min-width: 576px) {
   .visible-xs {
     display: none;
+  }
+  .container.blog-content {
+    .sidebar {
+      flex-wrap: wrap;
+    }
   }
 }
 
