@@ -50,7 +50,7 @@ genrule(
 )
 ```
 
-This is a very simple setup where I'm producing a ZIP file and in in the final target unzipping it.
+This is a very simple setup where I'm producing a ZIP file and in the final target unzipping it.
 
 ZIP files unfortunately are normally non-reproducible because they include modification timestamp information embedded in them & the order the files are included are non-ordered.
 

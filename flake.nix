@@ -8,6 +8,10 @@
       url = "github:inscapist/bundix/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    wordword = {
+      url = "git+https://codeberg.org/mtlynch/wordword";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
@@ -16,6 +20,7 @@
     nixpkgs,
     ruby-nix,
     bundix,
+    wordword,
     ...
   }: let
     eachSystem = f:
@@ -58,6 +63,8 @@
         src = fs.toSource {
           root = ./.;
           fileset = fs.unions [
+            ./.prettierignore
+            ./.prettierrc
             ./Gemfile
             ./Gemfile.lock
             ./index.md
@@ -79,9 +86,16 @@
           PAGES_REPO_NWO = "fzakaria/fzakaria.com";
           JEKYLL_BUILD_REVISION = self.rev or self.dirtyRev or "dirty";
         };
+
         buildInputs = [
           gemsets.${system}.envMinimal
           gemsets.${system}.ruby
+        ];
+        nativeBuildInputs = [
+          wordword.packages.${system}.default
+          # MacOS does not network sandbox
+          # the jekyll-github plugin tries to fetch metadata so it needs SSL_CERT_FILE
+          pkgs.cacert
         ];
         buildPhase = ''
           jekyll build
@@ -89,6 +103,13 @@
         installPhase = ''
           mkdir -p $out
           cp -r _site/* $out
+        '';
+
+        doCheck = true;
+        checkPhase = ''
+          # TODO: maybe move these to individual flake checks instead
+          # check for duplicate words
+          wordword _posts/
         '';
       };
     });
