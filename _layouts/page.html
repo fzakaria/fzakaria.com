@@ -63,10 +63,10 @@ layout: base
       for this site is © Drew Devault.
     </p>
     <div class="spacer" style="margin-top: 30px"></div>
-    {% capture contribute_msg %} Improve this page @
-    {{site.github.build_revision | slice: 0, 7}} {% endcapture %}
     <p>
-      <a href="{% github_edit_link %}">{{ contribute_msg }}</a>
+      <a href="https://github.com/fzakaria/fzakaria.com/commit/{{ site.commit_hash }}"
+        >Improve this page @ {{ site.commit_hash | slice: 0, 7 -}}
+      </a>
     </p>
   </div>
 </div>

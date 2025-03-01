@@ -2,6 +2,7 @@
 source "https://rubygems.org"
 
 gem "jekyll"
+gem "logger"
 
 # Jekyll will automatically activate any plugins
 # listed in the :jekyll_plugins group.
@@ -11,7 +12,6 @@ group :jekyll_plugins do
   gem "jekyll-seo-tag"
   gem "jekyll-feed"
   gem "jekyll-sitemap"
-  gem "jekyll-github-metadata"
 end
 
 group :development do

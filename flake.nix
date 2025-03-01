@@ -56,7 +56,7 @@
       system,
     }: let
       fs = pkgs.lib.fileset;
-    in rec {
+    in {
       default = pkgs.stdenv.mkDerivation {
         name = "fzakaria.com";
         version = "0.1.0";
@@ -78,6 +78,7 @@
             ./_old_blog
             ./_layouts
             ./_includes
+            ./_plugins
           ];
         };
         env = {
@@ -95,7 +96,7 @@
           wordword.packages.${system}.default
           # MacOS does not network sandbox
           # the jekyll-github plugin tries to fetch metadata so it needs SSL_CERT_FILE
-          pkgs.cacert
+          #pkgs.cacert
         ];
         buildPhase = ''
           jekyll build
