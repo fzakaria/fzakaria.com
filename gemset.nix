@@ -97,32 +97,6 @@
     targets = [];
     version = "1.2.7";
   };
-  faraday = {
-    dependencies = ["faraday-net_http" "json" "logger"];
-    groups = ["default" "jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "1mls9g490k63rdmjc9shqshqzznfn1y21wawkxrwp2vvbk13jwqm";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "2.12.2";
-  };
-  faraday-net_http = {
-    dependencies = ["net-http"];
-    groups = ["default" "jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "0jp5ci6g40d6i50bsywp35l97nc2fpi9a592r2cibwicdb6y9wd1";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "3.4.0";
-  };
   ffi = {
     groups = ["default" "jekyll_plugins"];
     platforms = [];
@@ -247,19 +221,6 @@
     };
     targets = [];
     version = "0.17.0";
-  };
-  jekyll-github-metadata = {
-    dependencies = ["jekyll" "octokit"];
-    groups = ["jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "0k2vnq6ns0x3iwnp8pw9lbxds924wmqswzy0gd57f95gpn49kwjc";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "2.16.1";
   };
   jekyll-redirect-from = {
     dependencies = ["jekyll"];
@@ -389,18 +350,6 @@
     targets = [];
     version = "3.9.0";
   };
-  logger = {
-    groups = ["default" "jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "05s008w9vy7is3njblmavrbdzyrwwc1fsziffdr58w9pwqj8sqfx";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "1.6.6";
-  };
   mercenary = {
     groups = ["default" "jekyll_plugins"];
     platforms = [];
@@ -412,32 +361,6 @@
     };
     targets = [];
     version = "0.4.0";
-  };
-  net-http = {
-    dependencies = ["uri"];
-    groups = ["default" "jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "1ysrwaabhf0sn24jrp0nnp51cdv0jf688mh5i6fsz63q2c6b48cn";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "0.6.0";
-  };
-  octokit = {
-    dependencies = ["faraday" "sawyer"];
-    groups = ["default" "jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "1gxh0x910qvah2sm9fbxn8jjy3pgwskyd3gm703zf182hafll3lj";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "6.1.1";
   };
   pathutil = {
     dependencies = ["forwardable-extended"];
@@ -562,19 +485,6 @@
     ];
     version = "1.85.1";
   };
-  sawyer = {
-    dependencies = ["addressable" "faraday"];
-    groups = ["default" "jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "1jks1qjbmqm8f9kvwa81vqj39avaj9wdnzc531xm29a55bb74fps";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "0.9.2";
-  };
   terminal-table = {
     dependencies = ["unicode-display_width"];
     groups = ["default" "jekyll_plugins"];
@@ -599,18 +509,6 @@
     };
     targets = [];
     version = "2.6.0";
-  };
-  uri = {
-    groups = ["default" "jekyll_plugins"];
-    platforms = [];
-    source = {
-      remotes = ["https://rubygems.org"];
-      sha256 = "04bhfvc25b07jaiaf62yrach7khhr5jlr5bx6nygg8pf11329wp9";
-      target = "ruby";
-      type = "gem";
-    };
-    targets = [];
-    version = "1.0.3";
   };
   webrick = {
     groups = ["default" "development" "jekyll_plugins"];
