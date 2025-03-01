@@ -34,7 +34,7 @@ Our _view commit source_ hyperlink is now pretty simple to cook up.
 
 ```html
 <p>
-  <a href="https://github.com/org/repo/commit/{% raw %}{{site.commit_hash}}{% endraw %}"
+  <a href="https://github.com/org/repo/tree/{% raw %}{{ site.commit_hash }}/{{ page.path }}{% endraw %}"
   >Improve this page @ {% raw %}{{ site.commit_hash | slice: 0, 7 -}}{% endraw %}
   </a>
 </p>

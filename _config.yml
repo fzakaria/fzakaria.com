@@ -25,6 +25,7 @@ url: "https://fzakaria.com" # the base hostname & protocol for your site, e.g. h
 markdown: kramdown
 sass:
   style: compressed
+permalink: /:categories/:year/:month/:day/:title
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
@@ -46,9 +47,5 @@ exclude:
 collections:
   old_blog:
     output: true
-github:
-  source:
-    branch: master
-repository: "fzakaria/fzakaria.com"
 # Google Analytics
 google_analytics: UA-35360900-1
