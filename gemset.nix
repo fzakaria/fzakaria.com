@@ -350,6 +350,18 @@
     targets = [];
     version = "3.9.0";
   };
+  logger = {
+    groups = ["default"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "05s008w9vy7is3njblmavrbdzyrwwc1fsziffdr58w9pwqj8sqfx";
+      target = "ruby";
+      type = "gem";
+    };
+    targets = [];
+    version = "1.6.6";
+  };
   mercenary = {
     groups = ["default" "jekyll_plugins"];
     platforms = [];

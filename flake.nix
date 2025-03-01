@@ -96,7 +96,7 @@
           wordword.packages.${system}.default
           # MacOS does not network sandbox
           # the jekyll-github plugin tries to fetch metadata so it needs SSL_CERT_FILE
-          pkgs.cacert
+          #pkgs.cacert
         ];
         buildPhase = ''
           jekyll build

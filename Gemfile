@@ -2,6 +2,7 @@
 source "https://rubygems.org"
 
 gem "jekyll"
+gem "logger"
 
 # Jekyll will automatically activate any plugins
 # listed in the :jekyll_plugins group.
