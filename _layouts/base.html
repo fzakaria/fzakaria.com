@@ -33,6 +33,8 @@
     {% endif %}
   </head>
   <body>
-    <div class="container">{{ content }}</div>
+    <div class="container{% if page.url != '/' %} blog-content{% endif %}">
+      {{ content }}
+    </div>
   </body>
 </html>
