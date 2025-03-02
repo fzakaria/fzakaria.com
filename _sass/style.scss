@@ -125,7 +125,7 @@ pre {
   border: 1px solid $color-gray-light;
   border-radius: $border-radius;
   line-height: 1.4;
-  max-width: 37.5rem; // 600px if 1rem=16px.
+  max-width: 100%;
   overflow-x: auto;
   padding: 0 $spacing-sm;
 }
@@ -175,6 +175,7 @@ code {
   }
 
   .content {
+    max-width: 37.5rem; // 600px if 1rem=16px.
     grid-column: 1;
   }
 
