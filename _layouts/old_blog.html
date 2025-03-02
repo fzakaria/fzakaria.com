@@ -1,15 +1,16 @@
 ---
 layout: page
 ---
-<blockquote style="margin-bottom: 0em;">
-  These posts are from my original Wordpress blog. They are kept here as an archive; the formatting did not necessarily
-  transition well.
-</blockquote>
-
 <div class="media">
+  <p class="text-muted">
+    <i>
+      These posts are from my original Wordpress blog. They are kept here as an archive; the formatting did not
+      necessarily transition well.
+    </i>
+  </p>
   {% assign old_blog_posts = site.old_blog | reverse %}
   {% for post in old_blog_posts %}
-    <div class="post-stub" style="padding-top: 1em;">
+    <div class="post-stub" style="padding-bottom: 1em;">
       <div class="date">{{ post.date | date: '%B %d, %Y' }}</div>
       <div class="title">
         <a href="{{ post.url }}"> {{ post.title }} </a>
