@@ -10,7 +10,7 @@ layout: page
   </p>
   {% assign old_blog_posts = site.old_blog | reverse %}
   {% for post in old_blog_posts %}
-    <div class="post-stub">
+    <div class="post-stub" style="padding-bottom: 1em;">
       <div class="date">{{ post.date | date: '%B %d, %Y' }}</div>
       <div class="title">
         <a href="{{ post.url }}"> {{ post.title }} </a>

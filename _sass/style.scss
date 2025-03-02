@@ -1,8 +1,4 @@
-/* ==========================================================================
- * Variable Definitions
- * ==========================================================================
- * Aim for minimal usage, removing default values and focusing on accessibility.
- */
+//Aim for minimal usage, removing default values and focusing on accessibility.
 
 // Slightly softened from pure black for easier reading.
 $color-dark: #222;
@@ -40,15 +36,9 @@ $font-sans:
 @use "syntax";
 @use "sass:color";
 
-/* ==========================================================================
- * 1. Base and Global Settings
- * ==========================================================================
- */
-
 html,
 body {
   font-family: $font-sans;
-  overflow-x: hidden;
   background: $color-white;
   color: $color-dark;
   padding-bottom: $spacing-lg;
@@ -90,7 +80,6 @@ h1 {
 blockquote {
   border-left: 0.25em solid $color-highlight; // ~4px if 1em=16px.
   padding-left: $spacing-sm;
-  font-size: 0.875rem;
   color: $color-gray-dark;
 }
 
@@ -124,13 +113,11 @@ hr {
 pre {
   border: 1px solid $color-gray-light;
   border-radius: $border-radius;
-  line-height: 1.4;
-  max-width: 100%;
+  line-height: 1.2;
   overflow-x: auto;
-  padding: 0 $spacing-sm;
-}
-
-.highlight pre {
+  max-width: 100%;
+  // A little padding within the textbox
+  padding-left: $spacing-sm;
   padding-top: $spacing-sm;
   padding-bottom: $spacing-sm;
 }
@@ -139,12 +126,8 @@ pre {
   margin: 0 -#{$spacing-sm};
 }
 
-pre code {
-  word-wrap: normal;
-}
-
 p code.oldblog {
-  max-width: 37.5rem;
+  max-width: 100%;
   overflow-x: auto;
   display: inline-block;
 }
@@ -154,41 +137,37 @@ code {
   color: $color-dark;
 }
 
-.container-basic {
-  max-width: 60rem; // 960px.
-  margin: 0 auto;
-
-  pre {
-    max-width: calc(100% + 2rem);
-  }
-}
-
 .container {
   max-width: 60rem; // 960px.
-  margin: 0 auto;
+  width: 100%; // responsive on small screens
+  margin: 0 auto; // centering
   display: grid;
-  grid-template-columns: 2fr 1fr;
 
-  .page-title {
-    grid-column: 1 / 3;
-    margin-bottom: 0;
-  }
+  /* 
+  Using minmax(0, 2fr) ensures the column won't 
+  expand beyond the container's max-width. It forces 
+  the column to shrink when content is too wide, 
+  letting the <pre> element handle horizontal scrolling.
+  */
+  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
 
+  gap: $spacing-lg;
+
+  // Be sure to set the min-width to 0 so that the grid can shrink
+  // for smaller screens
   .content {
-    max-width: 37.5rem; // 600px if 1rem=16px.
-    grid-column: 1;
+    min-width: 0;
   }
 
-  .sidebar {
-    grid-column: 2;
-    padding-left: $spacing-lg; // default is 2rem.
-  }
-
+  // Nested media query to switch to single column on mobile
+  // Adjust the gaps so things look a bit better
   @media (max-width: 48em) {
-    // 768px if 1em=16px.
-    display: block;
+    grid-template-columns: 1fr;
+    gap: $spacing-base;
+
     .sidebar {
       padding-left: 0;
+      padding-top: 0;
     }
   }
 }
