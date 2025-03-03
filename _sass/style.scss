@@ -82,6 +82,7 @@ blockquote {
   border-left: 0.25em solid $color-highlight; // ~4px if 1em=16px.
   padding-left: $spacing-sm;
   color: $color-gray-dark;
+  margin-left: $spacing-sm;
 }
 
 .sidebar {
