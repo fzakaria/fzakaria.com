@@ -3,6 +3,10 @@ layout: post
 title: 'Nix pragmatism: nix-ld and envfs'
 date: 2025-02-26 16:22 -0800
 excerpt_separator: <!--more-->
+redirect_from:
+  - /2025/02/27/nix-pragmatism-nix-ld-and-envfs.html
+  - /2025/02/27/nix-pragmatism-nix-ld-and-envfs
+  - /2025/02/27/nix-pragmatism-nix-ld-and-envfs/
 ---
 
 I have been daily driving [NixOS](https://nixos.org) for nearly a year on my wonderful [frame.work](https://frame.work/) laptop; and have been a Nix-enthusiast for ~5 years.

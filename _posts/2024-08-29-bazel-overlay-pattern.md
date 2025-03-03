@@ -3,6 +3,10 @@ layout: post
 title: Bazel Overlay Pattern
 date: 2024-08-29 20:06 -0700
 excerpt_separator: <!--more-->
+redirect_from:
+  - /2024/08/30/bazel-overlay-pattern.html
+  - /2024/08/30/bazel-overlay-pattern
+  - /2024/08/30/bazel-overlay-pattern/
 ---
 
 Do you have an internal fork of a codebase you've added Bazel `BUILD` files to?

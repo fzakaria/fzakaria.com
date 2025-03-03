@@ -3,6 +3,10 @@ layout: post
 title: 'Nix: string interpolation of directories gone awry'
 date: 2025-02-02 20:10 -0800
 excerpt_separator: <!--more-->
+redirect_from:
+  - /2025/02/03/nix-string-interpolation-of-directories-gone-awry.html
+  - /2025/02/03/nix-string-interpolation-of-directories-gone-awry
+  - /2025/02/03/nix-string-interpolation-of-directories-gone-awry/
 ---
 
 I was sleuthing 🦥 on the [NixOS](https://nixos.org/) Matrix channel ([#nix:nixos.org](https://matrix.to/#/#community:nixos.org)) -- trying to get some help for my own problems when myself and another user ([@mjm](@mjm:midna.dev)) starting helping someone whom was complaining that their seemingly innocuous derivation was continously rebuilding.

@@ -2,6 +2,10 @@
 layout: post
 title: 'Nix migraines: NIX_SSL_CERT_FILE'
 date: 2025-02-28 19:07 -0800
+redirect_from:
+  - /2025/03/01/nix-migraines-nix-ssl-cert-file.html
+  - /2025/03/01/nix-migraines-nix-ssl-cert-file
+  - /2025/03/01/nix-migraines-nix-ssl-cert-file/
 ---
 
 > This will be a self-post to describe [nixpkgs#issue385955](https://github.com/NixOS/nixpkgs/issues/385955). I refused to just "copy code" from other packages and wanted to better understand what was going on.

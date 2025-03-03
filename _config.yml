@@ -26,6 +26,10 @@ markdown: kramdown
 sass:
   style: compressed
 permalink: /:categories/:year/:month/:day/:title
+# I use to publish directly from my laptop which had this timezone
+# the switch to GitHub actions made it switch to UTC that changed
+# some post dates
+timezone: America/Los_Angeles
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.

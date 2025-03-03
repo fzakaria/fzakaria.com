@@ -2,6 +2,10 @@
 layout: post
 title: Jekyll Git commit
 date: 2025-02-28 21:23 -0800
+redirect_from:
+  - /2025/03/01/jekyll-git-commit.html
+  - /2025/03/01/jekyll-git-commit
+  - /2025/03/01/jekyll-git-commit/
 ---
 
 I wanted to include a hyperlink on my blog that included the commit it was published with.
