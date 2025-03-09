@@ -30,6 +30,48 @@ fetchurl {
 
 The **big difference** with the _intensional model_ is that Nix calculates the sha256 for you!
 
+Let's write a simple derivation to validate that the path is what we think it is.
+
+```nix
+pkgs.runCommand "hello-world" {
+  __contentAddressed = true;
+  outputHashMode = "flat";
+  outputHashAlgo = "sha256";
+} ''
+echo "Hello world." > $out
+''
+```
+
+We can now build it and see the path with hash
+value `d2ah0p9lxbbhadazaiqb8frxxd54zddz`.
+
+```console
+> nix build -f ca-example.nix hello-world --print-out-paths -L
+/nix/store/d2ah0p9lxbbhadazaiqb8frxxd54zddz-hello-world
+```
+
+We can run through the same steps to work back to the same path starting with the `sha256sum` of the file.
+
+```console
+> sha256sum /nix/store/d2ah0p9lxbbhadazaiqb8frxxd54zddz-hello-world
+
+6472bf692aaf270d5f9dc40c5ecab8f826ecc92425c8bac4d1ea69bcbbddaea4  /nix/store/d2ah0p9lxbbhadazaiqb8frxxd54zddz-hello-world
+
+> echo -n "fixed:out:sha256:6472bf692aaf270d5f9dc40c5ecab8f826ecc92425c8bac4d1ea69bcbbddaea4:" > tmp
+
+> nix-hash --type sha256 --flat tmp
+81d911ea283d5a4dfe38b6df6d046b7405585e55ea1e28eb992fc22459aecf03
+
+> echo -n "output:out:sha256:81d911ea283d5a4dfe38b6df6d046b7405585e55ea1e28eb992fc22459aecf03:/nix/store:hello-world" > tmp
+
+> nix-hash --type sha256 --truncate --base32 --flat tmp
+d2ah0p9lxbbhadazaiqb8frxxd54zddz
+```
+
+`d2ah0p9lxbbhadazaiqb8frxxd54zddz` is our matching hash! 🎉
+
+Let's continue to more complex CA derivations 🤓
+
 Let's start off with a chain (`parent` & `child`) of two _expensive_ derivations.
 
 ```nix
@@ -169,5 +211,3 @@ If your output is not bit-reproducible, there are cases where you might have to 
 There's some other potential pitfalls that were also outlined in the original PhD, such as the "two glibc issue", but according to [RFC#0062](https://github.com/tweag/rfcs/blob/cas-rfc/rfcs/0062-content-addressed-paths.md) which outlines the implementation, additional metadata SQLite tables and Nix binary-cache store information is included to avoid these class of problems.
 
 I don't think it's at a state quite yet where I'll be turning it on globally in my `nix.conf` -- but familiarity will be useful for the next entry where we discuss _dynamic-derivations_ which seem to rely and require CA derivations.
-
-_Note to readers:_ I would have loved to calculate by hand the `/nix/store` path as is done in [nix-pills#18](https://nixos.org/guides/nix-pills/18-nix-store-paths.html); however I could not seem to reproduce the hash. If you have insight or a good example, please reach out so I can update the entry. 🙏
