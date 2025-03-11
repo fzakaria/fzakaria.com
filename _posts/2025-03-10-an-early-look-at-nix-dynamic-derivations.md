@@ -117,6 +117,8 @@ let
 in (builtins.outputOf producing.outPath "out")
 ```
 
+> I wish I had a _succinct_ explanation for why we need `unsafeDiscardOutputDependency` right now. Without it though, building the derivation will try and build all `nativeBuildInputs` of the derivation which is a large set as it includes `stdenv`.
+
 We can now `eval` this Nix expression (_dynamic-derivations_ needs the new Nix commands and does not work with `nix-instantiate`). The evaluation is near instant.
 
 ```console
