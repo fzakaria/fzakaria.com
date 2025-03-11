@@ -4,25 +4,25 @@ title: An early look at Nix Dynamic Derivations
 date: 2025-03-10 16:34 -0700
 ---
 
-I normally like to write about concepts from first principes and wait for much of the dust to have settled on the implementation details. Let me take you on a small tour of an upcoming feature.
+I normally like to write about concepts from first principles and wait for much of the dust to have settled on the implementation details, but let me take you on a small tour of an upcoming feature instead.
 
-However one of the talks I attended at [PlanetNix2025](https://planetnix.com/) was from the _the legend_ John Ericson ([@ericson2314](https://github.com/ericson2314)) who is a core contributor [NixOS/nix](https://github.com/NixOS/nix) about **dynamic derivations** [RFC#92](https://github.com/NixOS/rfcs/blob/master/rfcs/0092-plan-dynamism.md).
+One of the talks I attended at [PlanetNix2025](https://planetnix.com/) was from _the legendary_ John Ericson ([@ericson2314](https://github.com/ericson2314)), who is a core contributor to [NixOS/nix](https://github.com/NixOS/nix) about **dynamic derivations** [RFC#92](https://github.com/NixOS/rfcs/blob/master/rfcs/0092-plan-dynamism.md).
 
 > The talk was a demo on [sandstone](https://github.com/obsidiansystems/sandstone), which is an example of the benefits of dynamic-derivations for Haskell.
 
-The talk had me so energized & excited that I wanted to peek at the current state of the implementation and see if I could contribute. ⚡
+The talk had me so energized and excited that I wanted to peek at the current state of the implementation and see if I could contribute. ⚡
 
 John had left us all with a _call to arms_ to try and adopt dynamic derivations for cases where it made sense. I'm writing this to spread the word and get the community similarly energized.
 
-So....
+So...
 
 What are dynamic-derivations? 🫠
 
-Dynamic derivations is the ability to create additional derivations at _build time_ to expand the graph.
+_Dynamic derivations_ is the ability to create additional derivations at _build time_ to expand the graph.
 
-At the moment this is _sort of possible_ in Nix through [import from derivations]({% post_url 2020-10-20-nix-parallelism-import-from-derivation %}) (IFD) but it comes with the downside that this can pause the evaluation phase which is why it's often banned in codebases such as [nixpkgs](https://github.com/NixOS/nixpkgs).
+At the moment, this is _sort of possible_ in Nix through [import from derivations]({% post_url 2020-10-20-nix-parallelism-import-from-derivation %}) (IFD) but it comes with the downside that this can pause the evaluation phase, which is why it's often banned in codebases such as [nixpkgs](https://github.com/NixOS/nixpkgs).
 
-Let's revisit again with the problem of IFD.
+Let's revisit what the problem with IFD is.
 
 ```nix
 let
@@ -41,7 +41,7 @@ in
   ''
 ```
 
-The following derivation when evaluated **still takes 10 seconds** even though I have not yet done a build.
+The following derivation, when only evaluated, **still takes 10 seconds**, even though I have not done a build yet.
 
 ```console
 > time nix-instantiate ifd.nix
@@ -54,15 +54,15 @@ Executed in   12.15 secs      fish           external
    sys time  226.14 millis    1.89 millis  224.25 millis
 ```
 
-This is the reason all the `lang2nix` tools exist since nixpkgs has banned IFD. At the moment the alternate approach is to have a separate tool create all the Nix derivation files you need in a _preprocessor step_.
+This is the reason all the `lang2nix` tools exist, as nixpkgs has banned IFD. At the moment, the alternate approach is to have a separate tool create all the Nix derivation files you need in a _preprocessor step_.
 
 How can dynamic-derivations make this better? 🤔
 
-⚠️ The state of dynamic-derivations is changing and _somewhat brittle_. At the moment, if you want to play with it it's important you use [nix@d904921](https://github.com/NixOS/nix/commit/d904921eecbc17662fef67e8162bd3c7d1a54ce0). Additionally, you need to enable `experimental-features = ["nix-command" "dynamic-derivations" "ca-derivations" "recursive-nix"]`. Here, there be dragons 🐲.
+⚠️ The state of dynamic-derivations is changing and is _somewhat brittle_. At the moment, if you want to play with it, it's important you use [nix@d904921](https://github.com/NixOS/nix/commit/d904921eecbc17662fef67e8162bd3c7d1a54ce0). Additionally, you need to enable `experimental-features = ["nix-command" "dynamic-derivations" "ca-derivations" "recursive-nix"]`. Here, there be dragons 🐲.
 
-First, off we can now create derivations whose output is a file that ends in **.drv** -- meaning the output of a derivation is a derivation itself!
+First, we can now create derivations whose output is a file that ends in **.drv** -- meaning the output of a derivation is a derivation itself!
 
-> 😲 I never bothered to create a derivation whose name ended in _drv_ -- so I was surprised this was a restriction earlier.
+> 😲 I never bothered to create a derivation whose name ended in _drv_, so I was surprised this even was a restriction previously.
 
 ```nix
 let
@@ -80,9 +80,9 @@ in
   ''
 ```
 
-The `outputHashMode` and `outputHashAlgo` are important as those are the hashing mode traditionally done for derivation files.
+The `outputHashMode` and `outputHashAlgo` are important, as those are the hashing modes traditionally done for derivation files.
 
-We can now build this file and it will be the output `$out`.
+We can now build this file, and it will be the output `$out`.
 
 ```console
 > nix-instantiate end-drv.nix 
@@ -92,9 +92,9 @@ We can now build this file and it will be the output `$out`.
 /nix/store/2r65y379iga77g8z42gfibn0bn0w7kgd-world.drv
 ```
 
-Secondly, there is a new `builtin.outputOf` that as best as I can tell instructs Nix that there is a chain of derivations to follow.
+Second, there is a new `builtin.outputOf` that, as best as I can tell, instructs Nix that there is a chain of derivations to follow.
 
-Let's rework our _slow_ IFD example from before but now leverage _dynamic-derivations_.
+Let's rework our _slow_ IFD example from before, but now leverage _dynamic-derivations_.
 
 ```nix
 let
@@ -131,7 +131,7 @@ Executed in  278.95 millis    fish           external
    sys time  115.78 millis    1.05 millis  114.73 millis
 ```
 
-We can now build this derivation and what in fact gets built is the **inner** derivation, which of course takes ~10 seconds! 🤯
+We can now build this derivation, and what gets built is in fact the **inner** derivation, which of course takes ~10 seconds! 🤯
 
 ```nix
 > time nix build -f ifd_dyn_drv.nix --store /tmp/dyn-drvs --print-out-paths -L
@@ -147,9 +147,9 @@ Ok, so the "dynamic-derivation" was still a Nix expression in the same file. Big
 
 It doesn't have to be, thanks to _recursive Nix_. 🫨
 
-Let's now do this example _again_ but craft our Nix expression dynamically from within another Nix derivation.
+Let's now do this example _again_, but craft our Nix expression dynamically from within another Nix derivation.
 
-> I am writing this in bash so the quoting is _very ugly_ as for demonstration purposes it's all in a single file. In practice you would probably do it programmatically with `libstore` or at least with separate Nix files.
+> I am writing this in bash so the quoting is _very ugly_ as it's all in a single file for demonstration purposes. In practice, you would probably do it programmatically with `libstore`, or at least with separate Nix files.
 
 ```nix
 let
@@ -173,7 +173,7 @@ let
 in (builtins.outputOf producing.outPath "out")
 ```
 
-We can now build our derivation and it will in fact build the `inner.nix` recipe we crafted within it.
+We can now build our derivation, and it will in fact build the `inner.nix` recipe we crafted within it.
 
 ```console
 > time nix build -f simple-raw.nix --store /tmp/dyn-drvs --print-out-paths -L
@@ -187,18 +187,18 @@ Executed in    8.54 secs    fish           external
 Hello from inner!
 ```
 
-Cool! Wait what was the point of all this again ? 🫠
+Cool! Wait, what was the point of all this again? 🫠
 
-We can now dynamically construct a graph of Nix expressions at build time and link them to a top level derivation.
+We can now dynamically construct a graph of Nix expressions at build time and link them to a top-level derivation.
 
 Imagine any tool that has knowledge of the code graph such as CMake, Bazel or even `-MD` for `gcc`.
 
-We can leverage these tools at the top-level derivation to construct a series of additional derivations for each "module" -- giving us the hermetic seal of Nix but all the incremental builds of these language toolchains!
+We can leverage these tools at the top-level derivation to construct a series of additional derivations for each "module" -- giving us the hermetic seal of Nix, but all the incremental builds of these language toolchains!
 
 No more `lang2nix`. Derivations can now parse lockfiles and generate derivations for all the packages without incurring the cost of IFD.
 
-The work on _dynamic-derivations_ is still somewhat new, but I agree with [@ericson2314](https://github.com/ericson2314) that this will unlock a whole range of new simpler UX for Nix users.
+The work on _dynamic-derivations_ is still somewhat new, but I agree with [@ericson2314](https://github.com/ericson2314) that this will unlock a whole range of new, simpler UX for Nix users.
 
-What can you come up with ? 💪
+What can you come up with? 💪
 
-Many thanks to my good friend Mark Williams ([@markrwilliams](https://github.com/markrwilliams)) who hacked on this stuff late into the night after PlanetNix and John Ericson ([@ericson2314](https://github.com/ericson2314)) who put up with me asking him a ton of questions as I wandered around this new feature. 🙇
+Many thanks to my good friend Mark Williams ([@markrwilliams](https://github.com/markrwilliams)), who hacked on this stuff late into the night after PlanetNix, and John Ericson ([@ericson2314](https://github.com/ericson2314)), who put up with me asking a ton of questions as I wandered around this new feature. 🙇
