@@ -12,7 +12,7 @@ However one of the talks I attended at [PlanetNix2025](https://planetnix.com/) w
 
 The talk had me so energized & excited that I wanted to peek at the current state of the implementation and see if I could contribute. ⚡
 
-> John had left us all with a _call to arms_ to try and adopt dynamic derivations for cases where it made sense.
+John had left us all with a _call to arms_ to try and adopt dynamic derivations for cases where it made sense. I'm writing this to spread the word and get the community similarly energized.
 
 So....
 
