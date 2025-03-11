@@ -199,4 +199,4 @@ The work on _dynamic-derivations_ is still somewhat new, but I agree with [@eric
 
 What can you come up with ? 💪
 
-Many thanks to John who put up with me asking him a ton of questions as I wandered around this new feature. 🙇
+Many thanks to my good friend Mark Williams ([@markrwilliams](https://github.com/markrwilliams)) who hacked on this stuff late into the night after PlanetNix and John Ericson ([@ericson2314](https://github.com/ericson2314)) who put up with me asking him a ton of questions as I wandered around this new feature. 🙇
