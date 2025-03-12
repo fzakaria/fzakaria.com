@@ -119,8 +119,26 @@
       system,
       pkgs,
     }: let
+      config = pkgs.writeText "nginx.conf" ''
+        daemon off;
+        error_log stderr info;
+        pid /tmp/nginx.pid;
+        events {}
+        http {
+          access_log /dev/stdout;
+          server {
+            listen 8080;
+            server_name localhost;
+            root ${packages.${system}.default};
+            location / {
+              try_files $uri $uri.html =404;
+            }
+          }
+        }
+      '';
       server = pkgs.writeShellScriptBin "server" ''
-        ${pkgs.python3}/bin/python -m http.server 8080 -b 127.0.0.1 -d ${packages.${system}.default}
+        echo "🌍 Nginx serving at http://127.0.0.1:8080";
+        ${pkgs.nginx}/bin/nginx -c ${config} -e /tmp/nginx_error.log
       '';
     in {
       default = {
