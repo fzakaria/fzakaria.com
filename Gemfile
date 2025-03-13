@@ -17,4 +17,5 @@ end
 group :development do
 	gem "rake"
   gem "webrick"
+  gem "ruby-lsp"
 end

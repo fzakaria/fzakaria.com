@@ -123,7 +123,7 @@ Can't not repeat this enough, with _dynamic-derivations_ **there is no recursive
 
 The derivation that puts this all together is rather simple.
 
-It does exactly what we set out to accomplish: generate depfiles, parse depfiles, emit dynamic Nix expression, `nix-instantiate`, profit. 🤑
+It does exactly what we set out to accomplish: generate depfiles, parse depfiles, emit dynamic Nix expression, `nix-instantiate`, and profit. 🤑
 
 > Please refer to my [earlier post]({% post_url 2025-03-10-an-early-look-at-nix-dynamic-derivations %}) on understanding this from the ground up. The interesting thing to notice here is that our output name for this derivation is in fact a derivation.
 

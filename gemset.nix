@@ -325,6 +325,18 @@
     targets = [];
     version = "1.1.0";
   };
+  language_server-protocol = {
+    groups = ["default" "development"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0scnz2fvdczdgadvjn0j9d49118aqm3hj66qh8sd2kv6g1j65164";
+      target = "ruby";
+      type = "gem";
+    };
+    targets = [];
+    version = "3.17.0.4";
+  };
   liquid = {
     groups = ["default" "jekyll_plugins"];
     platforms = [];
@@ -351,7 +363,7 @@
     version = "3.9.0";
   };
   logger = {
-    groups = ["default"];
+    groups = ["default" "development"];
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
@@ -386,6 +398,18 @@
     };
     targets = [];
     version = "0.16.2";
+  };
+  prism = {
+    groups = ["default" "development"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "0fi7hvrm2wzbhm21d3w87z5nrqx6z0gwhilvdizcpc9ik21205mi";
+      target = "ruby";
+      type = "gem";
+    };
+    targets = [];
+    version = "1.3.0";
   };
   public_suffix = {
     groups = ["default" "jekyll_plugins"];
@@ -436,6 +460,19 @@
     targets = [];
     version = "0.11.1";
   };
+  rbs = {
+    dependencies = ["logger"];
+    groups = ["default" "development"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "07cwjkx7b3ssy8ccqq1s34sc5snwvgxan2ikmp9y2rz2a9wy6v1b";
+      target = "ruby";
+      type = "gem";
+    };
+    targets = [];
+    version = "3.8.1";
+  };
   rexml = {
     groups = ["default" "jekyll_plugins"];
     platforms = [];
@@ -459,6 +496,19 @@
     };
     targets = [];
     version = "4.5.1";
+  };
+  ruby-lsp = {
+    dependencies = ["language_server-protocol" "prism" "rbs" "sorbet-runtime"];
+    groups = ["development"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "1hx0hb0j0jpzizc76sjrmvgvwifr7507xap66wzg6mj3mqc0y46r";
+      target = "ruby";
+      type = "gem";
+    };
+    targets = [];
+    version = "0.23.11";
   };
   safe_yaml = {
     groups = ["default" "jekyll_plugins"];
@@ -496,6 +546,18 @@
       }
     ];
     version = "1.85.1";
+  };
+  sorbet-runtime = {
+    groups = ["default" "development"];
+    platforms = [];
+    source = {
+      remotes = ["https://rubygems.org"];
+      sha256 = "04j516m3aydazs0i5sxy5h3lglxszjd89qwfk00h0ccjgfl8snmg";
+      target = "ruby";
+      type = "gem";
+    };
+    targets = [];
+    version = "0.5.11919";
   };
   terminal-table = {
     dependencies = ["unicode-display_width"];
