@@ -2,7 +2,7 @@
 
 // Slightly softened from pure black for easier reading.
 $color-dark: #222;
-$color-white: #fff;
+$color-white: #fafafa; // Slightly off-white for better comfort
 // More accessible link color than standard "blue".
 $color-link: #0645ad;
 $color-gray-light: #ddd;
@@ -10,6 +10,8 @@ $color-gray-mid: #999;
 $color-gray-dark: #666;
 $color-gray-border: #ccc;
 $color-highlight: #aaa;
+$color-code-bg: #f5f5f5; // Light gray for code blocks
+$color-inline-code-bg: #f0f0f0; // Slightly darker for inline code
 
 $spacing-sm: 0.5rem;
 $spacing-base: 1rem;
@@ -44,6 +46,7 @@ body {
   padding-bottom: $spacing-lg;
   // A default line-height is often beneficial, e.g., 1.6 for readability.
   line-height: 1.6;
+  font-size: 16px; // Base font size for better accessibility
 }
 
 iframe[src*="youtube"] {
@@ -72,9 +75,9 @@ a {
 }
 
 h1 {
-  font-size: 1.5rem;
+  font-size: 2rem;
   small {
-    font-size: 1rem; // changed from 14pt.
+    font-size: 1.25rem; // changed from 14pt.
   }
 }
 
@@ -105,6 +108,7 @@ hr {
 
 .date {
   color: $color-gray-mid;
+  font-size: 1.15rem;
 }
 
 .date a {
@@ -118,10 +122,8 @@ pre {
   line-height: 1.2;
   overflow-x: auto;
   max-width: 100%;
-  // A little padding within the textbox
-  padding-left: $spacing-sm;
-  padding-top: $spacing-sm;
-  padding-bottom: $spacing-sm;
+  background-color: $color-code-bg;
+  padding: $spacing-sm;
 }
 
 .highlighter-rouge:not(code) {
@@ -134,9 +136,17 @@ p code.oldblog {
   display: inline-block;
 }
 
+// Base code styling
 code {
-  font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-family: "JetBrains Mono", "Fira Code", "Source Code Pro", "Consolas", "Liberation Mono", "Menlo", "Courier", monospace;
   color: $color-dark;
+}
+
+// Inline code styling
+p code {
+  background-color: $color-inline-code-bg;
+  padding: 0.2em 0.4em;
+  border-radius: $border-radius-sm;
 }
 
 .container {
@@ -171,6 +181,12 @@ code {
       padding-left: 0;
       padding-top: 0;
     }
+  }
+
+  // Add wider layout for large screens
+  @media (min-width: 80em) {
+    max-width: 80rem; // 1280px
+    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
   }
 }
 
