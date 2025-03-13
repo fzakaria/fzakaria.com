@@ -17,7 +17,7 @@ title: Farid Zakaria's Blog
 email: farid.m.zakaria@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   I'm a software engineer, father and wishful amateur surfer.
-  If you've come seeking my political views; you've found the
+  If you've come seeking my political views, you've found the
   wrong <a href="https://fareedzakaria.com/">Fareed</a>.
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://fzakaria.com" # the base hostname & protocol for your site, e.g. http://example.com
@@ -48,6 +48,7 @@ exclude:
   - vendor/cache/
   - vendor/gems/
   - vendor/ruby/
+  - .direnv/
 collections:
   old_blog:
     output: true
