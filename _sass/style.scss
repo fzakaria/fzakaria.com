@@ -121,13 +121,12 @@ pre {
   border-radius: $border-radius;
   line-height: 1.2;
   overflow-x: auto;
+  width: fit-content;
   max-width: 100%;
   background-color: $color-code-bg;
   padding: $spacing-sm;
-}
-
-.highlighter-rouge:not(code) {
-  margin: 0 -#{$spacing-sm};
+  padding-right: $spacing-lg;
+  box-sizing: border-box;
 }
 
 p code.oldblog {
@@ -152,43 +151,36 @@ p code {
 }
 
 .container {
-  max-width: 60rem; // 960px.
-  width: 100%; // responsive on small screens
-  margin: 0 auto; // centering
-  display: grid;
+  margin: 0 auto;
 
-  /* 
-  Using minmax(0, 2fr) ensures the column won't 
-  expand beyond the container's max-width. It forces 
-  the column to shrink when content is too wide, 
-  letting the <pre> element handle horizontal scrolling.
-  */
-  grid-template-columns: minmax(0, 3fr) minmax(0, 1fr);
-
-  gap: $spacing-lg;
-
-  // Be sure to set the min-width to 0 so that the grid can shrink
-  // for smaller screens
-  .content {
-    min-width: 0;
-  }
-
-  // Nested media query to switch to single column on mobile
-  // Adjust the gaps so things look a bit better
-  @media (max-width: 48em) {
-    grid-template-columns: 1fr;
-    gap: $spacing-base;
-
-    .sidebar {
-      padding-left: 0;
-      padding-top: 0;
+  .post-content {
+    margin: 0 4em;
+    @media (max-width: 1024px) {
+      margin: 0 auto;
     }
   }
 
-  // Add wider layout for large screens
-  @media (min-width: 80em) {
-    max-width: 80rem; // 1280px
-    grid-template-columns: minmax(0, 4fr) minmax(0, 1fr);
+  .index-content {
+    max-width: 1024px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: $spacing-lg;
+    justify-content: center;
+
+    // Nested media query to switch to single column on mobile
+    // Adjust the gaps so things look a bit better
+    @media (max-width: 1024px) {
+      grid-template-columns: 1fr;
+      gap: $spacing-base;
+
+      .sidebar {
+        padding-left: 0;
+        padding-top: 0;
+        width: 100%;
+        margin: 0 auto;
+      }
+    }
   }
 }
 

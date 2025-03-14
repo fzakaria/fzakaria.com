@@ -1,5 +1,15 @@
 ---
-layout: page
-showTitle: true
+layout: base
 ---
-{{ content }}
+<div class="post-content">
+  <h1 class="page-title">
+    {{ page.title }}
+  </h1>
+  <p class="date">
+    Published {{ page.date | date: '%Y-%m-%d' }} on
+    <a href="/">{{ site.title }}</a>
+  </p>
+
+  <article>{{ content }}</article>
+  <hr>
+</div>
