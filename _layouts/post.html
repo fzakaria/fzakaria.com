@@ -13,8 +13,13 @@ layout: base
   <article>{{ content }}</article>
   <hr>
   <p style="text-align: center;">
-  <small>
-    The content for this site is
-    <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    <a href="https://github.com/fzakaria/fzakaria.com/tree/{{ site.commit_hash }}/{{ page.path }}"
+      >Improve this page @ {{ site.commit_hash | slice: 0, 7 -}}
+    </a>
+    <br>
+    <small>
+      The content for this site is
+      <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
+    </small>
   </p>
 </div>

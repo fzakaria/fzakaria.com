@@ -79,6 +79,8 @@
             ./_layouts
             ./_includes
             ./_plugins
+            ./package.json
+            ./package-lock.json
           ];
         };
         env = {
@@ -88,16 +90,22 @@
           JEKYLL_BUILD_REVISION = self.rev or self.dirtyRev or "dirty";
         };
 
+        npmDeps = pkgs.importNpmLock.buildNodeModules {
+          npmRoot = ./.;
+          inherit (pkgs) nodejs;
+        };
+
         buildInputs = [
           gemsets.${system}.envMinimal
           gemsets.${system}.ruby
         ];
+
         nativeBuildInputs = [
           wordword.packages.${system}.default
-          # MacOS does not network sandbox
-          # the jekyll-github plugin tries to fetch metadata so it needs SSL_CERT_FILE
-          #pkgs.cacert
+          pkgs.importNpmLock.hooks.linkNodeModulesHook
+          pkgs.nodejs
         ];
+
         buildPhase = ''
           jekyll build
         '';
@@ -108,6 +116,7 @@
 
         doCheck = true;
         checkPhase = ''
+          npm run prettier-check
           # TODO: maybe move these to individual flake checks instead
           # check for duplicate words
           wordword _posts/
