@@ -6,19 +6,19 @@ date: 2025-03-11 20:05 -0700
 
 > ℹ️ This is the second blog post discussing _dynamic-derivations_ in Nix. Checkout the first part [An early look at Nix Dynamic Derivations]({% post_url 2025-03-10-an-early-look-at-nix-dynamic-derivations %}) if you want a primer on the experimental feature.
 
-I'm still in love with the experimental feature _dynamic-derivations_ in Nix 🥰, but following my [earlier post]({% post_url 2025-03-10-an-early-look-at-nix-dynamic-derivations %}) I had read comments from readers that the potential was still _unclear_.
+I'm still in love with the experimental feature _dynamic-derivations_ in Nix 🥰, but following my [earlier post]({% post_url 2025-03-10-an-early-look-at-nix-dynamic-derivations %}), I have read comments from readers that the potential was still _unclear_.
 
-This makes total sense. Nix is already quite a complex tool, ecosystem and language. The addition of something like _dynamic-derivations_ muddles the capability to understand the potential it offers.
+This makes total sense. Nix is already quite a complex tool, an ecosystem and a language. The addition of something like _dynamic-derivations_ muddles the capability to understand the potential it offers.
 
 At the end of the last post, I echoed John Ericson's ([@ericson2314](https://github.com/ericson2314)) call to action for others in the community to begin to tinker with the feature. 
 
 In the spirit of that request, I have put together a practical demonstration of what can be accomplished with _dynamic-derivations_ in the tool [MakeNix](https://github.com/fzakaria/MakeNix) 💥🏃‍♂️🔥
 
-> Please checkout [https://github.com/fzakaria/MakeNix](https://github.com/fzakaria/MakeNix) and contribute any improvements, bug fixes or clarifications. The repository is meant to be an example for others to imitate. Contributions are always welcome.
+> Please check out [https://github.com/fzakaria/MakeNix](https://github.com/fzakaria/MakeNix), and contribute any improvements, bug fixes or clarifications. The repository is meant to be an example for others to imitate. Contributions are always welcome.
 
-Once again before we begin, if you want to play with it it's important you use [nix@d904921](https://github.com/NixOS/nix/commit/d904921eecbc17662fef67e8162bd3c7d1a54ce0). Additionally, you need to enable `experimental-features = ["nix-command" "dynamic-derivations" "ca-derivations" "recursive-nix"]`. Here, there be dragons 🐲.
+Once again, before we begin, if you want to play with it, it's important you use [nix@d904921](https://github.com/NixOS/nix/commit/d904921eecbc17662fef67e8162bd3c7d1a54ce0). Additionally, you need to enable `experimental-features = ["nix-command" "dynamic-derivations" "ca-derivations" "recursive-nix"]`. Here, there be dragons 🐲.
 
-Here we have a rather simple C project that produces a binary that emits `"Hello World"`
+Here we have a rather simple C project that produces a binary that emits `"Hello World"`:
 
 ```console
 > tree
@@ -35,24 +35,23 @@ Here we have a rather simple C project that produces a binary that emits `"Hello
 Hello, World!
 ```
 
-We _could_ write a typical Nix derivation via `mkDerivation` that calls `make` and for this relatively small example it would be fine. However for larger projects, everytime we change a tiny bit of our code we must rebuild _the whole thing_ from scratch.  We don't get to leverage all the prior object files that had been built.
+We _could_ write a typical Nix derivation via `mkDerivation` that calls `make`, and for this relatively small example it would be fine. However, for larger projects, every time we change a tiny bit of our code, we must rebuild _the whole thing_ from scratch. We don't get to leverage all the prior object files that have been built.
 
-That's a bummer 🙁. Wouldn't it be great if each object file (i.e. `hello.o`) was created in their own derivation?
+That's a bummer 🙁. Wouldn't it be great if each object file (i.e., `hello.o`) was created in their own derivation?
 
-We could do that ahead of time by writing a tool to create a bunch of tiny `mkDerivation` but everytime we change a dependency in our graph (i.e. add or remove a source file), we have to re-run the tool. That's a bit of a bummer on the development loop.
+We could do that ahead of time by writing a tool to create a bunch of tiny `mkDerivation`, but every time we change a dependency in our graph (i.e., add or remove a source file), we have to re-run the tool. That's a bit of a bummer on the development loop.
 
-If those generated Nix files were not committed to the repository and we wanted to add this package to [nixpkgs](https://github.com/NixOS/nixpkgs), we'd need to also do a full `nix build` within the derivation itself via _recursive-nix_. 😨
+If those generated Nix files were not committed to the repository, and we wanted to add this package to [nixpkgs](https://github.com/NixOS/nixpkgs), we'd need to also do a full `nix build` within the derivation itself via _recursive-nix_. 😨
 
-_Dynamic-derivations_ seeks to solve this callenge by having derivations **create other derivations** without having to execute a `nix build` recursively. Nix will realize the output of one derivation is another derivation and build it as well. 🤯
+_Dynamic-derivations_ seeks to solve this challenge by having derivations **create other derivations** without having to execute a `nix build` recursively. Nix will realize the output of one derivation is another derivation and build it as well. 🤯
 
-Let's return to our C
-/C++ project. [GCC](https://gcc.gnu.org/) & [Clang](https://clang.llvm.org/) support an argument `-MM` which runs only the preprocessor and emits depfiles `.d` that contain Makefile targets with the dependency targets between files.
+Let's return to our C/C++ project. [GCC](https://gcc.gnu.org/) & [Clang](https://clang.llvm.org/) support an argument `-MM` which runs only the preprocessor and emits depfiles `.d` that contain Makefile targets with the dependency targets between files.
 
 ```makefile
 main.o: src/main.c src/hello.h src/world.h
 ```
 
-The idea behind [MakeNix](https://github.com/fzakaria/MakeNix) is to generate these depfiles, parse them and create the necessary `mkDerivation` **all at build time**.
+The idea behind [MakeNix](https://github.com/fzakaria/MakeNix) is to generate these depfiles, parse them, and create the necessary `mkDerivation`, with **all of that at the build time**.
 
 [MakeNix](https://github.com/fzakaria/MakeNix) includes a very simple Golang parser, [parser.go](https://github.com/fzakaria/MakeNix/blob/main/parser/parser.go) (~70 lines of code), that parses the depfiles and generates the complete Nix expression.
 
@@ -117,15 +116,15 @@ Hello, World!
 ]
 ```
 
-As a reminder, we could have generated that Nix expression above earlier **but** if we embedded it within another Nix expression we need to run `nix build` recursively.
+As a reminder, we could have generated that Nix expression above earlier, **but** if we embedded it within another Nix expression, we need to run `nix build` recursively.
 
-Can't not repeat this enough, with _dynamic-derivations_ **there is no recursive** `nix build`.
+I cannot repeat this enough: With _dynamic-derivations_, **there is no recursive** `nix build`.
 
 The derivation that puts this all together is rather simple.
 
-It does exactly what we set out to accomplish: generate depfiles, parse depfiles, emit dynamic Nix expression, `nix-instantiate`, and profit. 🤑
+It does exactly what we set out to accomplish: generate depfiles, parse depfiles, emit dynamic Nix expressions, `nix-instantiate`, and profit. 🤑
 
-> Please refer to my [earlier post]({% post_url 2025-03-10-an-early-look-at-nix-dynamic-derivations %}) on understanding this from the ground up. The interesting thing to notice here is that our output name for this derivation is in fact a derivation.
+> Please refer to my [earlier post]({% post_url 2025-03-10-an-early-look-at-nix-dynamic-derivations %}) on understanding this from the ground up. The interesting thing to notice here is that our output name for this derivation is, in fact, a derivation.
 
 ```nix
 let
@@ -166,7 +165,7 @@ in
     }).outPath "out"
 ```
 
-As an experiment now, we can go ahead and change any of our source files.
+As an experiment, we can go ahead and change any of our source files.
 
 ```patch
 --- a/src/hello.c
@@ -180,9 +179,9 @@ As an experiment now, we can go ahead and change any of our source files.
  }
 ```
 
-If we re-run `nix build` we can notice that only `hello.o` gets rebuilt. 💥
+If we re-run `nix build`, we can notice that only `hello.o` gets rebuilt. 💥
 
-_For demonstrative purposes, I trimmed some of the output below_.
+_For demonstration purposes, I trimmed some of the output below_.
 
 ```console
 > nix build -f default.nix --store /tmp/dyn-drvs -print-out-paths -L
@@ -210,8 +209,8 @@ hello.o> Running phase: fixupPhase
 Goodbye, World!
 ```
 
-Not too bad. 😎 That was a relatively quick to get an incremental build in Nix working via _dynamic-derivations_.
+Not too bad. 😎 It was relatively quick to get an incremental build in Nix working via _dynamic-derivations_.
 
 Checkout [MakeNix](https://github.com/fzakaria/MakeNix) and play with it yourself. What other languages can we apply this to?
 
-Thank you again to John who answered some questions. 🙇
+Thank you again to John, who answered some questions. 🙇
