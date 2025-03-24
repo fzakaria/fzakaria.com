@@ -203,6 +203,6 @@ Success! 🤑 We got our expected output as well.
 
 You might be curious why I did `/bin/sh` instead of something like `/bin/bash` ?
 
-Well I wante dto keep our derivation _extremely simple_ and even something like `bash` needs to be an explicit dependency on our derivation.
+Well I wanted to keep our derivation _extremely simple_ and even something like `bash` needs to be an explicit dependency on our derivation.
 
 Turns out though that `/bin/sh` is by default always present in the Nix sandbox for POSIX compliance. 🤓
