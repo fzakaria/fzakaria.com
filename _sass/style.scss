@@ -144,7 +144,8 @@ code {
 }
 
 // Inline code styling
-p code {
+p code,
+dd code {
   background-color: $color-inline-code-bg;
   padding: 0.2em 0.4em;
   border-radius: $border-radius-sm;

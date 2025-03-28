@@ -24,7 +24,7 @@ Simply run the tool `nix-vanity`. Let it crunch through a bunch of possible deri
 # the same name.
 > nix-vanity -prefix /nix/store/farid \
   /nix/store/cdqs8ir4pzwpl512dp86nk9xhq9bfmcv-vanity-path.drv \
-> vanity-path.drv
+  > vanity-path.drv
 time=2025-03-27T20:40:40.941-07:00 level=INFO msg="Loading base derivation" path=/nix/store/cdqs8ir4pzwpl512dp86nk9xhq9bfmcv-vanity-path.drv
 time=2025-03-27T20:40:40.941-07:00 level=INFO msg="Calculating input derivation replacements..."
 time=2025-03-27T20:40:40.952-07:00 level=INFO msg="Finished calculating input derivation replacements."
@@ -35,7 +35,7 @@ time=2025-03-27T20:41:41.189-07:00 level=INFO msg="Writing successful derivation
 time=2025-03-27T20:41:41.189-07:00 level=INFO msg="All workers finished."
 ```
 
-We can now add our _modified_ derivation back to the `/nix/store`:
+We can now add our _modified_ derivation back to the `/nix/store`
 
 ```bash
 > nix-store --add vanity-path.drv
@@ -97,7 +97,7 @@ For two consecutive letters, there are 32 * 32 total possibilities. If I wanted 
 This is exponential and can blow up pretty fast as the search space becomes 32<sup>N</sup>.
 
 | **Prefix Length (N)** | **Expected Attempts** | **Time @ 300,904 drv/s**         |
-|-----------------------|-----------------------|----------------------------------|
+|:---------------------:|:---------------------:|:--------------------------------:|
 | 1                     | 32                    | < 1s                             |
 | 2                     | 1,024                 | < 1s                             |
 | 3                     | 32,768                | < 1s                             |
