@@ -117,7 +117,7 @@ If we were to change that derivation slightly by adding a comment to the bash co
    args = [
      "-c"
      ''
--      # This is a comment
++      # This is a comment
        echo "Hello World" > "$out"
      ''
    ];
@@ -204,39 +204,24 @@ So let's take our derivation and perform the following:
 
 Our sole `inputDrv` is `/nix/store/1g48s6lkc0cklvm2wk4kr7ny2hiwd4f1-simple-fod.drv` which is a _fixed-output derivation_.
 
-First we must construct the [fingerprint](https://hydra.nixos.org/build/293701648/download/1/manual/protocols/store-path.html) for it which will result in `103184bac4047357505cc2de9212170e71940f6ef992ca9fecba032495d450fc`.
+First we must construct the [fingerprint](https://hydra.nixos.org/build/293701648/download/1/manual/protocols/store-path.html) for it following the documentation which claims it should be `fixed:out:sha256:<base16 hash>:<store path>`.
 
 ```bash
+# let's convert our SRI hash to base16
 > nix hash convert --hash-algo sha256 --to base16 \
     --from sri \
     sha256-0qhPS4tlCTfsj3PNi+LHSt1akRumTfJ0WO2CKdqASiY=
 d2a84f4b8b650937ec8f73cd8be2c74add5a911ba64df27458ed8229da804a26
 
-> echo -n "fixed:out:sha256:d2a84f4b8b650937ec8f73cd8be2c74add5a911ba64df27458ed8229da804a26" | \
+# calculate the fingerprint
+> echo -n "fixed:out:sha256:d2a84f4b8b650937ec8f73cd8be2c74add5a911ba64df27458ed8229da804a26:/nix/store/3lx7snlm14n3a6sm39x05m85hic3f9xy-simple-fod" | \
     sha256sum
-2c199bc1734c1062798f8548c0e8a39d79bc4c103885b150dbde683edc0d5361
-
-> echo -n "output:out:sha256:2c199bc1734c1062798f8548c0e8a39d79bc4c103885b150dbde683edc0d5361:/nix/store:simple-fod" | \
-    sha256sum
-103184bac4047357505cc2de9212170e71940f6ef992ca9fecba032495d450fc
+1e9d789ac36f00543f796535d56845feb5363d4e287521d88a472175a59fb2d8
 ```
 
-We then have to compress down this result to 20 bytes, which I can't seem to find a analagous CLI utility [[ref]](https://github.com/NixOS/nix/blob/fd98f30e4ea652070553c901aaa7557f79bde76b/src/libutil/hash.cc#L387C1-L394C2),but we can easily create a simple Go program to compute it.
+We have the replacement value `1e9d789ac36f00543f796535d56845feb5363d4e287521d88a472175a59fb2d8`.
 
-```
-Hash compressHash(const Hash & hash, unsigned int newSize)
-{
-    Hash h(hash.algo);
-    h.hashSize = newSize;
-    for (unsigned int i = 0; i < hash.hashSize; ++i)
-        h.hash[i % newSize] ^= hash.hash[i];
-    return h;
-}
-```
-
-Once we compress it down we get the final replacement value `1e9d789ac36f00543f796535d56845feb5363d4e287521d88a472175a59fb2d8`.
-
-We then take the original ATerm (`.drv`) for `simple` and clear out the out variables as mentioned earlier and replace the `inputDrv` with this compressed value.
+We then take the original ATerm (`.drv`) for `simple` and clear out the out variables as mentioned earlier and replace the `inputDrv` with this replacement value.
 
 I've added some pretty-printing below to make it slightly easier to read.
 
@@ -259,13 +244,31 @@ Derive(
 
 Performing a `sha256sum` on this derivation give us `fbfae16395905ac63e41e0c1ce760fe468be838f1b88d9e589f45244739baabf`.
 
-We then need to construct another _fingerprint_, hash it and compress it😭.
+We then need to construct another _fingerprint_, hash it and compress it down to 20 bytes 😭.
+
+I could not seem to find an analagous CLI utility [[ref]](https://github.com/NixOS/nix/blob/fd98f30e4ea652070553c901aaa7557f79bde76b/src/libutil/hash.cc#L387C1-L394C2) to perform the compression, but we can easily create a simple Go program to compute it mimicing the C++ reference code.
+
+> 🤷 I am not sure why the hash has to be compressed or the fingerprint itself needs to be hashed. The fingerprint itself should be stable prior to hashing.
+
+```c++
+Hash compressHash(const Hash & hash, unsigned int newSize)
+{
+    Hash h(hash.algo);
+    h.hashSize = newSize;
+    for (unsigned int i = 0; i < hash.hashSize; ++i)
+        h.hash[i % newSize] ^= hash.hash[i];
+    return h;
+}
+```
 
 ```bash
+# hash this final fingerprint
 > echo -n "output:out:sha256:fbfae16395905ac63e41e0c1ce760fe468be838f1b88d9e589f45244739baabf:/nix/store:simple" |\
      sha256sum
 0fb43a8f107d1e986cc3b98d603cf227ffa034b103ff26118edf5627387343fc
 ```
+
+Using [go-nix](https://github.com/nix-community/go-nix) we can write a small CLI utility to do the final compression and emit the `/nix/store` path.
 
 ```golang
 func main() {
