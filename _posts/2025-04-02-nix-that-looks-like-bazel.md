@@ -40,8 +40,6 @@ Traditionally in Nix, you would replace these rules with something like `mkDeriv
 
 Here is something similar we can write in _pure_ Nix.
 
-Wow, that looks surprisingly similar. 😮
-
 ```nix
 # com/example/lib_b/default.nix
 {java_library}:
@@ -67,6 +65,8 @@ java_binary {
   ];
 }
 ```
+
+Wow, that looks surprisingly similar. 😮
 
 Getting this to work is surprisingly easy. We only need two function definitions for `java_library` and `java_binary`.
 
