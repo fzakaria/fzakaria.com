@@ -36,7 +36,7 @@ error:
   but it doesn't...
 ```
 
-Okay let's add an output. I checked the [derivation JSON format](https://nix.dev/manual/nix/2.21/protocols/json/derivatio) on the Nix manual to see what it looks like.
+Okay let's add an output. I checked the [derivation JSON format](https://nix.dev/manual/nix/2.21/protocols/json/derivation) on the Nix manual to see what it looks like.
 
 I just put some random 32 letter path I came up for now.
 
