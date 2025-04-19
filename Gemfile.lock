@@ -7,18 +7,14 @@ GEM
     bigdecimal (3.1.9)
     colorator (1.1.0)
     concurrent-ruby (1.3.5)
-    csv (3.3.2)
+    csv (3.3.4)
     em-websocket (0.5.3)
       eventmachine (>= 0.12.9)
       http_parser.rb (~> 0)
     eventmachine (1.2.7)
-    ffi (1.17.1-arm64-darwin)
-    ffi (1.17.1-x86_64-linux-gnu)
+    ffi (1.17.2-x86_64-linux-gnu)
     forwardable-extended (2.6.0)
-    google-protobuf (4.29.3-arm64-darwin)
-      bigdecimal
-      rake (>= 13)
-    google-protobuf (4.29.3-x86_64-linux)
+    google-protobuf (4.30.2-x86_64-linux)
       bigdecimal
       rake (>= 13)
     http_parser.rb (0.8.0)
@@ -81,24 +77,22 @@ GEM
       logger
     rexml (3.4.1)
     rouge (4.5.1)
-    ruby-lsp (0.23.11)
+    ruby-lsp (0.23.14)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 4)
       sorbet-runtime (>= 0.5.10782)
     safe_yaml (1.0.5)
-    sass-embedded (1.85.1-arm64-darwin)
-      google-protobuf (~> 4.29)
-    sass-embedded (1.85.1-x86_64-linux-gnu)
-      google-protobuf (~> 4.29)
-    sorbet-runtime (0.5.11966)
+    sass-embedded (1.86.3)
+      google-protobuf (~> 4.30)
+      rake (>= 13)
+    sorbet-runtime (0.5.12026)
     terminal-table (3.0.2)
       unicode-display_width (>= 1.1.1, < 3)
     unicode-display_width (2.6.0)
     webrick (1.9.1)
 
 PLATFORMS
-  arm64-darwin-24
   x86_64-linux
 
 DEPENDENCIES
@@ -114,4 +108,4 @@ DEPENDENCIES
   webrick
 
 BUNDLED WITH
-   2.6.2
+   2.3.27
