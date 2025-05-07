@@ -169,6 +169,7 @@
             bundix.packages.${system}.default
             gemsets.${system}.env
             nodejs
+            wordword.packages.${system}.default
           ];
           inputsFrom = [
           ];

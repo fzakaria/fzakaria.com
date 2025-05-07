@@ -53,7 +53,7 @@ Okay -- so we just tunneled our command through a daemon... cool?
 
 Well we can maybe write an interceptor to log all the traffic and see what's going on.
 
-Here we can use `socat` to pipe all the data to to `nix_socket_1` but also `-v` will debug print everything.
+Here we can use `socat` to pipe all the data to `nix_socket_1` but also `-v` will debug print everything.
 
 ```bash
 > socat -v UNIX-LISTEN:/tmp/nix_socket_1,fork \
