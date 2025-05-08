@@ -19,6 +19,15 @@ You can be more _explicit_ and tell `nix` the store to use via `--store` on the 
 
 There are a variety of store types: _dummy_, _ssh_, _overlay-fs_, _s3_, _http_ and so on.
 
+I think I can chain stores of type _daemon_ endlessly.
+
+```
++-------------------+         +-------------------+         +------------------+
+| Nix Daemon 2      |  --->   | Nix Daemon 1      |  --->   | Local Nix Store  |
+| /tmp/nix_socket_2 |         | /tmp/nix_socket_1 |         | /nix/store       |
++-------------------+         +-------------------+         +------------------+
+```
+
 To test this out, I have created a new `nix daemon` which is listening on a new socket `/tmp/nix_socket_1`.
 
 This _daemon_ will set it's store to `/tmp/chain-example`. When a filesystem store other than `/nix/store` is used, Nix will create `/nix/store` within it and `chroot` so that `/nix/store` appears to be the root.
@@ -30,7 +39,7 @@ This _daemon_ will set it's store to `/tmp/chain-example`. When a filesystem sto
       --debug --store /tmp/chain-example
 ```
 
-I know create a _second daemon_ that will listen on `/tmp/nix_socket_2` and whose store is `unix:///tmp/nix_socket_1`, the first daemon.
+I now create a _second daemon_ that will listen on `/tmp/nix_socket_2` and whose store is `unix:///tmp/nix_socket_1`, the first daemon.
 
 ```console
 > NIX_DAEMON_SOCKET_PATH=/tmp/nix_socket_2 nix daemon \
