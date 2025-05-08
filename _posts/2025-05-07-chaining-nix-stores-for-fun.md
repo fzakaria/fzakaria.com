@@ -43,7 +43,7 @@ I now create a _second daemon_ that will listen on `/tmp/nix_socket_2` and whose
 
 ```console
 > NIX_DAEMON_SOCKET_PATH=/tmp/nix_socket_2 nix daemon \
-      --debug --store unix:///tmp/nix_socket_2
+      --debug --store unix:///tmp/nix_socket_1
 ```
 
 Now we can do our build!
