@@ -14,8 +14,8 @@ While we sought to find the culprit, I wanted to explore whether `cgroup`, a Lin
 
 First, let us start with a small reproducer that we will call `eat_memory`, whose role will simply be to continously allocate more memory.
 
-<details>
-    <summary>eat_memory.py</summary>
+<details markdown="1">
+<summary markdown="span">eat_memory.py</summary>
     
 ```python
 import time
@@ -89,8 +89,8 @@ We now want to apply this to bazel!
 
 Let's create a simple Bazel project.
 
-<details>
-    <summary>BUILD.bazel</summary>
+<details markdown="1">
+<summary markdown="span">BUILD.bazel</summary>
 
 ```python
 py_binary(
@@ -107,8 +107,8 @@ sh_test(
 ```
 </details>
 
-<details>
-    <summary>eat_memory_test.sh</summary>
+<details markdown="1">
+<summary markdown="span">eat_memory_test.sh</summary>
 
 ```bash
 #!/bin/bash
