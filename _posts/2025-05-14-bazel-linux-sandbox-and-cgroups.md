@@ -74,6 +74,12 @@ echo $$ | sudo tee /sys/fs/cgroup/example/child/cgroup.procs
 
 Now we are ready to try `--experimental_cgroup_parent` flag for `bazel`.
 
+According to the Bazel documentation, this flag will make it so that Bazel runs every execution within a cgroup nested within this parent.
+
+While that on it's own is not very useful, we can combine it with other flags like `--experimental_sandbox_memory_limit_mb` to enforce maximum memory for tasks.
+
+We could even modify the parent cgroup ourselves which would be inherited by all the child groups. For instance, we could force CPU constraints, like have Bazel only schedule on certain cores. 🤓
+
 We would however like to validate that this all works, so for that we will write a very simple `genrule`.
 
 The goal of the genrule is to write out the info to a file `bazel-bin/cgroup_output.txt` that we can use
