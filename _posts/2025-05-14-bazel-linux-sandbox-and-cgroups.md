@@ -41,7 +41,7 @@ Turns out that if you run `dmesg`, we see the culprit.
   pid=3763 comm="unshare" capability=21  capname="sys_admin"
 ```
 
-Looks like _AppArmor_ is specifically denying the mount within the user namespace.
+Looks like [AppArmor](https://apparmor.net/) is specifically denying the mount within the user namespace.
 
 Why?
 
