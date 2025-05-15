@@ -4,7 +4,7 @@ title: Bazel linux-sandbox and cgroups
 date: 2025-05-14 20:13 -0700
 ---
 
-This is a follow up from the previous post [bazel cgroup]({% post_url 2025-05-08-bazel-cgroup-memory-investigation %}).
+This is a follow up from the previous post on [bazel cgroup memory investigation]({% post_url 2025-05-08-bazel-cgroup-memory-investigation %}) 🕵️.
 
 Turns out that at _$DAYJOB$_ we were not even using `linux-sandbox` like we thought we were! 🤦
 
