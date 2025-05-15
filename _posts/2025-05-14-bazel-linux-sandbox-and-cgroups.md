@@ -119,7 +119,7 @@ $ cat bazel-bin/cgroup_output.txt
 Great! Everything looks like it works.
 
 Our task was correctly placed within `/example` cgroup and I can even see
-that the `memory.max` valuef or the cgrou was set to 20MiB.
+that the `memory.max` value or the cgroup was set to 20MiB.
 
 We can now go back to our original demonstrate of `eat_memory.py` from earlier and avoid having
 to use `systemd-run` itself to limit memory but instead rely on `bazel` cgroup integration. 🔥
