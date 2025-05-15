@@ -77,7 +77,7 @@ GEM
       logger
     rexml (3.4.1)
     rouge (4.5.1)
-    ruby-lsp (0.23.14)
+    ruby-lsp (0.23.17)
       language_server-protocol (~> 3.17.0)
       prism (>= 1.2, < 2.0)
       rbs (>= 3, < 4)

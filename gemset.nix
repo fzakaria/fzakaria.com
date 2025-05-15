@@ -487,12 +487,12 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0xkjb0kvzr4yycfps0vhkkcrjm7iby6bibn6qcsh8fszchnv23ib";
+      sha256 = "0mhfn9y4znilqhn89fisa96fq96282gadw9rakbj8v7pijhp1dfj";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "0.23.14";
+    version = "0.23.17";
   };
   safe_yaml = {
     groups = ["default" "jekyll_plugins"];
