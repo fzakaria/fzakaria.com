@@ -186,3 +186,55 @@ Huzzah! We built a small declarative graph ruleset that emits DOT files 🙌🏽
 We did so by eleveraging Bazel `depset` to make the traversal efficient and propagated this information using our own custom `provider`.
 
 That was not as scary as I thought 🫣.
+
+### Update
+
+Some feedback was provided by [Peter Lobsinger](https://github.com/plobsing) over the Bazel slack that highlighted best practices from Bazel recommend trying to avoid calling `to_list` whenever possible.
+
+> You can coerce a depset to a flat list using to_list(), but doing so usually results in O(N^2) cost. If at all possible, avoid any flattening of depsets except for debugging purposes. [[ref]](https://bazel.build/versions/6.2.0/rules/performance#avoid-depset-to-list)
+
+We can update the rule to instead bubble up the _fragment_ which includes the transitive edges.
+
+The relevant change avoids calling `to_list` and instead concatenates prior fragments into the current one.
+
+```python
+def _graphviz_impl(ctx):
+  # Generate the DOT fragment for the current node
+  fragment = '"{}"\n'.format(ctx.label)
+  fragment += ''.join(
+    ['"{}" -> "{}"\n'.format(ctx.label, dep.label) for dep in ctx.attr.edges]
+  )
+
+  fragment += ''.join(
+    [dep[GraphvizProviderInfo].fragment for dep in ctx.attr.edges]
+  )
+
+  # Assemble the complete DOT content
+  dot_content = "digraph G {\n"
+  dot_content += fragment
+  dot_content += "}\n"
+```
+
+The downside to this approach is that nodes and edges may be duplicated in the resulting file with the current implementation.
+The DOT language supports duplicates, so the resulting graph is still correct albeit a bit unecessarily larger.
+
+```bash
+> bazel build //:A
+Target //:A up-to-date:
+  bazel-bin/A.dot
+
+> cat bazel-bin/A.dot
+digraph G {
+"@@//:A"
+"@@//:A" -> "@@//:B"
+"@@//:A" -> "@@//:D"
+"@@//:B"
+"@@//:B" -> "@@//:C"
+"@@//:B" -> "@@//:D"
+"@@//:C"
+"@@//:D"
+"@@//:D"
+}
+```
+
+We could handle the duplicates in the fragment each time by stripping them out however I wanted to keep the rule as simple as possible for demonstrative purposes.
