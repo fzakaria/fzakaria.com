@@ -239,4 +239,4 @@ digraph G {
 }
 ```
 
-We could handle the duplicates in the fragment each time by stripping them out or create a new rule `graph` that is the only piont at which we do the full traversal and may call `to_list` however I wanted to keep the rule as simple as possible for demonstrative purposes 🙇🏼.
+We could handle the duplicates in the fragment each time by stripping them out or create a new rule `graph` which is the only point at which we do the full traversal and may call `to_list`. However, I wanted to keep the rule as simple as possible for demonstrative purposes 🙇🏼.
