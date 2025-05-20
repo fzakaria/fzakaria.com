@@ -192,6 +192,8 @@ That was not as scary as I thought 🫣.
 Some feedback was provided by [Peter Lobsinger](https://github.com/plobsing) over the Bazel slack that highlighted best practices from Bazel recommend trying to avoid calling `to_list` whenever possible.
 
 > You can coerce a depset to a flat list using to_list(), but doing so usually results in O(N^2) cost. If at all possible, avoid any flattening of depsets except for debugging purposes. [[ref]](https://bazel.build/versions/6.2.0/rules/performance#avoid-depset-to-list)
+>
+> Finally, it's important to not retrieve the contents of the depset unnecessarily in rule implementations. One call to to_list() at the end in a binary rule is fine, since the overall cost is just O(n). It's when many non-terminal targets try to call to_list() that quadratic behavior occurs. [[ref]](https://bazel.build/extending/depsets#performance)
 
 We can update the rule to instead bubble up the _fragment_ which includes the transitive edges.
 
@@ -237,4 +239,4 @@ digraph G {
 }
 ```
 
-We could handle the duplicates in the fragment each time by stripping them out however I wanted to keep the rule as simple as possible for demonstrative purposes.
+We could handle the duplicates in the fragment each time by stripping them out or create a new rule `graph` that is the only piont at which we do the full traversal and may call `to_list` however I wanted to keep the rule as simple as possible for demonstrative purposes 🙇🏼.
