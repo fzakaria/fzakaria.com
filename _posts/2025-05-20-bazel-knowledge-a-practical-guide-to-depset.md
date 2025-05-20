@@ -126,7 +126,7 @@ own `depset` into the `transitive` attribute. This will create our graph bottom-
 a `to_list()` API that provides the traversal for us -- while still giving us all the other space & time efficiencies.
 
 ```python
-def _graphviz_impl(ctx):
+def _node_impl(ctx):
   # Generate the DOT fragment for the current node
   fragment = '"{}"\n'.format(ctx.label)
   fragment += ''.join(
@@ -200,7 +200,7 @@ We can update the rule to instead bubble up the _fragment_ which includes the tr
 The relevant change avoids calling `to_list` and instead concatenates prior fragments into the current one.
 
 ```python
-def _graphviz_impl(ctx):
+def _node_impl(ctx):
   # Generate the DOT fragment for the current node
   fragment = '"{}"\n'.format(ctx.label)
   fragment += ''.join(
