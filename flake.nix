@@ -92,7 +92,7 @@
 
         npmDeps = pkgs.importNpmLock.buildNodeModules {
           npmRoot = ./.;
-          inherit (pkgs) nodejs;
+          nodejs = pkgs.nodejs_22;
         };
 
         buildInputs = [
@@ -103,7 +103,7 @@
         nativeBuildInputs = [
           wordword.packages.${system}.default
           pkgs.importNpmLock.hooks.linkNodeModulesHook
-          pkgs.nodejs
+          pkgs.nodejs_22
         ];
 
         buildPhase = ''
@@ -168,7 +168,7 @@
           buildInputs = [
             bundix.packages.${system}.default
             gemsets.${system}.env
-            nodejs
+            nodejs_22
             wordword.packages.${system}.default
           ];
           inputsFrom = [
