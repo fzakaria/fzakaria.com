@@ -128,6 +128,12 @@ hello, world!
 
 Looks like the issue has been raised a few times on GitHub issues (i.e, [#11920](https://github.com/bazelbuild/bazel/issues/11920)) or on the Bazel slack but it's unclear if it's _working as intended_ or a _bug_ 🐛.
 
+> **Update (28-05-2025)**:  
+> It turns out that using `executable = True` in a `genrule` is discouraged and should be removed.
+> This is because `genrule` targets don't provide runfiles, which makes them unsuitable for being directly executed via `bazel run`.  
+> 
+> Instead, the recommended approach — as explained by [@fmeum](https://github.com/fmeum) in [this comment](https://github.com/bazelbuild/bazel/issues/11920#issuecomment-2585915779) — is to take the output of the `genrule` (such as a shell script created by `echo`) and wrap it in an `sh_binary` rule. This `sh_binary` can then serve as the actual executable target.
+
 This outcome though can be very confusing for yourself or engineers whom are using Bazel.
 
 My understanding is that this may be a current _bug_ specifically of `genrule` at the moment.
