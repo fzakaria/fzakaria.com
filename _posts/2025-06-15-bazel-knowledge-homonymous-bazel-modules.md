@@ -83,7 +83,9 @@ We write a `hello_world.bzl` as it's the same name as the repository.
 
 ```python
 def _hello_world_impl(ctx):
-  output_file = ctx.outputs.out
+  output_file = ctx.actions.declare_file(
+    "{}.txt".format(ctx.label.name)
+  )
   ctx.actions.write(
     output = output_file,
     content = "Hello World",
@@ -94,7 +96,6 @@ def _hello_world_impl(ctx):
 
 hello_world = rule(
   implementation = _hello_world_impl,
-  outputs = {"out": "%{name}.txt"},
 )
 ```
 
