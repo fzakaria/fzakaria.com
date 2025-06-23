@@ -38,7 +38,7 @@ Support for Windows is somewhat problematic because it deviates or does not supp
 
 Google's monorepo is well known to also house all third-party code within it as well in `//third_party`. This was partly due to the codebase predating the existence of many modern package-manage tools and the rise of semantic versioning.
 
-The end result however was an incredibly curated source of dependencies, free from the satisfiability problems often inherent in semantic versioning algorithms (e.g, _minimum version selection difficulties_).
+The end result however was an incredibly curated source of dependencies, free from the satisfiability problems often inherent in semantic versioning algorithms (e.g, minimum version selection, etc...).
 
 While the ergonomics of package-managers (i.e. `bzlmod`) are clearly superior to hand-curating and importing source-code the end result is we are back to square-one with many of the dependency management problems we sought to eschew through the adoption of Bazel.
 
