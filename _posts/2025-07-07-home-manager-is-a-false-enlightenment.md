@@ -44,9 +44,9 @@ This will make `bat` available on our `$PATH` and also create a `~/config/bat/co
 lrwxrwxrwx - fmzakari  7 Jul 15:44 /home/fmzakari/.config/bat/config -> /nix/store/fkr3bqlmds81i5122ypyn35486d5va6v-home-manager-files/.config/bat/config
 ```
 
-Unfortunately with this approach there is no way to easily copy the `/nix/store` closure to another machine via `nix copy` to another machine and have my wonderful `bat` tool work correctly 😭.
+Unfortunately with this approach there is no way to easily copy the `/nix/store` closure to another machine via `nix copy` and have my wonderful `bat` tool work correctly 😭.
 
-Looks like `bat` has support to read from alternate locations that can be specified via `$BAT_CONFIG_PATH` [[ref](https://github.com/sharkdp/bat/blob/e2aa4bc33cca785cab8bdadffc58a4a30b245854/src/bin/bat/config.rs#L25)].
+Looks like `bat` has support to read from alternate locations that can be specified via `$BAT_CONFIG_PATH` [[ref](https://github.com/sharkdp/bat/blob/e2aa4bc33cca785cab8bdadffc58a4a30b245854/src/bin/bat/config.rs#L25)] 💡.
 
 That means you could generate a wrapper for `bat` using [wrapProgram](https://nixos.org/manual/nixpkgs/stable/#fun-wrapProgram) to set this environment variable to the generated config file.
 
