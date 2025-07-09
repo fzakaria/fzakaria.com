@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Bazel Knowledge: transitions with style'
+title: 'Bazel Knowledge: transition with style'
 date: 2025-07-08 17:05 -0700
 ---
 
