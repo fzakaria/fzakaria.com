@@ -11,13 +11,13 @@ What even are "transitions" ? 🤨
 They are the capability for Bazel to apply modifications to a rule, but more importantly, apply it transitively for every dependency as well.
 
 ```
-                              root
-                          (transtion = none)
-                               │
-              ┌────────────────┴────────────────┐
-              │                                 │
-              A                                 C
-     (transtion = X)                  (style = inherited: none)
+                       root
+                (transtion = none)
+                         │
+              ┌──────────┴──────────┐
+              │                     │
+              A                     C
+     (transtion = X)      (style = inherited: none)
               │
               B
   (transtion = inherited: X)
