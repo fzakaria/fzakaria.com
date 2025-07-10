@@ -63,7 +63,7 @@ This `package.json` produces the following `package-lock.json` file.
 }
 ```
 
-[NpmNix](https://github.com/fzakaria/NpmNix) includes a very simple Golang parser, [parser.go](https://github.com/fzakaria/MakeNix/blob/main/parser/parser.go) (~70 lines of code), that parses the `package-lock.json` and generates the complete Nix expression.
+[NpmNix](https://github.com/fzakaria/NpmNix) includes a very simple Golang parser, [parser.go](https://github.com/fzakaria/NpmNix/blob/main/parser/parser.go) (~70 lines of code), that parses the `package-lock.json` and generates the complete Nix expression.
 
 Here is a sample of the Nix expression generated.
 
