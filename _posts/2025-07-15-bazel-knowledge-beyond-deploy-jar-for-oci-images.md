@@ -376,6 +376,9 @@ INFO: Running command line: bazel-bin/load2.sh
 The image hello-world:latest already exists, renaming the old one with ID sha256:c3658883db334fee7f36acf77ce1de4cb6a1bed3f23c01c6a378c36cac8ce56a to empty string
 Loaded image: hello-world:latest
 
+> docker run --rm hello-world:latest
+Goodbye from the Library with Guava !
+
 > docker inspect hello-world:latest | jq '.[0].RootFS.Layers'
 
 [
