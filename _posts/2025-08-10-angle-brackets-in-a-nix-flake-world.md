@@ -147,3 +147,43 @@ Yes! 🔥 _With the caveat that we had to provide `--impure` since getting the c
 This is a pretty ergonomic way to access the attributes of the current Flake automatically without having us all to go through the same setup for what is amounting to common best practices.
 
 The need to have `--impure` is a bit of a bummer although this is a pretty neat improvement. There could be a new builtin, `builtins.getCurrentFlake`, which automatically provides the context of the current flake and therefore could be pure.
+
+### Update: simpler & pure
+
+I got some wonderful feedback from [eljamm](https://github.com/eljamm) via the [discourse post](https://discourse.nixos.org/t/angle-brackets-in-a-nix-flake-world/67855) that we can just leverage `self` and avoid having to use `builtins.getFlake`.
+
+
+```nix
+{
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgslib.url = "github:nix-community/nixpkgs.lib";
+  };
+  description = "Trivial flake that returns a string for eval";
+
+  outputs =
+    {
+      nixpkgslib,
+      nixpkgs,
+      self,
+    }:
+    {
+      __findFile =
+        nixPath: name:
+        let
+          lib = nixpkgslib.lib;
+        in
+        lib.getAttrFromPath (lib.splitString "." name) self;
+
+      hello = "Hello from a flake!";
+      example = builtins.scopedImport self ./default.nix;
+    };
+}
+```
+
+We now don't need to provide `--impure` 👌 and we get all the same fun _new_ ergonomic way to access flake attributes.
+
+```bash
+> nix eval .#example
+"Hello from a flake! and welcome to Nix!"
+```
