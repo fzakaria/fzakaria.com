@@ -16,7 +16,7 @@ Pre-2020, code search in the open-source domain never really had a good solution
 
 An upside to the consolidation of code on GitHub's platform was capitalized on with the release of their revamped code search. Made generally available in May 2023, the new engine added powerful features like symbol search and the ability to follow references.
 
-The productivity win is clear to me, even with the introduction of LLMs. I visit [cs.github.com](https://cs.github.com) daily, more frequently and with more interaction than any of the LLMs available to me."
+The productivity win is clear to me, even with the introduction of LLMs. I visit [cs.github.com](https://cs.github.com) daily, more frequently and with more interaction than any of the LLMs available to me.
 
 Why?
 
@@ -26,4 +26,4 @@ Finding code written by other humans is _fun_, and for some reason, more joyful 
 
 If given a Sophie's choice between GitHub code search and LLMs, strictly for the purpose of code authorship, I would pick code search as of today.
 
-Humans easily adapt to their environment, a phenomenon known as the hedonic treadmill. As we all get excited for the incoming technology of generative AI, let's take a moment to reflect on the alrady amazing contribution to engineering we have become accustomed to due to a wonderful code search.
+Humans easily adapt to their environment, a phenomenon known as the hedonic treadmill. As we all get excited for the incoming technology of generative AI, let's take a moment to reflect on the already amazing contribution to engineering we have become accustomed to due to a wonderful code search.
