@@ -12,7 +12,7 @@ While I am amazed at the utility offered by these superintelligent LLMs, at the 
 
 Thinking about how much promise of productivity we might gain from this tool had me reflecting on what other changes in the past 5 years had already benefited me and a clear winner stands out: GitHub's code search via [cs.github.com](https://cs.github.com).
 
-Pre-2020, code search in the open-source domain never really had a good solution, given the diaspora of various hosting platforms. If you've worked in any large corporate environment (Amazon, Google, Meta etc...) you might have already had exposure to the powers of an incredible code search. The lack of such a tool for public codebases was a limitation we simply worked around.This is partly why third-party libraries were consolidated into well-known projects like Apacheor established companies such as [Google's Guava](https://github.com/google/guava).
+Pre-2020, code search in the open-source domain never really had a good solution, given the diaspora of various hosting platforms. If you've worked in any large corporate environment (Amazon, Google, Meta etc...) you might have already had exposure to the powers of an incredible code search. The lack of such a tool for public codebases was a limitation we simply worked  This is partly why third-party libraries were consolidated into well-known projects like [Apache](https://projects.apache.org/projects.html) or established companies such as [Google's Guava](https://github.com/google/guava).
 
 An upside to the consolidation of code on GitHub's platform was capitalized on with the release of their revamped code search. Made generally available in May 2023, the new engine added powerful features like symbol search and the ability to follow references.
 
