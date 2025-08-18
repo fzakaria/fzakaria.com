@@ -159,3 +159,5 @@ Lots of projects end up augmenting Nix by wrapping it with _fancy bash scripts_,
 > Learning the necessary functions to call is a little obtuse however I was able to reason through the necessary APIs by looking at unit-tests in the repository.
 
 What idea do you want to leverage Nix for but maybe put off since you thought doing it on top of Nix would be too hacky?
+
+Special thanks to [@xokdvium](https://github.com/xokdvium) who helped me through some learnings on `meson` and how to leverage Nix as a library. 🙇
