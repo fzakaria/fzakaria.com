@@ -101,18 +101,6 @@ If we inspect what this file looks like for the simple `java_library` I created 
 ```bash
 > cat bazel-bin/app.javac_params | head
 external/rules_java++toolchains+remotejdk21_macos_aarch64/bin/java
-'--add-exports=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED'
-'--add-exports=jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED'
-'--add-exports=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED'
-'--add-exports=jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED'
-'--add-exports=jdk.compiler/com.sun.tools.javac.resources=ALL-UNNAMED'
-'--add-exports=jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED'
-'--add-exports=jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED'
-'--add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED'
-'--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED'
-'--add-opens=jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED'
-'--add-opens=jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED'
-'--add-opens=java.base/java.nio=ALL-UNNAMED'
 '--add-opens=java.base/java.lang=ALL-UNNAMED'
 '-Dsun.io.useCanonCaches=false'
 -XX:-CompactStrings
@@ -120,6 +108,12 @@ external/rules_java++toolchains+remotejdk21_macos_aarch64/bin/java
 '-Xlog:all=warning:stderr:uptime,level,tags'
 -jar
 external/rules_java++toolchains+remote_java_tools/java_tools/JavaBuilder_deploy.jar
+--output
+bazel-out/darwin_arm64-fastbuild/bin/libapp.jar
+--native_header_output
+bazel-out/darwin_arm64-fastbuild/bin/libapp-native-header.jar
+--output_manifest_proto
+bazel-out/darwin_arm64-fastbuild/bin/libapp.jar_manifest_proto
 ```
 
 > If you are wondering what `JavaBuilder_deploy.jar` is?  Bazel uses a custom compiler plugin that will be relevant shortly. ☝️
