@@ -159,6 +159,14 @@ dd code {
     @media (max-width: 1024px) {
       margin: 0 auto;
     }
+
+    .page-title {
+      margin-bottom: $spacing-sm;
+    }
+
+    .date {
+      margin-top: $spacing-sm;
+    }
   }
 
   .index-content {
