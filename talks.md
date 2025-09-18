@@ -45,7 +45,7 @@ I enjoy speaking! Here are _some_ of my talks and publications available online.
 <h3>2025</h3>
 <ul>
     <li id="talk-learn-nix">
-        "Learn Nix The Fun Way" &mdash; <strong>Nix Vegas @ DEF CON 33</strong>.
+        "Learn Nix The Fun Way" &mdash; <strong>Nix Vegas @ DEFCON 33</strong>.
         <a href="https://www.youtube.com/watch?v=hX1aRF_Rnu0">[Video]</a>
         <a href="https://fzakaria.com/2024/07/05/learn-nix-the-fun-way">[Slides]</a>
         <br><em>A hands-on, approachable introduction to the Nix ecosystem for beginners. I also presented this talk at <a href="https://www.socallinuxexpo.org/scale/22x/presentations/learn-nix-fun-way">PlanetNix 2025</a>.</em>
@@ -64,7 +64,7 @@ I enjoy speaking! Here are _some_ of my talks and publications available online.
 <h3>2023</h3>
 <ul>
     <li id="talk-sql-elf">
-        "A SQL Approach to Exploring ELF Objects" &mdash; <strong>SCaLE 21x</strong>, Pasadena, CA.
+        "A SQL Approach to Exploring ELF Objects" &mdash; <strong>SCaLE 21x</strong>.
         <a href="https://www.youtube.com/watch?v=mEHWb4dCAFI">[Video]</a>
         <a href="https://www.socallinuxexpo.org/sites/default/files/presentations/A%20SQL%20Approach%20to%20Exploring%20ELF%20Objects.pdf">[Slides]</a>
         <br><em>An exploration of using SQL queries to analyze and introspect ELF binary files with the <a href="https://github.com/fzakaria/sqlelf">sqlelf</a> tool.</em>
@@ -80,7 +80,7 @@ I enjoy speaking! Here are _some_ of my talks and publications available online.
         <br><em>A talk on the associated <a href="#pub-hpc-chaos">published paper</a> and the tool <a href="https://github.com/fzakaria/shrinkwrap">shrinkwrap</a>.</em>
     </li>
     <li id="talk-rethinking-primitives">
-        "Rethinking basic primitives for store based systems" &mdash; <strong>NixCon 2022</strong>, Paris, France.
+        "Rethinking basic primitives for store based systems" &mdash; <strong>NixCon 2022</strong>.
         <a href="https://www.youtube.com/watch?v=HZKFe4mCkr4">[Video]</a>
         <br><em>I introduce some of the simple improvements one can uncover starting at the linking phase of object building and process startup. I challenge the community to take Nix further.</em>
     </li>
@@ -109,7 +109,7 @@ I enjoy speaking! Here are _some_ of my talks and publications available online.
 <h2 id="podcasts">Panels &amp; Podcasts</h2>
 <ul>
     <li id="podcast-rebuild-world">
-        "Rebuild The World: Access to secure software dependency management everywhere with Nix" &mdash; <strong>DEFCON 2025</strong>.
+        "Rebuild The World: Access to secure software dependency management everywhere with Nix" &mdash; <strong>DEFCON 33</strong>.
         <a href="https://defcon.org/html/defcon-33/dc-33-creator-talks.html#content_60779">
         [Event]</a>
         <br><em>A panel discussion on SBOMs and how we can reclaim our services and software from vendor lockin and Docker image bitrot using Nix and NixOS.</em>
@@ -141,23 +141,23 @@ I enjoy speaking! Here are _some_ of my talks and publications available online.
 <h2 id="publications">Publications</h2>
 <ul>
     <li id="pub-dissertation">
-        <strong>Dissertation:</strong> "Exploiting Stability in Software Systems: Primitives for Fast Startup, Binary Introspection, and Explicit Dependency Control". <i>UC Santa Cruz</i>, 2025.
+        <strong>Dissertation:</strong> "Exploiting Stability in Software Systems: Primitives for Fast Startup, Binary Introspection, and Explicit Dependency Control" &mdash; <i>UC Santa Cruz</i>, 2025.
         <a href="https://escholarship.org/uc/item/5cd970wn">[Paper]</a>
-        <a href="https://www.youtube.com/watch?v=ZAN2Z4_PG1E">[Defense Video]</a>
+        <a href="https://www.youtube.com/watch?v=ZAN2Z4_PG1E">[Video]</a>
         <br><em>My Ph.D. research on creating new primitives for software systems by exploiting temporal and spatial stability.</em>
     </li>
     <li id="pub-matrs">
-        "Symbol Resolution MatRs: Make it Fast and Observable with Stable Linking". <i>arXiv</i>, 2025.
+        "Symbol Resolution MatRs: Make it Fast and Observable with Stable Linking"  &mdash; <i>arXiv</i>, 2025.
         <a href="https://arxiv.org/abs/2501.06716">[Paper]</a>
         <br><em>This paper introduces MatRs, a novel approach to accelerate dynamic linking by reusing symbol resolution results.</em>
     </li>
     <li id="pub-sqlelf">
-        "sqlelf: a SQL-centric Approach to ELF Analysis". <i>arXiv</i>, 2024.
+        "sqlelf: a SQL-centric Approach to ELF Analysis"  &mdash;  <i>arXiv</i>, 2024.
         <a href="https://arxiv.org/abs/2405.03883">[Paper]</a>
         <br><em>Presents a new tool that leverages SQLite to enable powerful, query-based analysis of ELF binaries.</em>
     </li>
     <li id="pub-hpc-chaos">
-        "Mapping Out the HPC Dependency Chaos". <i>arXiv</i>, 2022.
+        "Mapping Out the HPC Dependency Chaos" &mdash;  <i>SuperComputing</i>, 2022.
         <a href="https://arxiv.org/abs/2211.05118">[Paper]</a>
         <br><em>An analysis of the complex software dependency graphs found in High-Performance Computing environments.</em>
     </li>
