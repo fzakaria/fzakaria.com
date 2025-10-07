@@ -4,9 +4,9 @@ title: Fuzzing for fun and profit
 date: 2025-10-07 12:05 -0700
 ---
 
-I watched recently a keynote by [Will Wilson](https://antithesis.com/company/leadership/) on fuzzing -- [Fuzzing'25 Keynote](https://www.youtube.com/watch?v=qQGuQ_4V6WI). The talk is excellent, and one main highlight is the fact we have at our disposal the capability to _"fuzz"_ our software toaday and yet we do not.
+I watched recently a keynote by [Will Wilson](https://antithesis.com/company/leadership/) on fuzzing -- [Fuzzing'25 Keynote](https://www.youtube.com/watch?v=qQGuQ_4V6WI). The talk is excellent, and one main highlight is the fact we have at our disposal is the capability to _"fuzz"_ our software toaday and yet we do not.
 
-While I've seen the power of [QuickCheck-like tools](https://github.com/pholser/junit-quickcheck) to create property based testing, I nev had never used fuzzing over an application as a whole, specifically [American Fuzzy Lop](https://github.com/google/AFL). I was intrigued to add this skill to my toolbelt and maybe apply it to [CppNix](https://github.com/NixOS/nix).
+While I've seen the power of [QuickCheck-like tools](https://github.com/pholser/junit-quickcheck) to create property based testing, I never had never used fuzzing over an application as a whole, specifically [American Fuzzy Lop](https://github.com/google/AFL). I was intrigued to add this skill to my toolbelt and maybe apply it to [CppNix](https://github.com/NixOS/nix).
 
 As with everything else, I need to learn things from _first principles_. I would like to create a scenario with a known-failure and see how AFL discovers it.
 
@@ -120,7 +120,7 @@ A really nice TUI appears that informs you of various statistics of the running 
 │havoc/splice : 6/13.5M, 0/0                         │ stability : 100.00%   │
 │py/custom/rq : unused, unused, unused, unused       ├───────────────────────┘
 │    trim/eff : 64.13%/20, n/a                       │          [cpu000: 18%]
-└─ strategy: exploit ────────── state: running... ──┘
+└─ strategy: exploit ────────── state: running...  ──┘
 ```
 
 The output directory contains all the saved information including the input that caused the crashes.
