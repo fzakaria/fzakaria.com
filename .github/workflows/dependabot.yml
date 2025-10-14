@@ -6,20 +6,24 @@ on:
 
 permissions:
   contents: write
-  pull-requests: read
+  pull-requests: write
 jobs:
-  build:
+  update-bundix-dependabot:
     if: ${{ github.actor == 'dependabot[bot]' }}
+    outputs:
+      package-ecosystem: ${{ steps.dependabot-metadata.outputs.package-ecosystem }}
     runs-on: ubuntu-latest
     steps:
       - name: Fetch Dependabot metadata
         id: dependabot-metadata
         uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
       - uses: actions/checkout@v5
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
         with:
-          repository: fzakaria/fzakaria.com
-          ref: ${{ github.event.pull_request.head.sha }}
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
           token: "${{ secrets.PAT_TOKEN }}"
       - name: Install Nix
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
@@ -37,8 +41,8 @@ jobs:
       - name: git update
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
         run: |
-          git config --global user.name 'Farid Zakaria'
-          git config --global user.email 'fzakaria@users.noreply.github.com'
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "github-actions[bot]"
           git add gemset.nix
-          git commit -m "updated gemset.nix"
-          git push -u origin HEAD:${{ github.event.pull_request.head.ref }}
+          git commit -m "[dependabot skip] updated gemset.nix"
+          git push
