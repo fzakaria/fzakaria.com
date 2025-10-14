@@ -19,6 +19,7 @@ jobs:
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
         with:
           ref: ${{ github.event.pull_request.head.sha }}
+          token: ${{ secrets.PAT_TOKEN }}
       - name: Install Nix
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
         uses: DeterminateSystems/nix-installer-action@main
