@@ -1,4 +1,5 @@
-name: Dependabot Tapioca updates
+# https://github.com/dependabot/dependabot-core/issues/5962#issuecomment-1303781931
+name: Dependabot Bundix updates
 on:
   pull_request:
     types: [opened, synchronize]
@@ -38,4 +39,4 @@ jobs:
           git config --global user.email 'fzakaria@users.noreply.github.com'
           git add gemset.nix
           git commit -m "updated gemset.nix"
-          git push
+          git push -u origin HEAD:${{ github.event.pull_request.head.ref }}
