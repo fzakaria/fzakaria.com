@@ -503,12 +503,12 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0rav4w22b6g5xs5p6dh0z3jjzbh5p448w306rispkn58g6n0y4gv";
+      sha256 = "050qg73g4qs3xza441nafy7610daa3k4ra0pbi3sdlawy9fwfh6i";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "0.26.0";
+    version = "0.26.1";
   };
   safe_yaml = {
     groups = ["default" "jekyll_plugins"];
