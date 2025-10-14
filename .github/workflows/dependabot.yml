@@ -1,0 +1,41 @@
+name: Dependabot Tapioca updates
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: write
+  pull-requests: read
+jobs:
+  build:
+    if: ${{ github.actor == 'dependabot[bot]' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch Dependabot metadata
+        id: dependabot-metadata
+        uses: dependabot/fetch-metadata@v2
+      - uses: actions/checkout@v5
+        if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Install Nix
+        if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
+        uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v16
+        if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
+        with:
+          name: fzakaria
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - name: Bundix update and fmt
+        if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
+        run: |
+          nix develop --command bash -c "bundix -l"
+          nix fmt -- .
+      - name: git update
+        if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
+        run: |
+          git config --global user.name 'Farid Zakaria'
+          git config --global user.email 'fzakaria@users.noreply.github.com'
+          git add gemset.nix
+          git commit -m "updated gemset.nix"
+          git push
