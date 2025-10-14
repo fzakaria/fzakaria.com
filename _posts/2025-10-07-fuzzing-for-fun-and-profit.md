@@ -12,7 +12,7 @@ As with everything else, I need to learn things from _first principles_. I would
 
 To get started let's first make sure we have access to AFL via [Nix](http://nixos.org/).
 
-> We will be using [AFL++](https://aflplus.plus/), the daughter of AFL that incorporates never updates and features.
+> We will be using [AFL++](https://aflplus.plus/), the daughter of AFL that incorporates newer updates and features.
 
 ```bash
 > nix-shell -p aflplusplus
