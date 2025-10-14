@@ -20,8 +20,6 @@ jobs:
         uses: dependabot/fetch-metadata@v2
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-      - name: Echo PAT_TOKEN
-        run: echo "PAT_TOKEN=${{ secrets.PAT_TOKEN }}"
       - uses: actions/checkout@v5
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
         with:
