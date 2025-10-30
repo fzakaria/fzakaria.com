@@ -170,7 +170,7 @@ It also got a new derivation path but the output path remained unchanged. 😮
 
 That means changes to _fixed-output-derivations_ didn't cause new outputs in either derivation _but_ it did create a complete new tree of `.drv` files. 🤯
 
-That means in [nixpkgs](https://github.com/NixOS/nixpkgs) changes to _fixed-output_ derivations can cause them to have new store paths but result in dependent derivations to have the same path. If the output path had alreayd been stored in the NixOS cache, then we lose that information.
+That means in [nixpkgs](https://github.com/NixOS/nixpkgs) changes to _fixed-output_ derivations can cause them to have new store paths but result in dependent derivations to have the same path. If the output path had already been stored in the NixOS cache, then we lose that information.
 
 The amount of churn that we are creating in derivations was unbeknownst to me.
 
@@ -261,7 +261,7 @@ Let's load this modified derivation back into our `/nix/store` and build it agai
 /nix/store/211nlyx2ga7mh5fdk76aggb04y1wsgkj-uses-fod
 ```
 
-Not only do we have a `1:N` trait for our output paths to derivations but we can also take certain derivations and completely change them by removing inputs and still get the same output! 😹
+We got the same output `211nlyx2ga7mh5fdk76aggb04y1wsgkj`. Not only do we have a `1:N` trait for our output paths to derivations but we can also take certain derivations and completely change them by removing inputs and still get the same output! 😹
 
 The road to Nix enlightenment is no joke and full of dragons.
 
