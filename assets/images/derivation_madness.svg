@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="778pt" height="384pt" viewBox="0.00 0.00 778.00 384.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 380)">
+<title>NixDerivationMadness</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-380 774,-380 774,4 -4,4"/>
+<g id="clust1" class="cluster">
+<title>cluster_v1</title>
+<polygon fill="#e6f4ea" stroke="black" points="8,-8 8,-368 384,-368 384,-8 8,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="196" y="-351.4" font-family="Times,serif" font-size="14.00">1: Initial Build &amp; Cache Upload</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_v2</title>
+<polygon fill="#fce4ec" stroke="black" points="392,-191.2 392,-368 762,-368 762,-191.2 392,-191.2"/>
+<text xml:space="preserve" text-anchor="middle" x="577" y="-351.4" font-family="Times,serif" font-size="14.00">2: FOD Changed (i.e. garbage added)</text>
+</g>
+<!-- FOD_V1 -->
+<g id="node1" class="node">
+<title>FOD_V1</title>
+<polygon fill="#b3e0c9" stroke="black" points="376.43,-335.2 15.57,-335.2 15.57,-293.6 376.43,-293.6 376.43,-335.2"/>
+<text xml:space="preserve" text-anchor="middle" x="196" y="-318.6" font-family="Times,serif" font-size="14.00">FOD drv V1</text>
+<text xml:space="preserve" text-anchor="middle" x="196" y="-301.8" font-family="Times,serif" font-size="14.00">(k2wjpwq43685j6vlvaarrfml4gl4196n-hello-world-fixed.drv)</text>
+</g>
+<!-- USES_FOD_V1 -->
+<g id="node2" class="node">
+<title>USES_FOD_V1</title>
+<polygon fill="#80cbc4" stroke="black" points="366.38,-240.8 57.62,-240.8 57.62,-199.2 366.38,-199.2 366.38,-240.8"/>
+<text xml:space="preserve" text-anchor="middle" x="212" y="-224.2" font-family="Times,serif" font-size="14.00">Uses-FOD Drv V1</text>
+<text xml:space="preserve" text-anchor="middle" x="212" y="-207.4" font-family="Times,serif" font-size="14.00">(85d15y7irq7x4fxv4nc7k1cw2rlfp3ag-uses-fod.drv)</text>
+</g>
+<!-- FOD_V1&#45;&gt;USES_FOD_V1 -->
+<g id="edge1" class="edge">
+<title>FOD_V1-&gt;USES_FOD_V1</title>
+<path fill="none" stroke="black" d="M199.47,-293.35C201.55,-281.36 204.23,-265.87 206.58,-252.3"/>
+<polygon fill="black" stroke="black" points="210.02,-252.95 208.28,-242.5 203.12,-251.76 210.02,-252.95"/>
+<text xml:space="preserve" text-anchor="middle" x="220.21" y="-263" font-family="Times,serif" font-size="14.00">Input</text>
+</g>
+<!-- OUTPUT -->
+<g id="node3" class="node">
+<title>OUTPUT</title>
+<polygon fill="#ffd54f" stroke="black" points="376.42,-146.4 97.58,-146.4 97.58,-104.8 376.42,-104.8 376.42,-146.4"/>
+<text xml:space="preserve" text-anchor="middle" x="237" y="-129.8" font-family="Times,serif" font-size="14.00">Uses-FOD Output</text>
+<text xml:space="preserve" text-anchor="middle" x="237" y="-113" font-family="Times,serif" font-size="14.00">(sd12qjak7rlxhdprj10187f9an787lk3-uses-fod)</text>
+</g>
+<!-- USES_FOD_V1&#45;&gt;OUTPUT -->
+<g id="edge2" class="edge">
+<title>USES_FOD_V1-&gt;OUTPUT</title>
+<path fill="none" stroke="black" d="M216.29,-198.93C218.61,-188.57 221.64,-175.75 224.79,-164.4 225.43,-162.12 226.11,-159.76 226.82,-157.4"/>
+<polygon fill="black" stroke="black" points="230.13,-158.55 229.78,-147.96 223.45,-156.46 230.13,-158.55"/>
+<text xml:space="preserve" text-anchor="middle" x="283.9" y="-168.6" font-family="Times,serif" font-size="14.00">Produces output path</text>
+</g>
+<!-- CACHE -->
+<g id="node4" class="node">
+<title>CACHE</title>
+<path fill="#90caf9" stroke="black" d="M349.74,-48.73C349.74,-50.53 332.82,-52 312,-52 291.18,-52 274.26,-50.53 274.26,-48.73 274.26,-48.73 274.26,-19.27 274.26,-19.27 274.26,-17.47 291.18,-16 312,-16 332.82,-16 349.74,-17.47 349.74,-19.27 349.74,-19.27 349.74,-48.73 349.74,-48.73"/>
+<path fill="none" stroke="black" d="M349.74,-48.73C349.74,-46.92 332.82,-45.45 312,-45.45 291.18,-45.45 274.26,-46.92 274.26,-48.73"/>
+<text xml:space="preserve" text-anchor="middle" x="312" y="-29.8" font-family="Times,serif" font-size="14.00">Nix Cache</text>
+</g>
+<!-- OUTPUT&#45;&gt;CACHE -->
+<g id="edge3" class="edge">
+<title>OUTPUT-&gt;CACHE</title>
+<path fill="none" stroke="black" d="M253.64,-104.71C264.41,-91.86 278.53,-74.99 290.18,-61.06"/>
+<polygon fill="black" stroke="black" points="292.72,-63.48 296.46,-53.57 287.35,-58.99 292.72,-63.48"/>
+<text xml:space="preserve" text-anchor="middle" x="321.84" y="-74.2" font-family="Times,serif" font-size="14.00">Output cached</text>
+</g>
+<!-- FOD_V2 -->
+<g id="node5" class="node">
+<title>FOD_V2</title>
+<polygon fill="#f48fb1" stroke="black" points="753.93,-335.2 400.07,-335.2 400.07,-293.6 753.93,-293.6 753.93,-335.2"/>
+<text xml:space="preserve" text-anchor="middle" x="577" y="-318.6" font-family="Times,serif" font-size="14.00">FOD drv V2</text>
+<text xml:space="preserve" text-anchor="middle" x="577" y="-301.8" font-family="Times,serif" font-size="14.00">(yimff0d4zr4krwx6cvdiqlin0y6vkis0-hello-world-fixed.drv)</text>
+</g>
+<!-- USES_FOD_V2 -->
+<g id="node6" class="node">
+<title>USES_FOD_V2</title>
+<polygon fill="#e57373" stroke="black" points="710.16,-240.8 399.84,-240.8 399.84,-199.2 710.16,-199.2 710.16,-240.8"/>
+<text xml:space="preserve" text-anchor="middle" x="555" y="-224.2" font-family="Times,serif" font-size="14.00">Uses-FOD Drv V2</text>
+<text xml:space="preserve" text-anchor="middle" x="555" y="-207.4" font-family="Times,serif" font-size="14.00">(85wkdaaq6q08f71xn420v4irll4a8g8v-uses-fod.drv)</text>
+</g>
+<!-- FOD_V2&#45;&gt;USES_FOD_V2 -->
+<g id="edge4" class="edge">
+<title>FOD_V2-&gt;USES_FOD_V2</title>
+<path fill="none" stroke="black" d="M572.23,-293.35C569.34,-281.24 565.61,-265.56 562.36,-251.89"/>
+<polygon fill="black" stroke="black" points="565.84,-251.4 560.11,-242.48 559.03,-253.02 565.84,-251.4"/>
+<text xml:space="preserve" text-anchor="middle" x="582.75" y="-263" font-family="Times,serif" font-size="14.00">Input</text>
+</g>
+<!-- USES_FOD_V2&#45;&gt;OUTPUT -->
+<g id="edge5" class="edge">
+<title>USES_FOD_V2-&gt;OUTPUT</title>
+<path fill="none" stroke="darkgreen" stroke-width="2" d="M426.87,-198.7C407.7,-193.96 388.41,-188.19 370.62,-181.2 357.25,-175.95 355.97,-170.58 343,-164.4 332.88,-159.58 321.97,-155.02 311.14,-150.85"/>
+<polygon fill="darkgreen" stroke="darkgreen" stroke-width="2" points="313.78,-148.1 303.19,-147.87 311.33,-154.66 313.78,-148.1"/>
+<text xml:space="preserve" text-anchor="middle" x="454.81" y="-168.6" font-family="Times,serif" font-size="14.00">Produces SAME Output Hash</text>
+</g>
+<!-- USES_FOD_V2&#45;&gt;CACHE -->
+<g id="edge6" class="edge">
+<title>USES_FOD_V2-&gt;CACHE</title>
+<path fill="none" stroke="red" stroke-width="2" stroke-dasharray="5,2" d="M552.83,-198.88C550.78,-187.76 546.78,-174.24 539,-164.4 489.49,-101.76 400.76,-64.09 350.14,-46.66"/>
+<text xml:space="preserve" text-anchor="middle" x="609.85" y="-121.4" font-family="Times,serif" font-size="14.00">Missing Cache Mapping for V2</text>
+</g>
+</g>
+</svg>

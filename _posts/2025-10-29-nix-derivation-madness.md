@@ -170,7 +170,53 @@ It also got a new derivation path but the output path remained unchanged. 😮
 
 That means changes to _fixed-output-derivations_ didn't cause new outputs in either derivation _but_ it did create a complete new tree of `.drv` files. 🤯
 
-That means in [nixpkgs](https://github.com/NixOS/nixpkgs) changes to _fixed-output_ derivations can cause them to have new store paths but result in dependent derivations to have the same path. If the output path had already been stored in the NixOS cache, then we lose that information.
+That means in [nixpkgs](https://github.com/NixOS/nixpkgs) changes to _fixed-output_ derivations can cause them to have new store paths for their `.drv` but result in dependent derivations to have the same output path. If the output path had already been stored in the NixOS cache, then we lose the link between the new `.drv` and this output path. 💥
+
+<!--
+
+digraph NixDerivationMadness {
+
+    // Global Styling for consistency
+    node [shape=box, style="filled"];
+
+    // Subgraph for the original, cached state (V1)
+    subgraph cluster_v1 {
+        label = "1: Initial Build & Cache Upload";
+        bgcolor = "#E6F4EA"; // Light Green Background
+
+        // V1 Nodes
+        FOD_V1 [label="FOD drv V1\n(k2wjpwq43685j6vlvaarrfml4gl4196n-hello-world-fixed.drv)", fillcolor="#B3E0C9"];
+        USES_FOD_V1 [label="Uses-FOD Drv V1\n(85d15y7irq7x4fxv4nc7k1cw2rlfp3ag-uses-fod.drv)", fillcolor="#80CBC4"];
+        OUTPUT [label="Uses-FOD Output\n(sd12qjak7rlxhdprj10187f9an787lk3-uses-fod)", fillcolor="#FFD54F", color=black];
+        CACHE [label="Nix Cache", shape=cylinder, fillcolor="#90CAF9"];
+
+        // V1 Edges
+        FOD_V1 -> USES_FOD_V1 [label="Input"];
+        USES_FOD_V1 -> OUTPUT [label="Produces output path"];
+        OUTPUT -> CACHE [label="Output cached", penwidth=1];
+    }
+
+    // Subgraph for the changed state (V2)
+    subgraph cluster_v2 {
+        label = "2: FOD Changed (i.e. garbage added)";
+        bgcolor = "#FCE4EC"; // Light Pink/Red Background
+
+        // V2 Nodes
+        FOD_V2 [label="FOD drv V2\n(yimff0d4zr4krwx6cvdiqlin0y6vkis0-hello-world-fixed.drv)", fillcolor="#F48FB1"];
+        USES_FOD_V2 [label="Uses-FOD Drv V2\n(85wkdaaq6q08f71xn420v4irll4a8g8v-uses-fod.drv)", fillcolor="#E57373"];
+
+        // V2 Edges
+        FOD_V2 -> USES_FOD_V2 [label="Input"];
+        USES_FOD_V2 -> OUTPUT [label="Produces SAME Output Hash", style=bold, color=darkgreen];
+    }
+    
+    // Connection between subgraphs
+    // The link from the new derivation (V2) to the existing cache entry is MISSING.
+    USES_FOD_V2 -> CACHE [label="Missing Cache Mapping for V2", color=red, style=dashed, penwidth=2, arrowhead=cross];
+}
+
+ -->
+![Derivation graphic](/assets/images/derivation_madness.svg)
 
 The amount of churn that we are creating in derivations was unbeknownst to me.
 
