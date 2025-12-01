@@ -577,11 +577,11 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "12d9n8hll67j737ym2zw4v23cn4vxyfkb6vyv1rzpwv6y6a3qbdl";
+      sha256 = "0ca1hr2rxrfw7s613rp4r4bxb454i3ylzniv9b9gxpklqigs3d5y";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "1.9.1";
+    version = "1.9.2";
   };
 }
