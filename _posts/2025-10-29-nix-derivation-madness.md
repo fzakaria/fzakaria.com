@@ -120,7 +120,7 @@ builtins.derivation {
 }
 ```
 
-The `/nix/store` for the output for this derivation _will change_ on changes to the derivation **except** if the derivation path for the FOD changes. This is in fact what makes it "modulo" the fixed-output derivations.
+The `/nix/store` for the output for this derivation _won't change_ on changes to the FOD **unless** the output path for the FOD changes. This is in fact what makes it "modulo" the fixed-output derivations.
 
 ```bash
 > nix-instantiate uses-fod.nix
