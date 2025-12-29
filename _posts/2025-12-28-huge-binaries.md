@@ -100,7 +100,7 @@ Notice that this call instruction, `e8`, only takes 32bits **signed** which mean
 
 What happens if our callsite is over 2GiB away?
 
-Let's build a synthetic example by asking our linker to place `far_function` _really really far away_. We can do this using a "linker script".
+Let's build a synthetic example by asking our linker to place `far_function` _really really far away_. We can do this using a "linker script", which is a mechanism we can instruct the linker how we would like our code sections laid out when the program starts.
 
 ```
 SECTIONS
@@ -125,8 +125,11 @@ SECTIONS
 }
 ```
 
-If we now try to link our code we will a "relocation overflow".
-I used `lld` from LLVM because the error messages are a bit prettier.
+If we now try to link our code we will see a "relocation overflow".
+
+> **TIP**
+> I used `lld` from [LLVM](https://lld.llvm.org/) because the error messages are a bit prettier.
+{: .alert .alert-tip }
 
 ```bash
 > gcc simple-relocation.o far-function.o -T overflow.lds -o simple-relocation-overflow -fuse-ld=lld
@@ -144,7 +147,7 @@ relocation R_X86_64_PLT32 out of range:
 When we hit this problem what solutions do we have?
 Well this is a complete other subject on "code models", and it's a little more nuanced depending on whether we are accessing data (i.e. static variables) or code that is far away. A great blog post that goes into this is [the following](https://maskray.me/blog/2023-05-14-relocation-overflow-and-code-models) by [@maskray](https://github.com/maskray) who wrote `lld`.
 
-The simplest solution however is to use `-mcmodel=large` which changes all the relative `CALL` instructions to absolute `JMP`.
+The simplest solution however is to use `-mcmodel=large` which changes all the relative `CALL` instructions to absolute 64bit ones; kind of like a `JMP`.
 
 ```bash
 > gcc simple-relocation.o far-function.o -T overflow.lds -o simple-relocation-overflow
@@ -188,12 +191,12 @@ There is no longer a sole `CALL` instruction, it has become `MOVABS` & `CALL` �
 
 This has notable downsides among others:
 * *Instruction Bloat*: We’ve gone from 5 bytes per call to 12. In a binary with millions of callsites, this can add up.
-* Register Pressure: We’ve burned a general-purpose register, `%rdx`, to perform the jump.
+* *Register Pressure*: We’ve burned a general-purpose register, `%rdx`, to perform the jump.
 
 > **Caution**
 > I had a lot of trouble building a benchmark that demonstrated a worse lower IPC (instructions per-cycle) for the large `mcmodel`, so let's just take my word for it. 🤷
 {: .alert .alert-caution }
 
-We would like to keep our small code-model. What other strategies can we pursue?
+Changing to a larger code-model is possible but it comes with these downsides. Ideally, we would like to keep our small code-model when we need it. What other strategies can we pursue?
 
 More to come in subsequent writings.
