@@ -225,3 +225,44 @@ dd code {
     display: inline-block;
   }
 }
+
+$alert-colors: (
+  "note":      #0969da,
+  "tip":       #1a7f37,
+  "important": #8250df,
+  "warning":   #9a6700,
+  "caution":   #d1242f
+);
+
+.alert {
+  margin: 1rem 0;
+  padding: 0 $spacing-base;
+  border-left: 0.25rem solid;
+  
+  p:first-child strong {
+    display: block;
+
+    &::before {
+      margin-right: 6px;
+      font-size: 1.1em;
+    }
+  }
+
+  @each $type, $color in $alert-colors {
+    &-#{$type} {
+      border-left-color: $color;
+      background-color: rgba($color, 0.05);
+
+      p:first-child strong {
+        color: $color;
+      }
+
+      code {
+        background-color: transparent !important;
+        border: none;
+        padding: 0;
+        color: inherit; // Keeps text color matching the alert's flow
+      }
+    }
+  }
+}
