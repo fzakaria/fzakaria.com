@@ -227,18 +227,18 @@ dd code {
 }
 
 $alert-colors: (
-  "note":      #0969da,
-  "tip":       #1a7f37,
+  "note": #0969da,
+  "tip": #1a7f37,
   "important": #8250df,
-  "warning":   #9a6700,
-  "caution":   #d1242f
+  "warning": #9a6700,
+  "caution": #d1242f,
 );
 
 .alert {
   margin: 1rem 0;
   padding: 0 $spacing-base;
   border-left: 0.25rem solid;
-  
+
   p:first-child strong {
     display: block;
 
