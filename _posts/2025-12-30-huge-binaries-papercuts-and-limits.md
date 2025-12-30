@@ -26,6 +26,8 @@ For instance, `lld`  assumes 32-bit `eh_frame_hdr` values regardless of the code
 
 I also mentioned earlier about a pattern about using multiple GOT, Global Offset Tables, to also avoid the 31-bit (±2GiB) relative offset limitation.
 
+Is there even a need for the large code-model?
+
 How far can that take us before we are forced to use the large code-model?
 
 Let's think about it:
