@@ -18,7 +18,7 @@ Consider this example where we will create a `Cache<T>` helper class and leverag
 > This example was inspired from [@grigorypas](https://github.com/grigorypas) on the discussion on the [LLVM discourse](https://discourse.llvm.org/t/rfc-lld-preferring-small-code-model-comdat-sections-over-large-ones-when-mixing-code-models/89550).
 {: .alert .alert-note }
 
-We can compile each individually such as `gcc -std=c++17 -g -O0 -c library.cpp -o library.o`. The -O0 is important here otherwise this simple code will be inlined, and `-std=c++17` allows us to use inline static variables.
+We can compile each individually such as `gcc -std=c++17 -g -O0 -c library.cpp -o library.o`. The `-O0` is important here otherwise this simple code will be inlined, and `-std=c++17` allows us to use inline static variables.
 
 ```cpp
 // cache.h
@@ -88,9 +88,9 @@ Disassembly of section .text._ZN5CacheIiE3setEi:
   12:	c3                   	ret
 ```
 
-Wow! Given the prevailing use of templates in C++ -- this is already seemingly increadibly wasteful since every `.o` has to include the instructions for the same templates. 😲
+Wow! Given the prevailing use of templates in C++ this is already seemingly incredibly wasteful since every `.o` has to include the instructions for the same templates. 😲
 
-At link time, the linker has to resolve the function use to one of these implementations.
+At link time, the linker has to resolve the function to **use only one** of these implementations.
 
 What do we do with all the other duplicate implementations?
 
@@ -191,7 +191,7 @@ Why does all this matter?
 
 We are pursuing moving some code to the medium code-model to overcome some relocation overflows, however we have some prebuilt code built in the small code-model. We noticed that although our goal was to leverage the medium code-model, the linker might chose the small code-model variant of a section if it happened to be found first.
 
-If the linker blindly picks the "small model" version (which uses 32-bit relative offsets) but places the data more than 2GB away, you won't just get the wrong performance characteristics—you will get a linker failure due to relocation truncation.
+If the linker blindly picks the "small model" version (which uses 32-bit relative offsets) but places the data more than 2GB away we still might end up with the relocation overflow errors we sought to resolve.
 
 But wait, it gets worse.
 
@@ -202,3 +202,5 @@ Imagine if `library.cpp` was compiled with `-DLOGGING_ENABLED` which injected `p
 If the linker picks the `main.o` (release) version of the `COMDAT` group, your "Debug" library implementation loses its logging features effectively muting your debug logic. Conversely, if it picks the `library.o` version, your high-performance release binary suddenly has debug logging in critical hot paths.
 
 You aren't just gambling with instruction selection that may affect performance such as in the case of code-models; you are gambling with program logic. Given that the section name is purely based on the name of the symbol, it's easy to see that you can get yourself into oddities if you accidentally link implementations that wildly differ.
+
+I can see why now many languages now force symbols to only ever be defined in a single translation unit as it avoids this whole conundrum. 🙃
