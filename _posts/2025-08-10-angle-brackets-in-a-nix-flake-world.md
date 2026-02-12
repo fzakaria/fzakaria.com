@@ -16,7 +16,7 @@ As a very worthwhile aside, the first time presence of the Nix community at DEFC
 
 Okay, back to the idea 💁.
 
-Importing _nixpks_ via the `NIX_PATH` through the angle-bracket syntax has been a long-standing wart on the reproducibility promises of Nix.
+Importing _nixpkgs_ via the `NIX_PATH` through the angle-bracket syntax has been a long-standing wart on the reproducibility promises of Nix.
 
 ```nix
 let pkgs = import <nixpkgs> {};
