@@ -10,7 +10,7 @@ Does it ever make sense to go the _other direction_? 🤔
 
 We've been working on linking some massive binaries that include Intel's [Math Kernel Library (MKL)](https://www.intel.com/content/www/us/en/developer/tools/oneapi/onemkl.html), a prebuilt static archive. MKL ships as object files compiled with the _small_ code-model (`mcmodel=small`), meaning its instructions assume everything is reachable within ±2 GiB. The included object files also has some odd relocations where the addend is a very large negative number (>1GiB).
 
-The calculation for the relocation valu is **S + A - P**: the symbol address plus the addend minus the instruction address. WIth a sufficiently large negative addend, the relocation value can easily exceed the 2 GiB limit and the linker fails with relocation overflows.
+The calculation for the relocation value is **S + A - P**: the symbol address plus the addend minus the instruction address. WIth a sufficiently large negative addend, the relocation value can easily exceed the 2 GiB limit and the linker fails with relocation overflows.
 
 We can't recompile MKL (it's a prebuilt proprietary archive), and we can't simply switch everything to the large code model. What can we do? 🤔
 
@@ -20,13 +20,13 @@ I am calling this technique **linker pessimization**: the reverse of relaxation.
 
 The specific instructions that overflow in our case are `LEA` (Load Effective Address) instructions.
 
-In x86_64, `lea r9, [rip + disp32]` performs pure arithmetic: it computes `RIP + disp32` and stores the result in `r9` _without accessing memory_. The `disp32` is a **32-bit signed integer** embedded directly into the instruction encoding, and the linker fills it in via an `R_X86_64_PC32` relocation.
+In x86_64, `lea r9, [rip + disp32]` performs pure arithmetic: it computes `RIP + disp32` and stores the result in `r9` without accessing memory. The `disp32` is a **32-bit signed integer** embedded directly into the instruction encoding, and the linker fills it in via an `R_X86_64_PC32` relocation.
 
 The relocation formula is **S + A - P**. Let's look at an example with a large addend.
 
 | Term | Meaning | Value (approximate) |
 |------|---------|---------------------|
-| **S** (Symbol) | Address of symbol | ~200 MB into `.rodata` |
+| **S** (Symbol) | Addfress of symbol | ~200 MB into `.rodata` |
 | **A** (Addend) | Constant baked into the object file | `0x44000000` (−1,062 MB) |
 | **P** (Position) | Address of the instruction being patched | ~1,200 MB into `.text` |
 
