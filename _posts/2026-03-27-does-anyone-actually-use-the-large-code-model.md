@@ -7,6 +7,15 @@ date: 2026-03-27 09:37 -0700
 I have been focused lately on trying to resolve relocation overflows when compiling large binaries in the small & medium code-models.
 Often when talking to others about the problem, they are quick to offer the idea of using the large code-model.
 
+**small code-model**
+  : Assumes all code and data comfortably fit within a single 2GiB window. The compiler relies on fast, compact 32-bit PC-relative offsets for all function calls and data accesses.
+
+**medium code-model**
+  : Assumes code stays under 2GiB, but data might exceed it. It splits data into "small" and "large" sections using 32-bit offsets for code and small data, and generating 64-bit addresses strictly for the large data.
+
+**large code-model**
+  : Makes zero assumptions about size or placement, lifting the 2GiB limit entirely. The compiler is forced to use 64-bit absolute addressing for every external reference.
+
 Despite the performance downsides of using the large code-model from the instructions generated, it's true that its intent was to support arbitrarily large binaries.
 However does anyone actually use it?
 
