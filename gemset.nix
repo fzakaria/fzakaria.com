@@ -461,17 +461,17 @@
     version = "0.11.1";
   };
   rbs = {
-    dependencies = ["logger" "tsort"];
+    dependencies = ["logger" "prism" "tsort"];
     groups = ["default" "development"];
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "19nsjb0wkb1zk274q0zy41hfzqraanar3jg6akak8q8134wpyqkh";
+      sha256 = "09ggg2zk0qrh0mc3fa23xjbn2gzqxd0jfqj6qm6460ydcqg6fxdg";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "3.10.3";
+    version = "4.0.2";
   };
   rexml = {
     groups = ["default" "jekyll_plugins"];
@@ -503,12 +503,12 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0s7r69c8qiv0nsq41ikjvpwnwc5w4m8f0nll3iwymiin4ws7qq7s";
+      sha256 = "0aa1mg6bdl23wgrxd98wycq3963jfpnh9z0yh976p9q03h01r81k";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "0.26.8";
+    version = "0.26.9";
   };
   safe_yaml = {
     groups = ["default" "jekyll_plugins"];
