@@ -428,12 +428,12 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "175iisqb211n0qbfyqd8jz2g01q6xj038zjf4q0nm8k6kz88k7lc";
+      sha256 = "009p524zl0p0kfa65nii8wdmaigkmawv9pbvlcffky7islmmp0nb";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "13.3.1";
+    version = "13.4.2";
   };
   rb-fsevent = {
     groups = ["default" "jekyll_plugins"];
