@@ -10,7 +10,7 @@ I tend to think of optimizing my binaries as thinking about whether I have attac
 
 Turns out though that's leaving lots of performance on the table.
 
-Compilers work under the assumption that every branch is is equally taken, unless you are hints like `[[likely]]` ([ref](https://en.cppreference.com/cpp/language/attributes/likely)). If we can feed the compilers more information about the likely path that our workloads often take, then they can produce much more performant code.
+Compilers work under the assumption that every branch is equally taken, unless you are hints like `[[likely]]` ([ref](https://en.cppreference.com/cpp/language/attributes/likely)). If we can feed the compilers more information about the likely path that our workloads often take, then they can produce much more performant code.
 
 There are two primary ways to optimize a binary: instrumented or statistical. When we instrument our binary, we run our workload with an instrumented binary and capture _the exact paths_ that are executed. We will then optimize the binary perfectly tuned to that workload.
 
