@@ -20,9 +20,6 @@ $ lscpu | grep -i cache
 
 $ getconf LEVEL1_DCACHE_LINESIZE
   64
-
-$ getconf PAGESIZE
-  4096
 ```
 
 The _instances_ number is a reflection of how the caches are shared amongst CPUs. If I had 10 CPUs, each one has their own `L1d` cache, whereas two of them would share an `L2` cache.
