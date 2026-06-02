@@ -38,6 +38,14 @@ $font-sans:
 @use "syntax";
 @use "sass:color";
 
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+}
+
 html,
 body {
   font-family: $font-sans;
@@ -141,6 +149,7 @@ code {
     "JetBrains Mono", "Fira Code", "Source Code Pro", "Consolas",
     "Liberation Mono", "Menlo", "Courier", monospace;
   color: $color-dark;
+  font-variant-ligatures: none;
 }
 
 // Inline code styling
