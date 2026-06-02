@@ -7,7 +7,7 @@ date: 2026-06-01 13:07 -0700
 I have spent a large portion of my career working in Java. In that time, you get used to huge classes. New functionality? Just add a new method and field to the class.
 The cost of each new field is rarely considered. Performance is often considered from a _classic computer science_ perspective by considering asymptotic analysis of the algorithms and data structures in-use.
 
-Turns out that even within a growth scale for your algorithm, such a simple for-loop `O(N)`, time can vary dramatically if we have a little deeper understanding of the underlying hardware.
+Turns out that even within a growth scale for your algorithm, such as a simple for-loop `O(N)`, time can vary dramatically if we have a little deeper understanding of the underlying hardware.
 
 First, let's understand our current machine. Let's take a peek at our _cache line_ and _page_ sizes.
 
