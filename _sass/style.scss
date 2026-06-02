@@ -40,6 +40,8 @@ $font-sans:
 
 html,
 body {
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
   font-family: $font-sans;
   background: $color-white;
   color: $color-dark;
@@ -119,9 +121,18 @@ hr {
 pre {
   border: 1px solid $color-gray-light;
   border-radius: $border-radius;
-  line-height: 1.2;
+  // ASCII art requires a strict monospace grid. We use a complete font source
+  // and lock the line-height/letter-spacing to prevent browser-side "drifting".
+  font-family:
+    "JetBrains Mono", "Roboto Mono", "Fira Code", "Source Code Pro", "Consolas",
+    "Liberation Mono", "Menlo", "Courier", monospace;
+  line-height: 1.1;
+  letter-spacing: 0;
+  text-rendering: geometricPrecision;
+  -webkit-text-size-adjust: 100%;
+  font-variant-ligatures: none;
   overflow-x: auto;
-  width: fit-content;
+  width: auto;
   max-width: 100%;
   background-color: $color-code-bg;
   padding: $spacing-sm;
@@ -138,9 +149,11 @@ p code.oldblog {
 // Base code styling
 code {
   font-family:
-    "JetBrains Mono", "Fira Code", "Source Code Pro", "Consolas",
+    "JetBrains Mono", "Roboto Mono", "Fira Code", "Source Code Pro", "Consolas",
     "Liberation Mono", "Menlo", "Courier", monospace;
   color: $color-dark;
+  font-variant-ligatures: none;
+  line-height: inherit;
 }
 
 // Inline code styling
