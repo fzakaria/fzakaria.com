@@ -275,7 +275,7 @@ successfully built /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv
 Hello from Guix!
 ```
 
-We can now convert this to a Nix expression with `guix-transfer.
+We can now convert this to a Nix expression with `guix-transfer`.
 
 ```bash
 ❯ /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv --emit-nix /tmp/demo.nix
@@ -284,7 +284,7 @@ Realise it with: nix-store --realise --option filter-syscalls false /nix/store/f
 Emitted Nix expression: /tmp/demo.nix
 ```
 
-We could do the `nix-store --realise` or we can `nix-build` the Nix expression. Please notice that both **produce the exact same hash**: `/nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo`.
+We realise the derivation with `nix-store --realise` or we can `nix-build` the Nix expression. Please notice that both **produce the exact same hash**: `/nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo`.
 
 ```bash
 ❯ nix-build /tmp/demo.nix
@@ -292,6 +292,9 @@ We could do the `nix-store --realise` or we can `nix-build` the Nix expression. 
 
 ❯ nix-store --realise --option filter-syscalls false /nix/store/zgwdbfpigl8cwy5d85p0rdcl21x3bszm-demo.drv
 /nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo
+
+❯ cat /nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo
+Hello from Guix!
 ```
 
 We can now use this Guix derivation like any normal Nix expression, such as the ones you might encounter in Nixpkgs.
