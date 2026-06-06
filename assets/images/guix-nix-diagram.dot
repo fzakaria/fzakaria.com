@@ -1,0 +1,102 @@
+digraph guix_nix {
+  rankdir=LR;
+  fontname="Helvetica";
+  node [fontname="Helvetica", fontsize=12];
+  edge [fontname="Helvetica", fontsize=10];
+  newrank=true;
+  pad=0.5;
+  nodesep=0.5;
+  ranksep=1.0;
+
+  // ── Nix (top) ──────────────────────────────────────────────
+  subgraph cluster_nix {
+    label="Nix";
+    labeljust="l";
+    style=dashed;
+    color="#4C78A8";
+    fontcolor="#4C78A8";
+    fontsize=14;
+    penwidth=2;
+
+    nix_lang1 [label="default.nix", shape=note, style=filled, fillcolor="#DCE6F1", color="#4C78A8"];
+    nix_lang2 [label="flake.nix", shape=note, style=filled, fillcolor="#DCE6F1", color="#4C78A8"];
+    nix_lang3 [label="shell.nix", shape=note, style=filled, fillcolor="#DCE6F1", color="#4C78A8"];
+
+    nix_drv [
+      label=<<b>.drv</b><br/><font point-size="9">Derive([("out",…)],…)</font>>,
+      shape=rect, style="filled,rounded,bold",
+      fillcolor="#A8D5E2", color="#4C78A8",
+      penwidth=2
+    ];
+
+    nix_daemon [
+      label=<<b>nix-daemon</b><br/><font point-size="9">sandbox + build</font>>,
+      shape=box3d, style=filled,
+      fillcolor="#E8E8E8", color="#666666"
+    ];
+
+    nix_out [
+      label=<<b>/nix/store/…</b><br/><font point-size="9">output</font>>,
+      shape=folder, style=filled,
+      fillcolor="#B8D4A8", color="#5A8A3C"
+    ];
+
+    nix_lang1 -> nix_drv [color="#4C78A8"];
+    nix_lang2 -> nix_drv [color="#4C78A8"];
+    nix_lang3 -> nix_drv [color="#4C78A8"];
+    nix_drv -> nix_daemon [color="#666666"];
+    nix_daemon -> nix_out [color="#5A8A3C"];
+  }
+
+  // ── Guix (bottom) ──────────────────────────────────────────
+  subgraph cluster_guix {
+    label="Guix";
+    labeljust="l";
+    style=dashed;
+    color="#E45756";
+    fontcolor="#E45756";
+    fontsize=14;
+    penwidth=2;
+
+    guix_lang1 [label="packages.scm", shape=note, style=filled, fillcolor="#FDDEDE", color="#E45756"];
+    guix_lang2 [label="system.scm", shape=note, style=filled, fillcolor="#FDDEDE", color="#E45756"];
+    guix_lang3 [label="manifest.scm", shape=note, style=filled, fillcolor="#FDDEDE", color="#E45756"];
+
+    guix_drv [
+      label=<<b>.drv</b><br/><font point-size="9">Derive([("out",…)],…)</font>>,
+      shape=rect, style="filled,rounded,bold",
+      fillcolor="#F4C2C2", color="#E45756",
+      penwidth=2
+    ];
+
+    guix_daemon [
+      label=<<b>guix-daemon</b><br/><font point-size="9">sandbox + build</font>>,
+      shape=box3d, style=filled,
+      fillcolor="#E8E8E8", color="#666666"
+    ];
+
+    guix_out [
+      label=<<b>/gnu/store/…</b><br/><font point-size="9">output</font>>,
+      shape=folder, style=filled,
+      fillcolor="#B8D4A8", color="#5A8A3C"
+    ];
+
+    guix_lang1 -> guix_drv [color="#E45756"];
+    guix_lang2 -> guix_drv [color="#E45756"];
+    guix_lang3 -> guix_drv [color="#E45756"];
+    guix_drv -> guix_daemon [color="#666666"];
+    guix_daemon -> guix_out [color="#5A8A3C"];
+  }
+
+  // ── Translation arrow between recipes ──────────────────────
+  guix_drv -> nix_drv [
+    xlabel=<<b>  guix-transfer  </b>>,
+    dir=both,
+    style=bold,
+    color="#F58518",
+    fontcolor="#F58518",
+    penwidth=2.5,
+    constraint=false,
+    forcelabels=true
+  ];
+}

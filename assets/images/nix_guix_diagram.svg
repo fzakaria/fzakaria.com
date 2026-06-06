@@ -1,0 +1,180 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="689pt" height="538pt" viewBox="0.00 0.00 689.00 538.00">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(36 502)">
+<title>guix_nix</title>
+<polygon fill="white" stroke="none" points="-36,36 -36,-502 652.61,-502 652.61,36 -36,36"/>
+<g id="clust1" class="cluster">
+<title>cluster_nix</title>
+<polygon fill="none" stroke="#4c78a8" stroke-width="2" stroke-dasharray="5,2" points="19,-8 19,-229 606.28,-229 606.28,-8 19,-8"/>
+<text xml:space="preserve" text-anchor="middle" x="37.11" y="-212.4" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#4c78a8">Nix</text>
+</g>
+<g id="clust2" class="cluster">
+<title>cluster_guix</title>
+<polygon fill="none" stroke="#e45756" stroke-width="2" stroke-dasharray="5,2" points="8,-237 8,-458 608.61,-458 608.61,-237 8,-237"/>
+<text xml:space="preserve" text-anchor="middle" x="30.39" y="-441.4" font-family="Helvetica,sans-Serif" font-size="14.00" fill="#e45756">Guix</text>
+</g>
+<!-- nix_lang1 -->
+<g id="node1" class="node">
+<title>nix_lang1</title>
+<polygon fill="#dce6f1" stroke="#4c78a8" points="91.7,-52 27,-52 27,-16 97.7,-16 97.7,-46 91.7,-52"/>
+<polyline fill="none" stroke="#4c78a8" points="91.7,-52 91.7,-46"/>
+<polyline fill="none" stroke="#4c78a8" points="97.7,-46 91.7,-46"/>
+<text xml:space="preserve" text-anchor="middle" x="62.35" y="-30.4" font-family="Helvetica,sans-Serif" font-size="12.00">default.nix</text>
+</g>
+<!-- nix_drv -->
+<g id="node4" class="node">
+<title>nix_drv</title>
+<path fill="#a8d5e2" stroke="#4c78a8" stroke-width="2" d="M266.6,-124C266.6,-124 192.7,-124 192.7,-124 186.7,-124 180.7,-118 180.7,-112 180.7,-112 180.7,-100 180.7,-100 180.7,-94 186.7,-88 192.7,-88 192.7,-88 266.6,-88 266.6,-88 272.6,-88 278.6,-94 278.6,-100 278.6,-100 278.6,-112 278.6,-112 278.6,-118 272.6,-124 266.6,-124"/>
+<text xml:space="preserve" text-anchor="start" x="218.65" y="-106.7" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="12.00">.drv</text>
+<text xml:space="preserve" text-anchor="start" x="188.7" y="-97.4" font-family="Helvetica,sans-Serif" font-size="9.00">Derive([("out",…)],…)</text>
+</g>
+<!-- nix_lang1&#45;&gt;nix_drv -->
+<g id="edge1" class="edge">
+<title>nix_lang1-&gt;nix_drv</title>
+<path fill="none" stroke="#4c78a8" d="M98,-49.09C120.2,-58.76 149.47,-71.51 174.68,-82.49"/>
+<polygon fill="#4c78a8" stroke="#4c78a8" points="173.25,-85.69 183.81,-86.47 176.04,-79.27 173.25,-85.69"/>
+</g>
+<!-- nix_lang2 -->
+<g id="node2" class="node">
+<title>nix_lang2</title>
+<polygon fill="#dce6f1" stroke="#4c78a8" points="86.36,-124 32.34,-124 32.34,-88 92.36,-88 92.36,-118 86.36,-124"/>
+<polyline fill="none" stroke="#4c78a8" points="86.36,-124 86.36,-118"/>
+<polyline fill="none" stroke="#4c78a8" points="92.36,-118 86.36,-118"/>
+<text xml:space="preserve" text-anchor="middle" x="62.35" y="-102.4" font-family="Helvetica,sans-Serif" font-size="12.00">flake.nix</text>
+</g>
+<!-- nix_lang2&#45;&gt;nix_drv -->
+<g id="edge2" class="edge">
+<title>nix_lang2-&gt;nix_drv</title>
+<path fill="none" stroke="#4c78a8" d="M92.52,-106C113.59,-106 142.79,-106 168.75,-106"/>
+<polygon fill="#4c78a8" stroke="#4c78a8" points="168.51,-109.5 178.51,-106 168.51,-102.5 168.51,-109.5"/>
+</g>
+<!-- nix_lang3 -->
+<g id="node3" class="node">
+<title>nix_lang3</title>
+<polygon fill="#dce6f1" stroke="#4c78a8" points="86.03,-196 32.67,-196 32.67,-160 92.03,-160 92.03,-190 86.03,-196"/>
+<polyline fill="none" stroke="#4c78a8" points="86.03,-196 86.03,-190"/>
+<polyline fill="none" stroke="#4c78a8" points="92.03,-190 86.03,-190"/>
+<text xml:space="preserve" text-anchor="middle" x="62.35" y="-174.4" font-family="Helvetica,sans-Serif" font-size="12.00">shell.nix</text>
+</g>
+<!-- nix_lang3&#45;&gt;nix_drv -->
+<g id="edge3" class="edge">
+<title>nix_lang3-&gt;nix_drv</title>
+<path fill="none" stroke="#4c78a8" d="M92.52,-165.29C115.29,-155.38 147.54,-141.33 174.93,-129.4"/>
+<polygon fill="#4c78a8" stroke="#4c78a8" points="176.01,-132.75 183.78,-125.54 173.21,-126.33 176.01,-132.75"/>
+</g>
+<!-- nix_daemon -->
+<g id="node5" class="node">
+<title>nix_daemon</title>
+<polygon fill="#e8e8e8" stroke="#666666" points="437.61,-124 358.27,-124 354.27,-120 354.27,-88 433.61,-88 437.61,-92 437.61,-124"/>
+<polyline fill="none" stroke="#666666" points="433.61,-120 354.27,-120"/>
+<polyline fill="none" stroke="#666666" points="433.61,-120 433.61,-88"/>
+<polyline fill="none" stroke="#666666" points="433.61,-120 437.61,-124"/>
+<text xml:space="preserve" text-anchor="start" x="362.27" y="-106.7" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="12.00">nix-daemon</text>
+<text xml:space="preserve" text-anchor="start" x="364.29" y="-97.4" font-family="Helvetica,sans-Serif" font-size="9.00">sandbox + build</text>
+</g>
+<!-- nix_drv&#45;&gt;nix_daemon -->
+<g id="edge4" class="edge">
+<title>nix_drv-&gt;nix_daemon</title>
+<path fill="none" stroke="#666666" d="M279.5,-106C299.43,-106 322.52,-106 342.79,-106"/>
+<polygon fill="#666666" stroke="#666666" points="342.52,-109.5 352.52,-106 342.52,-102.5 342.52,-109.5"/>
+</g>
+<!-- nix_out -->
+<g id="node6" class="node">
+<title>nix_out</title>
+<polygon fill="#b8d4a8" stroke="#5a8a3c" points="598.28,-124 595.28,-128 574.28,-128 571.28,-124 515.6,-124 515.6,-88 598.28,-88 598.28,-124"/>
+<text xml:space="preserve" text-anchor="start" x="523.6" y="-106.7" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="12.00">/nix/store/…</text>
+<text xml:space="preserve" text-anchor="start" x="544.43" y="-97.4" font-family="Helvetica,sans-Serif" font-size="9.00">output</text>
+</g>
+<!-- nix_daemon&#45;&gt;nix_out -->
+<g id="edge5" class="edge">
+<title>nix_daemon-&gt;nix_out</title>
+<path fill="none" stroke="#5a8a3c" d="M437.88,-106C458.01,-106 482.48,-106 503.91,-106"/>
+<polygon fill="#5a8a3c" stroke="#5a8a3c" points="503.62,-109.5 513.62,-106 503.62,-102.5 503.62,-109.5"/>
+</g>
+<!-- guix_lang1 -->
+<g id="node7" class="node">
+<title>guix_lang1</title>
+<polygon fill="#fddede" stroke="#e45756" points="102.7,-281 16,-281 16,-245 108.7,-245 108.7,-275 102.7,-281"/>
+<polyline fill="none" stroke="#e45756" points="102.7,-281 102.7,-275"/>
+<polyline fill="none" stroke="#e45756" points="108.7,-275 102.7,-275"/>
+<text xml:space="preserve" text-anchor="middle" x="62.35" y="-259.4" font-family="Helvetica,sans-Serif" font-size="12.00">packages.scm</text>
+</g>
+<!-- guix_drv -->
+<g id="node10" class="node">
+<title>guix_drv</title>
+<path fill="#f4c2c2" stroke="#e45756" stroke-width="2" d="M266.6,-353C266.6,-353 192.7,-353 192.7,-353 186.7,-353 180.7,-347 180.7,-341 180.7,-341 180.7,-329 180.7,-329 180.7,-323 186.7,-317 192.7,-317 192.7,-317 266.6,-317 266.6,-317 272.6,-317 278.6,-323 278.6,-329 278.6,-329 278.6,-341 278.6,-341 278.6,-347 272.6,-353 266.6,-353"/>
+<text xml:space="preserve" text-anchor="start" x="218.65" y="-335.7" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="12.00">.drv</text>
+<text xml:space="preserve" text-anchor="start" x="188.7" y="-326.4" font-family="Helvetica,sans-Serif" font-size="9.00">Derive([("out",…)],…)</text>
+</g>
+<!-- guix_lang1&#45;&gt;guix_drv -->
+<g id="edge6" class="edge">
+<title>guix_lang1-&gt;guix_drv</title>
+<path fill="none" stroke="#e45756" d="M105.49,-281.35C126.55,-290.53 152.26,-301.73 174.74,-311.52"/>
+<polygon fill="#e45756" stroke="#e45756" points="173.19,-314.66 183.76,-315.45 175.99,-308.24 173.19,-314.66"/>
+</g>
+<!-- guix_lang2 -->
+<g id="node8" class="node">
+<title>guix_lang2</title>
+<polygon fill="#fddede" stroke="#e45756" points="96.02,-353 22.68,-353 22.68,-317 102.02,-317 102.02,-347 96.02,-353"/>
+<polyline fill="none" stroke="#e45756" points="96.02,-353 96.02,-347"/>
+<polyline fill="none" stroke="#e45756" points="102.02,-347 96.02,-347"/>
+<text xml:space="preserve" text-anchor="middle" x="62.35" y="-331.4" font-family="Helvetica,sans-Serif" font-size="12.00">system.scm</text>
+</g>
+<!-- guix_lang2&#45;&gt;guix_drv -->
+<g id="edge7" class="edge">
+<title>guix_lang2-&gt;guix_drv</title>
+<path fill="none" stroke="#e45756" d="M102.11,-335C121.85,-335 146.31,-335 168.44,-335"/>
+<polygon fill="#e45756" stroke="#e45756" points="168.25,-338.5 178.25,-335 168.25,-331.5 168.25,-338.5"/>
+</g>
+<!-- guix_lang3 -->
+<g id="node9" class="node">
+<title>guix_lang3</title>
+<polygon fill="#fddede" stroke="#e45756" points="99.69,-425 19.01,-425 19.01,-389 105.69,-389 105.69,-419 99.69,-425"/>
+<polyline fill="none" stroke="#e45756" points="99.69,-425 99.69,-419"/>
+<polyline fill="none" stroke="#e45756" points="105.69,-419 99.69,-419"/>
+<text xml:space="preserve" text-anchor="middle" x="62.35" y="-403.4" font-family="Helvetica,sans-Serif" font-size="12.00">manifest.scm</text>
+</g>
+<!-- guix_lang3&#45;&gt;guix_drv -->
+<g id="edge8" class="edge">
+<title>guix_lang3-&gt;guix_drv</title>
+<path fill="none" stroke="#e45756" d="M105.49,-388.65C126.55,-379.47 152.26,-368.27 174.74,-358.48"/>
+<polygon fill="#e45756" stroke="#e45756" points="175.99,-361.76 183.76,-354.55 173.19,-355.34 175.99,-361.76"/>
+</g>
+<!-- guix_drv&#45;&gt;nix_drv -->
+<g id="edge11" class="edge">
+<title>guix_drv-&gt;nix_drv</title>
+<path fill="none" stroke="#f58518" stroke-width="2.5" d="M229.65,-302.56C229.65,-247.79 229.65,-193.01 229.65,-138.24"/>
+<polygon fill="#f58518" stroke="#f58518" stroke-width="2.5" points="226.15,-302.33 229.65,-312.33 233.15,-302.33 226.15,-302.33"/>
+<polygon fill="#f58518" stroke="#f58518" stroke-width="2.5" points="233.15,-138.57 229.65,-128.57 226.15,-138.57 233.15,-138.57"/>
+<text xml:space="preserve" text-anchor="start" x="157.41" y="-212.72" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="10.00" fill="#f58518">  guix-transfer  </text>
+</g>
+<!-- guix_daemon -->
+<g id="node11" class="node">
+<title>guix_daemon</title>
+<polygon fill="#e8e8e8" stroke="#666666" points="441.27,-353 354.6,-353 350.6,-349 350.6,-317 437.27,-317 441.27,-321 441.27,-353"/>
+<polyline fill="none" stroke="#666666" points="437.27,-349 350.6,-349"/>
+<polyline fill="none" stroke="#666666" points="437.27,-349 437.27,-317"/>
+<polyline fill="none" stroke="#666666" points="437.27,-349 441.27,-353"/>
+<text xml:space="preserve" text-anchor="start" x="358.6" y="-335.7" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="12.00">guix-daemon</text>
+<text xml:space="preserve" text-anchor="start" x="364.29" y="-326.4" font-family="Helvetica,sans-Serif" font-size="9.00">sandbox + build</text>
+</g>
+<!-- guix_drv&#45;&gt;guix_daemon -->
+<g id="edge9" class="edge">
+<title>guix_drv-&gt;guix_daemon</title>
+<path fill="none" stroke="#666666" d="M279.5,-335C298.15,-335 319.56,-335 338.83,-335"/>
+<polygon fill="#666666" stroke="#666666" points="338.69,-338.5 348.69,-335 338.69,-331.5 338.69,-338.5"/>
+</g>
+<!-- guix_out -->
+<g id="node12" class="node">
+<title>guix_out</title>
+<polygon fill="#b8d4a8" stroke="#5a8a3c" points="600.61,-353 597.61,-357 576.61,-357 573.61,-353 513.27,-353 513.27,-317 600.61,-317 600.61,-353"/>
+<text xml:space="preserve" text-anchor="start" x="521.27" y="-335.7" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="12.00">/gnu/store/…</text>
+<text xml:space="preserve" text-anchor="start" x="544.43" y="-326.4" font-family="Helvetica,sans-Serif" font-size="9.00">output</text>
+</g>
+<!-- guix_daemon&#45;&gt;guix_out -->
+<g id="edge10" class="edge">
+<title>guix_daemon-&gt;guix_out</title>
+<path fill="none" stroke="#5a8a3c" d="M441.65,-335C460.22,-335 481.95,-335 501.44,-335"/>
+<polygon fill="#5a8a3c" stroke="#5a8a3c" points="501.42,-338.5 511.42,-335 501.42,-331.5 501.42,-338.5"/>
+</g>
+</g>
+</svg>
