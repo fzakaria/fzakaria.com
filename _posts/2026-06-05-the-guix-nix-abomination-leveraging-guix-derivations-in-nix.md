@@ -278,7 +278,7 @@ Hello from Guix!
 We can now convert this to a Nix expression with `guix-transfer`.
 
 ```bash
-❯ /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv --emit-nix /tmp/demo.nix
+❯ guix-transfer /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv --emit-nix /tmp/demo.nix
 ...
 Realise it with: nix-store --realise --option filter-syscalls false /nix/store/fkj4vz6vs85s2x3dwhg5ysfwyr8rv4a5-demo.drv
 Emitted Nix expression: /tmp/demo.nix
