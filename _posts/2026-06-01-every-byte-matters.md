@@ -172,3 +172,7 @@ Rather than graph it logarithmically, which I find sometimes is easy to miss, I 
 This means for random access patterns, if you can keep tight control on your total working set size, you can drastically affect the time.
 
 Knowing your struct and working set size can make a substantial difference.
+
+> **Update (08/07/2026)**
+> If you interested in exploring this further or trying to create the numbers yourself, I have uploaded the benchmarks to GitHub [here](https://gist.github.com/fzakaria/93183b2f3f3038ebb9e4f9fdbf377195).
+{: .alert .alert-note }
