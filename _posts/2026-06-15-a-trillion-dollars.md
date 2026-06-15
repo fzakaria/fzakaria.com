@@ -14,23 +14,20 @@ The original post wasn't just insightful for sharing the time costs of common I/
 
 Scale at increasing orders of magnitude is often difficult to comprehend. Although logarithmic graphs are useful for showing exponential growth or displaying vastly different scales on a single chart, they are easily misunderstood.
 
-If we were to map 1 USD to 1 _ns_, what are the matching parallels to I/O access patterns?
+If we were to map 1 **million** USD to 1 _ns_, what are the matching parallels to I/O access patterns?
 
 | Latency Operation | Time | USD Equivalent |
 | :--- | :--- | :--- |
-| L1 cache reference | 1 ns | $1.00 |
-| Branch mispredict | 3 ns | $3.00 |
-| L2 cache reference | 4 ns | $4.00 |
-| Mutex lock/unlock | 17 ns | $17.00 |
-| Main memory reference | 100 ns | $100.00 |
-| Read 1,000 ns sequentially from memory | 3,000 ns (3 µs) | $3,000 |
-| SSD random read | 16,000 ns (16 µs) | $16,000 |
-| Read 1 MB sequentially from memory | 250,000 ns (250 µs) | $250,000 |
-| Round trip within same datacenter | 500,000 ns (500 µs) | $500,000 |
-| Read 1 MB sequentially from SSD | 1,000,000 ns (1 ms) | **$1,000,000 (A Millionaire)** |
-| Read 1 MB sequentially from WAN | 10,000,000 ns (10 ms) | $10,000,000 |
-| Cross-Atlantic round trip | 150,000,000 ns (150 ms) | $150,000,000 |
-| **Wait for a massive C++ binary to link** | **1,000,000,000,000 ns (~16.6 mins)** | **$1,000,000,000,000 (One Trillion)** |
+| L1 cache reference | 1 ns | $1,000,000 |
+| Branch mispredict | 3 ns | $3,000,000 |
+| L2 cache reference | 4 ns | $4,000,000 |
+| Mutex lock/unlock | 17 ns | $17,000,000 |
+| Main memory reference | 100 ns | $100,000,000 |
+| Read 1,000 ns sequentially from memory | 3,000 ns (3 µs) | $3,000,000,000 (3 Billion) |
+| SSD random read | 16,000 ns (16 µs) | $16,000,000,000 (16 Billion) |
+| Read 1 MB sequentially from memory | 250,000 ns (250 µs) | $250,000,000,000 (250 Billion) |
+| Round trip within same datacenter | 500,000 ns (500 µs) | $500,000,000,000 (500 Billion) |
+| **Read 1 MB sequentially from SSD** | **1,000,000 ns (1 ms)** | **$1,000,000,000,000 (One Trillion)** |
 
 I have seen similar graphics for representing wealth, but I decided to make my own -- because _why not_.
 
