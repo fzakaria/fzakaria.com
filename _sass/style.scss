@@ -249,6 +249,17 @@ table {
   color: $color-dark;
 }
 
+.separator {
+  margin: 0 0.15rem;
+  color: $color-dark;
+}
+
+.rss-link svg {
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+}
+
 .avatar {
   max-width: 50%;
   border-radius: 5px;
