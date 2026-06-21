@@ -8,11 +8,11 @@ I've said before that [Nix is a lie]({% post_url 2026-03-07-nix-is-a-lie-and-tha
 
 The `nix` daemon _feels_ like a black box. You type `nix build` and somewhere behind a Unix socket a privileged process does inscrutable things, and out the other end pops a path in `/nix/store`. 🪄
 
-What if I told you the part everyone thinks is magic — turning a derivation into a store path — is almost _nothing_ ?
+What if I told you the part everyone thinks is magic and that turning a derivation into a store path is nearly an _exec_ ?
 
-Let me prove it. We're going to reimplement `nix-build` in under 100 lines of Go. No daemon, no C++, no magic.
+Let's reimplement `nix-build` in under 100 lines of Go.
 
-## What is a derivation, really?
+First off, What is a derivation, really?
 
 A derivation (`.drv`) is just a build plan. Let's instantiate the most boring one imaginable.
 
