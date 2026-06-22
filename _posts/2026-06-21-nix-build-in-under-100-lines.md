@@ -235,7 +235,7 @@ Quite a lot, honestly **but** none of it is the part that turns a derivation int
 
 * **Sandboxing**: Nix runs the builder in a mount/network/PID namespaces for security and hermiticity.
 * **The database**: Nix records every valid path and its references in a SQLite db. We just check if the file exists.
-* **Substitution**: Nix asks a binary cache if the derivation was alreay built.
+* **Substitution**: Nix asks a binary cache if the derivation was already built.
 * **Everything else**: Multiple output paths, support for fixed-output derivations (`fetchurl`), garbage collection, etc.
 
 The beauty of Nix is the derivation is a pure function. Getting the store path is not magic. It's `exec` with a clean environment. Everything else, _mostly_ is bookkeeping and security.
