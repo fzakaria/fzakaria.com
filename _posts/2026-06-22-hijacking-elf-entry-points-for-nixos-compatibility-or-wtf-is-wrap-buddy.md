@@ -92,7 +92,7 @@ Let's peek at the original binary and the instructions for `_start`:
 0x000011b3      4531c0         xor r8d, r8d
 ```
 
-`wrap-buddy` saves those starting 416 bytes to the hidden file `.main.wrapbuddy`. The configuration file format starts with a 22-byte header, followed by the interpreter string (83 bytes) and RPATH string (442 bytes), placing our saved original instructions at offset 547 (`0x223`):
+`wrap-buddy` saves those starting 416 bytes to the hidden file `.main.wrapbuddy`. The configuration file format starts with a 22-byte header, followed by the interpreter string (83 bytes) and `RUNPATH` string (442 bytes), placing our saved original instructions at offset 547 (`0x223`):
 
 ```bash
 > radare2 -q -a x86 -b 64 -c "pd 10 @ 547" .main.wrapbuddy
