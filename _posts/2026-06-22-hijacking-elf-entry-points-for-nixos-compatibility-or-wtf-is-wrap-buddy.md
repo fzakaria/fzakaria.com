@@ -20,7 +20,7 @@ I opened the GitHub project and I have to admit, I did not quite understand it. 
 
 So, _wtf is wrap-buddy_?
 
-Nix is all about explicit dependencies and it leverages this with techniques like `RUNPATH` on the ELF binary. This all works for newly minted code, but if you try to download any precompiled binary on your NixOS machine, you'll hit an error for a myriad of reasons—one of the biggest being that the dynamic linker/interpreter, `/lib64/ld-linux-x86-64.so.2`, does not exist on NixOS.
+Nix is all about explicit dependencies and it leverages this with techniques like `RUNPATH` on the ELF binary. This all works for newly minted code, but if you try to download any precompiled binary on your NixOS machine, you'll hit an error for a myriad of reasons. One of the biggest being that the dynamic linker/interpreter, `/lib64/ld-linux-x86-64.so.2`, does not exist on NixOS.
 
 We would love to compile everything from source, but the reality is that plenty of software people want to use is _closed_. In order to allow that to work on NixOS machines, derivations may _patch_ the ELF files with [patchelf](https://github.com/nixos/patchelf) setting things like `RUNPATH` and `DT_INTERP` to Nix-friendly paths.
 
