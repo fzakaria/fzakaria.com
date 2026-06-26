@@ -54,7 +54,7 @@ Hello, world!
 
 Is this just a joke or is there anything of value here?
 
-Well, some packages only exist in Guile, notable many GNU Guile built software, like [guile-png](https://github.com/artyom-poptsov/guile-png) that are now easily available in Nix. 🤷
+Well, some packages only exist in Guix, notable many GNU Guile built software, like [guile-png](https://github.com/artyom-poptsov/guile-png) that are now easily available in Nix. 🤷
 
 How does it work?
 
@@ -67,7 +67,7 @@ Realising a Guix package under Nix recompiles Guix's **entire source bootstrap**
 What's next?
 
 We can now do some truly horrendous evil stuff.
-What about an overlay that replaces every package from Nixpkgs which one that exists in Guix?. 😈
+What about an overlay that replaces every package from Nixpkgs which one that exists in Guix? 😈
 
 We can then build a NixOS machine where every package is the Guix equivalent 😱.
 
