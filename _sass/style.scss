@@ -286,7 +286,7 @@ $alert-colors: (
   padding: 0 $spacing-base;
   border-left: 0.25rem solid;
 
-  p:first-child strong {
+  p:first-child > strong:first-child {
     display: block;
 
     &::before {
@@ -300,7 +300,7 @@ $alert-colors: (
       border-left-color: $color;
       background-color: rgba($color, 0.05);
 
-      p:first-child strong {
+      p:first-child > strong:first-child {
         color: $color;
       }
 

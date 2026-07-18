@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 345" width="620" height="345" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif" role="img" aria-labelledby="title desc">
+  <title id="title">Where NixOS Community Survey 2025 respondents live</title>
+  <desc id="desc">Horizontal bar chart of respondent geography. Europe 60%, North America 21.3%, Asia 8.1%, Latin America and the Caribbean 3.8%, Oceania 2.4%, Africa 1.5%, Middle East 1.1%, Prefer not to say 0.9%, Skipped 0.9%.</desc>
+
+  <!-- Europe — 60% -->
+  <text x="150" y="29" text-anchor="end" font-size="12.5" font-weight="700" fill="#222" dominant-baseline="middle">Europe</text>
+  <rect x="160" y="19" width="410.0" height="20" rx="3" fill="#0072B2"/>
+  <text x="577" y="29" font-size="12.5" font-weight="700" fill="#222" dominant-baseline="middle">60%</text>
+
+  <!-- North America — 21.3% -->
+  <text x="150" y="63" text-anchor="end" font-size="12.5" font-weight="700" fill="#222" dominant-baseline="middle">North America</text>
+  <rect x="160" y="53" width="145.5" height="20" rx="3" fill="#E69F00"/>
+  <text x="312" y="63" font-size="12.5" font-weight="700" fill="#222" dominant-baseline="middle">21.3%</text>
+
+  <!-- Asia — 8.1% -->
+  <text x="150" y="97" text-anchor="end" font-size="12.5" fill="#222" dominant-baseline="middle">Asia</text>
+  <rect x="160" y="87" width="55.3" height="20" rx="3" fill="#868E96"/>
+  <text x="222" y="97" font-size="12.5" fill="#444" dominant-baseline="middle">8.1%</text>
+
+  <!-- Latin America & the Caribbean — 3.8% (two lines) -->
+  <text x="150" y="126" text-anchor="end" font-size="12.5" fill="#222">Latin America</text>
+  <text x="150" y="141" text-anchor="end" font-size="12.5" fill="#222">&amp; the Caribbean</text>
+  <rect x="160" y="121" width="26.0" height="20" rx="3" fill="#868E96"/>
+  <text x="192" y="131" font-size="12.5" fill="#444" dominant-baseline="middle">3.8%</text>
+
+  <!-- Oceania — 2.4% -->
+  <text x="150" y="165" text-anchor="end" font-size="12.5" fill="#222" dominant-baseline="middle">Oceania</text>
+  <rect x="160" y="155" width="16.4" height="20" rx="3" fill="#868E96"/>
+  <text x="182" y="165" font-size="12.5" fill="#444" dominant-baseline="middle">2.4%</text>
+
+  <!-- Africa — 1.5% -->
+  <text x="150" y="199" text-anchor="end" font-size="12.5" fill="#222" dominant-baseline="middle">Africa</text>
+  <rect x="160" y="189" width="10.2" height="20" rx="3" fill="#868E96"/>
+  <text x="176" y="199" font-size="12.5" fill="#444" dominant-baseline="middle">1.5%</text>
+
+  <!-- Middle East — 1.1% -->
+  <text x="150" y="233" text-anchor="end" font-size="12.5" fill="#222" dominant-baseline="middle">Middle East</text>
+  <rect x="160" y="223" width="7.5" height="20" rx="3" fill="#868E96"/>
+  <text x="173" y="233" font-size="12.5" fill="#444" dominant-baseline="middle">1.1%</text>
+
+  <!-- Prefer not to say — 0.9% -->
+  <text x="150" y="267" text-anchor="end" font-size="12.5" fill="#888" dominant-baseline="middle">Prefer not to say</text>
+  <rect x="160" y="257" width="6.1" height="20" rx="3" fill="#ADB5BD"/>
+  <text x="172" y="267" font-size="12.5" fill="#888" dominant-baseline="middle">0.9%</text>
+
+  <!-- Skipped — 0.9% -->
+  <text x="150" y="301" text-anchor="end" font-size="12.5" fill="#888" dominant-baseline="middle">Skipped</text>
+  <rect x="160" y="291" width="6.1" height="20" rx="3" fill="#ADB5BD"/>
+  <text x="172" y="301" font-size="12.5" fill="#888" dominant-baseline="middle">0.9%</text>
+
+  <!-- Source -->
+  <text x="6" y="333" font-size="10.5" fill="#999">Source: NixOS Community Survey 2025 — nixos.org/surveys/community/2025</text>
+</svg>
