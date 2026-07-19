@@ -79,6 +79,10 @@ Every hour spent making Nix pleasant on macOS is an hour not spent making Nix _e
 
 [![drake macos meme](/assets/images/drake_macos_meme_50p.png)](/assets/images/drake_macos_meme.png)
 
+
+The single most-impactful advice I give to those earlier in their career is to use a Linux machine, especially if you build and write software for Linux (i.e. web stuff).
+There are rarely any tips to fast-track your career beyond time except for this one.
+
 For Nix, Darwin support is a bottomless tax. Closed toolchains, an SDK that shifts under you every release, a sandbox that fights you. All to chase an OS whose entire philosophy (opaque, proprietary, convention over purity) is the antithesis of Nix.
 
 When we have to target solutions that cover wildly different platforms, the end result is muddled and limited. Beauty, elegance and innovation emerge when you apply constraints and restrict a problem.
