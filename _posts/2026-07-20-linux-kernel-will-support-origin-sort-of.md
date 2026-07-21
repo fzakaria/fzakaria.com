@@ -16,7 +16,7 @@ I waded through the complexity of sending patches over email (turns out I actual
 
 My first attempt [here](https://lore.kernel.org/all/20260622043934.179879-1-farid.m.zakaria@gmail.com/) proposed simply adding direct support for `$ORIGIN` in the Virtual File System (VFS) subsystem.
 
-I waited nervously expecting the result I expected from what I had come to read about online; someone non-politely telling me to _F$#CK off_ because there is something I missed, misunderstood or did not consider. 🤬
+I waited nervously. I was expecting the result from what I had come to read about online; someone non-politely telling me to _F$#CK OFF_ because there is something I missed, misunderstood or did not consider. 🤬
 
 The result was completely different. 😲
 
@@ -38,7 +38,7 @@ If you don't know what eBPF is or `binfmt_misc`, WTF did we just collaborate on?
 
 Let's take a look!
 
-I won't do eBPF justice, and there are plenty of articles online about it as it's quite _in vogue_ at the moment.
+I won't do eBPF justice, and there are plenty of articles online about it as it's quite _in-vogue_ at the moment.
 
 **tl;dr;** You can write programs in a C subset that gets compiled to an instruction set whose virtual machine is running **within the kernel**. Shouldn't the kernel be super fast? Yes, the programs are jitted to their native CPU architecture and the programs have a fixed-time slice. Isn't this some crazy vulnerability for the kernel? Before any code is loaded it is "verified" to be safe. Checkout [this guide](https://ebpf.io/what-is-ebpf/) for more info.
 
@@ -74,7 +74,7 @@ struct binfmt_misc_ops nix = {
 };
 ```
 
-Once the above program is loaded and registered into the kernel, we then ask the `binfmt_misc` subsystem to trigger it! Checkout [this thread](https://lore.kernel.org/linux-fsdevel/20260711-binfmt-misc-bpf-v2-v2-5-d6591ceaf207@gmail.com/) if you want to see the complete example.
+Once the above program is loaded and registered into the kernel, we then ask the `binfmt_misc` subsystem to trigger it. Checkout [this thread](https://lore.kernel.org/linux-fsdevel/20260711-binfmt-misc-bpf-v2-v2-5-d6591ceaf207@gmail.com/) if you want to see the complete example.
 
 ```bash
 > bpftool struct_ops register nix_origin.bpf.o /sys/fs/bpf
@@ -83,7 +83,7 @@ Once the above program is loaded and registered into the kernel, we then ask the
 
 What does that mean?
 
-It means that every binary now triggers the `nix_match` function above — in this case any `ELF` file, but it could be executables with a new segment like `PT_INTERP_NIX` — and the kernel will ask `nix_load` to determine the interpreter to use dynamically.
+It means that every binary now triggers the `nix_match` function above, in this case any `ELF` file, but it could be executables with a new segment like `PT_INTERP_NIX`, and the kernel will ask `nix_load` to determine the interpreter to use dynamically.
 
 Our special BPF program has support for `$ORIGIN` 💥
 
@@ -95,7 +95,7 @@ What else can we do?
 
 Since we can now programmatically select our interpreter **based on anything** in the file, we can do quite a lot. I'm keen to hear your suggestions and ideas 💡.
 
-Some of the smaller items are that we can even support `$ORIGIN` in the shebangs (`#!$ORIGIN/bin/ld.so`) very easily as [seen here](https://gist.github.com/fzakaria/2e1e1c44fa488a951674f8761c672366); we simply look at the first 256 bytes of the file and look for `$ORIGIN` to trigger.
+Some of the smaller items are that we can even support `$ORIGIN` in the shebangs (`#!$ORIGIN/bin/ld.so`) very easily as [seen here](https://gist.github.com/fzakaria/2e1e1c44fa488a951674f8761c672366): we simply look at the first 256 bytes of the file and look for `$ORIGIN` to trigger.
 
 One downside or _side-effect_ of the traditional `binfmt_misc` hand-off was that the way in which the desired final binary was invoked was _non-transparent_.
 
