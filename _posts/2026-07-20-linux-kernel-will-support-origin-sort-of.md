@@ -4,7 +4,7 @@ title: Linux kernel will support $ORIGIN, sort of
 date: 2026-07-20 19:00 -0700
 ---
 
-For some reason, during [TacoSprint 2026](https://tacospring.org) I decided to see if we could tackle [relocatable binaries]({% post_url 2026-06-21-nix-needs-relocatable-binaries %}) in Nix.
+For some reason, during [TacoSprint 2026](https://tacosprint.org) I decided to see if we could tackle [relocatable binaries]({% post_url 2026-06-21-nix-needs-relocatable-binaries %}) in Nix.
 
 I enjoy these lofty goals to push Nix and the surrounding ecosystem forward. I am _bold if not stupid_.
 
