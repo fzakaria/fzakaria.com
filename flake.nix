@@ -141,13 +141,18 @@
         pid /tmp/nginx.pid;
         events {}
         http {
+          # Without this nginx labels everything text/plain, and browsers
+          # refuse to apply a stylesheet served under the wrong type.
+          include ${pkgs.nginx}/conf/mime.types;
+          default_type application/octet-stream;
           access_log /dev/stdout;
           server {
             listen 8080;
             server_name localhost;
             root ${packages.${system}.default};
+
             location / {
-              try_files $uri $uri.html =404;
+              try_files $uri $uri.html $uri/index.html =404;
             }
           }
         }
