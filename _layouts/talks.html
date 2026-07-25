@@ -1,0 +1,67 @@
+---
+layout: base
+---
+<article class="column">
+  <header class="post-header rise">
+    <p class="post-kicker">
+      {% assign talk_count = 0 %}
+      {% for section in site.data.talks.sections %}
+        {% assign talk_count = talk_count | plus: section.items.size %}
+      {% endfor %}
+      <span>{{ talk_count }} entries</span>
+    </p>
+    <h1 class="post-title">{{ page.title }}</h1>
+    <hr class="post-rule">
+  </header>
+
+  <div class="prose">
+    {{ content }}
+
+    <nav class="section-nav" aria-label="Sections">
+      {% for section in site.data.talks.sections %}
+        <a href="#{{ section.id }}">{{ section.title }}</a>
+        {%- unless forloop.last -%}
+          <span class="sep" aria-hidden="true">/</span>
+        {%- endunless -%}
+      {% endfor %}
+    </nav>
+  </div>
+
+  {% for section in site.data.talks.sections %}
+    {% assign years = section.items | group_by: 'year' | sort: 'name' | reverse %}
+    <section class="talks-section" id="{{ section.id }}">
+      <h2 class="talks-section__title">{{ section.title }}</h2>
+
+      {% for year in years %}
+        <div class="year">
+          <h3 class="year__label">{{ year.name }}</h3>
+          <ul class="year__list">
+            {% for item in year.items %}
+              <li class="talk" id="{{ item.id }}">
+                <p class="talk__head">
+                  <span class="talk__title">{{ item.title }}</span>
+                  {% if item.venue -%}
+                    <span class="talk__venue">{{ item.venue }}</span>
+                  {%- endif %}
+                </p>
+                {% if item.note %}
+                  <div class="talk__note">{{ item.note | markdownify }}</div>
+                {% endif %}
+                {% if item.links %}
+                  <p class="talk__links">
+                    {% for link in item.links %}
+                      <a href="{{ link.url | escape }}">{{ link.label }}</a>
+                      {%- unless forloop.last -%}
+                        <span class="sep" aria-hidden="true">·</span>
+                      {%- endunless -%}
+                    {% endfor %}
+                  </p>
+                {% endif %}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    </section>
+  {% endfor %}
+</article>

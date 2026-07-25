@@ -1,0 +1,201 @@
+# Talks, panels and publications, rendered by _layouts/talks.html.
+#
+# Entries are grouped by `year` automatically and shown newest first, so the
+# order within a year is the only thing that matters here. `note` is markdown.
+# `id` is a permanent anchor — external links point at these, so do not rename
+# one without leaving the old id in place.
+
+sections:
+  - id: talks
+    title: Talks
+    items:
+      - id: talk-learn-nix
+        year: 2025
+        title: Learn Nix The Fun Way
+        venue: Nix Vegas @ DEFCON 33
+        note: >-
+          A hands-on, approachable introduction to the Nix ecosystem for
+          beginners. I also presented this talk at
+          [PlanetNix 2025](https://www.socallinuxexpo.org/scale/22x/presentations/learn-nix-fun-way).
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=hX1aRF_Rnu0
+          - label: Slides
+            url: https://fzakaria.com/2024/07/05/learn-nix-the-fun-way
+
+      - id: talk-looker-nix
+        year: 2024
+        title: "[High|Low]Lights of Adopting Nix at Looker (Google Cloud)"
+        venue: PlanetNix 2024
+        note: >-
+          A retrospective on the experience of integrating Nix into a
+          large-scale enterprise environment at Google Cloud.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=GkgsFbwYdYA
+
+      - id: talk-sql-elf
+        year: 2023
+        title: A SQL Approach to Exploring ELF Objects
+        venue: SCaLE 21x
+        note: >-
+          An exploration of using SQL queries to analyze and introspect ELF
+          binary files with the [sqlelf](https://github.com/fzakaria/sqlelf)
+          tool.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=mEHWb4dCAFI
+          - label: Slides
+            url: https://www.socallinuxexpo.org/sites/default/files/presentations/A%20SQL%20Approach%20to%20Exploring%20ELF%20Objects.pdf
+
+      - id: talk-mapping-dependency-chaos
+        year: 2022
+        title: Mapping Out the HPC Dependency Chaos
+        venue: SuperComputing 2022
+        note: >-
+          A talk on the associated [published paper](#pub-hpc-chaos) and the
+          tool [shrinkwrap](https://github.com/fzakaria/shrinkwrap).
+        links:
+          - label: Event
+            url: https://sc22.supercomputing.org/presentation/index-333.htm?post_type=page&p=3479&id=pap132&sess=sess159
+
+      - id: talk-rethinking-primitives
+        year: 2022
+        title: Rethinking basic primitives for store based systems
+        venue: NixCon 2022
+        note: >-
+          I introduce some of the simple improvements one can uncover starting
+          at the linking phase of object building and process startup. I
+          challenge the community to take Nix further.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=HZKFe4mCkr4
+
+      - id: talk-java-hermetic
+        year: 2021
+        title: Challenges with Java in a hermetic world
+        venue: PackagingCon 2021
+        note: >-
+          A deep dive into the complexities of packaging Java applications for
+          hermetic, reproducible builds.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=gQstiX7H8MQ
+
+      - id: talk-nix-java
+        year: 2020
+        title: Nix in the Java ecosystem
+        venue: NixCon 2020
+        note: >-
+          An early look at bridging the gap between Nix's reproducible builds
+          and the Java development world.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=HGEY6ABQUBw
+
+  - id: podcasts
+    title: Panels & Podcasts
+    items:
+      - id: podcast-rebuild-world
+        year: 2025
+        title: "Rebuild The World: Access to secure software dependency management everywhere with Nix"
+        venue: DEFCON 33
+        note: >-
+          A panel discussion on SBOMs and how we can reclaim our services and
+          software from vendor lockin and Docker image bitrot using Nix and
+          NixOS.
+        links:
+          - label: Event
+            url: https://defcon.org/html/defcon-33/dc-33-creator-talks.html#content_60779
+
+      - id: podcast-bazel
+        year: 2025
+        title: Bazel for Everyone? Hard Questions with Confluent Engineers
+        note: >-
+          A conversation about the trade-offs and challenges of adopting the
+          Bazel build system.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=oh_b19EtDHs
+
+      - id: podcast-tech-over-tea
+        year: 2025
+        title: Tech Over Tea
+        venue: Podcast appearance
+        note: >-
+          A friendly chat about the pros and cons of using NixOS as a daily
+          driver.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=KVxk7LFdHtQ
+
+      - id: podcast-fulltime-nix
+        year: 2025
+        title: FullTime Nix
+        venue: Podcast appearance
+        note: >-
+          A discussion about stable linking and its implications for
+          reproducible software.
+        links:
+          - label: Listen
+            url: https://podcasts.apple.com/us/podcast/stable-linking-with-farid-zakaria/id1729409279?i=1000700765989
+
+      - id: podcast-dockercon
+        year: 2023
+        title: The Impact of AI on Cloud-Native Engineering
+        venue: DockerCon 2023
+        note: >-
+          A panel discussion on how AI is shaping the future of software
+          development and cloud infrastructure.
+        links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=ytOt4nyrBE8
+
+  - id: publications
+    title: Publications
+    items:
+      - id: pub-dissertation
+        year: 2025
+        title: "Exploiting Stability in Software Systems: Primitives for Fast Startup, Binary Introspection, and Explicit Dependency Control"
+        venue: Dissertation · UC Santa Cruz
+        note: >-
+          My Ph.D. research on creating new primitives for software systems by
+          exploiting temporal and spatial stability.
+        links:
+          - label: Paper
+            url: https://escholarship.org/uc/item/5cd970wn
+          - label: Video
+            url: https://www.youtube.com/watch?v=ZAN2Z4_PG1E
+
+      - id: pub-matrs
+        year: 2025
+        title: "Symbol Resolution MatRs: Make it Fast and Observable with Stable Linking"
+        venue: arXiv
+        note: >-
+          This paper introduces MatRs, a novel approach to accelerate dynamic
+          linking by reusing symbol resolution results.
+        links:
+          - label: Paper
+            url: https://arxiv.org/abs/2501.06716
+
+      - id: pub-sqlelf
+        year: 2024
+        title: "sqlelf: a SQL-centric Approach to ELF Analysis"
+        venue: arXiv
+        note: >-
+          Presents a new tool that leverages SQLite to enable powerful,
+          query-based analysis of ELF binaries.
+        links:
+          - label: Paper
+            url: https://arxiv.org/abs/2405.03883
+
+      - id: pub-hpc-chaos
+        year: 2022
+        title: Mapping Out the HPC Dependency Chaos
+        venue: SuperComputing
+        note: >-
+          An analysis of the complex software dependency graphs found in
+          High-Performance Computing environments.
+        links:
+          - label: Paper
+            url: https://arxiv.org/abs/2211.05118
