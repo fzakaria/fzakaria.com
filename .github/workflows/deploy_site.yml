@@ -26,26 +26,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+      - uses: cachix/cachix-action@v17
         with:
-          bundler-cache: true
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v6
-      # _plugins/images.rb shells out to this to build the srcset derivatives.
-      # It degrades to serving full-size originals if missing, so make the
-      # dependency explicit rather than relying on the runner image.
-      - name: Ensure ImageMagick
-        run: command -v magick || command -v convert || sudo apt-get install -y imagemagick
-      - name: Build with Jekyll
-        # Outputs to the './_site' directory by default
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
-        env:
-          JEKYLL_ENV: production
+          name: fzakaria
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+      - name: Build with Nix
+        run: nix build --print-build-logs
+      - name: Stage the site
+        # `result` points into the store, which is read-only and full of
+        # symlinks; the upload action wants a plain writable directory.
+        run: |
+          cp -rL result _site
+          chmod -R u+w _site
       - name: Upload artifact
-        # Automatically uploads an artifact from the './_site' directory by default
         uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
 
   # Deployment job
   deploy:
