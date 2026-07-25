@@ -2,6 +2,10 @@
 layout: post
 title: Relocatable Derivations
 date: 2026-06-08 20:39 -0700
+redirect_from:
+  - /2026/06/09/relocatable-derivations.html
+  - /2026/06/09/relocatable-derivations
+  - /2026/06/09/relocatable-derivations/
 ---
 
 The [earlier post]({% post_url 2026-06-05-the-guix-nix-abomination-leveraging-guix-derivations-in-nix %}) on [guix-transfer](https://github.com/fzakaria/guix-transfer) highlighted how we can use the tool to transfer derivations from `/gnu/store` to `/nix/store`.

@@ -2,6 +2,10 @@
 layout: post
 title: Linux kernel will support $ORIGIN, sort of
 date: 2026-07-20 19:00 -0700
+redirect_from:
+  - /2026/07/21/linux-kernel-will-support-origin-sort-of.html
+  - /2026/07/21/linux-kernel-will-support-origin-sort-of
+  - /2026/07/21/linux-kernel-will-support-origin-sort-of/
 ---
 
 For some reason, during [TacoSprint 2026](https://tacosprint.org) I decided to see if we could tackle [relocatable binaries]({% post_url 2026-06-21-nix-needs-relocatable-binaries %}) in Nix.
