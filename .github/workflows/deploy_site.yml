@@ -33,6 +33,11 @@ jobs:
       - name: Setup Pages
         id: pages
         uses: actions/configure-pages@v6
+      # _plugins/images.rb shells out to this to build the srcset derivatives.
+      # It degrades to serving full-size originals if missing, so make the
+      # dependency explicit rather than relying on the runner image.
+      - name: Ensure ImageMagick
+        run: command -v magick || command -v convert || sudo apt-get install -y imagemagick
       - name: Build with Jekyll
         # Outputs to the './_site' directory by default
         run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"

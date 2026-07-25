@@ -71,7 +71,10 @@
             ./keybase.txt
             ./old_blog.md
             ./publickey.txt
+            ./styleguide.md
+            ./talks.md
             ./_config.yml
+            ./_data
             ./_sass
             ./assets
             ./_posts
@@ -104,6 +107,10 @@
           wordword.packages.${system}.default
           pkgs.importNpmLock.hooks.linkNodeModulesHook
           pkgs.nodejs_22
+          # _plugins/images.rb shells out to `magick` to build the srcset
+          # derivatives. Without it the build still succeeds, but ships the
+          # full-size originals.
+          pkgs.imagemagick
         ];
 
         buildPhase = ''
@@ -170,6 +177,7 @@
             gemsets.${system}.env
             nodejs_22
             wordword.packages.${system}.default
+            imagemagick
           ];
           inputsFrom = [
           ];

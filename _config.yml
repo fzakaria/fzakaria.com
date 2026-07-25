@@ -34,6 +34,9 @@ timezone: America/Los_Angeles
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
 exclude:
+  # The nix build output symlink. Without this, `jekyll build` copies a whole
+  # previous build back into _site and every page appears twice.
+  - result
   - flake.lock
   - flake.nix
   - gemset.nix
