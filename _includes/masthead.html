@@ -1,3 +1,9 @@
 <header class="masthead column rise">
   <p class="masthead__title"><a href="{{ '/' | relative_url }}">Farid Zakaria</a></p>
+  {%- comment -%}
+    Only the index layout carries the colophon, so only it gets the signpost.
+  {%- endcomment -%}
+  {%- if page.layout == 'index' %}
+    <a class="masthead__about" href="#about">About</a>
+  {%- endif %}
 </header>
