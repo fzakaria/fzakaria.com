@@ -17,4 +17,9 @@
       RSS
     </a>
   </span>
+  {%- if site.nix_store_path %}
+    <span class="store-path-row"
+      ><code class="store-path" title="This site was built by Nix">{{ site.nix_store_path }}</code></span
+    >
+  {%- endif %}
 </footer>

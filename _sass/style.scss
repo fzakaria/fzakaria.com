@@ -1121,6 +1121,26 @@ blockquote.alert {
       fill: currentColor;
     }
   }
+
+  // Own row, so the path gets the whole measure rather than whatever is left
+  // over beside the RSS link.
+  .store-path-row {
+    flex-basis: 100%;
+  }
+
+  // A store path is a single 56-character token: broken across lines it is
+  // unreadable and awkward to select. Hold it on one line and let it shrink
+  // instead. 0.7rem needs ~400px, which the measure has to spare on a desktop
+  // but a phone does not, so the vw term takes over below ~517px viewport.
+  .store-path {
+    font-size: min(0.7rem, 2.3vw);
+    letter-spacing: 0;
+    white-space: nowrap;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+  }
 }
 
 // --- Index -----------------------------------------------------------------

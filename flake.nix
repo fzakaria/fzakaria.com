@@ -91,6 +91,7 @@
           PAGES_ENV = "production";
           PAGES_REPO_NWO = "fzakaria/fzakaria.com";
           JEKYLL_BUILD_REVISION = self.rev or self.dirtyRev or "dirty";
+          JEKYLL_STORE_PATH = placeholder "out";
         };
 
         npmDeps = pkgs.importNpmLock.buildNodeModules {
