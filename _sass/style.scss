@@ -70,25 +70,16 @@ $wide: 67.5625rem;
 @font-face {
   font-family: "JetBrains Mono";
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 400;
   font-display: swap;
-  src: url("/assets/fonts/JetBrainsMono-latin.woff2") format("woff2");
-  unicode-range:
-    u+0000-00ff, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc,
-    u+0304, u+0308, u+0329, u+2000-206f, u+20ac, u+2122, u+2191, u+2193, u+2212,
-    u+2215, u+feff, u+fffd;
-}
-
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-  src: url("/assets/fonts/JetBrainsMono-latin-ext.woff2") format("woff2");
-  unicode-range:
-    u+0100-02ba, u+02bd-02c5, u+02c7-02cc, u+02ce-02d7, u+02dd-02ff, u+0304,
-    u+0308, u+0329, u+1d00-1dbf, u+1e00-1e9f, u+1ef2-1eff, u+2020, u+20a0-20ab,
-    u+20ad-20c0, u+2113, u+2c60-2c7f, u+a720-a7ff;
+  // The complete face from the upstream JetBrains release, deliberately NOT
+  // subsetted and with no unicode-range. Google Fonts and Fontsource ship it
+  // split into ranges that stop short of the box-drawing block
+  // (U+2500-U+257F); a browser then falls back to a system monospace for
+  // exactly those glyphs, and the differing metrics tear apart the ASCII
+  // diagrams in posts like "Every byte matters" -- most visibly on Android.
+  // The extra ~50KB buys correct alignment.
+  src: url("/assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
 }
 
 // --- Tokens ----------------------------------------------------------------
