@@ -1122,6 +1122,22 @@ blockquote.alert {
     }
   }
 
+  // "Improve this page" is 13 characters longer than the row can spare on a
+  // phone; the short form keeps the footer to one line there at full size.
+  .foot-edit__short {
+    display: none;
+  }
+
+  @media (max-width: 34rem) {
+    .foot-edit__long {
+      display: none;
+    }
+
+    .foot-edit__short {
+      display: inline;
+    }
+  }
+
   // Own row, so the path gets the whole measure rather than whatever is left
   // over beside the RSS link.
   .store-path-row {

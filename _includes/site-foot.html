@@ -1,7 +1,9 @@
 <footer class="site-foot column">
   <span>
     <a href="https://github.com/fzakaria/fzakaria.com/tree/{{ site.commit_hash }}/{{ page.path }}"
-      >Improve this page @ {{ site.commit_hash | slice: 0, 7 -}}
+      ><span class="foot-edit__long">Improve this page</span><span class="foot-edit__short">Edit</span> @
+      {{- ' ' -}}
+      {{- site.commit_hash | slice: 0, 7 -}}
     </a>
   </span>
   <span class="sep" aria-hidden="true">·</span>
