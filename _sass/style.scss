@@ -114,6 +114,12 @@ $wide: 67.5625rem;
   --accent-wash: #9e34131f;
   --glow: #fffdf6;
 
+  // Deliberately not themed. Diagrams and SVG charts are line art on a
+  // transparent background, drawn in near-black ink; on the dark palette they
+  // would sit on --paper-raised at a contrast ratio of 1.0 and vanish. Opaque
+  // screenshots cover this entirely, so they are unaffected either way.
+  --image-mat: #ebe6da;
+
   // Layout zones. The gutter holds hanging section markers and running heads,
   // the margin holds sidenotes; both collapse to zero on narrow screens and
   // widen again once there is room to spend.
@@ -805,7 +811,7 @@ svg {
   margin-inline: auto;
   border: 1px solid var(--rule);
   border-radius: 3px;
-  background: var(--paper-raised);
+  background: var(--image-mat);
 }
 
 .prose a img {
