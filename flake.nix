@@ -87,6 +87,10 @@
           ];
         };
         env = {
+          # The sandbox has no /etc/zoneinfo, so the `timezone:` in _config.yml
+          # (which just sets TZ) silently resolves to UTC and every post whose
+          # local time is late enough gets its permalink bumped a day forward.
+          TZDIR = "${pkgs.tzdata}/share/zoneinfo";
           JEKYLL_ENV = "production";
           PAGES_ENV = "production";
           PAGES_REPO_NWO = "fzakaria/fzakaria.com";
