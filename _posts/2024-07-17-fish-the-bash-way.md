@@ -67,13 +67,13 @@ Now when you start your shell, via an interactive session, it will automatically
 Your `$SHELL` remains bash, which means that any non-interactive use by programs will get the common bash they unfortunately implicitly rely on.
 
 ```console
-❯ ps -p $fish_pid
+$ ps -p $fish_pid
     PID TTY          TIME CMD
   71116 pts/2    00:00:00 fish
 
-❯ echo $SHELL
+$ echo $SHELL
 /run/current-system/sw/bin/bash
 
-❯ bash -c "echo $SHELL"
+$ bash -c "echo $SHELL"
 /run/current-system/sw/bin/bash
 ```

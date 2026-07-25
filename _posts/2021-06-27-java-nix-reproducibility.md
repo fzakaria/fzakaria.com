@@ -117,15 +117,15 @@ Nothing surprising here if you've read the Maven Nixpkgs documentation. The one 
 This is to make the use of _Maven_ a bit simpler for education purposes.
 
 Let's build!
-```bash
-❯ nix-build build.nix --option sandbox relaxed --no-out-link
+```console
+$ nix-build build.nix --option sandbox relaxed --no-out-link
 ... bunch of output omitted ...
 /nix/store/g1bgxhr84ldag0hyshlz3r7aagq551f8-nixos-java-maven-r8-1.0
 ```
 
 We can then ask Nix to validate that our derivation is _binary reproducible_.
-```bash
-❯ nix-build build.nix --option sandbox relaxed --no-out-link --check --keep-failed
+```console
+$ nix-build build.nix --option sandbox relaxed --no-out-link --check --keep-failed
 ... bunch of output omitted ...
 derivation '/nix/store/7hfkwwdb5y4llbgykb3dgnb2hy5xwww4-nixos-java-maven-r8-1.0.drv' may not be deterministic: output '/nix/store/g1bgxhr84ldag0hyshlz3r7aagq551f8-nixos-java-maven-r8-1.0' differs from '/nix/store/g1bgxhr84ldag0hyshlz3r7aagq551f8-nixos-java-maven-r8-1.0.check'
 note: keeping build directory '/tmp/nix-build-nixos-java-maven-r8-1.0.drv-4'
@@ -152,7 +152,7 @@ Luckily, Maven itself [has the ability](https://maven.apache.org/guides/mini/gui
 If we try the build again, we are now reproducible.
 ```bash
 # let's repeat the build three times
-❯ nix-build build.nix --option sandbox relaxed --no-out-link --option repeat 3 --option enforce-determinism true
+$ nix-build build.nix --option sandbox relaxed --no-out-link --option repeat 3 --option enforce-determinism true
 building '/nix/store/yvvia00l1vls1qkgypikvjivn2ash498-nixos-java-maven-r8-1.0.drv' (round 1/4)...
 building '/nix/store/yvvia00l1vls1qkgypikvjivn2ash498-nixos-java-maven-r8-1.0.drv' (round 2/4)...
 building '/nix/store/yvvia00l1vls1qkgypikvjivn2ash498-nixos-java-maven-r8-1.0.drv' (round 3/4)...

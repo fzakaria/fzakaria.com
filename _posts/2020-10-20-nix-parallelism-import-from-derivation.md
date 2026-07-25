@@ -34,13 +34,13 @@ runCommand "long-running" {} ''
 
 We can confirm that _nix-instantiate_ is **instant**, whereas _nix-build_ takes 15 seconds to realise "build" the derivation. _This makes sense, as the sleep is part of the builder of the derivation._
 
-```bash
-❯ time nix-instantiate long-running.nix
+```console
+$ time nix-instantiate long-running.nix
 warning: you did not specify '--add-root'; the result might be removed by the garbage collector
 /nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv
 nix-instantiate long-running.nix  0.19s user 0.04s system 100% cpu 0.227 total
 
-❯ time nix-build --no-out-link long-running.nix
+$ time nix-build --no-out-link long-running.nix
 these derivations will be built:
   /nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv
 building '/nix/store/qps2bfm3z5y1pkkq02gknyzd168hpawv-long-running.drv'...
@@ -69,13 +69,13 @@ runCommand "basic-using-long-running" {} ''
 
 Here we see that _nix-instantiate_ continue to be **instant** and _nix-build_ continues to be roughly 15 seconds to build both derivations.
 
-```bash
-❯ time nix-instantiate uses-long-running-simple.nix
+```console
+$ time nix-instantiate uses-long-running-simple.nix
 warning: you did not specify '--add-root'; the result might be removed by the garbage collector
 /nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv
 nix-instantiate uses-long-running-simple.nix  0.20s user 0.02s system 94% cpu 0.238 total
 
-❯ time nix-build --no-out-link uses-long-running-simple.nix
+$ time nix-build --no-out-link uses-long-running-simple.nix
 these derivations will be built:
   /nix/store/5dqxa586rdb0hiw3d0sbv2xjx6w3wa4y-long-running.drv
   /nix/store/gd2jqmy54xlk3prcsaa3mgcyn7qf85mf-basic-using-long-running.drv
@@ -107,8 +107,8 @@ runCommand "basic-using-long-running" {} ''
 
 In this case, _nix-instantiate_ takes roughly 16 seconds!
 
-```bash
-❯ time nix-instantiate uses-long-running-complex.nix
+```console
+$ time nix-instantiate uses-long-running-complex.nix
 building '/nix/store/7fwqhzlnd7z21n63s2qrisvd5mjwpyji-long-running.drv'...
 Sleeping!
 warning: you did not specify '--add-root'; the result might be removed by the garbage collector

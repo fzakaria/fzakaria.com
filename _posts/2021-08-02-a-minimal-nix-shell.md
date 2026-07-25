@@ -41,8 +41,8 @@ nix-store --query --graph $(nix-build --no-out-link -A inputDerivation basic-she
 
 There is quite a lot there including GCC and we see the total closure size is **~270MiB**.
 
-```bash
-❯ nix path-info --closure-size --human-readable $(nix-build --no-out-link -A inputDerivation basic-shell.nix)
+```console
+$ nix path-info --closure-size --human-readable $(nix-build --no-out-link -A inputDerivation basic-shell.nix)
 
 /nix/store/zg33vr1apaq341c9bdfbhlwbp8l22qm6-basic-shell	 268.3M
 ```
@@ -67,8 +67,8 @@ in nixpkgs.mkShellNoCC {
 ![nix-shell without compiler](/assets/images/shell-no-cc-graph.svg)
 
 Looks like we are down to **~53MiB**
-```bash
-❯ nix path-info --closure-size --human-readable $(nix-build --no-out-link -A inputDerivation shell-no-cc.nix).
+```console
+$ nix path-info --closure-size --human-readable $(nix-build --no-out-link -A inputDerivation shell-no-cc.nix).
 /nix/store/7afg0p2kyc8qb5a0nv7mlvpf1mbpqkdx-shell-no-cc	  53.5M
 ```
 
@@ -109,16 +109,16 @@ in minimalMkShell {
 ![nix-shell without compiler](/assets/images/shell-minimal-graph.svg)
 
 💥 Looks like it's down to **34MiB**  💥
-```bash
-❯ nix path-info --closure-size --human-readable $(nix-build --no-out-link -A inputDerivation minimal-shell.nix)
+```console
+$ nix path-info --closure-size --human-readable $(nix-build --no-out-link -A inputDerivation minimal-shell.nix)
 /nix/store/2msg7r8gd7ydwmr33a9nrrjnar7wywxh-minimal-shell	  34.9M
 ```
 
 Awesome, we've just reduced the closure-size by **~7.7x** !
 
 🧐 Most of that space is due to **glibc** i8n & locales.
-```bash
-❯ du -h /nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47 | sort -rh | head -n 10
+```console
+$ du -h /nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47 | sort -rh | head -n 10
 33M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47
 17M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/share/i18n
 17M	/nix/store/j5p0j1w27aqdzncpw73k95byvhh5prw2-glibc-2.33-47/share
@@ -135,8 +135,8 @@ Can we do *even* better?
 
 Unfortunately **not at this time**. Removing _coreutils_ from the closure, causes the [basic builder](https://github.com/NixOS/nixpkgs/blob/c464dc811babfe316ed4ab7bbc12351122e69dd7/pkgs/stdenv/generic/builder.sh#L7) to fail since it no longer can find _mkdir_.
 
-```bash
-❯ nix-shell minimal-shell.nix --pure
+```console
+$ nix-shell minimal-shell.nix --pure
 these derivations will be built:
   /nix/store/4gw7ly8hicaw5895370ylmrdhz9l4y9d-stdenv-linux.drv
 building '/nix/store/4gw7ly8hicaw5895370ylmrdhz9l4y9d-stdenv-linux.drv'...

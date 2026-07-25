@@ -84,7 +84,7 @@ overlay_configure(
 
 When you try to build the external repository `@hello-world//`, the repository rule will symlink all the files in the _overlay_path_ & the _src_path_ together.
 
-```bash
+```console
 $ tree $(bazel info output_base)/external/hello-world
 
 /home/fmzakari/.cache/bazel/_bazel_fmzakari/738ca8ce4d1d8ce828e952fe7b9fdd95/external/hello-world

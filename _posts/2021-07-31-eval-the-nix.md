@@ -14,35 +14,35 @@ I wanted to set _JAVA_HOME_ to a particular JDK.
 
 You can use `eval` to determine the _JAVA_HOME. The **gotcha** here however, is that the JDK may not necessarily be in your _/nix/home_.
 
-```bash
-❯ nix eval nixpkgs.jdk8.home --raw
+```console
+$ nix eval nixpkgs.jdk8.home --raw
 /nix/store/0jfk27bplglsqh7m945pvayjwh2fy1m0-openjdk-8u272-b10/lib/openjdk
 ```
 
 A more complete solution is the following.
 
-```bash
-❯ export JAVA_HOME=$(nix build nixpkgs.jdk8 && nix eval nixpkgs.jdk8.home --raw)
+```console
+$ export JAVA_HOME=$(nix build nixpkgs.jdk8 && nix eval nixpkgs.jdk8.home --raw)
 ```
 
 **Scenario 2** I wanted to discover the calculated _/nix/store_ path for a particular derivation.
 
-```bash
-❯ nix eval nixpkgs.hello.outPath --raw
+```console
+$ nix eval nixpkgs.hello.outPath --raw
 /nix/store/jmmw0d3nmklwafcwylvrjb9v69wrbcxf-hello-2.10
 ```
 
 💡 You can also do something similar to find out the derivation path.
 
-```bash
-❯ nix eval nixpkgs.hello.drvPath --raw
+```console
+$ nix eval nixpkgs.hello.drvPath --raw
 /nix/store/wqnx5cgcabxkfp771fmjr1nw7mjr9zlm-hello-2.10.drv
 ```
 
 **Scenario 3** I want a quick one-liner for what I can do with `nix repl`.
 
-```bash
-❯ nix eval '(builtins.attrNames (import <nixpkgs>{}).hello)' --json | jq
+```console
+$ nix eval '(builtins.attrNames (import <nixpkgs>{}).hello)' --json | jq
 [
   "__ignoreNulls",
   "all",
@@ -94,8 +94,8 @@ A more complete solution is the following.
 
 For instance the following works on `nix repl` but fails on `nix eval`
 
-```bash
-❯ nix repl
+```console
+$ nix repl
 Welcome to Nix version 2.3.12. Type :? for help.
 
 nix-repl> :l <nixpkgs>
@@ -105,8 +105,8 @@ nix-repl> hello
 «derivation /nix/store/wqnx5cgcabxkfp771fmjr1nw7mjr9zlm-hello-2.10.drv»
 ```
 
-```bash
-❯ nix eval nixpkgs#hello
+```console
+$ nix eval nixpkgs#hello
 error: anonymous function at /nix/store/h7b0frzjk6ylyqq471m667yd9bl9n6fm-source/pkgs/build-support/fetchurl/boot.nix:5:1 called with unexpected argument 'meta'
 
        at /nix/store/h7b0frzjk6ylyqq471m667yd9bl9n6fm-source/pkgs/build-support/fetchzip/default.nix:18:2:

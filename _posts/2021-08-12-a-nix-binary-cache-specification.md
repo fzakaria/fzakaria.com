@@ -20,8 +20,8 @@ Since there's no specification (aside from the code), I will use the canonical b
 
 Let's start off and use `nix path-info` to query some information. I find it always more useful to use `--json` to see the displayed results.
 
-```bash
-❯ nix path-info nixpkgs.ruby --store https://cache.nixos.org --json | jq
+```console
+$ nix path-info nixpkgs.ruby --store https://cache.nixos.org --json | jq
 [
   {
     "path": "/nix/store/p4pclmv1gyja5kzc26npqpia1qqxrf0l-ruby-2.7.3",
@@ -58,8 +58,8 @@ Every Nix Binary Cache needs to support querying for [NARInfo](https://hackage.h
 
 For instance for our Ruby path _/nix/store/p4pclmv1gyja5kzc26npqpia1qqxrf0l-ruby-2.7.3_, we take the cryptographic hash portion and use that to cURL the metadata [https://cache.nixos.org/p4pclmv1gyja5kzc26npqpia1qqxrf0l.narinfo](https://cache.nixos.org/p4pclmv1gyja5kzc26npqpia1qqxrf0l.narinfo).
 
-```bash
-❯ curl -i https://cache.nixos.org/p4pclmv1gyja5kzc26npqpia1qqxrf0l.narinfo
+```console
+$ curl -i https://cache.nixos.org/p4pclmv1gyja5kzc26npqpia1qqxrf0l.narinfo
 HTTP/2 200 
 x-amz-id-2: Qpz5ZRR31fiF+A3lN9Gl5SVP1kC4/9jgEWUibbFX/p+rVazDVznQMtT4qgskwlkDcwOtDGtegjY=
 x-amz-request-id: 5G9ZDZB9TFR665RN
@@ -95,8 +95,8 @@ Let's get some statistics about it.
 
 > NAR is the Nix ARchive. Not all archive formats are reproducible, so Nix had to create it's own!
 
-```bash
-❯ nix-hash --type sha256 --flat \
+```console
+$ nix-hash --type sha256 --flat \
        --base32 <(curl --silent https://cache.nixos.org/nar/1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3.nar.xz)
 
 1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3
@@ -112,8 +112,8 @@ The NAR hash should be calculated in a very similar fashion.
 
 Let's try by piping it into [unxz](https://linux.die.net/man/1/unxz).
 
-```bash
-❯ nix-hash --type sha256 --flat \
+```console
+$ nix-hash --type sha256 --flat \
        --base32 <(curl --silent https://cache.nixos.org/nar/1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3.nar.xz | unxz)
 1impfw8zdgisxkghq9a3q7cn7jb9zyzgxdydiamp8z2nlyyl0h5h
 ```
@@ -121,8 +121,8 @@ Let's try by piping it into [unxz](https://linux.die.net/man/1/unxz).
 What about _References_, what's that?
 
 We see a very similar concept in the `nix-store --query` CLI and it produces the same list.
-```bash
-❯ nix-store --query \
+```console
+$ nix-store --query \
     --references /nix/store/p4pclmv1gyja5kzc26npqpia1qqxrf0l-ruby-2.7.3
 
 /nix/store/sbbifs2ykc05inws26203h0xwcadnf0l-glibc-2.32-46
@@ -148,11 +148,11 @@ In order for our _Ruby_ to run successfully on a machine, one would have to thou
 
 If we _extract_ the NAR above, we see it's just the contents of our Nix derivation.
 
-```bash
-❯ curl --silent https://cache.nixos.org/nar/1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3.nar.xz \
+```console
+$ curl --silent https://cache.nixos.org/nar/1w1fff338fvdw53sqgamddn1b2xgds473pv6y13gizdbqjv4i5p3.nar.xz \
        | unxz | nix-store --restore /tmp/ruby
 
-❯ ls -l /tmp/ruby
+$ ls -l /tmp/ruby
 
 drwxr-xr-x - fmzakari 12 Aug 15:16 bin
 drwxr-xr-x - fmzakari 12 Aug 15:16 include
@@ -162,8 +162,8 @@ drwxr-xr-x - fmzakari 12 Aug 15:16 share
 ```
 
 Finally browsing the _nix-serve_ source, I see there's a _/nix-cache-info_ path.
-```bash
-❯ curl https://cache.nixos.org/nix-cache-info
+```console
+$ curl https://cache.nixos.org/nix-cache-info
 StoreDir: /nix/store
 WantMassQuery: 1
 Priority: 40
@@ -180,8 +180,8 @@ the default NixOS binary cache.
 For instance, even though above I extracted the Ruby NAR to **/tmp/ruby**, if we read where
 it expects to find the dynamic libraries, we see it still references _/nix/store_.
 
-```bash
-❯ ldd /tmp/ruby/bin/ruby
+```console
+$ ldd /tmp/ruby/bin/ruby
 	linux-vdso.so.1 (0x00007ffd6e57b000)
 	libruby-2.7.3.so.2.7 => /nix/store/p4pclmv1gyja5kzc26npqpia1qqxrf0l-ruby-2.7.3/lib/libruby-2.7.3.so.2.7 (0x00007f7a819e2000)
     ibz.so.1 => /nix/store/65ys3k6gn2s27apky0a0la7wryg3az9q-zlib-1.2.11/lib/libz.so.1 (0x00007f7a819c5000)

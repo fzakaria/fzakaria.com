@@ -37,7 +37,7 @@ Python is a toolchain but also a runtime file ["runfile"](https://bazel.build/ex
 
 Here is a sample of the symlinks for the Python installation that are created.
 ```console
-❯ ls -l bazel-out/k8-fastbuild/mytest.test.runfiles/rules_python\~0.30.0\~python\~python_3_10_x86_64-unknown-linux-gnu/bin
+$ ls -l bazel-out/k8-fastbuild/mytest.test.runfiles/rules_python\~0.30.0\~python\~python_3_10_x86_64-unknown-linux-gnu/bin
 2to3 -> /home/fmzakari/.cache/bazel/_bazel_fmzakari/17bce12c4b47a4a2fc75249afee05177/external/rules_python~0.30.0~python~python_3_10_x86_64-unknown-linux-gnu/bin/2to3
 2to3-3.10 -> /home/fmzakari/.cache/bazel/_bazel_fmzakari/17bce12c4b47a4a2fc75249afee05177/external/rules_python~0.30.0~python~python_3_10_x86_64-unknown-linux-gnu/bin/2to3-3.10
 idle3 -> /home/fmzakari/.cache/bazel/_bazel_fmzakari/17bce12c4b47a4a2fc75249afee05177/external/rules_python~0.30.0~python~python_3_10_x86_64-unknown-linux-gnu/bin/idle3
@@ -46,7 +46,7 @@ idle3 -> /home/fmzakari/.cache/bazel/_bazel_fmzakari/17bce12c4b47a4a2fc75249afee
 How many files (inodes) are created for each test?
 
 ```console
-❯ find bazel-out/k8-fastbuild/bin/stablehlo/tests/transform_chlo.mlir.test.runfiles/rules_python\~0.30.0\~python\~python_3_10_x86_64-unknown-linux-gnu  | wc  -l
+$ find bazel-out/k8-fastbuild/bin/stablehlo/tests/transform_chlo.mlir.test.runfiles/rules_python\~0.30.0\~python\~python_3_10_x86_64-unknown-linux-gnu  | wc  -l
 2458
 ```
 

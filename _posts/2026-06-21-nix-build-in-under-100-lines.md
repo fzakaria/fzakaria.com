@@ -201,7 +201,7 @@ func main() {
 
 That's it. Does it work?
 
-```bash
+```console
 $ go build -o simple-nix .
 
 $ ./simple-nix $(nix-instantiate hello.nix)
@@ -214,7 +214,7 @@ Hello World
 
 We can even build a real-world derivation.
 
-```bash
+```console
 $ ./simple-nix $(nix eval nixpkgs#hello --raw)
 
 Using versionCheckHook

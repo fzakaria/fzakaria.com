@@ -11,7 +11,7 @@ Need proof? 🕵 How about we build a Guix derivation with Nix.
 First let's create a super basic derivation in Guix: _Hello world_.
 
 ```bash
-❯ guix repl -- /dev/stdin <<'EOF'
+$ guix repl -- /dev/stdin <<'EOF'
   (use-modules (guix derivations) (guix store))
   (with-store %store
     (let ((drv (derivation %store "simple" "/bin/sh"
@@ -33,7 +33,7 @@ We ask to use `/gnu/store` as the Nix store and have it write its state, databas
 
 ```
 
-❯ cat > /tmp/register.txt <<'EOF'
+$ cat > /tmp/register.txt <<'EOF'
 /gnu/store/zr0q11srv4yir8a6wrz582js7zsi17ij-simple.drv
 822a79886102e5ca392cd14358aef0866c36ca526ff1b156f1ded2808a2095df
 336
@@ -41,12 +41,12 @@ We ask to use `/gnu/store` as the Nix store and have it write its state, databas
 0
 EOF
 
-❯ NIX_STORE=/nix/store/fla7gi1dvkw4hvwxar8m7z25p2yv7r40-nix-2.34.7/bin/nix-store
+$ NIX_STORE=/nix/store/fla7gi1dvkw4hvwxar8m7z25p2yv7r40-nix-2.34.7/bin/nix-store
 
-❯ NIX_STORE_DIR=/gnu/store NIX_STATE_DIR=/tmp/nix-gnu/var/nix \
+$ NIX_STORE_DIR=/gnu/store NIX_STATE_DIR=/tmp/nix-gnu/var/nix \
    $NIX_STORE --load-db < /tmp/register.txt
 
-❯ sudo unshare --mount bash -c '
+$ sudo unshare --mount bash -c '
 mount -o remount,rw /gnu/store
 su -s /bin/bash guix-daemon -c \
     "NIX_STORE_DIR=/gnu/store NIX_STATE_DIR=/tmp/nix-gnu/var/nix \
@@ -61,7 +61,7 @@ building '/gnu/store/zr0q11srv4yir8a6wrz582js7zsi17ij-simple.drv'...
 warning: you did not specify '--add-root'; the result might be removed by the garbage collector
 /gnu/store/kd5szqbl9asz5hravhnxgd9plm4a9gzh-simple
 
-❯ cat /gnu/store/kd5szqbl9asz5hravhnxgd9plm4a9gzh-simple
+$ cat /gnu/store/kd5szqbl9asz5hravhnxgd9plm4a9gzh-simple
 Hello World
 ```
 
@@ -102,11 +102,11 @@ Confused? Let us see it in action:
 
 ```bash
 # generate a Guix derivation
-❯ guix build hello --derivations
+$ guix build hello --derivations
 /gnu/store/2nfg943asrl9dv64zrr1a4kpb25mfafd-hello-2.12.2.drv
 
 # translate it
-❯ /guix-transfer /gnu/store/2nfg943asrl9dv64zrr1a4kpb25mfafd-hello-2.12.2.drv
+$ /guix-transfer /gnu/store/2nfg943asrl9dv64zrr1a4kpb25mfafd-hello-2.12.2.drv
 Loading Guix derivation graph from /gnu/store/2nfg943asrl9dv64zrr1a4kpb25mfafd-hello-2.12.2.drv ...
 Loaded 228 derivations.
 Translating bottom-up ...
@@ -117,10 +117,10 @@ Realise it with: nix-store --realise --option filter-syscalls false /nix/store/b
 
 # build it with Nix
 # this is a LONG multi-hour build since we build everything from source
-❯ nix-store --option filter-syscalls false --realise \
+$ nix-store --option filter-syscalls false --realise \
 /nix/store/brdd8zw3j9hhq8zf27ixqyi3l61nwppn-hello-2.12.2.drv
 
-❯ /nix/store/j3940mdzr6qmw4ydhyla663s501vb8ns-hello-2.12.2/bin/hello
+$ /nix/store/j3940mdzr6qmw4ydhyla663s501vb8ns-hello-2.12.2/bin/hello
 Hello, world!
 ```
 
@@ -150,7 +150,7 @@ derivation {
 When we evaluate (nix-instantiate) this derivation, we get a path to a file that contains the derivation in the [ATerm](https://nix.dev/manual/nix/2.25/protocols/derivation-aterm) format:
 
 ```
-❯ nix-instantiate - << 'EOF'
+$ nix-instantiate - << 'EOF'
 derivation {
   name = "simple";
   builder = "/bin/sh";
@@ -238,10 +238,10 @@ derivation {
 
 Nix automatically scans your derivations for anything prefixed with `/nix/store` and tracks it as an input dependency. This is similar to how store paths are interpolated when you do something like `${pkgs.hello}/bin/hello`.
 
-```bash
-❯ nix-build --no-out-link hello-from-nix.nix
+```console
+$ nix-build --no-out-link hello-from-nix.nix
 
-❯ cat /nix/store/...-run-guix-hello
+$ cat /nix/store/...-run-guix-hello
 Hello, world! from Nix
 ```
 
@@ -251,7 +251,7 @@ If writing the `/nix/store` paths raw in the Nix expression is a little _too raw
 Let's look at a slightly more complex example that uses Guix's `guile` to build a derivation with dependencies:
 
 ```bash
-❯ guix repl -- /dev/stdin <<'EOF'
+$ guix repl -- /dev/stdin <<'EOF'
   (use-modules (guix derivations) (guix store) (guix packages)
                (gnu packages bootstrap))
   (with-store store
@@ -267,18 +267,18 @@ Let's look at a slightly more complex example that uses Guix's `guile` to build 
       (format #t "~a\n" (derivation-file-name drv))))
 EOF
 
-❯ guix build /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv
+$ guix build /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv
 successfully built /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv
 /gnu/store/l66zvywi60ljhk3kwwaay156cgsc2ahg-demo
 
-❯ cat /gnu/store/l66zvywi60ljhk3kwwaay156cgsc2ahg-demo
+$ cat /gnu/store/l66zvywi60ljhk3kwwaay156cgsc2ahg-demo
 Hello from Guix!
 ```
 
 We can now convert this to a Nix expression with `guix-transfer`.
 
-```bash
-❯ guix-transfer /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv --emit-nix /tmp/demo.nix
+```console
+$ guix-transfer /gnu/store/fln2d17fyqka3gafcdqyhfyl1nzml5jn-demo.drv --emit-nix /tmp/demo.nix
 ...
 Realise it with: nix-store --realise --option filter-syscalls false /nix/store/fkj4vz6vs85s2x3dwhg5ysfwyr8rv4a5-demo.drv
 Emitted Nix expression: /tmp/demo.nix
@@ -286,14 +286,14 @@ Emitted Nix expression: /tmp/demo.nix
 
 We realise the derivation with `nix-store --realise` or we can `nix-build` the Nix expression. Please notice that both **produce the exact same hash**: `/nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo`.
 
-```bash
-❯ nix-build /tmp/demo.nix
+```console
+$ nix-build /tmp/demo.nix
 /nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo
 
-❯ nix-store --realise --option filter-syscalls false /nix/store/zgwdbfpigl8cwy5d85p0rdcl21x3bszm-demo.drv
+$ nix-store --realise --option filter-syscalls false /nix/store/zgwdbfpigl8cwy5d85p0rdcl21x3bszm-demo.drv
 /nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo
 
-❯ cat /nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo
+$ cat /nix/store/rq5bc9crsg1hrr7afllzjgi7z8bl21zy-demo
 Hello from Guix!
 ```
 

@@ -91,31 +91,31 @@ stdenv.mkDerivation {
 
 Let's build it. 🏗️
 
-```bash
-❯ nix-build lolhello.nix --no-out-link
+```console
+$ nix-build lolhello.nix --no-out-link
 /nix/store/czf8l5nlp2kaag96hb42qvqd85glr8f8-lolhello
 ```
 
 Now let's try to upload it to our GCS bucket via the S3 integration in Nix.
 
 ```bash
-❯ nix copy $(nix-build lolhello.nix --no-out-link) \
+$ nix copy $(nix-build lolhello.nix --no-out-link) \
     --to "s3://nix-cache-testing?endpoint=https://storage.googleapis.com&profile=gcp"
 
 # Check it's been uploaded
-❯ aws s3 ls nix-cache-testing --profile=gcp --endpoint-url https://storage.googleapis.com
+$ aws s3 ls nix-cache-testing --profile=gcp --endpoint-url https://storage.googleapis.com
                            PRE nar/
 2021-06-22 12:09:42        476 czf8l5nlp2kaag96hb42qvqd85glr8f8.narinfo
 
 # Check it using the gsutil also
-❯ gsutil ls gs://nix-cache-testing
+$ gsutil ls gs://nix-cache-testing
 gs://nix-cache-testing/czf8l5nlp2kaag96hb42qvqd85glr8f8.narinfo
 gs://nix-cache-testing/nar/
 ```
 
 Now let's delete it from our system.
-```bash
-❯ nix-store --delete /nix/store/czf8l5nlp2kaag96hb42qvqd85glr8f8-lolhello
+```console
+$ nix-store --delete /nix/store/czf8l5nlp2kaag96hb42qvqd85glr8f8-lolhello
 ```
 
 Now let's try to build it, using our substituter.
@@ -124,8 +124,8 @@ We will also disable building locally to verify everything is working correctly.
 > I disabled verifying the signatures for now for simplicity of the demo. Please see my
 > [previous post]({% post_url 2020-07-15-setting-up-a-nix-s3-binary-cache %}) on how to add signatures.
 
-```bash
-❯ nix-build lolhello.nix --no-out-link --builders '' -j0 \
+```console
+$ nix-build lolhello.nix --no-out-link --builders '' -j0 \
     --option substituters "s3://nix-cache-testing?endpoint=https://storage.googleapis.com&profile=gcp" \
     --option require-sigs false
 these paths will be fetched (0.03 MiB download, 0.18 MiB unpacked):

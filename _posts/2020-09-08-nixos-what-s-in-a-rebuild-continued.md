@@ -22,8 +22,8 @@ targetHostCmd nix-env -p "$profile" --set "$pathToConfig"
 
 It will attempt to copy the _system_ _/nix/store_ path if a target host is set & also change the profile (_/nix/var/nix/profiles/system_) to the new _system_.
 
-```bash
-❯ tree /nix/var/nix/profiles/
+```console
+$ tree /nix/var/nix/profiles/
 /nix/var/nix/profiles/
 ...
 ├── system -> system-18-link
@@ -38,8 +38,8 @@ Finally the _system_ is activated; by calling the generated _switch-to-configura
 if ! targetHostCmd $pathToConfig/bin/switch-to-configuration "$action";
 ...
 ```
-```bash
-❯ tree /nix/store/rpfin018i0s2bdvmsikkrdvd0wvwg287-nixos-system-altaria-20.03post-git/bin
+```console
+$ tree /nix/store/rpfin018i0s2bdvmsikkrdvd0wvwg287-nixos-system-altaria-20.03post-git/bin
 /nix/store/rpfin018i0s2bdvmsikkrdvd0wvwg287-nixos-system-altaria-20.03post-git/bin
 └── switch-to-configuration
 ```

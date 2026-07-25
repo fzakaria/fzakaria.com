@@ -62,14 +62,14 @@ with clear support and guidance on how to cross-compile the image.
 
 Having a starting NixOS configuration means you can avoid the base installer and 
 directly create the initial image via
-```bash
-❯ nix build '.#nixosConfigurations.kuato.config.system.build.sdImage'
+```console
+$ nix build '.#nixosConfigurations.kuato.config.system.build.sdImage'
 ```
 
 Subsequent updates can happen via _ssh_. I build the image on my `x86_64` machine via _emulation_ using
 the following command which then copies the _/nix/store_ closure and activates the new generation.
-```bash
-❯ nixos-rebuild switch --flake .#kuato \
+```console
+$ nixos-rebuild switch --flake .#kuato \
                        --target-host fmzakari@kuato \
                        --use-remote-sudo
 ```

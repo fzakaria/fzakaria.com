@@ -27,8 +27,8 @@ _"Can we force developers only to pull from the Nix binary cache?"_
 
 "Sure, just set _max-jobs_ to zero in the configuration."
 
-```bash
-❯ nix-build --no-out-link lolhello.nix --option max-jobs 0
+```console
+$ nix-build --no-out-link lolhello.nix --option max-jobs 0
 these derivations will be built:
   /nix/store/vwrgdjl9h1h53ch2zh8cb18nd2raz8a7-lolhello.drv
 these paths will be fetched (0.35 MiB download, 0.34 MiB unpacked):
@@ -70,8 +70,8 @@ derivation {
 }
 ```
 
-```bash
-❯ time nix-build --no-out-link large-dummy-a.nix
+```console
+$ time nix-build --no-out-link large-dummy-a.nix
 these derivations will be built:
   /nix/store/nk7gljxxv2g5c6n4x08sdhmrvmg8smph-builder.sh.drv
   /nix/store/vgbgd05fcgas6imrm4xsgilsv8gx1jqm-b.drv
@@ -94,16 +94,16 @@ building '/nix/store/xyx3zxkvjrkchjsz7gb9kzp7j3kiwypz-test.drv'...
 /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
 nix-build --no-out-link large-dummy-a.nix  3.24s user 31.37s system 94% cpu 36.506 total
 
-❯ cat /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+$ cat /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
 
 /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
 /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
 
-❯ ls -lh /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
+$ ls -lh /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
 
 Permissions Size User     Date Modified Name
 .r--r--r--  536M fmzakari 31 Dec  1969  /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a
-❯ ls -lh /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
+$ ls -lh /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
 
 Permissions Size User     Date Modified Name
 .r--r--r--  536M fmzakari 31 Dec  1969  /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
@@ -112,8 +112,8 @@ Permissions Size User     Date Modified Name
 Building it from scratch takes **31.37s** 🕒
 
 I add the large derivations to `$out` so it's a runtime dependency
-```bash
-❯ nix-store --query --tree /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+```console
+$ nix-store --query --tree /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
 
 /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
 +---/nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
@@ -122,8 +122,8 @@ I add the large derivations to `$out` so it's a runtime dependency
 
 Let's upload them both to cachix.
 
-```bash
-❯ cachix push fzakaria /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
+```console
+$ cachix push fzakaria /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
 compressing and pushing /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a (512.00 MiB)
 compressing and pushing /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b (512.00 MiB)
 compressing and pushing /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test (208.00 B)
@@ -132,16 +132,16 @@ All done.
 
 **Don't forget to cleanup these paths in between tests**
 
-```bash
-❯ nix-store --delete /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test; \
+```console
+$ nix-store --delete /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test; \
   nix-store --delete /nix/store/ln0d29k6zfskhgvig4kyhcql0phxd4qw-a; \
   nix-store --delete /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b;
 ```
 
 Now let's _time_ building it with jobs set to the _max-jobs_ set to 5.
 
-```bash
-❯ time nix-build --no-out-link large-dummy-a.nix --option max-jobs 5
+```console
+$ time nix-build --no-out-link large-dummy-a.nix --option max-jobs 5
 these paths will be fetched (1024.05 MiB download, 1024.00 MiB unpacked):
   /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
   /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b
@@ -158,8 +158,8 @@ Downloading it with the default number of jobs, takes **17.78s** 🕒
 
 Now let's _time_ building it with jobs set to _0_.
 
-```bash
-❯ time nix-build --no-out-link large-dummy-a.nix --option max-jobs 0
+```console
+$ time nix-build --no-out-link large-dummy-a.nix --option max-jobs 0
 these paths will be fetched (1024.05 MiB download, 1024.00 MiB unpacked):
   /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
   /nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b

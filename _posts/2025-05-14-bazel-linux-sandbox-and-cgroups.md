@@ -109,7 +109,7 @@ genrule(
 
 Now let's run it!
 
-```bash
+```console
 $ bazel --experimental_cgroup_parent=/example/test build \
    //:check_cgroup \
    --experimental_sandbox_memory_limit_mb=20

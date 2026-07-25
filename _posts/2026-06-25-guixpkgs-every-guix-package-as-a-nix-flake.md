@@ -45,8 +45,8 @@ Well.... Hello [GuixPkgs](https://github.com/fzakaria/guixpkgs). 🤯
 ```
 
 ```console
-❯ nix build github:fzakaria/guixpkgs#hello
-❯ ./result/bin/hello
+$ nix build github:fzakaria/guixpkgs#hello
+$ ./result/bin/hello
 Hello, world!
 ```
 

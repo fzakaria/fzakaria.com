@@ -64,23 +64,23 @@ The route table _lametun_, only needs a **single** entry. Route everything throu
 ```bash
 # Add the rule if the src address is our tun0 addr then
 # lookup the lametun routing table
-❯ sudo ip rule add from 172.31.255.7 lookup lametun
+$ sudo ip rule add from 172.31.255.7 lookup lametun
 
-❯ sudo ip rule show table lametun
+$ sudo ip rule show table lametun
 5209:   from 172.31.255.7 lookup lametun
 
 # Add the single route to send all traffic to our "gateway" (the tunnel)
-❯ sudo ip route add default via 172.31.255.7 dev tun0 table lametun
+$ sudo ip route add default via 172.31.255.7 dev tun0 table lametun
 
-❯ sudo ip route show table lametun
+$ sudo ip route show table lametun
 default via 172.31.255.7 dev tun0
 
 ```
 
 Now let's try to use _ping_ but have it select the _source IP_ to that of our _tun0_ device; let's `ping 8.8.8.8`.
 
-```bash
-❯ ping -I tun0 8.8.8.8
+```console
+$ ping -I tun0 8.8.8.8
 PING 8.8.8.8 (8.8.8.8) from 172.31.255.7 tun0: 56(84) bytes of data.
 64 bytes from 8.8.8.8: icmp_seq=1 ttl=112 time=9.09 ms
 64 bytes from 8.8.8.8: icmp_seq=2 ttl=112 time=9.03 ms
@@ -90,7 +90,7 @@ Let's prove though that this traffic is going through our tunnel by using [tshar
 
 ```bash
 # Running this on the laptop
-❯ sudo tshark -i tun0 icmp
+$ sudo tshark -i tun0 icmp
 Running as user "root" and group "root". This could be dangerous.
 Capturing on 'tun0'
     1 0.000000000 172.31.255.7 ? 8.8.8.8      ICMP 84 Echo (ping) request  id=0x3f0d, seq=17/4352, ttl=64
@@ -99,12 +99,12 @@ Capturing on 'tun0'
     4 1.009073436      8.8.8.8 ? 172.31.255.7 ICMP 84 Echo (ping) reply    id=0x3f0d, seq=18/4608, ttl=112 (request in 3)
 
 # Running this on the server
-❯ sudo tshark -i tun0 icmp
+$ sudo tshark -i tun0 icmp
 Running as user "root" and group "root". This could be dangerous.
 Capturing on 'tun0'
     1 0.000000000 172.31.255.7 → 8.8.8.8      ICMP 84 Echo (ping) request  id=0x3f0d, seq=88/22528, ttl=64
     2 0.002077891      8.8.8.8 → 172.31.255.7 ICMP 84 Echo (ping) reply    id=0x3f0d, seq=88/22528, ttl=112 (request in 1)
-❯ sudo tshark icmp
+$ sudo tshark icmp
 Running as user "root" and group "root". This could be dangerous.
 Capturing on 'eth0'
     1 0.000000000 172.31.9.116 → 8.8.8.8      ICMP 98 Echo (ping) request  id=0x3f0d, seq=110/28160, ttl=63
@@ -131,26 +131,26 @@ For such cases, we will rely on a more thorough setup using _network namespaces_
 First let's setup the network namespace using a _virtual ethernet device_ that we will use to bridge the network namespace & the host namespace.
 ```bash
 # Create a new network namespace
-❯ sudo ip netns add lametun
+$ sudo ip netns add lametun
 
 # Create a virtual ethernet device which will help move traffic
 # from the netns to the host namespace
 # Consider this like a wire connecting our network namespcae &
 # the host namespace.
-❯ sudo ip link add veth0 type veth peer name veth1
-❯ sudo ip link set up dev veth0
+$ sudo ip link add veth0 type veth peer name veth1
+$ sudo ip link set up dev veth0
 # Let's give it it's own subnet for simplicity
-❯ sudo ip addr add 10.0.0.7/24 dev veth0
+$ sudo ip addr add 10.0.0.7/24 dev veth0
 
 # Move the veth1 to the lametun network namespace
-❯ sudo ip link set veth1 netns lametun
+$ sudo ip link set veth1 netns lametun
 # Make sure to give it in an address in the same subnet
 # and set all the devices up!
-❯ sudo ip netns exec lametun ip addr add 10.0.0.3/24 dev veth1
-❯ sudo ip netns exec lametun ip link set up dev veth1
+$ sudo ip netns exec lametun ip addr add 10.0.0.3/24 dev veth1
+$ sudo ip netns exec lametun ip link set up dev veth1
 
 # Let's verify we can ping our virtual ethernet devices!
-❯ sudo ip netns exec lametun ping 10.0.0.7
+$ sudo ip netns exec lametun ping 10.0.0.7
 PING 10.0.0.7 (10.0.0.7) 56(84) bytes of data.
 64 bytes from 10.0.0.7: icmp_seq=1 ttl=64 time=0.070 ms
 64 bytes from 10.0.0.7: icmp_seq=2 ttl=64 time=0.147 ms
@@ -168,15 +168,15 @@ sudo ip netns exec lametun ip route add default via 10.0.0.7
 # It's not 100% clear this is needed since we have enabled ip_forward,
 # however for now it's enabled to help send the packets up/down the physical
 # device
-❯ sudo iptables -A FORWARD -o eth0 -i veth0 -j ACCEPT
-❯ sudo iptables -A FORWARD -i eth0 -o veth0 -j ACCEPT
+$ sudo iptables -A FORWARD -o eth0 -i veth0 -j ACCEPT
+$ sudo iptables -A FORWARD -i eth0 -o veth0 -j ACCEPT
 
 # We then need to NAT the veth IP similar to how we did in the server.
 # Here however we make sure we just set the source to be the whole subnet.
-❯ sudo iptables -t nat -A POSTROUTING -o eth0 -s 10.0.0.0/24 -j MASQUERADE
+$ sudo iptables -t nat -A POSTROUTING -o eth0 -s 10.0.0.0/24 -j MASQUERADE
 
 # Test out we can ping from inside the namespace
-❯ sudo ip netns exec lametun ping 8.8.8.8
+$ sudo ip netns exec lametun ping 8.8.8.8
 PING 8.8.8.8 (8.8.8.8) 56(84) bytes of data.
 64 bytes from 8.8.8.8: icmp_seq=1 ttl=115 time=6.28 ms
 64 bytes from 8.8.8.8: icmp_seq=2 ttl=115 time=5.77 ms
@@ -207,8 +207,8 @@ listen:false server:54.219.126.112 dev:tun0 port:1234
 The final _cherry on top_, is to make sure DNS works inside the namespace.
 For that let's create a file **/etc/netns/lametun/resolv.conf** with the following contents:
 
-```bash
-❯ cat /etc/netns/lametun/resolv.conf
+```console
+$ cat /etc/netns/lametun/resolv.conf
 nameserver 8.8.8.8
 ```
 

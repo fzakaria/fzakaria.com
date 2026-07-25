@@ -33,7 +33,7 @@ to link against at runtime.
 The _state of the art_ (prior to sqlelf) of how to retrieve this diagnostic information is using `LD_DEBUG` environment variable and trolling through the large dump of logs it emits. 🤦
 
 ```console
-❯ LD_DEBUG=symbols,bindings /usr/bin/ruby |& head
+$ LD_DEBUG=symbols,bindings /usr/bin/ruby |& head
    1228310:	symbol=__vdso_clock_gettime;  lookup in file=linux-vdso.so.1 [0]
    1228310:	binding file linux-vdso.so.1 [0] to linux-vdso.so.1 [0]: normal symbol `__vdso_clock_gettime' [LINUX_2.6]
    1228310:	symbol=__vdso_gettimeofday;  lookup in file=linux-vdso.so.1 [0]
@@ -68,7 +68,7 @@ _Please provide all pairings of symbols where the name is the same between any t
 One of the files must export the symbol and the other must be importing it._
 
 ```console
-❯ sqlelf /usr/bin/ruby --sql "SELECT caller.path as 'caller.path',
+$ sqlelf /usr/bin/ruby --sql "SELECT caller.path as 'caller.path',
        callee.path as 'calee.path',
        caller.name
 FROM ELF_SYMBOLS caller
@@ -130,7 +130,7 @@ Any symbol here is technically being shadowed, whether on purpose or benign.
 
 Revisiting the same _ruby_ example above we can see the results.
 ```console
-❯ sqlelf /usr/bin/ruby --recursive --sql "
+$ sqlelf /usr/bin/ruby --recursive --sql "
 SELECT name, version, count(*) as symbol_count,
        GROUP_CONCAT(path, ':') as libraries
 FROM elf_symbols

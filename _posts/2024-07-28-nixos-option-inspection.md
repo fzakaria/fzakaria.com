@@ -60,7 +60,7 @@ The common way people find out that a particular option is being set by multiple
 If `Module B` and `Module C` were to conflict with how they set `a.value`, you are presented with a friendly error telling you to decide on a priority.
 
 ```console
-❯ nix-instantiate --eval default.nix -A config.a.value
+$ nix-instantiate --eval default.nix -A config.a.value
 error: The option `a.value' has conflicting definition values:
 - In `moduleC.nix': false
 - In `moduleB.nix': true
@@ -88,7 +88,7 @@ Turns out, the solution to my woes has been in Nixpkgs for over 2 years (circa 2
 You can load up the `nix repl` for a given Nix Flake and find all the locations (only file sadly 😔 no line number) along with their values.
 
 ```console
-❯ nix repl --extra-experimental-features 'flakes repl-flake' .
+$ nix repl --extra-experimental-features 'flakes repl-flake' .
 warning: unknown experimental feature 'repl-flake'
 Nix 2.23.2
 Type :? for help.

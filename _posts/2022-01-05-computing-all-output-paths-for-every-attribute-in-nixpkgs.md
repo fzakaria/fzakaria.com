@@ -50,10 +50,10 @@ by [hydra](https://github.com/NixOS/hydra) or [ofborg](https://github.com/NixOS/
 
 I succumb to peer pressure and decided to use these tools 😮‍💨 rather than what I was hoping to be an elegant _pure Nix_ expression.
 
-```bash
-❯ nix search . --json | jq -r 'keys|.[]' > package-names.txt
+```console
+$ nix search . --json | jq -r 'keys|.[]' > package-names.txt
 
-❯ head -n 10 package-names.txt
+$ head -n 10 package-names.txt
 legacyPackages.x86_64-linux.AMB-plugins
 legacyPackages.x86_64-linux.ArchiSteamFarm
 legacyPackages.x86_64-linux.AusweisApp2
@@ -76,12 +76,12 @@ The plan here to continue with the new Nix commands and now evaluate the _outPat
 
 ⚠️ This does not build the derivation.
 
-```bash
-❯ cat package-names.txt | \
+```console
+$ cat package-names.txt | \
 xargs -I'{}' sh -c \
 'nix eval --raw ".#{}.outPath" >> outpaths.txt; echo >> outpaths.txt'
 
-❯ head -n 10 outpaths.txt
+$ head -n 10 outpaths.txt
 /nix/store/jrvzirqlzpylxxij8q10hramdsgk6nvx-AMB-plugins-0.8.1
 /nix/store/szh7aikwz12vj1sbkf4r6vdvy1k8apym-archisteamfarm-5.1.5.3
 /nix/store/mxi5pignri1z8n3lizkcp8y8m8cgfn55-AusweisApp2-1.22.2

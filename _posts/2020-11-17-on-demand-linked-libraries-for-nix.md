@@ -26,15 +26,15 @@ This was some of the questions posed by some Nix contributors and I wanted to ca
 Without going into a ton of detail about how dynamic libraries are performed on Linux; a Linux binary - [ELF format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) - contains information pertaining to the dynamic libraries necessary for the binary.
 
 For instance, here is a non-NixOS Ruby installation.
-```bash
-❯ readelf -d $(which ruby) | grep NEEDED
+```console
+$ readelf -d $(which ruby) | grep NEEDED
  0x0000000000000001 (NEEDED)             Shared library: [libruby-2.7.so.2.7]
  0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
 ```
 It requires two dynamic libraries _libruby_ & _libc_. These libraries may themselves have other dependencies, so we can use **ldd** to recursively find the dependency closure.
 
-```bash
-❯ ldd $(which ruby)
+```console
+$ ldd $(which ruby)
     linux-vdso.so.1 (0x00007ffed1705000)
     /lib/x86_64-linux-gnu/libnss_cache.so.2 (0x00007f3626cd0000)
     libruby-2.7.so.2.7 => /lib/x86_64-linux-gnu/libruby-2.7.so.2.7 (0x00007f3626960000)
@@ -58,7 +58,7 @@ This is the exact problem that Nix itself wants to address.
 Nix addresses this generally by patching the ELF header to _fully specify_ where the shared libraries can be found in the _/nix/store_; so that they are not resolved or searched on the FHS.
 
 ```
-❯ readelf -d $(which ruby) | grep RUNPATH
+$ readelf -d $(which ruby) | grep RUNPATH
  0x000000000000001d (RUNPATH) Library runpath:
  [/nix/store/z5lira1853d97gbmv1qbdjjpkjn7ksj8-ruby-2.6.6/lib:
  /nix/store/8fcxqg8dmwlkjw2vgkgz607kr5jy552w-zlib-1.2.11/lib:
@@ -77,8 +77,8 @@ A key insight into the bootstrapping of an ELF binary in Linux is the _interpret
 
 Let's take a look again at my non-Nix Ruby binary
 
-```bash
-❯ readelf -l $(which ruby) | grep interpreter
+```console
+$ readelf -l $(which ruby) | grep interpreter
       [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
 ```
 

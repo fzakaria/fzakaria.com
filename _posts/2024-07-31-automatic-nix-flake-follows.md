@@ -95,7 +95,7 @@ Our flake emits a `versions` attribute which we can evaluate.
 We correcltly see at the start the two different versions of _nixpkgs_.
 
 ```console
-❯ nix eval "#versions"
+$ nix eval "#versions"
 
 {
   a = {nixpkgs = "23.11pre-git";};
@@ -134,9 +134,9 @@ Turns out if we make the nodes references by the `inputs` in `roots` (our top le
 Let's apply _all-follow.py_ and see what happens.
 
 ```console
-❯ python all-follow.py flake.lock -i
+$ python all-follow.py flake.lock -i
 
-❯ nix eval "#versions"
+$ nix eval "#versions"
 {
   a = {nixpkgs = "24.05.20240729.12bf098";};
   nixpkgs = "24.05.20240729.12bf098";

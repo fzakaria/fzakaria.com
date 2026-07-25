@@ -6,7 +6,7 @@ excerpt_separator: <!--more-->
 ---
 
 **tl;dr;** you can use the following invocation to cache  your _nix-shell_
-```bash
+```console
  $ nix-store --query --references $(nix-instantiate shell.nix) | \
     xargs nix-store --realise | \
     xargs nix-store --query --requisites | \
@@ -48,7 +48,7 @@ mkShell {
 
 Let's us run the prevailing wisdom command.
 
-```bash
+```console
 $ nix-store --query --requisites --include-outputs $(nix-instantiate shell.nix) | wc -l
 
 2102
@@ -82,7 +82,7 @@ The _problem_ is that it's returning the **.drv** for chromium; if we were to ca
 
 The _"trick"_ is to _realise_ it so we get an output-path.
 
-```bash
+```console
 
 $ nix-store --query --references $(nix-instantiate shell.nix) | \
     xargs nix-store --realise | \
@@ -97,7 +97,7 @@ $ nix-store --query --references $(nix-instantiate shell.nix) | \
 Hurray much smaller!
 
 Tying it now with [cachix](https://cachix.org/) we get this nice one-liner.
-```bash
+```console
  $ nix-store --query --references $(nix-instantiate shell.nix) | \
     xargs nix-store --realise | \
     xargs nix-store --query --requisites | \

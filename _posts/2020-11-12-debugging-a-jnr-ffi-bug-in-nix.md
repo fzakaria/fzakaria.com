@@ -102,11 +102,11 @@ j  org.jruby.ext.socket.RubySocket.getifaddrs(Lorg/jruby/runtime/ThreadContext;L
 Putting this all together, we can now write a minimal reproducer.
 
 ```bash
-❯ which jruby
+$ which jruby
 /nix/store/v0frl1gs13bxs7g3hvlrm3656zq9ra5f-jruby-9.2.13.0/bin/jruby
 
-❯ gem install macaddr
-❯ jruby -e "require 'macaddr'; require 'jruby/path_helper'; puts Mac.addr"
+$ gem install macaddr
+$ jruby -e "require 'macaddr'; require 'jruby/path_helper'; puts Mac.addr"
 
 #
 # A fatal error has been detected by the Java Runtime Environment:
@@ -131,8 +131,8 @@ lib = os.equals(LINUX)
 
 Okay, so the _hunch_ is that the wrong _libc_ is being brought in, let's check with **LD_DEBUG=libs**.
 
-```bash
-❯ LD_DEBUG=libs jruby -e "require 'macaddr'; require 'jruby/path_helper'; puts Mac.addr"
+```console
+$ LD_DEBUG=libs jruby -e "require 'macaddr'; require 'jruby/path_helper'; puts Mac.addr"
 ...
    3769338: calling init: /lib/x86_64-linux-gnu/libc.so.6
 ...
@@ -141,7 +141,7 @@ Okay, so the _hunch_ is that the wrong _libc_ is being brought in, let's check w
 💡 Great! We are definitely resolving to a different libc than what is already set in the ELF header of our Java process.
 
 ```
-❯ ldd $(which java)
+$ ldd $(which java)
     ...
     libc.so.6 =>
     /nix/store/bdf8iipzya03h2amgfncqpclf6bmy3a1-glibc-2.32/lib/libc.so.6 (0x00007f9e58bc6000)

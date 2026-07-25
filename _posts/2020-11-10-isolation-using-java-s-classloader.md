@@ -21,8 +21,8 @@ It's important to understand though that the _CLASS_PATH_ is used during **compi
 
 > Did you know JAR files are just zip files ?
 
-```bash
-❯ file some-jar.jar
+```console
+$ file some-jar.jar
 some-jar.jar: Zip archive data, at least v1.0 to extract
 ```
 
@@ -54,9 +54,9 @@ public class Main {
 ```
 
 I can go ahead and compile these classes & run it.
-```bash
-❯ javac Main.java
-❯ java Main
+```console
+$ javac Main.java
+$ java Main
 Woof!
 ```
 
@@ -71,9 +71,9 @@ public class Rottweiler implements Dog {
   }
 }
 ```
-```bash
-❯ javac Dog.java
-❯ java Main
+```console
+$ javac Dog.java
+$ java Main
 Starting application!
 Meow!
 ```
@@ -100,8 +100,8 @@ The best you can do for classes A, B & C is to make sure they were both built & 
 
 Let's change our Dog example to resemble the following:
 
-```bash
-❯ tree
+```console
+$ tree
 .
 ├── Dog.class
 ├── Dog.java
@@ -145,8 +145,8 @@ public class Main {
 }
 ```
 
-```bash
-❯ java Main
+```console
+$ java Main
 Woof!
 Meow!
 ```

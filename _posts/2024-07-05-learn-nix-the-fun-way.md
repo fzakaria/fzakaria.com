@@ -53,15 +53,15 @@ If we build this, we get the result:
 
   **/nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip**
 
-```bash
-❯ /nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip 
+```console
+$ /nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip 
 24.5.113.148
 ```
 
 Now that this is in Nix and we've modeled our dependencies, we can do _fun_ things like generate graph diagrams to view them (click the image to view larger).
 
-```bash
-❯ nix-store --query --graph $(nix-build what-is-my-ip.nix) | \
+```console
+$ nix-store --query --graph $(nix-build what-is-my-ip.nix) | \
 dot -Tpng -o what-is-my-ip-deps.png
 ```
 
@@ -84,7 +84,7 @@ in
 ```
 
 ```
-❯ nix-shell what-is-my-ip-shell.nix
+$ nix-shell what-is-my-ip-shell.nix
 Hello, Nix!
 
 [nix-shell:~/tutorial]$ which what-is-my-ip
@@ -95,11 +95,11 @@ Hello, Nix!
 
 We can now do binary or source deployments 🚀🛠️📦 since we know the full dependency closure of our tool. We simply copy the necessary _/nix/store_ paths to another machine with Nix installed.
 
-```bash
-❯ nix copy --to ssh://nixie.tail9f4b5.ts.net \
+```console
+$ nix copy --to ssh://nixie.tail9f4b5.ts.net \
     $(nix-build what-is-my-ip.nix) --no-check-sigs
 
-❯ ssh nixie.tail9f4b5.ts.net
+$ ssh nixie.tail9f4b5.ts.net
 
 [fmzakari@nixie:~]$ /nix/store/lr6wlz2652r35rwzc79samg77l6iqmii-what-is-my-ip/bin/what-is-my-ip
 98.147.178.19
@@ -120,11 +120,11 @@ in
   }
 ```
 
-```bash
-❯ docker load < $(nix-build what-is-my-ip-docker.nix)
+```console
+$ docker load < $(nix-build what-is-my-ip-docker.nix)
 Loaded image: what-is-my-ip-docker:c9g6x30invdq1bjfah3w1aw5w52vkdfn
 
-❯ docker run -it what-is-my-ip-docker:c9g6x30invdq1bjfah3w1aw5w52vkdfn
+$ docker run -it what-is-my-ip-docker:c9g6x30invdq1bjfah3w1aw5w52vkdfn
 24.5.113.148
 ```
 
@@ -157,9 +157,9 @@ in
 ```
 
 ```console
-❯ nix-build what-is-my-ip-vm.nix
+$ nix-build what-is-my-ip-vm.nix
 
-❯ QEMU_KERNEL_PARAMS=console=ttyS0 ./result/bin/run-nixos-vm -nographic; reset
+$ QEMU_KERNEL_PARAMS=console=ttyS0 ./result/bin/run-nixos-vm -nographic; reset
 
 <<< Welcome to NixOS 24.05pre-git (x86_64) - ttyS0 >>>
 

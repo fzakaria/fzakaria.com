@@ -62,7 +62,7 @@ main: main.c libfoo.so
 If we inspect the resulting executable file with _readelf_ we can see the relocations that are present, specifically the one for the `foo` function.
 
 ```console
-❯ readelf -r main
+$ readelf -r main
 ...
 Relocation section '.rela.plt' at offset 0x530 contains 5 entries:
   Offset          Info           Type           Sym. Value    Sym. Name + Addend
@@ -115,7 +115,7 @@ This works on store-based systems, such as Nix, since the set of shared librarie
 Let's start of with the results of this optimization by looking at the _extreme case_ of 1 million symbols.
 
 ```console
-❯ hyperfine --warmup 1 --runs 3 'DEBUG=1 RELOC_READ=1 ./1_million_functions.bin > /dev/null'
+$ hyperfine --warmup 1 --runs 3 'DEBUG=1 RELOC_READ=1 ./1_million_functions.bin > /dev/null'
 Benchmark 1: DEBUG=1 RELOC_READ=1 ./1_million_functions.bin > /dev/null
   Time (mean ± σ):     623.4 ms ±  15.1 ms    [User: 524.7 ms, System: 98.6 ms]
   Range (min … max):   608.1 ms … 638.3 ms    3 runs

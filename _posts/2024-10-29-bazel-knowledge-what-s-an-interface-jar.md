@@ -57,7 +57,7 @@ Wouldn't private-only changes to a dependency (i.e. renaming a private variable)
 `ijar` is a tool found within the Bazel repository [bazel/third_party/ijar](https://github.com/bazelbuild/bazel/blob/master/third_party/ijar/README.txt).
 
 You can build and run it fairly simple with Bazel
-```bash
+```console
 $ bazel run //third_party/ijar
 Usage: ijar [-v] [--[no]strip_jar] [--target label label] [--injecting_rule_kind kind] x.jar [x_interface.j
 ar>]
@@ -91,7 +91,7 @@ public class Banana {
 ```
 
 We compile it like usual.
-```bash
+```console
 $ javac Banana.java
 $ jar cf banana.jar Banana.class
 ```
@@ -100,7 +100,7 @@ When we run `ijar` on it we get the hash _e18e0ae82bdc4deb04f04aa_
 
 ⚠️ I shortened the hashes to make them more legible.
 
-```bash
+```console
 $ bazel-bin/third_party/ijar/ijar banana.jar
 
 $ sha256sum banana.jar
@@ -114,7 +114,7 @@ Let's now change the internals of the _Banana_ class; let's rename the method `s
 
 Let's recompute the new sha256.
 
-```bash
+```console
 $ sha256sum banana.jar
 9278282827ddb55c68eb370 banana.jar
 

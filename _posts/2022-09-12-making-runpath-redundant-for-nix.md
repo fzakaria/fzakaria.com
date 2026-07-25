@@ -13,10 +13,10 @@ Nix and other store-like systems (i.e. Guix or Spack), resolve all their depende
 dynamic linker where to discover the libraries -- as opposed to searching default search paths like _/lib_.
 
 ```console
-❯ which ruby
+$ which ruby
 /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/bin/ruby
 
-❯ patchelf --print-rpath $(which ruby)
+$ patchelf --print-rpath $(which ruby)
 /nix/store/8k4sgk3bmxnj0jvcgc4wvyd8ilg0ww3y-ruby-2.7.6/lib:/nix/store/r90cncsaa519pwqpijg7ii4rkcmwjn6h-zlib-1.2.12/lib:/nix/store/bvy2z17rzlvkx2sj7fy99ajm853yv898-glibc-2.34-210/lib
 ```
 
@@ -43,21 +43,21 @@ Here is a small example to demonstrate
 ```
 # Let's build our library with an absolute path for soname
 # notice I have set the soname to an absolute path
-❯ gcc -shared -o libf.so -Wl,-soname,/nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so -x c - <<EOF
+$ gcc -shared -o libf.so -Wl,-soname,/nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so -x c - <<EOF
         #include <stdio.h>
         void f() { puts("hello world"); }
     EOF
 
-❯ patchelf --print-soname libf.so
+$ patchelf --print-soname libf.so
 /nix/store/zir4jfm86i3037lnsaz5br55iwavvhpz-libf-0.1/lib/libf.so
 
 # now build the application that relies on it
-❯ gcc -o app -lf -L. -x c - <<EOF
+$ gcc -o app -lf -L. -x c - <<EOF
     void f();
     int main() { f(); }
 EOF
 
-❯ patchelf --print-needed app
+$ patchelf --print-needed app
 /nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so
 libc.so.6
 ```
@@ -132,10 +132,10 @@ stdenv.mkDerivation rec {
 
 The built binary will correctly have the _DT_NEEDED_ set to the absolute path of the shared object file.
 ```console
-❯ patchelf --print-needed /nix/store/6pg9d3lwlmgcmmswv937fcy211vkqxch-app-0.1/bin/app
+$ patchelf --print-needed /nix/store/6pg9d3lwlmgcmmswv937fcy211vkqxch-app-0.1/bin/app
 /nix/store/znxycsxlnx2s9zn6g0s0fl4z57ar7aps-libf-0.1/lib/libf.so
 libc.so.6
-❯ patchelf --print-soname /nix/store/zir4jfm86i3037lnsaz5br55iwavvhpz-libf-0.1/lib/libf.so
+$ patchelf --print-soname /nix/store/zir4jfm86i3037lnsaz5br55iwavvhpz-libf-0.1/lib/libf.so
 /nix/store/zir4jfm86i3037lnsaz5br55iwavvhpz-libf-0.1/lib/libf.so
 ```
 

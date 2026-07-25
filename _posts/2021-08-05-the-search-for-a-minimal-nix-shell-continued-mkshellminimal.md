@@ -39,8 +39,8 @@ mkShellMinimal {
 
 If we check the closure size of our shell, we see that it's only **1.4KiB** 😮
 
-```bash
-❯ nix path-info -rSsh $(nix-build shell.nix) 
+```console
+$ nix path-info -rSsh $(nix-build shell.nix) 
 This derivation is not meant to be built, unless you want to capture the dependency closure.
 
 /nix/store/8ka1hnlf06z3h2rpd00b4d9w5yxh0n39-setup        	 376.0 	 376.0

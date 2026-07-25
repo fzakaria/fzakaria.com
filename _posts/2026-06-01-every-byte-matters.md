@@ -11,7 +11,7 @@ Turns out that even within a growth scale for your algorithm, such as a simple f
 
 First, let's understand our current machine. Let's take a peek at our _cache line_ and _page_ sizes.
 
-```bash
+```console
 $ lscpu | grep -i cache
   L1d cache:    352 KiB (10 instances)
   L1i cache:    640 KiB (10 instances)

@@ -30,13 +30,13 @@ You find the similar announcement on <https://discourse.nixos.org/t/mvn2nix-pack
 ### Demo
 
 You can easily run **mvn2nix** using *nix run*.
-```bash
+```console
 $ nix run -f https://github.com/fzakaria/mvn2nix/archive/master.tar.gz \
 --command mvn2nix
 ```
 
 Doing so on a Maven project with a _pom.xml_ will produce lock file contents.
-```bash
+```console
 $ nix run -f https://github.com/fzakaria/mvn2nix/archive/master.tar.gz \
         --command mvn2nix > mvn2nix-lock.json
 

@@ -35,7 +35,7 @@ As part of my work on [Shrinkwrap](https://github.com/fzakaria/shrinkwrap), I wa
 
 The best tools we have to introspect binaries are `readelf` and `objdump` whom simply dump raw ASCII text to the console.
 ```console
-❯ readelf --demangle --dyn-syms /usr/bin/ruby | head
+$ readelf --demangle --dyn-syms /usr/bin/ruby | head
 
 Symbol table '.dynsym' contains 22 entries:
    Num:    Value          Size Type    Bind   Vis      Ndx Name
@@ -52,7 +52,7 @@ To prove to myself that the idea has merit, I wanted to explore making a tool th
 Using the power of [SQLite](https://sqlite.org/index.html) and the Virtual Tables concept, I wrote [sqlelf](https://github.com/fzakaria/sqlelf): _Explore ELF objects through the power of SQL._
 
 ```console
-❯ sqlelf /usr/bin/ruby /bin/ls /usr/bin/pnmarith
+$ sqlelf /usr/bin/ruby /bin/ls /usr/bin/pnmarith
 sqlite> SELECT elf_headers.path, COUNT(*) as num_sections
     ..> FROM elf_headers
     ..> INNER JOIN elf_sections ON elf_headers.path = elf_sections.path

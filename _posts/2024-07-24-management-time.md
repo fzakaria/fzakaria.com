@@ -39,7 +39,7 @@ typedef struct {
 These _fixed-width_ entries are serialized to a separate file that is told to the loader to be loaded through the use of an environment variable `RELOC_READ`
 
 ```console
-❯ RELOC_READ='hello_world_relo.bin' hello_world
+$ RELOC_READ='hello_world_relo.bin' hello_world
 ```
 
 In practice, the binaries are _wrapped_ when deployed through NixOS so that this is all transparent to the user via a simple gesture in Nix.
@@ -73,10 +73,10 @@ To demonstrate _management time_, I wrote a small Python utility [sak](https://g
 The current file format is a binary protocol and not suitable for auditing. We can easily transform it to JSON or a SQLite database, to perform audits.
 
 ```console
-❯ sak file-to-sqlite ./hello_world_relo.bin \
+$ sak file-to-sqlite ./hello_world_relo.bin \
                      --db hello_world.sqlite
 
-❯ sqlite3 hello_world.sqlite
+$ sqlite3 hello_world.sqlite
 sqlite> .mode json
 sqlite> select * from CachedRelocInfo LIMIT 1;
 [
@@ -108,7 +108,7 @@ Knowing the surface area the transitive closure (_not just the application_) use
 We can validate that we could replace a library with a different version, or even a different library that may offer the same symbols, without needing to run our application.
 
 ```console
-❯ sak has-necessary-symbols hello_world_relo.bin \
+$ sak has-necessary-symbols hello_world_relo.bin \
         --new-library /nix/store/xxx-libfoo-1.1/lib/libfoo.so \
         --symbol-dso-name "/nix/store/xxx-libfoo-1.0/lib/libfoo.so"
 The following symbols are missing:

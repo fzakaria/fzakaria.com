@@ -65,14 +65,14 @@ Next, let's import this module, à la `imports` keyword attribute in a NixOS mod
 
 Everything looks OK, and evaluates correctly.
 ```console
-❯ nix-instantiate --eval config.nix -A config.greet.name
+$ nix-instantiate --eval config.nix -A config.greet.name
 "hi"
 ```
 
 If we try `definitionsWithLocations` however we don't get what we expected. 🤮
 
 ```console
-❯ nix repl 
+$ nix repl 
 Nix 2.23.2
 nix-repl> :l ./config.nix
 Added 7 variables.
@@ -109,7 +109,7 @@ imports = [
 With the applied fix, the results are what we want, and the world makes sense again. 😌
 
 ```console
-❯ nix repl
+$ nix repl
 Nix 2.23.2
 Type :? for help.
 nix-repl> :l ./config.nix                                

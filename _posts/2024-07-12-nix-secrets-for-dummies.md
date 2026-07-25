@@ -20,8 +20,8 @@ Let me save you time, and we will focus solely on _agenix_. _agenix_ is a Nix mo
 We will work around the example of a secret file: _password_
 
 ```
-❯ echo -n "swordfish" > password
-❯ cat password
+$ echo -n "swordfish" > password
+$ cat password
 swordfish
 ```
 
@@ -32,11 +32,11 @@ You encrypt files in _age_ with "recipients" (public-keys) and decrypt them with
 ❗You can encrypt a file for multiple recipients but **any single one** can decrypt the file. This will prove to be useful for _agenix_.
 
 ```console
-❯ age --armor \
+$ age --armor \
     -r age1yubikey1qg8nf40dfw4gprmywplggtg2wuvv55fcmujzrm65z8s3j6rhwje2vm3hhs7 \
     password > password.age
 
-❯ cat password.age 
+$ cat password.age 
 -----BEGIN AGE ENCRYPTED FILE-----
 YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IHBpdi1wMjU2IGVUczBkQSBBeEIwTlVC
 TE1ZU3dhS1I4UlphT1dhaXNUY2Z2L1pLaWUxS0dwZFB6V0x4VApLWCs5R2hjY3JT
@@ -55,9 +55,9 @@ The goal is to get an encrypted secret from one machine to another.
 _agenix_ takes advantage of the fact that most systems built with NixOS have a default host key generated via [services.openssh.hostKeys](https://search.nixos.org/options?channel=unstable&show=services.openssh.hostKeys&from=0&size=50&sort=relevance&type=packages&query=services.openssh.hostKeys).
 
 ```console
-❯ ls /etc/ssh/*_key
+$ ls /etc/ssh/*_key
 /etc/ssh/ssh_host_ed25519_key  /etc/ssh/ssh_host_rsa_key
-❯ ls /etc/ssh/*_key*pub
+$ ls /etc/ssh/*_key*pub
 /etc/ssh/ssh_host_ed25519_key.pub  /etc/ssh/ssh_host_rsa_key.pub
 ```
 
@@ -128,7 +128,7 @@ _Remember we encrypted the secret with host public keys of the machines that cou
 After you deploy your NixOS configuration, you can find the secret at _/run/agenix_ decrypted at switch time via an activation script.
 
 ```console
-❯ sudo ls /run/agenix/
+$ sudo ls /run/agenix/
 password
 ```
 

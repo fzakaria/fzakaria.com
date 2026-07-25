@@ -39,8 +39,8 @@ mkShell {
 ```
 
 Let's see it in action:
-```bash
-❯ nix-shell shell.nix
+```console
+$ nix-shell shell.nix
 
 [nix-shell:~/code/nix/playground]$ echo $MESSAGE
 Hello, world!
@@ -50,8 +50,8 @@ Recently an improvement [#95536](https://github.com/NixOS/nixpkgs/pull/95536) by
 
 ✨ A new attribute for derivations _inputDerivation_ is introduced that is _always buildable_ and whose runtime dependences are it's build dependencies; exactly what we need for nix-shell!
 
-```bash
-❯ nix-build --no-out-link shell.nix -A inputDerivation
+```console
+$ nix-build --no-out-link shell.nix -A inputDerivation
 these derivations will be built:
   /nix/store/bjn4imm9dw7xnxpjrwyrpk0wsy0j7xwh-example-shell.drv
 building '/nix/store/bjn4imm9dw7xnxpjrwyrpk0wsy0j7xwh-example-shell.drv'...
@@ -62,8 +62,8 @@ We now have a store path _/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-sh
 
 > The below is simply the *immediate* dependencies and not the full transitive closure for brevity.
 
-```bash
-❯ nix-store --query --references \
+```console
+$ nix-store --query --references \
     /nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
 
 /nix/store/2jysm3dfsgby5sw5jgj43qjrb5v79ms9-bash-4.4-p23
@@ -74,10 +74,10 @@ We now have a store path _/nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-sh
 ```
 
 I will now copy the _shell.nix_ file to my other machine & copy the transitive closure to it.
-```bash
-❯ scp shell.nix machine-b:~
+```console
+$ scp shell.nix machine-b:~
 
-❯ nix-copy-closure --to machine-b \
+$ nix-copy-closure --to machine-b \
     /nix/store/rw6i1wk9iv0286xi2b6kpw4ynk4pldyh-example-shell
 copying 36 paths...
 ```
@@ -88,20 +88,20 @@ Let's hop on _machine B_ and create a network namespace to pretend we do not hav
 > with its own routes, firewall rules, and network devices.
 
 ```bash
-❯ ssh machine-b
+$ ssh machine-b
 
 # since we won't have any Internet access, hydrate the cache
 # with our nixpkgs version
-❯ nix-prefetch-url --unpack \
+$ nix-prefetch-url --unpack \
 https://github.com/nixos/nixpkgs/archive/5aba0fe9766a7201a336249fd6cb76e0d7ba2faf.tar.gz \
 --name "nixos-unstable-2020-09-24"
 
-❯ sudo ip netns add nixshell
+$ sudo ip netns add nixshell
 # enter the namespace
-❯ sudo ip netns exec nixshell su $USER -c zsh
+$ sudo ip netns exec nixshell su $USER -c zsh
 
 # let's confirm we do not have Internet access
-❯ ping google.com
+$ ping google.com
 ping: google.com: Temporary failure in name resolution
 ```
 
@@ -110,7 +110,7 @@ Let's fire up our _nix-shell_ and see if it works.
 ```bash
 # don't forget we are within our network namespace
 # without access to the Internet
-❯ nix-shell shell.nix
+$ nix-shell shell.nix
 bash: cannot set terminal process group (-1): Inappropriate ioctl for device
 bash: no job control in this shell
 
