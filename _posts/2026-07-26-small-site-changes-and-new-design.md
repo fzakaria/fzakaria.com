@@ -16,6 +16,10 @@ Some small improvements and quality-of-life enhacements:
 * A small `/nix/store` entry in the footer to showcase the site is built with Nix.
 * A [Jekyll plugin](https://github.com/fzakaria/fzakaria.com/blob/9d5dc190358f42466d99ce990cda77448f8713d8/_plugins/images.rb) that automatically creates source-sets for the images I use in my blog posts.
 * A [Jekyll plugin](https://github.com/fzakaria/fzakaria.com/blob/9d5dc190358f42466d99ce990cda77448f8713d8/_plugins/asset_version.rb) to create a short content hash for the stylesheets to avoid the browsers caching stale CSS.
+* A [Jekyll plugin](https://github.com/fzakaria/fzakaria.com/blob/779849a9a37e2a8c381acc751eacac5dd4b1aa3f/_plugins/signal.rb) that generates a little curved line for the masthead that is the `sha256` of the page.
 * Redesigned the layout to allow side-bar content.
+
+{: .aside}
+Look at me! I'm sidebar content I will undoubtedly abuse.
 
 I continued to try and give it my personal _flair_ to avoid it looking like _AI-slop_ but 🤷
