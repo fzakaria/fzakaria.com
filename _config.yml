@@ -52,6 +52,7 @@ exclude:
   - vendor/gems/
   - vendor/ruby/
   - .direnv/
+  - .jj/
 collections:
   old_blog:
     output: true
