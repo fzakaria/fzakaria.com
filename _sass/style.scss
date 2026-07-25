@@ -319,21 +319,55 @@ body {
   justify-content: space-between;
   gap: 0 1rem;
 
-  // The hairline under the masthead fades out to the right, so the page opens
-  // with a stroke rather than a box.
-  &::after {
-    content: "";
+  // The line under the masthead is an oscilloscope trace of the page's own
+  // address: SHA-256 of the URL plotted one sample per byte. Deterministic —
+  // a given page always draws the same line. The path itself is built in
+  // _plugins/signal.rb.
+  //
+  // The stroke ramps accent to rule-strong and the mask dissolves the tail,
+  // which is what the hairline this replaced used to do: the page opens with a
+  // stroke rather than a box.
+  &__signal {
     position: absolute;
     left: 0;
     right: 0;
     bottom: 0;
-    height: 2px;
-    background: linear-gradient(
+    height: 26px;
+    -webkit-mask-image: linear-gradient(
       to right,
-      var(--accent) 0%,
-      var(--rule-strong) 22%,
-      transparent 92%
+      #000 0%,
+      #000 62%,
+      transparent 96%
     );
+    mask-image: linear-gradient(to right, #000 0%, #000 62%, transparent 96%);
+
+    svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    path {
+      fill: none;
+      stroke: url("#signal-ramp");
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      // The viewBox is stretched to the masthead, so without this the stroke
+      // would be scaled wide and squat along with it.
+      vector-effect: non-scaling-stroke;
+    }
+  }
+
+  // Gradient stops are styled here rather than as presentation attributes so
+  // they follow the light and dark palettes.
+  .signal-ramp__lead {
+    stop-color: var(--accent);
+  }
+
+  .signal-ramp__body,
+  .signal-ramp__tail {
+    stop-color: var(--rule-strong);
   }
 }
 
@@ -1686,6 +1720,25 @@ blockquote.alert {
   .rise {
     animation: rise 0.5s cubic-bezier(0.22, 0.68, 0.35, 1) backwards;
     animation-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  // The trace draws itself left to right once the header has settled, the way
+  // a scope sweeps. Both the initial state and the animation live inside this
+  // query, so a reader who asks for less motion simply gets the finished line
+  // rather than an invisible one.
+  //
+  // pathLength normalises the curve to 100 units, so one dash length covers it
+  // whatever shape the page's hash happens to make.
+  @keyframes signal-sweep {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .masthead__signal path {
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: signal-sweep 1.1s cubic-bezier(0.32, 0.5, 0.3, 1) 0.18s forwards;
   }
 }
 

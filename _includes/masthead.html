@@ -6,4 +6,23 @@
   {%- if page.layout == 'index' %}
     <a class="masthead__about" href="#about">About</a>
   {%- endif %}
+  {%- comment -%}
+    The trace is built in _plugins/signal.rb; the page ships only its own path.
+  {%- endcomment -%}
+  <div
+    class="masthead__signal"
+    aria-hidden="true"
+    title="sha256 of this page's URL, drawn — {{ page.signal_hash }}"
+  >
+    <svg viewBox="0 0 1000 100" preserveAspectRatio="none" focusable="false">
+      <defs>
+        <linearGradient id="signal-ramp" x1="0" y1="0" x2="1" y2="0">
+          <stop class="signal-ramp__lead" offset="0" />
+          <stop class="signal-ramp__body" offset="0.24" />
+          <stop class="signal-ramp__tail" offset="1" />
+        </linearGradient>
+      </defs>
+      <path d="{{ page.signal_path }}" pathLength="100" />
+    </svg>
+  </div>
 </header>
