@@ -1,25 +1,66 @@
 ---
 layout: base
 ---
-<div class="post-content">
-  <h1 class="page-title">
-    {{ page.title }}
-  </h1>
-  <p class="date">
-    Published {{ page.date | date: '%Y-%m-%d' }} on
-    <a href="/">{{ site.title }}</a>
-  </p>
+{% assign is_archive = false %}
+{% if page.collection == 'old_blog' %}{% assign is_archive = true %}{% endif %}
+{% assign words = content | number_of_words %}
+{% assign minutes = words | divided_by: 200 | plus: 1 %}
 
-  <article>{{ content }}</article>
-  <hr>
-  <p style="text-align: center;">
-    <a href="https://github.com/fzakaria/fzakaria.com/tree/{{ site.commit_hash }}/{{ page.path }}"
-      >Improve this page @ {{ site.commit_hash | slice: 0, 7 -}}
-    </a>
-    <br>
-    <small>
-      The content for this site is
-      <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>.
-    </small>
-  </p>
-</div>
+<article class="column">
+  <header class="post-header rise">
+    <p class="post-kicker">
+      {% if is_archive %}
+        <span>Archive</span>
+        <span class="sep" aria-hidden="true">&middot;</span>
+      {% endif %}
+      {% if page.date %}
+        <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: '%Y-%m-%d' }}</time>
+        <span class="sep" aria-hidden="true">&middot;</span>
+      {% endif %}
+      <span>{{ minutes }} min read</span>
+    </p>
+    <h1 class="post-title">{{ page.title }}</h1>
+    <hr class="post-rule">
+  </header>
+
+  {% if is_archive %}
+    {%- comment -%}
+      Read the span off the collection rather than hardcoding it, so the note
+      stays true if anything is ever added to or removed from the archive.
+    {%- endcomment -%}
+    {% assign archive_by_date = site.old_blog | sort: 'date' %}
+    {% assign archive_first = archive_by_date.first.date | date: '%Y' %}
+    {% assign archive_last = archive_by_date.last.date | date: '%Y' %}
+    <p class="archive-note">
+      This post comes from my original WordPress blog, written between {{ archive_first }} and {{ archive_last }}. It is
+      kept here verbatim as an archive — the formatting did not always survive the move, and I no longer agree with all
+      of it.
+    </p>
+  {% endif %}
+
+  <div class="post-body prose">{{ content }}</div>
+
+  {% if page.comments and page.comments.size > 0 %}
+    <section class="comments">
+      <h2 class="comments__title">
+        {{ page.comments | size }} archived comment{% if page.comments.size != 1 %}s{% endif %}
+      </h2>
+      {% for comment in page.comments %}
+        <div class="comment">
+          <p class="comment__meta">
+            <span class="who">
+              {%- if comment.author_url and comment.author_url != '' -%}
+                <a href="{{ comment.author_url }}">{{ comment.author }}</a>
+              {%- else -%}
+                {{ comment.author }}
+              {%- endif -%}
+            </span>
+            <span class="sep" aria-hidden="true">&middot;</span>
+            {{ comment.date | date: '%Y-%m-%d' }}
+          </p>
+          {{ comment.content | markdownify }}
+        </div>
+      {% endfor %}
+    </section>
+  {% endif %}
+</article>

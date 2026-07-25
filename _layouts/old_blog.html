@@ -1,27 +1,43 @@
 ---
 layout: base
 ---
-<div class="index-content">
-  <div class="articles">
-    <h1 class="page-title">
-      {{ page.title }}
-    </h1>
-    <p class="text-muted">
-      <i>
-        These posts are from my original Wordpress blog. They are kept here as an archive; the formatting did not
-        necessarily transition well.
-      </i>
+{% assign old_blog_posts = site.old_blog | sort: 'date' | reverse %}
+{% assign years = old_blog_posts | group_by_exp: 'post', "post.date | date: '%Y'" %}
+
+<div class="column">
+  <header class="post-header rise">
+    <p class="post-kicker">
+      <span>Archive</span>
+      <span class="sep" aria-hidden="true">&middot;</span>
+      <span>{{ old_blog_posts | size }} posts</span>
     </p>
-    {% assign old_blog_posts = site.old_blog | reverse %}
-    {% for post in old_blog_posts %}
-      <div class="post-stub" style="padding-bottom: 1em;">
-        <div class="date">{{ post.date | date: '%B %d, %Y' }}</div>
-        <div class="title">
-          <a href="{{ post.url }}"> {{ post.title }} </a>
-        </div>
-      </div>
-    {% endfor %}
-    <hr>
-  </div>
-  {% include sidebar.html %}
+    {%- comment -%}
+      The note below already says what this page is, so the title is kept for
+      the document outline and screen readers rather than shown.
+    {%- endcomment -%}
+    <h1 class="visually-hidden">{{ page.title }}</h1>
+    <hr class="post-rule">
+  </header>
+
+  <p class="archive-note">
+    These are the posts from my original WordPress blog. They are kept here as an archive; the formatting did not always
+    survive the migration, and the opinions are those of a much younger engineer.
+  </p>
+
+  {% for year in years %}
+    <section class="year">
+      <h2 class="year__label">
+        {{ year.name }}
+        <span class="count">{{ year.items | size }} posts</span>
+      </h2>
+      <ul class="year__list">
+        {% for post in year.items %}
+          <li class="entry">
+            <span class="date">{{ post.date | date: '%b %d' }}</span>
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endfor %}
 </div>

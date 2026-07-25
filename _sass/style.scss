@@ -1,315 +1,1688 @@
-//Aim for minimal usage, removing default values and focusing on accessibility.
-
-// Slightly softened from pure black for easier reading.
-$color-dark: #222;
-$color-white: #fafafa; // Slightly off-white for better comfort
-// More accessible link color than standard "blue".
-$color-link: #0645ad;
-$color-gray-light: #ddd;
-$color-gray-mid: #999;
-$color-gray-dark: #666;
-$color-gray-border: #ccc;
-$color-highlight: #aaa;
-$color-code-bg: #f5f5f5; // Light gray for code blocks
-$color-inline-code-bg: #f0f0f0; // Slightly darker for inline code
-
-$spacing-sm: 0.5rem;
-$spacing-base: 1rem;
-$spacing-md: 1.5rem;
-$spacing-lg: 2rem;
-
-$border-radius: 4px;
-$border-radius-sm: 3px;
-
-// Use a well-regarded accessible typeface stack.
-// "Inter" is a common modern choice, with fallbacks.
-$font-sans:
-  "Inter",
-  -apple-system,
-  BlinkMacSystemFont,
-  "Segoe UI",
-  Roboto,
-  "Helvetica Neue",
-  Arial,
-  sans-serif,
-  "Apple Color Emoji",
-  "Segoe UI Emoji";
+// ---------------------------------------------------------------------------
+// fzakaria.com — a typeset technical monograph.
+//
+// Prose is set in Newsreader; every piece of structural chrome (dates, labels,
+// nav, captions, code) is set in JetBrains Mono. The page is a three-zone
+// layout: a narrow left gutter for hanging section markers, a fixed measure
+// for the prose, and a right margin for sidenotes. Zero JavaScript.
+// ---------------------------------------------------------------------------
 
 @use "syntax";
-@use "sass:color";
+@use "sass:list";
+
+// The single breakpoint that matters: above it there is room for a left gutter
+// and a right margin column, below it the page is one honest column.
+$wide: 67.5625rem;
+
+// --- Fonts -----------------------------------------------------------------
+// Self-hosted so there is no third-party DNS + TLS handshake on first paint.
+// Both families are weight-variable; unicode-range keeps the -ext subsets from
+// being fetched unless a page actually needs them.
+
+@font-face {
+  font-family: "Newsreader";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/assets/fonts/Newsreader-latin.woff2") format("woff2");
+  unicode-range:
+    u+0000-00ff, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc,
+    u+0304, u+0308, u+0329, u+2000-206f, u+20ac, u+2122, u+2191, u+2193, u+2212,
+    u+2215, u+feff, u+fffd;
+}
+
+@font-face {
+  font-family: "Newsreader";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/assets/fonts/Newsreader-latin-ext.woff2") format("woff2");
+  unicode-range:
+    u+0100-02ba, u+02bd-02c5, u+02c7-02cc, u+02ce-02d7, u+02dd-02ff, u+0304,
+    u+0308, u+0329, u+1d00-1dbf, u+1e00-1e9f, u+1ef2-1eff, u+2020, u+20a0-20ab,
+    u+20ad-20c0, u+2113, u+2c60-2c7f, u+a720-a7ff;
+}
+
+@font-face {
+  font-family: "Newsreader";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/assets/fonts/Newsreader-italic-latin.woff2") format("woff2");
+  unicode-range:
+    u+0000-00ff, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc,
+    u+0304, u+0308, u+0329, u+2000-206f, u+20ac, u+2122, u+2191, u+2193, u+2212,
+    u+2215, u+feff, u+fffd;
+}
+
+@font-face {
+  font-family: "Newsreader";
+  font-style: italic;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/assets/fonts/Newsreader-italic-latin-ext.woff2") format("woff2");
+  unicode-range:
+    u+0100-02ba, u+02bd-02c5, u+02c7-02cc, u+02ce-02d7, u+02dd-02ff, u+0304,
+    u+0308, u+0329, u+1d00-1dbf, u+1e00-1e9f, u+1ef2-1eff, u+2020, u+20a0-20ab,
+    u+20ad-20c0, u+2113, u+2c60-2c7f, u+a720-a7ff;
+}
 
 @font-face {
   font-family: "JetBrains Mono";
   font-style: normal;
-  font-weight: 400;
+  font-weight: 400 700;
   font-display: swap;
-  src: url("/assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
+  src: url("/assets/fonts/JetBrainsMono-latin.woff2") format("woff2");
+  unicode-range:
+    u+0000-00ff, u+0131, u+0152-0153, u+02bb-02bc, u+02c6, u+02da, u+02dc,
+    u+0304, u+0308, u+0329, u+2000-206f, u+20ac, u+2122, u+2191, u+2193, u+2212,
+    u+2215, u+feff, u+fffd;
 }
 
-html,
-body {
-  font-family: $font-sans;
-  background: $color-white;
-  color: $color-dark;
-  padding-bottom: $spacing-lg;
-  // A default line-height is often beneficial, e.g., 1.6 for readability.
-  line-height: 1.6;
-  font-size: 16px; // Base font size for better accessibility
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/assets/fonts/JetBrainsMono-latin-ext.woff2") format("woff2");
+  unicode-range:
+    u+0100-02ba, u+02bd-02c5, u+02c7-02cc, u+02ce-02d7, u+02dd-02ff, u+0304,
+    u+0308, u+0329, u+1d00-1dbf, u+1e00-1e9f, u+1ef2-1eff, u+2020, u+20a0-20ab,
+    u+20ad-20c0, u+2113, u+2c60-2c7f, u+a720-a7ff;
 }
 
-iframe[src*="youtube"] {
-  // Using relative units for height can be beneficial.
-  width: 100%;
-  height: 22.5em; // ~360px if 1em = 16px.
-  margin: $spacing-base 0;
+// --- Tokens ----------------------------------------------------------------
+
+:root {
+  --serif:
+    "Newsreader", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia,
+    "Times New Roman", serif;
+  --mono:
+    "JetBrains Mono", ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo,
+    Consolas, "Liberation Mono", monospace;
+
+  // Warm paper, ink, and one sharp accent: burnt vermillion, the colour of a
+  // proofreader's pen.
+  --paper: #f5f2ec;
+  --paper-raised: #ebe6da;
+  --ink: #1a1815;
+  --ink-muted: #565046;
+  --ink-faint: #6f685b;
+  --rule: #dcd5c5;
+  --rule-strong: #c2b9a6;
+  --accent: #9e3413;
+  --accent-wash: #9e34131f;
+  --glow: #fffdf6;
+
+  // Layout zones. The gutter holds hanging section markers and running heads,
+  // the margin holds sidenotes; both collapse to zero on narrow screens and
+  // widen again once there is room to spend.
+  --measure: 36rem;
+  --gutter: 0rem;
+  --gap: 0rem;
+  --margin-col: 0rem;
+  --pad: 1.5rem;
+
+  // Read back by _plugins/images.rb to size the srcset ladder and the `sizes`
+  // attribute. They live here so the stylesheet stays the single source of
+  // truth for the layout: change --measure and the images follow.
+  --root-max: 19.5px;
+  --layout-breakpoint: #{$wide};
+
+  --step: 1.6rem; // vertical rhythm unit
+
+  color-scheme: light dark;
 }
 
-video {
-  max-width: 100%;
-}
-
-img {
-  max-width: 100%;
-  margin: 0 auto;
-  display: block;
-}
-
-a {
-  color: $color-link;
-  text-decoration: underline; // Consider using none + hover underline.
-  &:hover {
-    color: color.scale($color-link, $lightness: -15%);
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #15171a;
+    --paper-raised: #1d2025;
+    --ink: #ddd8cd;
+    --ink-muted: #9b958a;
+    --ink-faint: #8a8377;
+    --rule: #2b2f35;
+    --rule-strong: #3f454d;
+    --accent: #e08a45;
+    --accent-wash: #e08a4526;
+    --glow: #1f242b;
   }
 }
 
-h1 {
-  font-size: 2rem;
-  small {
-    font-size: 1.25rem; // changed from 14pt.
+// Wide enough for a margin column. Sized so the whole three-zone block still
+// fits inside the viewport at the breakpoint itself.
+@media (min-width: $wide) {
+  :root {
+    --gutter: 4.5rem;
+    --gap: 2rem;
+    --margin-col: 13.5rem;
   }
 }
 
-blockquote {
-  border-left: 0.25em solid $color-highlight; // ~4px if 1em=16px.
-  padding-left: $spacing-sm;
-  color: $color-gray-dark;
-  margin-left: $spacing-sm;
+// Large and extra-large displays: the measure never grows (that would wreck
+// the line length) but the gutter and margin get more air.
+@media (min-width: 87.5rem) {
+  :root {
+    --gutter: 6rem;
+    --gap: 2.5rem;
+    --margin-col: 16rem;
+  }
 }
 
-.sidebar {
-  padding-top: $spacing-base;
+@media (max-width: 34rem) {
+  :root {
+    --pad: 1.15rem;
+    --step: 1.35rem;
+  }
 }
 
-.sidebar a {
-  color: $color-gray-dark;
-  text-decoration: underline;
-}
+// --- Reset -----------------------------------------------------------------
 
-.sidebar h3 {
-  font-size: 1.2rem; // 14pt => 18.67px. This can be fine-tuned.
-}
-
-hr {
-  border: none;
-  border-top: 1px solid $color-gray-mid;
-}
-
-.date {
-  color: $color-gray-mid;
-  font-size: 1.15rem;
-}
-
-.date a {
-  color: $color-gray-mid;
-  text-decoration: underline;
-}
-
-pre {
-  border: 1px solid $color-gray-light;
-  border-radius: $border-radius;
-  line-height: 1.2;
-  overflow-x: auto;
-  width: fit-content;
-  max-width: 100%;
-  background-color: $color-code-bg;
-  padding: $spacing-sm;
-  padding-right: $spacing-lg;
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-p code.oldblog {
-  max-width: 100%;
-  overflow-x: auto;
-  display: inline-block;
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ul,
+ol,
+dl,
+dd,
+figure,
+blockquote,
+pre {
+  margin: 0;
 }
 
-// Base code styling
-code {
-  font-family:
-    "JetBrains Mono", "Fira Code", "Source Code Pro", "Consolas",
-    "Liberation Mono", "Menlo", "Courier", monospace;
-  color: $color-dark;
+html {
+  // Scales gently between phone and 4K without breaking the reader's own
+  // font-size preference (the rem here resolves against the browser default).
+  font-size: clamp(17px, 0.95rem + 0.2vw, var(--root-max));
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+body {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.62;
+  color: var(--ink);
+  background-color: var(--paper);
+  // A soft light source at the top-left rather than a flat fill.
+  background-image: radial-gradient(
+    75rem 32rem at 14% -6%,
+    var(--glow) 0%,
+    transparent 68%
+  );
+  background-repeat: no-repeat;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-wrap: break-word;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+// --- Layout ----------------------------------------------------------------
+
+.wrap {
+  width: 100%;
+  max-width: calc(
+    var(--gutter) + var(--measure) + var(--gap) + var(--margin-col) + 2 *
+      var(--pad)
+  );
+  margin-inline: auto;
+  padding-inline: var(--pad);
+  padding-bottom: calc(var(--step) * 2);
+}
+
+// Everything that holds prose is capped at the measure and offset by the
+// gutter; floated sidenotes reach past it into the margin column.
+.column {
+  max-width: var(--measure);
+  margin-left: var(--gutter);
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  padding: 0.5rem 0.9rem;
+  background: var(--accent);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  z-index: 10;
+
+  &:focus {
+    left: 0.5rem;
+    top: 0.5rem;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+// In the document outline and the accessibility tree, but not on the page.
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+// --- Mono chrome -----------------------------------------------------------
+// Shared voice for every label, date and piece of metadata on the site.
+
+%chrome {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
+
+// --- Masthead --------------------------------------------------------------
+
+.masthead {
+  padding-top: calc(var(--step) * 1.6);
+  padding-bottom: var(--step);
+  margin-bottom: calc(var(--step) * 1.4);
+  position: relative;
+
+  // The hairline under the masthead fades out to the right, so the page opens
+  // with a stroke rather than a box.
+  &::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    background: linear-gradient(
+      to right,
+      var(--accent) 0%,
+      var(--rule-strong) 22%,
+      transparent 92%
+    );
+  }
+}
+
+.masthead__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.018em;
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--accent);
+  }
+}
+
+// --- Prose -----------------------------------------------------------------
+
+.prose {
+  > * + * {
+    margin-top: var(--step);
+  }
+
+  p,
+  ul,
+  ol,
+  dl {
+    line-height: 1.65;
+  }
+
+  // Raw HTML blocks in a post (the talks page, old WordPress markup) nest
+  // their content, so the top-level owl above never reaches it. Give nested
+  // containers a rhythm of their own.
+  div > * + *,
+  details > * + *,
+  li > * + *,
+  td > * + *,
+  th > * + * {
+    margin-top: 0.7rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    margin-top: calc(var(--step) * 2);
+    margin-bottom: 0;
+    position: relative;
+    scroll-margin-top: 1.5rem;
+  }
+
+  // Whatever follows a heading sits close to it, at any nesting depth. This
+  // replaces the usual negative-margin trick, which only works when the next
+  // element is a direct child carrying the full --step.
+  :is(h1, h2, h3, h4, h5, h6) + :not(h1, h2, h3, h4, h5, h6) {
+    margin-top: 0.55rem;
+  }
+
+  // A heading straight after another heading is a subsection, not a new
+  // section: keep them related without jamming them together.
+  :is(h1, h2, h3, h4, h5, h6) + :is(h1, h2, h3, h4, h5, h6) {
+    margin-top: calc(var(--step) * 1.1);
+  }
+
+  // Posts use `#` for their top-level sections, so h1 inside an article is a
+  // section heading — not the page title.
+  h1 {
+    font-size: 1.62rem;
+  }
+  h2 {
+    font-size: 1.4rem;
+  }
+  h3 {
+    font-size: 1.18rem;
+  }
+  h4,
+  h5,
+  h6 {
+    font-size: 1rem;
+    font-family: var(--mono);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  // The section mark hangs in the left gutter, out of the reading path, and is
+  // a permalink to the section. Injected by _plugins/typography.rb.
+  .hanchor {
+    position: absolute;
+    right: calc(100% + 0.9rem);
+    top: 0.06em;
+    font-family: var(--mono);
+    font-size: 0.78em;
+    font-weight: 400;
+    color: var(--accent);
+    opacity: 0.4;
+    text-decoration: none;
+    transition: opacity 0.15s ease;
+
+    &:hover,
+    &:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  @media (max-width: $wide) {
+    .hanchor {
+      // No gutter to hang in; the heading itself is still linkable by id.
+      display: none;
+    }
+  }
+
+  ul,
+  ol {
+    padding-left: 1.35rem;
+  }
+
+  li + li {
+    margin-top: 0.35rem;
+  }
+
+  li > ul,
+  li > ol {
+    margin-top: 0.35rem;
+  }
+
+  ul {
+    list-style: none;
+    padding-left: 1.15rem;
+  }
+
+  ul > li {
+    position: relative;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: -1.05rem;
+      top: 0.66em;
+      width: 0.38rem;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.75;
+    }
+  }
+
+  ul ul > li::before {
+    background: var(--rule-strong);
+  }
+
+  ol {
+    list-style: none;
+    counter-reset: ol;
+    padding-left: 1.85rem;
+  }
+
+  ol > li {
+    counter-increment: ol;
+    position: relative;
+
+    &::before {
+      content: counter(ol) ".";
+      position: absolute;
+      right: calc(100% + 0.5rem);
+      top: 0.06em;
+      font-family: var(--mono);
+      font-size: 0.75em;
+      color: var(--ink-faint);
+      font-variant-numeric: tabular-nums;
+    }
+  }
+
+  dt {
+    font-weight: 600;
+  }
+
+  dd {
+    margin-left: 1.35rem;
+  }
+
+  strong,
+  b {
+    font-weight: 700;
+  }
+
+  hr {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      var(--rule-strong),
+      var(--rule) 45%,
+      transparent
+    );
+    margin-block: calc(var(--step) * 1.6);
+  }
+
+  sup,
+  sub {
+    line-height: 0;
+    font-size: 0.7em;
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.17em;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
+
+  &:hover {
+    color: var(--accent);
+    text-decoration-thickness: 2px;
+  }
+}
+
+// --- Blockquote ------------------------------------------------------------
+
+blockquote {
+  padding-left: 1.15rem;
+  border-left: 2px solid var(--rule-strong);
+  color: var(--ink-muted);
+
+  > * + * {
+    margin-top: 0.7rem;
+  }
+
+  cite {
+    @extend %chrome;
+    display: block;
+    font-style: normal;
+    margin-top: 0.6rem;
+  }
+}
+
+// --- Code ------------------------------------------------------------------
+
+code,
+kbd,
+samp {
+  font-family: var(--mono);
   font-variant-ligatures: none;
+  font-feature-settings:
+    "liga" 0,
+    "calt" 0;
 }
 
-// Inline code styling
-p code,
-dd code {
-  background-color: $color-inline-code-bg;
-  padding: 0.2em 0.4em;
-  border-radius: $border-radius-sm;
+// Inline code
+:not(pre) > code {
+  font-size: 0.82em;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.08em 0.26em;
+  color: var(--ink);
+  white-space: break-spaces;
+  word-break: break-word;
+}
+
+a :not(pre) > code,
+:not(pre) > code:has(a) {
+  color: inherit;
+}
+
+// Keys get a slightly raised chip so they read as something you press.
+kbd {
+  font-size: 0.78em;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-bottom-width: 2px;
+  border-radius: 3px;
+  padding: 0.08em 0.36em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.highlighter-rouge {
+  position: relative;
+
+  // Language tag, printed from the class kramdown already emits — no JS. It
+  // straddles the top border like a fieldset legend so it can never collide
+  // with the first line of code. z-index keeps it above the inner .highlight
+  // div, which is also a positioned box and would otherwise paint over it.
+  &::before {
+    @extend %chrome;
+    content: attr(data-lang);
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    right: 0.85rem;
+    transform: translateY(-50%);
+    padding-inline: 0.4rem;
+    background: var(--paper);
+    font-size: 0.6rem;
+    line-height: 1;
+    color: var(--ink-faint);
+    pointer-events: none;
+  }
+
+  &:not([data-lang])::before {
+    content: none;
+  }
+}
+
+pre {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 0.85rem 1rem;
+  overflow-x: auto;
+  tab-size: 4;
+  color: var(--ink);
+
+  code {
+    background: none;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+    color: inherit;
+  }
+}
+
+// --- Collapsible blocks ----------------------------------------------------
+// <details markdown="1"> usually wraps a long listing, so the summary reads as
+// a file tab and the body sits in a quiet box under it.
+
+.prose details {
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--rule-strong);
+  border-radius: 3px;
+  padding: 0 0.9rem;
+
+  > summary {
+    font-family: var(--mono);
+    font-size: 0.78rem;
+    color: var(--ink);
+    padding: 0.6rem 0;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &::before {
+      content: "▸";
+      color: var(--accent);
+      font-size: 0.85em;
+      transition: transform 0.15s ease;
+      display: inline-block;
+    }
+
+    &:hover {
+      color: var(--accent);
+    }
+  }
+
+  &[open] {
+    padding-bottom: 0.9rem;
+
+    > summary {
+      margin-bottom: 0.9rem;
+      border-bottom: 1px solid var(--rule);
+      color: var(--accent);
+
+      &::before {
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  // The listing inside already has its own frame; drop the double border.
+  .highlighter-rouge {
+    margin-inline: -0.9rem;
+  }
+
+  pre {
+    border-inline: 0;
+    border-radius: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .prose details > summary::before {
+    transition: none;
+  }
+}
+
+// --- Tables ----------------------------------------------------------------
+
+.table-scroll {
+  overflow-x: auto;
+  max-width: 100%;
 }
 
 table {
   border-collapse: collapse;
-  margin: $spacing-base auto;
-  font-size: 0.95rem;
-  width: auto;
-  max-width: 100%;
-  overflow-x: auto;
-  display: block;
+  width: 100%;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
 
   th,
   td {
-    border: 1px solid $color-gray-border;
-    padding: $spacing-sm $spacing-base;
+    padding: 0.45rem 0.7rem;
     text-align: left;
+    border: 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
   }
 
-  thead th {
-    background-color: $color-code-bg;
-    font-weight: 600;
-    border-bottom: 2px solid $color-gray-border;
+  // Outer edges align with the text column instead of being inset by padding,
+  // which also buys back width before anything has to scroll.
+  th:first-child,
+  td:first-child {
+    padding-left: 0;
   }
 
-  tbody tr:nth-child(even) {
-    background-color: $color-code-bg;
-  }
-}
-
-.container {
-  margin: 0 auto;
-
-  .post-content {
-    margin: 0 20%;
-    @media (max-width: 1024px) {
-      margin: 0 auto;
-    }
-
-    .page-title {
-      margin-bottom: $spacing-sm;
-    }
-
-    .date {
-      margin-top: $spacing-sm;
-    }
+  th:last-child,
+  td:last-child {
+    padding-right: 0;
   }
 
-  .index-content {
-    max-width: 1024px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: $spacing-lg;
-    justify-content: center;
+  th {
+    @extend %chrome;
+    color: var(--ink-muted);
+    border-bottom: 1px solid var(--rule-strong);
+    // Uppercase mono with the full chrome tracking is wide; a five-column
+    // header would force the whole table to scroll. Tighten it and let long
+    // headers wrap onto a second line instead.
+    letter-spacing: 0.055em;
+    line-height: 1.35;
+  }
 
-    // Nested media query to switch to single column on mobile
-    // Adjust the gaps so things look a bit better
-    @media (max-width: 1024px) {
-      grid-template-columns: 1fr;
-      gap: $spacing-base;
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
 
-      .sidebar {
-        padding-left: 0;
-        padding-top: 0;
-        width: 100%;
-        margin: 0 auto;
-      }
-    }
+  tbody tr:hover td {
+    background: var(--accent-wash);
   }
 }
 
-.external-links {
-  padding-top: $spacing-sm;
+// --- Figures and media -----------------------------------------------------
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
+  height: auto;
 }
 
-.external-links > p {
-  position: relative;
-
-  &:not(:last-child) {
-    padding-bottom: $spacing-sm;
-  }
-}
-
-.external-links .context {
-  position: absolute;
-  top: -0.9rem;
-  left: 0;
-  font-size: 0.8rem;
-  color: $color-dark;
-}
-
-.separator {
-  margin: 0 0.15rem;
-  color: $color-dark;
-}
-
-.rss-link svg {
-  width: 1em;
-  height: 1em;
-  vertical-align: -0.125em;
-}
-
-.avatar {
-  max-width: 50%;
-  border-radius: 5px;
+.prose img {
   display: block;
+  margin-inline: auto;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  background: var(--paper-raised);
 }
 
-.post-stub {
-  .date {
-    color: $color-dark;
-    display: inline-block;
+.prose a img {
+  border-color: var(--rule-strong);
+}
+
+iframe,
+embed,
+object {
+  max-width: 100%;
+  border: 0;
+}
+
+iframe[src*="youtube"],
+iframe[src*="vimeo"] {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+}
+
+// --- Sidenotes -------------------------------------------------------------
+// Two ways into the right margin:
+//
+//   [^1]  a footnote, lifted out of the endnote list at build time by
+//         _plugins/typography.rb and planted beside the sentence that
+//         raised it;
+//
+//   {: .aside}  written deliberately, on any block, to push a short remark
+//               into the margin. Place it just *before* the paragraph it
+//               belongs beside — a float aligns with where it appears.
+//
+// Both fold back into the text column when the margin disappears.
+
+.sn-ref {
+  font-family: var(--mono);
+  font-size: 0.62em;
+  font-weight: 600;
+  line-height: 0;
+  vertical-align: super;
+  color: var(--accent);
+  text-decoration: none;
+  padding-inline: 0.08em;
+
+  &:hover {
+    color: var(--accent);
+    text-decoration: underline;
   }
 }
 
-$alert-colors: (
-  "note": #0969da,
-  "tip": #1a7f37,
-  "important": #8250df,
-  "warning": #9a6700,
-  "caution": #d1242f,
+.sidenote {
+  display: block;
+  float: right;
+  clear: right;
+  width: var(--margin-col);
+  margin-right: calc((var(--gap) + var(--margin-col)) * -1);
+  margin-top: 0.3rem;
+  margin-bottom: 0.9rem;
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  text-align: left;
+  position: relative;
+  padding-top: 0.35rem;
+  border-top: 1px solid var(--rule);
+  // Citation URLs are long and unbreakable; let them break rather than bleed
+  // out of the margin column.
+  overflow-wrap: anywhere;
+
+  .sn-num {
+    font-family: var(--mono);
+    font-size: 0.72em;
+    font-weight: 600;
+    color: var(--accent);
+    margin-right: 0.35em;
+  }
+
+  // Note bodies arrive as spans, not paragraphs — a block element inside the
+  // host <p> would break the document. See _plugins/typography.rb.
+  .sn-p + .sn-p {
+    display: block;
+    margin-top: 0.5rem;
+  }
+
+  :not(pre) > code {
+    font-size: 0.86em;
+  }
+
+  a {
+    text-decoration-thickness: 1px;
+  }
+}
+
+// An author-written margin note. Specificity beats the .prose owl so it does
+// not pick up the full --step of top margin.
+.prose .aside {
+  float: right;
+  clear: right;
+  width: var(--margin-col);
+  margin: 0.3rem calc((var(--gap) + var(--margin-col)) * -1) 0.9rem 0;
+  padding: 0.35rem 0 0;
+  border: 0;
+  border-top: 1px solid var(--rule);
+  font-size: 0.76rem;
+  font-style: normal;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+
+  > * + * {
+    margin-top: 0.5rem;
+  }
+
+  :not(pre) > code {
+    font-size: 0.86em;
+  }
+}
+
+// Below the breakpoint the margin column is gone, so notes become quiet
+// indented asides directly under the paragraph that references them.
+@media (max-width: $wide) {
+  .sidenote,
+  .prose .aside {
+    float: none;
+    width: auto;
+    margin-right: 0;
+    margin-block: 0.85rem;
+    padding: 0.55rem 0 0.55rem 0.9rem;
+    border-top: 0;
+    border-left: 2px solid var(--accent);
+    background: var(--accent-wash);
+  }
+
+  // The note is now a block interrupting its own paragraph, so a second
+  // reference in the same paragraph would be stranded on a line of its own.
+  // Drop the superscript: the note sits at the reference point already and
+  // still carries its number.
+  .sn-ref {
+    display: none;
+  }
+}
+
+// Kramdown's own endnote list only survives when the sidenote pass bailed out
+// (see _plugins/typography.rb); style it so the fallback still reads well.
+.footnotes {
+  margin-top: calc(var(--step) * 2);
+  padding-top: var(--step);
+  border-top: 1px solid var(--rule);
+  font-size: 0.85rem;
+  color: var(--ink-muted);
+}
+
+// --- Alerts ----------------------------------------------------------------
+
+$alerts: (
+  "note": (
+    #0b5fa5,
+    #6fb2e8,
+  ),
+  "tip": (
+    #1a7f37,
+    #79c98d,
+  ),
+  "important": (
+    #7145c4,
+    #b79ded,
+  ),
+  "warning": (
+    #8a6100,
+    #dfb051,
+  ),
+  "caution": (
+    #b1201d,
+    #ec8b7f,
+  ),
 );
 
 .alert {
-  margin: 1rem 0;
-  padding: 0 $spacing-base;
-  border-left: 0.25rem solid;
+  --alert: var(--rule-strong);
+  border-left: 2px solid var(--alert);
+  background: var(--paper-raised);
+  padding: 0.85rem 1.1rem;
+  border-radius: 0 3px 3px 0;
+  color: var(--ink);
 
+  > * + * {
+    margin-top: 0.65rem;
+  }
+
+  // `> **Note**` on the first line becomes the label.
   p:first-child > strong:first-child {
+    @extend %chrome;
     display: block;
+    color: var(--alert);
+    margin-bottom: 0.3rem;
+  }
 
-    &::before {
-      margin-right: 6px;
-      font-size: 1.1em;
+  :not(pre) > code {
+    background: transparent;
+    border-color: transparent;
+    padding: 0;
+  }
+
+  @each $name, $pair in $alerts {
+    &.alert-#{$name} {
+      --alert: #{list.nth($pair, 1)};
+
+      @media (prefers-color-scheme: dark) {
+        --alert: #{list.nth($pair, 2)};
+      }
+    }
+  }
+}
+
+// A plain blockquote that got the alert class keeps its quote indentation from
+// blockquote rules; neutralise the duplicate border.
+blockquote.alert {
+  border-left-color: var(--alert);
+  color: var(--ink);
+}
+
+// --- Post header -----------------------------------------------------------
+
+.post-header {
+  margin-bottom: calc(var(--step) * 1.5);
+}
+
+.post-kicker {
+  @extend %chrome;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.5rem;
+  margin-bottom: 0.7rem;
+
+  .sep {
+    color: var(--rule-strong);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-strong);
+
+    &:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+  }
+}
+
+.post-title {
+  font-size: clamp(1.85rem, 1.3rem + 2.1vw, 2.85rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.post-rule {
+  width: 3.5rem;
+  height: 2px;
+  background: var(--accent);
+  // `margin-inline: 0` matters: the UA default for <hr> is `auto`, which
+  // quietly centres the rule under a left-aligned title.
+  margin: 1.1rem auto 0 0;
+  border: 0;
+}
+
+.post-body {
+  margin-top: calc(var(--step) * 1.5);
+}
+
+// --- Site footer -----------------------------------------------------------
+
+.site-foot {
+  @extend %chrome;
+  margin-top: calc(var(--step) * 2.5);
+  padding-top: var(--step);
+  border-top: 1px solid var(--rule);
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-size: 0.7rem;
+  line-height: 1.75;
+  color: var(--ink-faint);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+  gap: 0 0.5rem;
+
+  a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+
+    &:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
     }
   }
 
-  @each $type, $color in $alert-colors {
-    &-#{$type} {
-      border-left-color: $color;
-      background-color: rgba($color, 0.05);
+  .sep {
+    color: var(--rule-strong);
+  }
 
-      p:first-child > strong:first-child {
-        color: $color;
-      }
+  .rss {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-bottom: 0;
 
-      code {
-        background-color: transparent !important;
-        border: none;
-        padding: 0;
-        color: inherit; // Keeps text color matching the alert's flow
+    svg {
+      width: 0.85em;
+      height: 0.85em;
+      fill: currentColor;
+    }
+  }
+}
+
+// --- Index -----------------------------------------------------------------
+
+.index-lead {
+  display: block;
+  text-decoration: none;
+  margin-bottom: calc(var(--step) * 2);
+  padding-left: 1rem;
+  border-left: 2px solid var(--accent);
+
+  .label {
+    @extend %chrome;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.4rem;
+  }
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    display: block;
+  }
+
+  .excerpt {
+    display: block;
+    color: var(--ink-muted);
+    font-size: 0.92rem;
+    margin-top: 0.5rem;
+  }
+
+  .more {
+    @extend %chrome;
+    color: var(--accent);
+    display: block;
+    margin-top: 0.7rem;
+  }
+
+  &:hover .title {
+    color: var(--accent);
+  }
+}
+
+.year {
+  margin-top: calc(var(--step) * 2);
+  position: relative;
+
+  &:first-of-type {
+    margin-top: 0;
+  }
+}
+
+.year__label {
+  @extend %chrome;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  padding-bottom: 0.4rem;
+  margin-bottom: 0.6rem;
+  border-bottom: 1px solid var(--rule);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+
+  .count {
+    font-size: 0.66rem;
+    color: var(--rule-strong);
+  }
+}
+
+// On wide screens the year sits out in the gutter as a running head. It is
+// sized to the gutter exactly so it can never spill off the left of the page.
+@media (min-width: $wide) {
+  .year__label {
+    position: absolute;
+    right: calc(100% + 0.9rem);
+    top: 0.1rem;
+    width: calc(var(--gutter) - 0.9rem);
+    display: block;
+    border-bottom: 0;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    text-align: right;
+    letter-spacing: 0.04em;
+
+    .count {
+      display: none;
+    }
+  }
+
+  .year__list {
+    border-top: 1px solid var(--rule);
+    padding-top: 0.35rem;
+  }
+}
+
+.year__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: 4.25rem 1fr;
+  gap: 0 0.85rem;
+  align-items: baseline;
+  padding-block: 0.42rem;
+
+  @media (max-width: 34rem) {
+    grid-template-columns: 1fr;
+    gap: 0.12rem;
+    padding-block: 0.5rem;
+  }
+
+  + .entry {
+    border-top: 1px solid var(--rule);
+  }
+
+  .date {
+    @extend %chrome;
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+
+  a {
+    text-decoration: none;
+    line-height: 1.35;
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.17em;
+  }
+
+  &:hover a {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  &:hover .date {
+    color: var(--accent);
+  }
+}
+
+// --- Talks & publications --------------------------------------------------
+// Reuses the index's year machinery: the year is a running head in the gutter
+// rather than a heading in the text column, so a year holding one talk no
+// longer looks like a section of its own.
+
+.section-nav {
+  @extend %chrome;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.5rem;
+  padding-block: 0.6rem;
+  border-block: 1px solid var(--rule);
+
+  a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+
+    &:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+  }
+
+  .sep {
+    color: var(--rule-strong);
+    user-select: none;
+  }
+}
+
+.talks-section {
+  margin-top: calc(var(--step) * 2.5);
+
+  // Most years here hold a single entry, so the index's generous year spacing
+  // leaves the page full of holes. Close it up.
+  .year {
+    margin-top: var(--step);
+  }
+}
+
+.talks-section__title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+  margin-bottom: calc(var(--step) * 1.15);
+  padding-bottom: 0.35rem;
+  border-bottom: 2px solid var(--rule-strong);
+  scroll-margin-top: 1.5rem;
+}
+
+.talk {
+  padding-block: 0.8rem;
+  scroll-margin-top: 1.5rem;
+
+  + .talk {
+    border-top: 1px solid var(--rule);
+  }
+
+  &:target .talk__title {
+    color: var(--accent);
+  }
+}
+
+.talk__title {
+  display: block;
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-wrap: pretty;
+}
+
+.talk__venue {
+  @extend %chrome;
+  display: block;
+  font-size: 0.64rem;
+  margin-top: 0.22rem;
+}
+
+.talk__note {
+  font-size: 0.87rem;
+  line-height: 1.5;
+  color: var(--ink-muted);
+  margin-top: 0.45rem;
+
+  p {
+    margin: 0;
+  }
+
+  p + p {
+    margin-top: 0.4rem;
+  }
+}
+
+.talk__links {
+  @extend %chrome;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.45rem;
+  font-size: 0.62rem;
+  margin-top: 0.55rem;
+
+  a {
+    color: var(--ink-muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule-strong);
+
+    &:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+  }
+
+  .sep {
+    color: var(--rule-strong);
+    user-select: none;
+  }
+}
+
+// --- Colophon (bio card) ---------------------------------------------------
+
+.page-index {
+  display: flow-root;
+}
+
+.colophon {
+  float: right;
+  width: var(--margin-col);
+  margin-right: calc((var(--gap) + var(--margin-col)) * -1);
+  margin-bottom: var(--step);
+  font-size: 0.8rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+}
+
+.colophon__avatar {
+  width: 100%;
+  max-width: 8.5rem;
+  border-radius: 3px;
+  border: 1px solid var(--rule-strong);
+  display: block;
+  margin-bottom: 0.85rem;
+  filter: grayscale(0.35);
+  transition: filter 0.3s ease;
+
+  &:hover {
+    filter: grayscale(0);
+  }
+}
+
+.colophon__bio {
+  margin-bottom: 1rem;
+
+  a {
+    text-decoration-color: var(--rule-strong);
+  }
+}
+
+.colophon__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+
+  // The key sits above its value rather than beside it: a two-column split
+  // leaves roughly 150px for the value, which is not enough for an email
+  // address in monospace without breaking it across lines.
+  li {
+    padding-block: 0.4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .key {
+    @extend %chrome;
+    display: block;
+    font-size: 0.6rem;
+    margin-bottom: 0.05rem;
+  }
+
+  // No overflow-wrap override here on purpose: an email address has no break
+  // opportunities, so the default keeps it on one line.
+  .val {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+
+    a {
+      color: var(--ink-muted);
+      text-decoration: none;
+      border-bottom: 1px solid var(--rule-strong);
+
+      &:hover {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
       }
     }
+  }
+}
+
+// Narrow: the float is dropped and the card moves below the article list.
+@media (max-width: $wide) {
+  .page-index {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .colophon {
+    float: none;
+    width: 100%;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-top: calc(var(--step) * 2);
+    padding-top: var(--step);
+    border-top: 1px solid var(--rule);
+    order: 3;
+    display: grid;
+    grid-template-columns: 8.5rem 1fr;
+    gap: 0 1.25rem;
+    align-items: start;
+  }
+
+  .colophon__avatar {
+    margin-bottom: 0;
+    grid-row: span 2;
+  }
+
+  .index-body {
+    order: 2;
+  }
+
+  @media (max-width: 30rem) {
+    .colophon {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .colophon__avatar {
+      max-width: 6.5rem;
+    }
+  }
+}
+
+// --- Archive (the WordPress import) ----------------------------------------
+// Same skin, dialled down: the accent goes grey so the archive reads as a
+// different, older register of the site.
+
+.archive {
+  --accent: var(--ink-faint);
+  --accent-wash: #6f685b1a;
+}
+
+// An editor's note, not a system message — so it stays in the serif.
+.archive-note {
+  font-size: 0.88rem;
+  font-style: italic;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  border-left: 2px solid var(--rule-strong);
+  padding: 0.1rem 0 0.1rem 1.1rem;
+  margin-bottom: calc(var(--step) * 1.5);
+}
+
+// Defensive rules for two-decade-old WordPress markup: Flash embeds, raw
+// <br>-formatted code, oversized images.
+.prose {
+  object,
+  embed {
+    max-width: 100%;
+  }
+
+  p code.oldblog {
+    display: inline-block;
+    max-width: 100%;
+    overflow-x: auto;
+    vertical-align: bottom;
+  }
+
+  font {
+    font-size: inherit !important;
+    font-family: inherit !important;
+  }
+
+  del {
+    color: var(--ink-faint);
+  }
+}
+
+// --- Archived comments -----------------------------------------------------
+
+.comments {
+  margin-top: calc(var(--step) * 2.5);
+  padding-top: var(--step);
+  border-top: 1px solid var(--rule);
+}
+
+.comments__title {
+  @extend %chrome;
+  margin-bottom: var(--step);
+}
+
+.comment {
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-muted);
+  padding-left: 0.9rem;
+  border-left: 1px solid var(--rule);
+
+  + .comment {
+    margin-top: 1.1rem;
+  }
+
+  &__meta {
+    @extend %chrome;
+    font-size: 0.63rem;
+    margin-bottom: 0.3rem;
+
+    .who {
+      color: var(--ink);
+    }
+  }
+
+  p + p {
+    margin-top: 0.5rem;
+  }
+}
+
+// --- Motion ----------------------------------------------------------------
+// One orchestrated entrance on load; nothing animates during reading.
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(0.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .rise {
+    animation: rise 0.5s cubic-bezier(0.22, 0.68, 0.35, 1) backwards;
+    animation-delay: calc(var(--i, 0) * 60ms);
+  }
+}
+
+// --- Print -----------------------------------------------------------------
+
+@media print {
+  :root {
+    --paper: #fff;
+    --paper-raised: #fff;
+    --ink: #000;
+    --ink-muted: #333;
+    --ink-faint: #555;
+    --rule: #bbb;
+    --rule-strong: #888;
+    --accent: #000;
+    --gutter: 0rem;
+    --margin-col: 0rem;
+    --gap: 0rem;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  .colophon,
+  .skip-link {
+    display: none;
+  }
+
+  // Collapsed sections still print their contents.
+  details {
+    border: 0;
+    padding: 0;
+  }
+
+  details > summary::before {
+    content: none;
+  }
+
+  .sidenote,
+  .prose .aside {
+    float: none;
+    width: auto;
+    margin-right: 0;
+    border-left: 1px solid #999;
+    padding-left: 0.75rem;
+    border-top: 0;
+    background: none;
+  }
+
+  pre,
+  blockquote,
+  details,
+  .alert {
+    break-inside: avoid;
+  }
+
+  a::after {
+    content: " (" attr(href) ")";
+    font-size: 0.75em;
+    color: #555;
+  }
+
+  a[href^="#"]::after {
+    content: "";
   }
 }

@@ -1,27 +1,23 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <meta name="theme-color" content="#f5f2ec" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#15171a" media="(prefers-color-scheme: dark)">
     {% seo %}
     {% feed_meta %}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
-      rel="stylesheet"
-    >
-    <link rel="preload" href="/assets/fonts/JetBrainsMono-Regular.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
-    <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
-    <link
-      rel="alternate"
-      type="application/atom+xml"
-      title="Farid Zakaria's Blog"
-      href="/feed.xml"
-    >
+    {% if page.noindex %}<meta name="robots" content="noindex, nofollow">{% endif %}
 
-    <link ref="{{ date }}">
+    <!-- Fonts are self-hosted, so there is no third-party DNS + TLS before first paint. -->
+    <link rel="preload" href="/assets/fonts/Newsreader-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/assets/fonts/JetBrainsMono-latin.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" type="text/css" href="/assets/css/base.css">
+
+    <link rel="icon" type="image/x-icon" href="/assets/images/avatar.ico">
+    <link rel="alternate" type="application/atom+xml" title="{{ site.title }}" href="/feed.xml">
+
     {% if site.google_analytics and jekyll.environment == 'production' %}
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script
@@ -39,7 +35,16 @@
       </script>
     {% endif %}
   </head>
-  <body>
-    <div class="container">{{ content }}</div>
+  <body
+    {% if page.collection == 'old_blog' or page.url == '/old_blog/' %}
+      class="archive"
+    {% endif %}
+  >
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="wrap">
+      {% include masthead.html %}
+      <main id="main">{{ content }}</main>
+      {% include site-foot.html %}
+    </div>
   </body>
 </html>
