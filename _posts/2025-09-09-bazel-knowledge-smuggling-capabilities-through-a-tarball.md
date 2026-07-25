@@ -51,7 +51,7 @@ int main(void) {
 
 If we build this with Bazel and try to run it, we will see that it fails _unless_ we either spawn it with `CAP_NET_RAW`, `sudo` or add it to the binary via `setcap`.
 
-```bash
+```console?comments=true
 > bazel build //:rawsock
 
 > bazel-bin/rawsock
@@ -112,7 +112,7 @@ If we amend the `Dockerfile` by adding `setcap` we also see it succeeds.
 
 Now we can build and run it again.
 
-```bash
+```console
 > docker build -f Dockerfile.setcap bazel-bin -t with-caps
 
 > docker run --rm with-caps
@@ -129,7 +129,7 @@ genrule(
 )
 ```
 
-```bash
+```console?comments=true
 # see my user
 > echo $USER
 fmzakari
@@ -154,7 +154,7 @@ What are OCI images?
 
 We can export the image from Docker and inspect it.
 
-```bash
+```console
 > docker save with-caps -o image.tar
 
 > mkdir out && tar -C out -xf image.tar 
@@ -186,7 +186,7 @@ An OCI image is a `tar` archive containing metadata and a series of "blobs" some
 
 These blobs are the "layers" that are used to construct the final filesystem and contain all the files that will comprise the rootfs.
 
-```bash
+```console
 > tar -tf out/blobs/sha256/da1a39c8c0dabc8784a2567fa24df668b50d32b13f2893812d4740fa07a1d41c 
 
 bin/
@@ -196,7 +196,7 @@ etc/
 
 For capabilities to _transport_ themselves through a tar archive, the tar archive itself must have the capability to store extended attributes as well. You can enable this feature with the `--xattrs` option.
 
-```bash
+```console
 > tar --xattrs --xattrs-include="*" -tf --verbose --verbose \
     out/blobs/sha256/da1a39c8c0dabc8784a2567fa24df668b50d32b13f2893812d4740fa07a1d41c  
 drwxr-xr-x  0/0               0 2025-09-09 15:27 bin/
@@ -207,7 +207,7 @@ drwxr-xr-x  0/0               0 2025-09-09 15:30 etc/
 
 If you decompress the `tar` archive, and have necessary privileges to set extended attributes (`CAP_SETFCAP` or `sudo`) then the unarchived file will retain the capability and everything will work!
 
-```bash
+```console
 > mkdir test
 
 > sudo tar --xattrs --xattrs-include="*" -C test -xf \

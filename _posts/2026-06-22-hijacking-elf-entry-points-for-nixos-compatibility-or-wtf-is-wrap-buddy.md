@@ -40,14 +40,14 @@ main: main.c libfoo.so libbar.so
 
 If we run this binary, it fails immediately because `/lib64/ld-linux-x86-64.so.2` doesn't exist or it can't resolve `libfoo.so`.
 
-```bash
+```console
 > ./main
 ./main: error while loading shared libraries: libfoo.so: cannot open shared object file...
 ```
 
 Now we patch it using `wrap-buddy` pointing to our library paths:
 
-```bash
+```console
 > wrap-buddy --paths ./main --libs ./libfoo ./libbar
 Using interpreter: /nix/store/57iz36553175g3178pvxjij8z5rcsd4n-glibc-2.42-61/lib/ld-linux-x86-64.so.2
 64-bit stub: 407 bytes
@@ -65,7 +65,7 @@ Patched: ./main
 
 Now if we run our binary, `main`, we see that it works:
 
-```bash
+```console
 > ./main
 Starting C application...
 Hello from libfoo!
@@ -78,7 +78,7 @@ First off, it copies the first 416 bytes of our program code into a hidden file 
 
 Let's peek at the original binary and the instructions for `_start`:
 
-```bash
+```console
 > radare2 -q -c "e asm.functions=false; e asm.var=false; e asm.lines=false; e asm.xrefs=false; aa; pd 40 @ entry0" main.orig
   ;-- _start:
 0x000011a0      f30f1efa       endbr64
@@ -94,7 +94,7 @@ Let's peek at the original binary and the instructions for `_start`:
 
 `wrap-buddy` saves those starting 416 bytes to the hidden file `.main.wrapbuddy`. The configuration file format starts with a 22-byte header, followed by the interpreter string (83 bytes) and `RUNPATH` string (442 bytes), placing our saved original instructions at offset 547 (`0x223`):
 
-```bash
+```console
 > radare2 -q -a x86 -b 64 -c "pd 10 @ 547" .main.wrapbuddy
 0x00000223      f30f1efa       endbr64
 0x00000227      31ed           xor ebp, ebp
@@ -120,7 +120,7 @@ Next, it clears our `PT_INTERP` to `PT_NULL` so the Linux kernel thinks it's a s
 
 Lastly, it overwrites our entrypoint with that _small stub_ (416 bytes). We can see in the disassembly that `entry0` immediately redirects and calls `stub_main` now:
 
-```bash
+```console
 > radare2 -q -c "e asm.functions=false; e asm.var=false; e asm.lines=false; e asm.xrefs=false; aa; af- 0x1203; f- sym.register_tm_clones; f stub_main @ 0x120f; pd 4 @ entry0; s entry0; so 3; s \$ij; pd 40" main
   ;-- _start:
 0x000011a0      4831ed         xor rbp, rbp

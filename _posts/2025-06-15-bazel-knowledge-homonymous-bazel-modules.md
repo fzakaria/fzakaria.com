@@ -47,7 +47,7 @@ cc_binary(
 
 Since the target is the same as the repository, I can freely omit the target from the `bazel run` command in any Bazel codebase that depends on this module.
 
-```bash
+```console
 > bazel run @hello_world
 INFO: Analyzed target @@hello_world~//:hello_world
 INFO: Found 1 target...

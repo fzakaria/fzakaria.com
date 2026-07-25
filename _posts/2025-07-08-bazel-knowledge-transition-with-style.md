@@ -105,7 +105,7 @@ text = rule(
 
 We can now `bazel build` our `//:thesis` target and we should get our expected result. 👌
 
-```bash
+```console
 > bazel build //:thesis
 INFO: Invocation ID: eab79aac-86e7-4810-8465-abaca38f3b33
 INFO: Analyzed target //:thesis (0 packages loaded, 6 targets configured).
@@ -198,7 +198,7 @@ assign to our instance declared earlier and add a switch statement to handle the
 
 Now we can control the value with the command line using `--//:style=<value>` to modify **all** the produced text files.
 
-```bash
+```console
 > bazel build //:thesis --//:style=upper
 INFO: Invocation ID: f1f9ee1b-0c2e-49d1-be9e-926948c5ec09
 INFO: Analyzed target //:thesis (0 packages loaded, 5 targets configured).
@@ -273,7 +273,7 @@ text(
 ```
 
 
-```bash
+```console
 > bazel build //:thesis
 INFO: Invocation ID: d6bb1d4e-9d6b-412e-9161-7a75dae37ecc
 INFO: Analyzed target //:thesis (0 packages loaded, 6 targets configured).
@@ -297,7 +297,7 @@ We can even mix and match the command-line flag and the transition.
 
 In the following example, I set my `style` transition to be _lower_ and the command line flag to be _upper_.
 
-```bash
+```console
 > bazel build //:thesis --//:style=upper
 INFO: Invocation ID: efadd96d-dab1-4771-a26d-9960ab0785b9
 WARNING: Build option --//:style has changed, discarding analysis cache (this can be expensive, see https://bazel.build/advanced/performance/iteration-speed).
@@ -333,7 +333,7 @@ text(
 I have for demonstrative purposes added `//:chapter1part1` to `//:thesis` -- even though it's a dependency of `//:chapter1`. When this happens in a "normal" Bazel setup, you don't have to recompile the duplicate target however here we have it applied _without the transition_.
 
 
-```bash
+```console
 > bazel build //:thesis
 INFO: Invocation ID: 5e897401-b516-48fe-bb1b-225ab326fb35
 INFO: Analyzed target //:thesis (0 packages loaded, 8 targets configured).

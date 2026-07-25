@@ -64,7 +64,7 @@ Packets sent by the operating system via the _tun_ device are delivered to a use
 
 > _tun_ devices operate at the L3 layer (IP). There is an analogous _tap_ device that operates at the L2 layer (Ethernet).
 
-```bash
+```console?comments=true
 # on server & laptop run the following
 # adding the user will allow userspace programs running as that user
 # to attach to it without needing `sudo`
@@ -79,7 +79,7 @@ Packets sent by the operating system via the _tun_ device are delivered to a use
 
 We then need to assign the new _private IP addresses_ for our new subnet.
 
-```bash
+```console?comments=true
 # on the laptop run the following
 > sudo ip addr add 172.31.255.7/24 dev tun0
 # on the server run the following
@@ -88,7 +88,7 @@ We then need to assign the new _private IP addresses_ for our new subnet.
 
 Now let's create a general routing rule so that anything destined for that subnet routes to the desired _tun_ device.
 
-```bash
+```console?comments=true
 # run the following on both laptop & server
 > sudo ip route add 172.16.0.0/12 dev tun0
 
@@ -148,7 +148,7 @@ Given that the IP header is 20 bytes (minimum) and the UDP header is 8 bytes, ou
 
 A simple demonstration will help.
 
-```bash
+```console?comments=true
 # Upper limit MTU is 1500 safely across the Internet
 # IPv4 header is 20 bytes (minimum)
 # UDP header is 8 bytes
@@ -176,7 +176,7 @@ A simple demonstration will help.
 
 So we simply need to adjust the MTU on our TUN device accordingly.
 
-```bash
+```console?comments=true
 # run the following on both laptop and server
 > sudo ip link set dev tun0 mtu 1472
 ```
@@ -342,7 +342,7 @@ func main() {
 ```
 
 Running the code is quite simple.
-```bash
+```console?comments=true
 # the server runs it in listen mode
 > ./lametun -listen
 

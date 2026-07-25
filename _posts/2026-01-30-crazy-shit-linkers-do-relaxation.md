@@ -110,7 +110,7 @@ On x86-64, `0x67` (`addr32`) usually implies 32-bit addressing for the operand. 
 
 If we go back to our example and enable relaxation, and produce a final binary, we can disassemble it to see whether it was relaxed.
 
-```bash
+```console
 > objdump -SD main
 
 0000000000401133 <example>:

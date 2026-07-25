@@ -19,7 +19,7 @@ Pick *any* derivation from your `/nix/store`. In my example, I'm picking a deriv
 
 Simply run the tool `nix-vanity`. Let it crunch through a bunch of possible derivations until it emits:
 
-```bash
+```console?comments=true
 # n.b. write out the discovered derivation to a file with
 # the same name.
 > nix-vanity -prefix /nix/store/farid \
@@ -37,14 +37,14 @@ time=2025-03-27T20:41:41.189-07:00 level=INFO msg="All workers finished."
 
 We can now add our _modified_ derivation back to the `/nix/store`
 
-```bash
+```console
 > nix-store --add vanity-path.drv
 /nix/store/mw0ay18bx93r5syyscfmdy1s6jgjxk31-vanity-path.drv
 ```
 
 Finally, let's _realize_ our modified derivation and validate we have our vanity store path:
 
-```bash
+```console
 > nix-store --realize /nix/store/mw0ay18bx93r5syyscfmdy1s6jgjxk31-vanity-path.drv
 this derivation will be built:
   /nix/store/mw0ay18bx93r5syyscfmdy1s6jgjxk31-vanity-path.drv
@@ -61,7 +61,7 @@ The concept is rather _simple_. The `/nix/store` path is calculated from the has
 
 By injecting a new environment variable `VANITY_SEED` we can attempt different possible store paths.
 
-```bash
+```console
 > nix derivation show /nix/store/mw0ay18bx93r5syyscfmdy1s6jgjxk31-vanity-path.drv 
 {
   "/nix/store/mw0ay18bx93r5syyscfmdy1s6jgjxk31-vanity-path.drv": {
@@ -80,7 +80,7 @@ Thankfully there was a decent starting point with [go-nix](https://github.com/ni
 
 You can checkout the command at [https://github.com/fzakaria/go-nix/tree/vanity](https://github.com/fzakaria/go-nix/tree/vanity)
 
-```bash
+```console
 > go run ./cmd/nix-vanity ...
 ```
 

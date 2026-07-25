@@ -19,7 +19,7 @@ Well, Nix already lets you specify a different store-path today _but there is a 
 Let's take a look at a simple example.
 We can build `hello` two different ways.
 
-```bash
+```console
 > nix build nixpkgs#hello
 
 > nix build --store /tmp/fzakaria/store nixpkgs#hello
@@ -37,7 +37,7 @@ If you are using tools like [Bazel](https://bazel.build/) or [Buck2](https://buc
 
 We can ask `Nix` to use an alternate store prefix, _without chroot and mount namespaces_ but it has a big gap.
 
-```bash
+```console
 > XDG_CACHE_HOME=/tmp/fzakaria/cache \
 nix eval --store 'local?store=/tmp/fzakaria/store&state=/tmp/fzakaria/state&log=/tmp/fzakaria/log' \
 --raw nixpkgs#hello.outPath
@@ -62,7 +62,7 @@ We don't have to specify the full store-prefix everywhere. What if we used relat
 
 Let's look at one place the full paths are written today in the binary via `RUNPATH`.
 
-```bash
+```console
 > patchelf $(nix build --no-link --print-out-paths nixpkgs#hello)/bin/hello \
             --print-rpath
 /nix/store/57iz36553175g3178pvxjij8z5rcsd4n-glibc-2.42-61/lib
@@ -82,7 +82,7 @@ Well, like most things the devil is in the details. 😈
 
 Before the dynamic linker can read the `RUNPATH` to find the necessary libraries, the Linux kernel has to load the dynamic linker itself. This path is stored in a different ELF header called `PT_INTERP` (Program Interpreter).
 
-```bash
+```console
 > patchelf $(nix build --no-link --print-out-paths nixpkgs#hello)/bin/hello \
         --print-interpreter
 /nix/store/57iz36553175g3178pvxjij8z5rcsd4n-glibc-2.42-61/lib/ld-linux-x86-64.so.2

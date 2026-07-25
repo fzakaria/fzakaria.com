@@ -67,7 +67,7 @@ public static void main(String[] args) throws Exception {
 
 We can run this and see that the expected file is produced.
 
-```bash
+```console
 > protoc example.proto --plugin=protoc-gen-dumb \
                        --dumb_out=./generated
 > cat generated/Dummy.java
@@ -105,7 +105,7 @@ message Address {
 
 You can generate the traditional Java code for this using `protoc` which by default includes the capability to output Java.
 
-```bash
+```console
 > protoc --java_out=./generated example.proto
 
 > tree generated
@@ -129,7 +129,7 @@ If you _audit_ the generated code you will see comments that contain `protoc_ins
 
 `@@protoc_insertion_point(message_implements:Person)`
 
-```bash
+```console
 > rg "@@protoc_insertion" generated
 generated/com/example/protobuf/tutorial/Person.java
 13:    // @@protoc_insertion_point(message_implements:Person)
@@ -171,7 +171,7 @@ We can audit the generated source and we see that our new method is now included
 
 _Note: The plugin **must** be listed after `java_out` as the order matters on the command-line._
 
-```bash
+```console
 > protoc example.proto  --java_out=./generated \         
                         --plugin=protoc-gen-example \
                         --example_out=./generated

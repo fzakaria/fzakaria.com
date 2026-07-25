@@ -88,7 +88,7 @@ Is this possible today? Yes!
 
 Whenever Nix sees angled brackets `<something>` it desugars the expression to a call to `__findFile`.
 
-```bash
+```console
 > nix-instantiate --parse --expr "<hello>"
 (__findFile __nixPath "hello")
 ```
@@ -137,7 +137,7 @@ We write a function of `__findFile` that trivially splits the contents within th
 
 So does this even work?
 
-```bash
+```console
 > nix eval .#example --impure
 "Hello from a flake! and welcome to Nix!"
 ```
@@ -183,7 +183,7 @@ I got some wonderful feedback from [eljamm](https://github.com/eljamm) via the [
 
 We now don't need to provide `--impure` 👌 and we get all the same fun _new_ ergonomic way to access flake attributes.
 
-```bash
+```console
 > nix eval .#example
 "Hello from a flake! and welcome to Nix!"
 ```

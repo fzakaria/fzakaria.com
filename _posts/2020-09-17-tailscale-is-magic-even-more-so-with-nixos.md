@@ -54,20 +54,20 @@ The above will provide a HTTPS link for you to login through your registered ide
 After running this, you checkout the changes that were done.
 
 1. Confirm that _tailscaled_ is running properly
-    ```bash
-    ❯ systemctl is-active tailscaled
+    ```console
+    $ systemctl is-active tailscaled
     active
     ```
 2. Checkout the new network device created.
-    ```bash
-    ❯ ip link show dev tailscale0
+    ```console
+    $ ip link show dev tailscale0
     6: tailscale0: <POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP> mtu 1280 qdisc pfifo_fast state UNKNOWN mode DEFAULT group default qlen 500
     link/none
     ```
     > Interestingly, the MTU is set to 1280 which is very conservative for the necessary encapsulation headers to tunnel traffic. [#246](https://github.com/tailscale/tailscale/issues/246)
 3. Checkout the route table created
-    ```bash
-    ❯ ip route show table 52
+    ```console
+    $ ip route show table 52
     100.87.7.89 dev tailscale0 scope link
     100.100.100.100 dev tailscale0 scope link
     100.101.102.103 dev tailscale0 scope link

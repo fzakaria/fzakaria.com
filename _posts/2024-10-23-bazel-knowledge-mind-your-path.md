@@ -7,7 +7,7 @@ excerpt_separator: <!--more-->
 
 Have you encountered the following?
 
-```bash
+```console
 > bazel build
 INFO: Invocation ID: f16c3f83-0150-494e-bd34-1a9cfb6a2e67
 WARNING: Build option --incompatible_strict_action_env has changed, discarding analysis cache (this can be expensive, see https://bazel.build/advanced/performance/iteration-speed).
@@ -50,7 +50,7 @@ I want to validate this assumption, by following the guide on [how to debug remo
 I ran Bazel twice, once with a different `PATH` and stored the compact execution log.
 I then convert it to textual form and diff them.
 
-```bash
+```console?comments=true
 # build protoc normally
 > bazel build @com_google_protobuf//:protoc \
     --execution_log_compact_file=/tmp/exec1.log

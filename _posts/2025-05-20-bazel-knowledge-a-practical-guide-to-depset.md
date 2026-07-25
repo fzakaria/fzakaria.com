@@ -162,7 +162,7 @@ def _node_impl(ctx):
 
 Let's try our new rule using the targets earlier!
 
-```bash
+```console
 > bazel build //:A
 Target //:A up-to-date:
   bazel-bin/A.dot
@@ -219,7 +219,7 @@ def _node_impl(ctx):
 The downside to this approach is that nodes and edges may be duplicated in the resulting file with the current implementation.
 The DOT language supports duplicates, so the resulting graph is still correct albeit a bit unecessarily larger.
 
-```bash
+```console
 > bazel build //:A
 Target //:A up-to-date:
   bazel-bin/A.dot

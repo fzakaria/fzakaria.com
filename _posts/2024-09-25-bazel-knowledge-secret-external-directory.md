@@ -26,7 +26,7 @@ http_archive(
 
 We can query for this repository directly. You can provide any of the output types (i.e. build, label, graph) but I tend to find *build* useful to see how a transitive dependency might be defined.
 
-```console
+```console?comments=true
 > bazel query //external:gnu_hello --output build
 
 # /Users/fzakaria/code/playground/bazel/external-example/WORKSPACE:3:13

@@ -27,7 +27,7 @@ int main() {
 
 If we compile this `gcc -c simple-relocation.c -o simple-relocation.o` we can inspect it with `objdump`.
 
-```bash
+```console
 > objdump -dr simple-relocation.o
 
 0000000000000000 <main>:
@@ -47,7 +47,7 @@ There's a lot going on here, but one important part is `e8 00 00 00 00`. `e8` is
 > If you are wondering why we need `-0x4`, it's because the offset is relative to the instruction-pointer which has already moved to the next instruction. The 4 bytes is the operand it has skipped over.
 {: .alert .alert-note }
 
-```bash
+```console
 > readelf -r simple-relocation.o -d
 
 Relocation section '.rela.text' at offset 0x170 contains 1 entry:
@@ -66,13 +66,13 @@ void far_function() {
 
 We will now compile it and link the two object files together using our linker.
 
-```bash
+```console
 > gcc simple-relocation.o far-function.o -o simple-relocation
 ```
 
 Let's now inspect that same callsite and see what it has.
 
-```bash
+```console
 > objdump -dr simple-relocation
 
 0000000000401106 <main>:
@@ -131,7 +131,7 @@ If we now try to link our code we will see a "relocation overflow".
 > I used `lld` from [LLVM](https://lld.llvm.org/) because the error messages are a bit prettier.
 {: .alert .alert-tip }
 
-```bash
+```console
 > gcc simple-relocation.o far-function.o -T overflow.lds -o simple-relocation-overflow -fuse-ld=lld
 
 ld.lld: error: <internal>:(.eh_frame+0x6c):
@@ -149,7 +149,7 @@ Well this is a complete other subject on "code models", and it's a little more n
 
 The simplest solution however is to use `-mcmodel=large` which changes all the relative `CALL` instructions to absolute 64bit ones; kind of like a `JMP`.
 
-```bash
+```console
 > gcc simple-relocation.o far-function.o -T overflow.lds -o simple-relocation-overflow
 
 > gcc -c simple-relocation.c -o simple-relocation.o -mcmodel=large -fno-asynchronous-unwind-tables
@@ -165,7 +165,7 @@ The simplest solution however is to use `-mcmodel=large` which changes all the r
 
 What does the disassembly look like now?
 
-```bash
+```console
 > objdump -dr simple-relocation-overflow 
 
 0000000120000000 <far_function>:

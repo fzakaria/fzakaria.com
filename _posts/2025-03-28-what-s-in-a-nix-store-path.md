@@ -190,7 +190,7 @@ Okay let's see if we can do this by hand 🔨. I love trying to learn things fro
 
 The desired output path we want to derive is `/nix/store/n4sa1zr7y8y60wgsn1abyj52ksg1qjqc-simple`.
 
-```bash
+```console
 > nix derivation show \
   /nix/store/cf6b516yzc4xbm6ddg9b9mklqmxk2ili-simple.drv \
   | grep path
@@ -206,7 +206,7 @@ Our sole `inputDrv` is `/nix/store/1g48s6lkc0cklvm2wk4kr7ny2hiwd4f1-simple-fod.d
 
 First we must construct the [fingerprint](https://hydra.nixos.org/build/293701648/download/1/manual/protocols/store-path.html) for it following the documentation which claims it should be `fixed:out:sha256:<base16 hash>:<store path>`.
 
-```bash
+```console?comments=true
 # let's convert our SRI hash to base16
 > nix hash convert --hash-algo sha256 --to base16 \
     --from sri \
@@ -261,7 +261,7 @@ Hash compressHash(const Hash & hash, unsigned int newSize)
 }
 ```
 
-```bash
+```console?comments=true
 # hash this final fingerprint
 > echo -n "output:out:sha256:fbfae16395905ac63e41e0c1ce760fe468be838f1b88d9e589f45244739baabf:/nix/store:simple" |\
      sha256sum

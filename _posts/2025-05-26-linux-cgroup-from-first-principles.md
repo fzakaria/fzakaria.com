@@ -131,7 +131,7 @@ You can inspect your login shells current cgroup by inspecting `/proc/self/cgrou
 
 The returned value is what should be appended to the root.
 
-```bash
+```console
 > cat /proc/self/cgroup
 0::/user.slice/user-1000.slice/session-5.scope
 
@@ -204,7 +204,7 @@ All the files that begin with `cgroup` itself, help set up the cgroup and turn o
 
 Initially, our `cgroup.subtree_control` for `/sys/fs/cgroup/demo` is empty. This means if you looked at any of the child cgroup, i.e. `/sys/fs/cgroup/demo/cpu-limited`, it will be missing a bunch of files.
 
-```bash
+```console?comments=true
 > cat /sys/fs/cgroup/demo/cgroup.subtree_control 
 # empty
 > cat /sys/fs/cgroup/demo/cpu-limited/cgroup.controllers 
@@ -213,7 +213,7 @@ Initially, our `cgroup.subtree_control` for `/sys/fs/cgroup/demo` is empty. This
 
 Let's toggle on various controllers.
 
-```bash
+```console
 > echo "+memory +io +cpu" > /sys/fs/cgroup/demo/cgroup.subtree_control 
 
 > cat /sys/fs/cgroup/demo/cgroup.subtree_control 
@@ -225,7 +225,7 @@ cpu io memory
 
 We can change the cgroup for a process by writing its _pid_ to the `cgroup.procs` file.
 
-```bash
+```console
 > sleep infinity &
 1055
 > echo 1055 | sudo tee /sys/fs/cgroup/demo/memory-limited/cgroup.procs 
@@ -274,7 +274,7 @@ int main() {
 
 We will restrict processes within our `demo/memory-limited` group to 5MiB.
 
-```bash
+```console
 > echo "5242880" > /sys/fs/cgroup/demo/memory-limited/memory.max  
 
 > cat /sys/fs/cgroup/demo/memory-limited/memory.max  
@@ -283,7 +283,7 @@ We will restrict processes within our `demo/memory-limited` group to 5MiB.
 
 Now let's start `hog` in the cgroup. We will use the tool `cgexec` which takes care of spawning the process in the desired cgroup -- this avoids us having to write ourselves to the `cgroup.procs` file.
 
-```bash
+```console
 > sudo cgexec -g memory:demo/memory-limited hog
 1 MB allocated
 1 MB allocated
@@ -338,7 +338,7 @@ int main() {
 
 If we were to run this program normally, we may see the following:
 
-```bash
+```console
 > throttled  | head
 Delta: 0 ms
 Delta: 1 ms
@@ -363,7 +363,7 @@ Now let's apply a CPU constraint saying that within 100ms (100000µs), processes
 
 Let's use `cgexec` again on our `throttled` program and observe the difference.
 
-```bash
+```console
 > sudo cgexec -g cpu:demo/cpu-limited throttled
 Delta: 0 ms
 Delta: 5 ms

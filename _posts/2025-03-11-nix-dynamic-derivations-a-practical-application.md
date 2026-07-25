@@ -93,7 +93,7 @@ After the Nix expression is generated, we need to only `nix-instantiate` it and 
 
 We just got incremental Nix C/C++ builds automatically from the dependency information provided by the compiler. 🔥
 
-```bash
+```console?comments=true
 # use `nix run` to bind mount our temporary store to /nix/store
 > nix run nixpkgs#fish --store /tmp/dyn-drvs
 

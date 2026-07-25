@@ -40,14 +40,14 @@ SELECT a FROM fibonacci WHERE n = 100000000;
 
 We will compile `sqlite3` from source by downloading it.
 
-```bash
+```console
 > wget https://sqlite.org/2026/sqlite-amalgamation-3530100.zip
 > unzip sqlite-amalgamation-3530100.zip
 ```
 
 We can compile a "traditional" optimized binary that merely has `-O3` and also a version that has LTO enabled since I was also keen to see how much LTO itself adds.
 
-```bash
+```console?comments=true
 > clang -O3 shell.c sqlite3.c -o sqlite3_base
 
 > clang -O3 -flto shell.c sqlite3.c -o sqlite3_lto
@@ -75,7 +75,7 @@ Next, we compile our program again but we _instrument the binary_, which effecti
 After we have our instrumented binary, we run our workload again to generate the profile data and rebuild the binary with that data.
 
 
-```bash
+```console?comments=true
 # 1. Build the instrumented version for Clang
 > clang -O3 -flto -fprofile-generate=. shell.c sqlite3.c -o sqlite3_instr
 
@@ -93,7 +93,7 @@ The last step will be to optimize with BOLT, which is a post-link optimizer, whi
 
 When we run our workload with the final optimized binary, we see massive improvement already! 🤯
 
-```bash
+```console
 > time ./sqlite3_pgo :memory: < ./fibbonoci.sql
 ╭───────────╮
 │     a     │
@@ -111,7 +111,7 @@ We've cut our workload time down to ~10 seconds which is a nearly a **1.5x** imp
 
 Now let's optimize the final binary with LLVM's [BOLT](https://github.com/llvm/llvm-project/blob/main/bolt/README.md). BOLT is a post-link optimizer designed for "large applications". What this means, is that it largely works by shuffling code around the binary to keep code-paths that have high temporal locality near each other (spatial locality). This can have positive impact on performance due to the instruction cache for instance.
 
-```bash
+```console?comments=true
 # 1. Instrument the PGO binary with BOLT
 > llvm-bolt sqlite3_pgo -o sqlite3_bolt_instr --instrument --instrumentation-file=bolt.fdata
 

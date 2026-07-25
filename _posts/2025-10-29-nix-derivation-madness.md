@@ -8,7 +8,7 @@ I've written _a bit_ about [Nix](https://nixos.org) and I still face moments whe
 
 Recently I hit an issue that stumped me as it break some basic comprehension I had on how Nix works. I wanted to produce the build and runtime graph for the Ruby interpreter.
 
-```bash
+```console
 > nix-shell -p ruby
 
 > which ruby
@@ -29,7 +29,7 @@ I have Ruby but I don't seem to have the derivation, `24v9wpp393ib1gllip7ic13ayc
 
 No worries, I think I can `--realize` it and download it from the NixOS cache.
 
-```bash
+```console
 > nix-store --realize /nix/store/24v9wpp393ib1gllip7ic13aycbi704g-ruby-3.3.9.drv
 don't know how to build these paths:
   /nix/store/24v9wpp393ib1gllip7ic13aycbi704g-ruby-3.3.9.drv
@@ -44,7 +44,7 @@ My mental model however of Nix though is that I must have first evaluated the de
 
 Is this derivation wrong somehow? Nope. This is the derivation Nix believes that produced this Ruby binary from the `sqlite` database. 🤨
 
-```bash
+```console
 > sqlite3 "/nix/var/nix/db/db.sqlite" 
     "select deriver from ValidPaths where path = 
     '/nix/store/mp4rpz283gw3abvxyb4lbh4vp9pmayp2-ruby-3.3.9'"
@@ -53,7 +53,7 @@ Is this derivation wrong somehow? Nope. This is the derivation Nix believes that
 
 What does the binary cache itself say? Even the cache itself thinks this particular derivation, `24v9wpp393ib1gllip7ic13aycbi704g`, produced this particular Ruby output.
 
-```bash
+```console
 > curl -s https://cache.nixos.org/mp4rpz283gw3abvxyb4lbh4vp9pmayp2.narinfo |\
   grep Deriver
 Deriver: 24v9wpp393ib1gllip7ic13aycbi704g-ruby-3.3.9.drv
@@ -61,7 +61,7 @@ Deriver: 24v9wpp393ib1gllip7ic13aycbi704g-ruby-3.3.9.drv
 
 What if I try a different command? 
 
-```bash
+```console
 > nix derivation show $(which ruby) | jq -r "keys[0]"
 /nix/store/kmx8kkggm5i2r17s6l67v022jz9gc4c5-ruby-3.3.9.drv
 
@@ -93,7 +93,7 @@ in derivation {
 
 ☝️ Since this is a _fixed-output derivation_ (FOD) the produced `/nix/store` path will not be affected to changes to the derivation beyond the contents of `$out`.
 
-```bash
+```console
 > nix-instantiate fod.nix
 /nix/store/k2wjpwq43685j6vlvaarrfml4gl4196n-hello-world-fixed.drv
 
@@ -122,7 +122,7 @@ builtins.derivation {
 
 The `/nix/store` for the output for this derivation _will change_ on changes to the derivation **except** if the derivation path for the FOD changes. This is in fact what makes it "modulo" the fixed-output derivations.
 
-```bash
+```console
 > nix-instantiate uses-fod.nix
 /nix/store/85d15y7irq7x4fxv4nc7k1cw2rlfp3ag-uses-fod.drv
 
@@ -146,7 +146,7 @@ Let's do this by just adding some _garbage_ attribute to the derivation.
 
 What happens now?
 
-```bash
+```console
 > nix-instantiate fod.nix
 /nix/store/yimff0d4zr4krwx6cvdiqlin0y6vkis0-hello-world-fixed.drv
 
@@ -158,7 +158,7 @@ The path of the derivation itself, `.drv`, has changed but the output path `ajk1
 
 What about the derivation that leverages it?
 
-```bash
+```console
 > nix-instantiate uses-fod.nix
 /nix/store/85wkdaaq6q08f71xn420v4irll4a8g8v-uses-fod.drv
 
@@ -259,7 +259,7 @@ builtins.derivation {
 
 We can now instantiate and build this as normal.
 
-```bash
+```console
 > nix-instantiate uses-fod.nix
 /nix/store/z6nr2k2hy982fiynyjkvq8dliwbxklwf-uses-fod.drv
 
@@ -271,7 +271,7 @@ What is weird about that?
 
 Well, let's take the JSON representation of the derivation and remove one of the inputs.
 
-```bash
+```console
 > nix derivation show \
     /nix/store/z6nr2k2hy982fiynyjkvq8dliwbxklwf-uses-fod.drv \
     jq 'values[].inputDrvs | keys[]'
@@ -299,7 +299,7 @@ We can do this because although there are two input derivations, we know they bo
 
 Let's load this modified derivation back into our `/nix/store` and build it again!
 
-```bash
+```console
 > nix derivation add < derivation.json
 /nix/store/s4qrdkq3a85gxmlpiay334vd1ndg8hm1-uses-fod.drv
 

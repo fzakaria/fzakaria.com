@@ -58,7 +58,7 @@ Other fun failure modes that exist:
 **The String Table (.strtab)**
   : Even in a 64-bit ELF (`Elf64_Sym`), the `st_name` field, which holds the offset to the symbol's name in the string table is only a 32-bit integer. If you have enough heavily mangled C++ templates, your string table can theoretically hit the 4GiB limit, at which point the ELF format itself fundamentally caps out. 🫠
 
-  ```
+  ```c
   typedef struct {
 	Elf64_Word	st_name;
 	unsigned char	st_info;

@@ -115,7 +115,7 @@ We just got the `node_modules` for our `package-lock.json` in a manner that does
 
 What's nice is that we retain the developer experience however. If our packages ever change, we don't have to update a `npmDepHash`, `cargoHash` or whatnot.
 
-```console
+```console?comments=true
 # use `nix run` to bind mount our temporary store to /nix/store
 > nix run nixpkgs#fish --store /tmp/dyn-drvs
 

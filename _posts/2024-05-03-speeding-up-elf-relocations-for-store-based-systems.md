@@ -132,7 +132,7 @@ To achieve this improvement, I have a basic implementation built atop musl's dyn
 1. I've added support for a new environment variable `RELOC_WRITE` that when set will write the resolved symbols for each relocation to disk in a file set by the variable.
 
     ```console
-    ❯ RELOC_WRITE=relo.bin ./1_million_functions.bin &>/dev/null
+    $ RELOC_WRITE=relo.bin ./1_million_functions.bin &>/dev/null
     ```
 
     The resolves symbols are serialized as the simple structure below.
@@ -157,7 +157,7 @@ To achieve this improvement, I have a basic implementation built atop musl's dyn
 2. We add this serialized file to the ELF binary as a new section using _objcopy_
 
     ```console
-    ❯ objcopy --add-section .reloc.cache=relo.bin \
+    $ objcopy --add-section .reloc.cache=relo.bin \
         --set-section-flags .reloc.cache=noload,readonly 1_million_functions.bin  \
         1_million_functions.bin
     ```
@@ -165,7 +165,7 @@ To achieve this improvement, I have a basic implementation built atop musl's dyn
 3. Run the program again, and the dynamic linker will use the cached symbol resolutions if the section `.reloc.cache` is present.
 
     ```console
-    ❯ ./1_million_functions.bin
+    $ ./1_million_functions.bin
     ```
 
     The dynamic linker will load the symbol resolutions and apply them to the relocations in the binary. The DSO names for each entry

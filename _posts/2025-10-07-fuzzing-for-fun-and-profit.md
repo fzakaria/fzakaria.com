@@ -14,7 +14,7 @@ To get started let's first make sure we have access to AFL via [Nix](http://nixo
 
 > We will be using [AFL++](https://aflplus.plus/), the daughter of AFL that incorporates newer updates and features.
 
-```bash
+```console
 > nix-shell -p aflplusplus
 ```
 
@@ -76,21 +76,21 @@ int main(int argc, char *argv[]) {
 
 We now can compile our code with `afl-cc` to get the _instrumented binary_.
 
-```bash
+```console
 > afl-cc demo.c -o demo
 ```
 
 AFL needs to be given some sample inputs 
 Let's feed it the simplest starter seed possible -- an empty file!
 
-```bash
+```console
 > mkdir -p seed_dir
 > echo "" > seed_dir/empty_input.txt
 ```
 
 Now we simply run `afl-fuzz`, and the _magic happens_. ✨
 
-```bash
+```console
 > afl-fuzz -i seed_dir -o out_dir -- ./demo
 ```
 
@@ -127,7 +127,7 @@ The output directory contains all the saved information including the input that
 
 Let's inspect it!
 
-```bash
+```console
 > cat "out_dir/default/crashes/id:000000,sig:11,src:000005,time:2119,execs:14486,op:havoc,rep:1" 
 Farid
 ```

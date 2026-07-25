@@ -36,7 +36,7 @@ bat = {
 
 This will make `bat` available on our `$PATH` and also create a `~/config/bat/config` with our theme, which the program is expected to read which is a symlink to a file in the `/nix/store`
 
-```bash
+```console
 > cat ~/.config/bat/config
 --theme=Dracula
 
@@ -68,7 +68,7 @@ Some modules within home-manager adopt this pattern already such as `vim` ðŸ•µï¸
 
 Here is a `vim` program configured with home-manager and we can see that it wraps the program and provides the `vimrc` file directly.
 
-```bash
+```console?comments=true
 > cat $(which vim)
 #! /nix/store/8vpg72ik2kgxfj05lc56hkqrdrfl8xi9-bash-5.2p37/bin/bash -e
 exec "/nix/store/kjzs8h7bv3xck90m3wdb7gcb71i2w5sv-vim-full-9.1.1122/bin/vim" \

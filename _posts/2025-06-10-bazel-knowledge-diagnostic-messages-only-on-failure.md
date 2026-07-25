@@ -149,7 +149,7 @@ hello_world = rule(
 
 When we have a **successful** build, it is quiet. 😌
 
-```bash
+```console
 > bazel build //:hello_world
 INFO: Invocation ID: 114e65ff-a263-4dcd-9b4f-de6cef10d36a
 INFO: Analyzed target //:hello_world (1 packages loaded, 5 targets configured).
@@ -161,7 +161,7 @@ Target //:hello_world up-to-date:
 If I were to induce a failure in our tool, by having it return `System.exit(-1)` we can see the logs now include
 the relevant information.
 
-```bash
+```console
 > bazel build //:hello_world
 INFO: Invocation ID: fb1170c9-7f38-4269-9d60-7d03155837c2
 INFO: Analyzed target //:hello_world (0 packages loaded, 0 targets configured).
@@ -185,7 +185,7 @@ ERROR: Build did NOT complete successfully
 
 Finally, we can use `--output_groups` to get access to the output on successful builds.
 
-```bash
+```console
 > bazel build //:hello_world --output_groups=output
 INFO: Invocation ID: f2341485-42f3-4117-aced-bfdd87ef60ca
 INFO: Analyzed target //:hello_world (0 packages loaded, 0 targets configured).

@@ -127,7 +127,7 @@ LLVM includes support for inserting thunks for certain architectures such as AAr
 
 If we cross-compile our "far function" example for AArch64 using the same linker script to synthetically place it far away to trigger the need for a thunk, the linker magic becomes visible immediately.
 
-```bash
+```console
 > aarch64-linux-gnu-gcc -c main.c -o main.o \
 -fno-exceptions -fno-unwind-tables \
 -fno-asynchronous-unwind-tables
@@ -141,7 +141,7 @@ If we cross-compile our "far function" example for AArch64 using the same linker
 
 We can now see the generated code with `objdump`.
 
-```bash
+```console
 > aarch64-unknown-linux-gnu-objdump -dr thunk-example 
 
 Disassembly of section .text:

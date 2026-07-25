@@ -50,7 +50,7 @@ Now we can do our build!
 
 We execute `nix build` but execute it against the _second daemon_ (`nix_socket_2`).
 
-```bash
+```console?comments=true
 > nix build nixpkgs#hello \
     --store unix:///tmp/nix_socket_2 \
     --print-out-paths
@@ -64,7 +64,7 @@ Well we can maybe write an interceptor to log all the traffic and see what's goi
 
 Here we can use `socat` to pipe all the data to `nix_socket_1` but also `-v` will debug print everything.
 
-```bash
+```console
 > socat -v UNIX-LISTEN:/tmp/nix_socket_1,fork \
        UNIX-CONNECT:/tmp/nix_socket_2
 ```

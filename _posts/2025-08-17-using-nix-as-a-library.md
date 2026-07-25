@@ -65,14 +65,14 @@ To start, let's create a `devShell` that will include our necessary packages: `n
 
 Adding `pkg-config` to our `devShell` will initiate a `buildHook` for any package that contains a `dev` output and set up the necessary environment variables. This will be the mechanism with which our build tool `meson` finds the necessary shared-objects and header files.
 
-```bash
+```console
 > env | grep PKG_CONFIG_PATH
 PKG_CONFIG_PATH=/nix/store/dxar61b2ig87cfdvsylfcnyz6ajls91v-nix-2.28.3-dev/lib/pkgconfig:/nix/store/sgsi5d3z14ygk1f2nlgnlj5w4vl0z8gc-boehm-gc-8.2.8-dev/lib/pkgconfig:/nix/store/l6wng97amh2h2saa5dpvbx5gavjv95r4-nlohmann_json-3.11.3/share/pkgconfig:/nix/store/8kyckzscivn03liyw8fwx93lm3h21z9c-libarchive-3.7.8-dev/lib/pkgconfig:/nix/store/d003f74y8hj2xw9gw480nb54vq99h5r3-attr-2.5.2-dev/lib/pkgconfig:/nix/store/rrgb780yg822kwc779qrxhk60nmj8f6q-acl-2.3.2-dev/lib/pkgconfig:/nix/store/ammv4hfx001g454rn0dlgibj1imn9rkw-boost-1.87.0-dev/lib/pkgconfig
 ```
 
 We can also run `pkg-config --list` to see that they can be discovered.
 
-```bash
+```console
 > pkg-config --list-all | head
 nix-flake              Nix - Nix Package Manager
 nix-store              Nix - Nix Package Manager
@@ -137,7 +137,7 @@ int main(int argc, char **argv) {
 
 We can now build our project and run it! 🔥
 
-```bash
+```console
 > meson setup build
 
 > meson compile -C build

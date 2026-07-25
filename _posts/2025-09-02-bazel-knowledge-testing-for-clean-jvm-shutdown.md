@@ -47,7 +47,7 @@ public class Main {
 
 If we run this, although we exit the _main_ thread, we observe that the JVM does not exit and the thread continues to do its "work".
 
-```bash
+```console
 > java Main
 Leaving main thread
 Thread is running...
@@ -81,7 +81,7 @@ public void testNonDaemonThread() {
 
 If we run this test however we notice the test **PASSES** 😱
 
-```bash
+```console
 > bazel test //:NonDaemonThreadTest -t-
 INFO: Invocation ID: f0b0c42f-2113-4050-ab7e-53c67dfa7904
 INFO: Analyzed target //:NonDaemonThreadTest (0 packages loaded, 4 targets configured).

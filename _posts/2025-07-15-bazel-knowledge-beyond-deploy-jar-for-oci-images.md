@@ -311,7 +311,7 @@ We can now build our image and load into our local docker daemon.
 
 We will inspect the image uding `docker history` and we can confirm there are 4 layers, 3 we created and 1 for the base image. Bazel even includes the target name for the history comment of the layer. 🔥 
 
-```bash
+```console
 > bazel run //:load2
 INFO: Invocation ID: d2d143f8-1f7e-4b8a-88be-c8cd7d6430df
 INFO: Analyzed target //:load2 (0 packages loaded, 0 targets configured).
@@ -343,7 +343,7 @@ c3658883db33   N/A           bazel build //:java_image_layer_main            16.
 
 Just to confirm, let's run our docker image!
 
-```bash
+```console
 > docker run --rm hello-world:latest
 Hello from the Library with Guava!
 ```
@@ -361,7 +361,7 @@ I will then go ahead and change something small in our application code and conf
  }
 ```
 
-```bash
+```console
 > bazel run //:load2
 INFO: Invocation ID: d289ae67-865b-4699-a47a-b0142a609ec7
 INFO: Analyzed target //:load2 (0 packages loaded, 0 targets configured).

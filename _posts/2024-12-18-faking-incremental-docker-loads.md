@@ -65,7 +65,7 @@ Turns out, this limitation is documented and known:
 ❗ _There exists no API to query the layers the Docker engine has locally_.
 
 For a _quick'n'dirty_ (but effective) workaround I relied on the following before our CI job
-```bash
+```console
 > bazel query "kind(oci_load, //...)" \
     | xargs -n 1 -P 8 -I target bazel run target
 ```
@@ -105,7 +105,7 @@ Let's break it down.
 
 2. Although our metadata outlines _4 different layers_, we can omit the actual layer data.
 
-    ```bash
+    ```console
     > tar tf testimage.tar.gz | tree --fromfile .
     .
     ├── blobs
@@ -118,7 +118,7 @@ Let's break it down.
 3. If we try to upload this image, if the local daemon has all the layers already present, the upload will succeed **despite us not including any actual layers**.
 
 
-    ```bash
+    ```console
     > docker load < testimage.tar.gz
     Loaded image: example:0.1
     ```
@@ -126,7 +126,7 @@ Let's break it down.
 4. If a layer is missing locally, we detect it via the error response and subsequently include it in
 the archive and re-upload it.
 
-    ```bash
+    ```console
     > docker load < testimage.tar.gz
     open /var/lib/docker/tmp/docker-import-2494045611/blobs/sha256/6dd6992:
     no such file or directory
@@ -190,7 +190,7 @@ individual large layers, perhaps they were squashed, we are back to square one.
 
 
 Here we see an example image whose single layer is 1.28GiB.
-```bash
+```console
 > docker image history bad_example:0.1 --human \
                     --format 'table {{ "{{ .Size " }}}}' | head
 SIZE
@@ -213,14 +213,14 @@ At this point you have to improve the image by seggregating the data into more m
 The relevant code in Docker [can be found here](https://github.com/moby/moby/blob/0d53725a7f8abb0b75961806da252f31155cb813/image/tarexport/load.go#L33).
 
 Quick benchmarks done on my M3 Pro MacBook demonstrate it takes ~35-45 seconds to gzip a 2GiB file.
-```bash
+```console
 > time docker save bad_example:0.1 | gzip > test.tar.gz
 docker save bad_example:0.1  0.49s user 2.49s system 6% cpu 44.843 total
 gzip > test.tar.gz  36.72s user 0.48s system 82% cpu 44.842 total
 ```
 
 Uploading the image seems to take ~15 seconds
-```bash
+```console
 > time docker load < test.tar.gz
 75cc828c731c: Loading layer [==================================================>]  102.1MB/102.1MB
 20ebbf9559c4: Loading layer [==================================================>]  552.9MB/552.9MB

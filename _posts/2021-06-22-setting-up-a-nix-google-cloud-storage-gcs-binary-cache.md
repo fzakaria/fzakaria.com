@@ -18,40 +18,40 @@ Following this guide will allow Nix to leverage GCS without having to use a prox
 > You may want to follow best practices for reducing IAM roles and service account management.
 
 1. Let's create a bucket for us to store the Nix binary artifacts.
-    ```bash
-    ❯ gsutil mb gs://nix-cache-testing
+    ```console?comments=true
+    $ gsutil mb gs://nix-cache-testing
     Creating gs://nix-cache-testing/...
     # Validate it exists
-    ❯ gsutil du -s gs://nix-cache-testing
+    $ gsutil du -s gs://nix-cache-testing
     0            gs://nix-cache-testing
     ```
 2. Create a _service account_.
-    ```bash
-    ❯ gcloud iam service-accounts create nix-cache-testing \
+    ```console?comments=true
+    $ gcloud iam service-accounts create nix-cache-testing \
     >       --description="Service account for Nix GCS cache" \
     >       --display-name="Nix GCS Service Account"
     Created service account [nix-cache-testing].
     # Validate it exists
-    ❯ gcloud iam service-accounts list
+    $ gcloud iam service-accounts list
     DISPLAY NAME                            EMAIL                                                                     DISABLED
     Nix GCS Service Account                 nix-cache-testing@my-project.google.com.iam.gserviceaccount.com  False
     ```
 3. Create an _hmac_ for use with S3 API.
-    ```bash
-    ❯ gsutil hmac create  nix-cache-testing@my-project.iam.gserviceaccount.com
+    ```console
+    $ gsutil hmac create  nix-cache-testing@my-project.iam.gserviceaccount.com
     Access ID:   GOOGTS7C7FUP3AIRVJTE2BCDKINBTES3HC2GY5CBFJDCQ2SYHV6A6XXVTJFSA
     Secret:      <SCRUBBED OUT FOR SECURITY>
     ```
 4. Attach an appropriate IAM role to the service account.
-    ```bash
-    ❯ gcloud projects add-iam-policy-binding my-project \
+    ```console
+    $ gcloud projects add-iam-policy-binding my-project \
         --member="serviceAccount:nix-cache-testing@my-project.iam.gserviceaccount.com" \
         --role="roles/storage.admin" --condition=None
     ```
 5. Set the credentials anywhere the [that works](https://docs.aws.amazon.com/cli/latest/topic/config-vars.html#credentials) for the AWS CLI.
    I've chosen to do it in the `~/.aws/credentials` within a profile named _gcp_.
-    ```bash
-    ❯ cat ~/.aws/credentials
+    ```console
+    $ cat ~/.aws/credentials
     [gcp]
     aws_access_key_id = GOOGTS7C7FUP3AIRVJTE2BCDKINBTES3HC2GY5CBFJDCQ2SYHV6A6XXVTJFSA
     aws_secret_access_key = <SCRUBBED OUT FOR SECURITY>
@@ -60,8 +60,8 @@ Following this guide will allow Nix to leverage GCS without having to use a prox
 
    > You can avoid setting the endpoint-url if you use the [awscli-plugin-endpoint](https://github.com/wbingli/awscli-plugin-endpoint).
 
-    ```bash
-    ❯ aws s3 ls --profile gcp --endpoint-url https://storage.googleapis.com
+    ```console
+    $ aws s3 ls --profile gcp --endpoint-url https://storage.googleapis.com
     2021-06-22 09:04:24 nix-cache-testing
     ```
 

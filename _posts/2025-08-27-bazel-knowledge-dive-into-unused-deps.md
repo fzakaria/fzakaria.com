@@ -23,7 +23,7 @@ The analog tool for removing dependencies which are not directly referenced is [
 
 You can run this on your Java codebase to prune your dependencies to those only strictly required.
 
-```bash
+```console
 > unused_deps //...
 ....
 buildozer "add deps $(bazel query 'labels(exports, :cat)' | tr '\n' ' ')" //:park
@@ -57,7 +57,7 @@ java_library(
 
 First thing the tool does is query which targets to _look at_, and it emits this to _stderr_ so that part is a little obvious.
 
-```bash
+```console
 > unused_deps //...
 bazel query --tool_tag=unused_deps --keep_going \
             --color=yes --curses=yes \
@@ -98,7 +98,7 @@ The aspect is designed to emit additional files `%s.javac_params` that contain t
 
 If we inspect what this file looks like for the simple `java_library` I created `//:app`, we see it's the arguments to `java` itself.
 
-```bash
+```console
 > cat bazel-bin/app.javac_params | head
 external/rules_java++toolchains+remotejdk21_macos_aarch64/bin/java
 '--add-opens=java.base/java.lang=ALL-UNNAMED'
@@ -122,7 +122,7 @@ How does the aspect get injected into our project?
 
 Well, after figuring out which targets to build via the `bazel query`, `unused_deps` will `bazel build` your target pattern and specify `--override_repository` to include this additional dependency and enable the aspect via the `--aspects` flag.
 
-```bash
+```console
 > unused_deps //...
 ...
 bazel build --tool_tag=unused_deps --keep_going --color=yes --curses=yes \
@@ -140,7 +140,7 @@ Why did it go through such lengths to produce this file? The tool is trying is t
 
 The tool searches for the line `--direct_dependencies` for each target to see the dependencies that were needed to build it.
 
-```bash
+```console
 > cat bazel-bin/app.javac_params | grep direct_dependencies -A 3 -B 2
 --strict_java_deps
 ERROR
@@ -151,7 +151,7 @@ bazel-out/darwin_arm64-fastbuild/bin/liblibB-hjar.jar
 
 **QUESTION #1**: Why does the tool need to set up this aspect anyways? Bazel will already emit param files `*-0.params` for each Java target that contains nearly identical information.
 
-```bash
+```console
 > cat bazel-bin/libapp.jar-0.params | grep "direct_dependencies" -A 3
 --direct_dependencies
 bazel-out/darwin_arm64-fastbuild/bin/liblibB-hjar.jar
@@ -164,7 +164,7 @@ Bazel target expression for this dependency.
 
 In this case we can see the desired value is `Target-Label: //:libB`.
 
-```bash
+```console
 > zipinfo bazel-out/darwin_arm64-fastbuild/bin/liblibB-hjar.jar
 Archive:  bazel-out/darwin_arm64-fastbuild/bin/liblibB-hjar.jar
 Zip file size: 680 bytes, number of entries: 3
@@ -181,7 +181,7 @@ Target-Label: //:libB
 
 If you happen to use [rules_jvm_external](https://github.com/bazel-contrib/rules_jvm_external) to pull in Maven dependencies, the ruleset will "stamp" the downloaded JARs which means injecting them with the `Target-Label` entry in their `MANIFEST.MF` specifically to work with `unused_deps` [[ref](https://github.com/bazel-contrib/rules_jvm_external/blob/1c5cfbf96de595a3e23cf440fb40380cc28c1aea/private/rules/jvm_import.bzl#L35)].
 
-```bash
+```console
 > unzip -p bazel-bin/external/rules_jvm_external++maven+maven/com/google/guava/guava/32.0.1-jre/processed_guava-32.0.1-jre.jar | grep Target-Label
 Target-Label: @maven//:com_google_guava_guava
 ```
@@ -199,7 +199,7 @@ java_library(
 )
 ```
 
-```bash
+```console
 > bazel query "kind(java_*, deps(//:app, 1))" --notool_deps --noimplicit_deps
 INFO: Invocation ID: 09539f9d-9beb-401c-aca4-4728d5cfa75e
 //:app
@@ -210,7 +210,7 @@ After the labels of all the direct dependencies are known for each target, `unus
 
 Using `protoc` we can inspect and explore the file.
 
-```bash
+```console
 > protoc --proto_path /Users/fzakaria/code/ --decode blaze_deps.Dependencies \
         /Users/fzakaria/code/github.com/bazelbuild/buildtools/deps_proto/deps.proto \
         < ./bazel-bin/libapp.jdeps

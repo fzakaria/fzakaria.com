@@ -79,7 +79,7 @@ java_binary(
 
 I wrote a simple handy tool, [check-jar-versions](https://github.com/fzakaria/check-jar-versions), that can quickly list out all the bytecode versions within a JAR file.
 
-```bash
+```console
 > bazel build //slice/:main_deploy.jar
 INFO: Invocation ID: dbb086ca-66b4-40bd-a1f4-5b6f733bf671
 INFO: Analyzed target //slice:main_deploy.jar (0 packages loaded, 350 targets configured).
@@ -100,7 +100,7 @@ We see some classes compiled at Java 14 for the code within `//slice` but probab
 Why ?
 This is because `java_proto_library` automatically includes dependencies for the protobuf runtime to the compiled Java code.
 
-```bash
+```console
 > bazel query "kind('java_library', deps(//:main))"
 INFO: Invocation ID: 29b33588-a7cd-450a-a63e-6b044cc19966
 @protobuf//java/core:core
@@ -137,7 +137,7 @@ java_binary(
 )
 ```
 
-```bash
+```console
 > bazel build //slice/:main_deploy.jar
 INFO: Invocation ID: 424ae6d9-af38-418f-a986-5aa890bc9b1a
 INFO: Analyzed target //slice/:main_deploy.jar (0 packages loaded, 351 targets configured).

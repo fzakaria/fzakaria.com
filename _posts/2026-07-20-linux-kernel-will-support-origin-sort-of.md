@@ -76,7 +76,7 @@ struct binfmt_misc_ops nix = {
 
 Once the above program is loaded and registered into the kernel, we then ask the `binfmt_misc` subsystem to trigger it. Checkout [this thread](https://lore.kernel.org/linux-fsdevel/20260711-binfmt-misc-bpf-v2-v2-5-d6591ceaf207@gmail.com/) if you want to see the complete example.
 
-```bash
+```console
 > bpftool struct_ops register nix_origin.bpf.o /sys/fs/bpf
 > echo ':origin:B::::nix:' > /proc/sys/fs/binfmt_misc/register
 ```
