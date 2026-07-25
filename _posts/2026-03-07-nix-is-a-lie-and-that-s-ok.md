@@ -8,7 +8,7 @@ When [Eelco Dolstra](https://edolstra.github.io/), father of Nix, descended from
 
 > The FHS is the "find libraries and files by convention" dogma Nix abandons in the pursuit of purity.
 
-[![nix commandments](/assets/images/nix_commandments_50p.png)](/assets/images/nix_commandments_large.png)
+[![nix commandments](/assets/images/nix_commandments_large.png)](/assets/images/nix_commandments_large.png)
 
 What if I told you that was a _lie_ ? 😑
 

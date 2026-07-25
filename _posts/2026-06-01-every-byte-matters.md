@@ -138,7 +138,7 @@ This type of layout is referred to as "Struct of Arrays".
 
 How much of an impact can this have?
 
-[![graph of soa](/assets/images/aos_vs_soa_50p.png)](/assets/images/aos_vs_soa.png)
+[![graph of soa](/assets/images/aos_vs_soa.png)](/assets/images/aos_vs_soa.png)
 
 We can observe up to **30x** improvements when the Monster struct is 1KiB 🤯
 
@@ -165,7 +165,7 @@ Doubling the struct from 64B to 128B doubles the working set for the same number
 We can observe this with a pointer-chasing benchmark. We allocate N monster-sized nodes, wire them into a random order, and chase pointers. Each hop lands at an unpredictable address,
 defeating the CPU's prefetcher entirely.
 
-[![graph of soa](/assets/images/cache_staircase_50p.png)](/assets/images/cache_staircase.png)
+[![graph of soa](/assets/images/cache_staircase.png)](/assets/images/cache_staircase.png)
 
 Rather than graph it logarithmically, which I find sometimes is easy to miss, I have included a zoomed in graph. We can see that all struct sizes hit the same _staircase_ like pattern as they go through the various cache levels however the larger struct sizes are _shifted left_, meaning they hit the increase earlier.
 

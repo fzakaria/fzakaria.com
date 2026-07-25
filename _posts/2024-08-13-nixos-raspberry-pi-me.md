@@ -14,7 +14,7 @@ I have had always a positive experience with [Ubiquiti](https://www.ui.com/intro
 
 <!--more-->
 
-[![Image of my home rack](/assets/images/home_rack_50p.jpg)](/assets/images/home_rack.jpg)
+[![Image of my home rack](/assets/images/home_rack.jpg)](/assets/images/home_rack.jpg)
 
 > I'm currently building a home-server that will fill a few of the empty slots on the rack.
 

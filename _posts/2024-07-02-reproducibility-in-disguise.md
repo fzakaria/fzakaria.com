@@ -16,7 +16,7 @@ These companies however have a very distinctive software development practice fr
 
 Vendoring all third party dependencies has proven too onerous for most. Few developers truly understand the amount of code they pull in via transitive dependencies from their language package managers.
 
-![third party iceberg](/assets/images/iceberg_third_party_50p.jpg)
+![third party iceberg](/assets/images/iceberg_third_party.jpg)
 
 
 To help those onboard to Bazel, the tool has introduced incrementally the concept of non-vendored dependencies (remote repositories) and integration with typical language package management tools such as _maven_, _pip_ or _npm_. More recently, they've fully launched the _bazel mod_ system which is a semantic versioning solver for dependencies. These are features that
@@ -27,7 +27,7 @@ _Ah, diamond dependency problem, how I've missed you._ 🙃
 
 The introduction and use of Bazel has given many a **false** sense of security in that they have a lot better reproducibility than they did before.
 
-![head in sand meme](/assets/images/head_in_sand_bazel_50p.jpeg)
+![head in sand meme](/assets/images/head_in_sand_bazel.jpeg)
 
 The inconvenient truth is that by leveraging language package management packages and patterns, they've _infected_ or _poisoned_ the build system with ultimately the same root problems (diamond dependency) Google set out to thwart when building Bazel and vendoring dependencies.
 

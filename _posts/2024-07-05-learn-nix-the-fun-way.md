@@ -13,7 +13,7 @@ Giving a talk about Nix is hard. As engineers I find often we try to explain **w
 
 Many of the talks I've given start explaining _"Nix developed as part of Eelco's PhD thesis in 2003"_ and immediately eyes roll.
 
-![A meme photo of Picard hearing Nix terminology](/assets/images/picard_nix_hash_meme_50p.jpg)
+![A meme photo of Picard hearing Nix terminology](/assets/images/picard_nix_hash_meme.jpg)
 
 Let's do it different this time. Let's learn _Nix the fun way_.
 

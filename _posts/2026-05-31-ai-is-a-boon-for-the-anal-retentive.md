@@ -12,7 +12,7 @@ A typical project, B.O. (Before Opus 4.6), was one where I think of an idea that
 
 My latest project, [Zephyr](https://zephyr.exe.xyz/), is my attempt to build a weather wind station powered by battery & solar that can send me updates via cellular network.
 
-[![zephyr breadboard](/assets/images/zephyr_breadboard_50p.jpg)](/assets/images/zephyr_breadboard.jpg)
+[![zephyr breadboard](/assets/images/zephyr_breadboard.jpg)](/assets/images/zephyr_breadboard.jpg)
 
 The project involves: writing firmware via Rust `nostd` to an ESP32 board, sending commands to the modem to initiate the HTTPS requests, connecting the anemometer and wind vane to the device, working with a breadboard (I can do hardware now too!) and writing a frontend website to display the results.
 

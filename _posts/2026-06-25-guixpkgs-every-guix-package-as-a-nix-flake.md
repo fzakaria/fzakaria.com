@@ -73,4 +73,4 @@ We can then build a NixOS machine where every package is the Guix equivalent ðŸ˜
 
 This was a really fun project to pursue during [TacoSprint](https://tacosprint.org).
 
-[![taco sprint group photo](/assets/images/tacosprint_group_50p.jpg)](/assets/images/tacosprint_group.jpg)
+[![taco sprint group photo](/assets/images/tacosprint_group.jpg)](/assets/images/tacosprint_group.jpg)

@@ -8,7 +8,7 @@ I have been working on a patch to the Linux kernel to support `$ORIGIN` for the 
 
 Of course I'm leveraging an LLM to help me do this! To pre-seed the context of the LLM, I asked it to read the [https://lore.kernel.org/](https://lore.kernel.org/) thread.
 
-[![Anubis challenge page](/assets/images/anubis-challenge_50p.png)](/assets/images/anubis-challenge.png)
+[![Anubis challenge page](/assets/images/anubis-challenge.png)](/assets/images/anubis-challenge.png)
 
 Uh oh. Looks like they have adopted [Anubis](https://github.com/TecharoHQ/anubis), which is an HTTP proxy that requires _proof-of-work_ before allowing access to the resource.
 

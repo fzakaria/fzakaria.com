@@ -121,7 +121,7 @@ A thunk (or trampoline) is a linker-inserted shim that lives within the immediat
 \end{document}
 
 -->
-[![thunk image](/assets/images/thunk_50p.png)](/assets/images/thunk.png)
+[![thunk image](/assets/images/thunk.png)](/assets/images/thunk.png)
 
 LLVM includes support for inserting thunks for certain architectures such as AArch64 because it is a fixed-size instruction set (32-bit), so the relative branch instruction is restricted to 128MiB. As this limit is so low, `lld` has support for thunks out of the box.
 

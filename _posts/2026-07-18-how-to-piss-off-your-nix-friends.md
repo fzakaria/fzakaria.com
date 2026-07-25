@@ -24,11 +24,11 @@ _The emperor has no clothes._
 
 Nix is "having a moment". Growth on any measurable metric is growing. [There](https://gg-solutions.hashnode.dev/linux-the-silent-revolution) [are](https://ryanrasti.com/blog/why-nix-will-win/) [endless](https://determinate.systems/blog/the-nix-moment/) posts about it.
 
-[![nix growth chart](/assets/images/nix_growth_chart_50p.png)](https://gg-solutions.hashnode.dev/linux-the-silent-revolution)
+[![nix growth chart](/assets/images/nix_growth_chart.png)](https://gg-solutions.hashnode.dev/linux-the-silent-revolution)
 
 Part of human nature is the desire to win. As a result, there is a persistent fantasy that if we _just_ fix the documentation, _just_ smooth the onboarding, _just_ ship a friendlier installer and so on, then everyone, <u>even your grandmother</u>, can be using NixOS.
 
-[![grandmother nix meme](/assets/images/grandma_nix_ifd_meme_50p.png)](/assets/images/grandma_nix_ifd_meme.png)
+[![grandmother nix meme](/assets/images/grandma_nix_ifd_meme.png)](/assets/images/grandma_nix_ifd_meme.png)
 
 Nix is not meant for everyone.
 
@@ -53,7 +53,7 @@ As a result, there's a bit of an undercurrent where being an American or an Amer
 
 I am clearly in the "AI is useful" camp. I have [written before]({% post_url 2026-05-31-ai-is-a-boon-for-the-anal-retentive %}) about how much LLMs have unlocked for me personally.
 
-[![ai is slop meme](/assets/images/ai_is_slop_meme_50p.png)](/assets/images/ai_is_slop_meme.png)
+[![ai is slop meme](/assets/images/ai_is_slop_meme.png)](/assets/images/ai_is_slop_meme.png)
 
 The Nix ecosystem is probably the best poised for the AI-wave. I have found a newfound joy and love for my NixOS machine now with LLMs. All those weird quirks that bugged me I have been able to resolve, **and declaratively reproduce** for future generations. One-off AI written tools can be written and stored in my NixOS configuration with a sense of assurance that they will not collide or interfere with the rest of the system.
 
@@ -77,7 +77,7 @@ A clear vision, whether you agree with it or not, is refreshing. Someone who can
 
 Every hour spent making Nix pleasant on macOS is an hour not spent making Nix _extraordinary_ on Linux. You would never catch an iOS developer working on Linux and yet it pains me to see those who target the Linux platform working on a Mac.
 
-[![drake macos meme](/assets/images/drake_macos_meme_50p.png)](/assets/images/drake_macos_meme.png)
+[![drake macos meme](/assets/images/drake_macos_meme.png)](/assets/images/drake_macos_meme.png)
 
 
 The single most-impactful advice I give to those earlier in their career is to use a Linux machine, especially if you build and write software for Linux (i.e. web stuff).
@@ -108,7 +108,7 @@ Multi-user is the right default for a shared build farm. It is _overkill_ for th
 
 Nix is the closest thing we have to a solution where we can rebuild the entire world reproducibly. It is used by the Software Heritage Foundation as a way to reliably collect, preserve, and share all software that is publicly available in source code form [[cite](https://docs.softwareheritage.org/user/software-origins/nixguix.html)].
 
-[![midwit nix meme](/assets/images/midwit_nix_meme_50p.png)](/assets/images/midwit_nix_meme.png)
+[![midwit nix meme](/assets/images/midwit_nix_meme.png)](/assets/images/midwit_nix_meme.png)
 
 Some of the most amazing technology that exists in this world exists when one can make changes at multiple layers throughout the stack. This is the _secret sauce_ to many of the hyperscalers of today. This is table-stakes for NixOS. You can implement a solution that requires new: application, compiler, library, runtime and kernel all within a **single commit**.
 

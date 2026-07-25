@@ -10,7 +10,7 @@ _"What fun things can we do with `<` and `>` with the eventual deprecation of `N
 
 > The actual 💡 was from [tomberek](https://github.com/tomberek) and this is a demonstration of what that might look like without necessitating any changes to CppNix itself.
 
-[![Nix DEFCON Badge](/assets/images/nix_badge_25p.jpeg)](/assets/images/nix_badge_50p.jpeg)
+[![Nix DEFCON Badge](/assets/images/nix_badge_50p.jpeg)](/assets/images/nix_badge_50p.jpeg)
 
 As a very worthwhile aside, the first time presence of the Nix community at DEFCON was fantastic and I am extra appreciative to [numinit](https://github.com/numinit) and [RossComputerguy](https://github.com/RossComputerguy) 🙇. The badges handed out were so cool. They have strobing LEDs but also can act as a substituter for the Nix infra that was setup.
 

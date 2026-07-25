@@ -6,7 +6,7 @@ date: 2026-06-22 17:55 -0700
 
 We are part-way through [TacoSprint 2026](https://tacosprint.org/) and a project that has inspired me has been the long-standing pursuit of producing [relocatable binaries]({% post_url 2026-06-21-nix-needs-relocatable-binaries %}) in Nix. This is something I've been [discussing since as early as 2022](https://discourse.nixos.org/t/making-runpath-redundant-for-nix/21631/12?u=fzakaria).
 
-[![photo us hacking at tacosprint](/assets/images/tacosprint_photo_50p.webp)](/assets/images/tacosprint_photo.webp)
+[![photo us hacking at tacosprint](/assets/images/tacosprint_photo.webp)](/assets/images/tacosprint_photo.webp)
 
 We've made pretty great headway! 🥳
 

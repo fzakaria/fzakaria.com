@@ -33,6 +33,6 @@ I have seen similar graphics for representing wealth, but I decided to make my o
 
 Check it out: [https://fzakaria.github.io/trillion-wut/](https://fzakaria.github.io/trillion-wut/) -- _how fast can you scroll to the bottom?_
 
-[![lol wut example](/assets/images/trillion_wut_50p.png)](/assets/images/trillion_wut.png)
+[![lol wut example](/assets/images/trillion_wut.png)](/assets/images/trillion_wut.png)
 
 You can find the source available at [https://github.com/fzakaria/trillion-wut](https://github.com/fzakaria/trillion-wut).
