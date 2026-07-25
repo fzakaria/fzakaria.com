@@ -39,16 +39,16 @@ You might also notice that my blog is now hosted on a new '<em>blog</em>' subdom
 <h3>.htaccess file </h3>
 <p>
 <code><br />
-<files .htaccess><br />
+&lt;files .htaccess&gt;<br />
 order allow,deny<br />
 deny from all<br />
-</files></p>
+&lt;/files&gt;</p>
 <p># disable the server signature<br />
 ServerSignature Off</p>
-<p><files wp-config.php><br />
+<p>&lt;files wp-config.php&gt;<br />
 order allow,deny<br />
 deny from all<br />
-</files></p>
+&lt;/files&gt;</p>
 <p># who has access, who doesn't<br />
 order allow,deny<br />
 allow from all</p>
@@ -58,14 +58,14 @@ Options All -Indexes</p>
 RewriteEngine On<br />
 RewriteCond %{HTTP_HOST} ^ryourdomain.com$ [NC]<br />
 RewriteRule ^(.*)$ http://www.yourdomain.com/$1 [R=301,L]</p>
-<p><IfModule mod_rewrite.c><br />
+<p>&lt;IfModule mod_rewrite.c&gt;<br />
 RewriteEngine On<br />
 RewriteBase /<br />
 RewriteRule ^index.php$ - [L]<br />
 RewriteCond %{REQUEST_FILENAME} !-f<br />
 RewriteCond %{REQUEST_FILENAME} !-d<br />
 RewriteRule . /index.php [L]<br />
-</IfModule><br />
+&lt;/IfModule&gt;<br />
 </code></p>
 <h3>Update database</h3>
 <p>

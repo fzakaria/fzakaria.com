@@ -28,7 +28,7 @@ comments: []
 <p><!--more--><br />
 <h2>Deploying Django</h2>
 <p>For some <em>crazy</em><strong> </strong>reason, I decided to learn how to deploy Django on my shared hosted server <a href="http://www.bluehost.com/" target="_blank">Bluehost.com</a> first before <font color="#222222">actually learning Django (don&rsquo;t get me started on my annoyance with using a shared server now). </font></p>
-<p>I have my main domain address &lsquo;www.fzakaria.com&rsquo; pointed to my Wordpress blog. I wanted to achieve in having Django installed as a sub directory/url of the domain (rather than a subdomain). i.e. &lsquo;www.fzakaria.com/django/<myapp>&rsquo;</p>
+<p>I have my main domain address &lsquo;www.fzakaria.com&rsquo; pointed to my Wordpress blog. I wanted to achieve in having Django installed as a sub directory/url of the domain (rather than a subdomain). i.e. &lsquo;www.fzakaria.com/django/&lt;myapp&gt;&rsquo;</p>
 <p>There was plenty of resources available (shockingly even on the Bluehost FAQ) which helped me setup the server appropriately however I ran into a lot of <strong>GOTCHAS</strong> just because I didn&rsquo;t know what I was doing.</p>
 <ol>
 <li>Python doesn&rsquo;t recursively search through the PYTHONPATH if the directory is created as a module. (i.e. needs an __init__.py file in the directory). This caused a headache and me having to add a lot of additions to the PYTHONPATH before I realized it. </li>

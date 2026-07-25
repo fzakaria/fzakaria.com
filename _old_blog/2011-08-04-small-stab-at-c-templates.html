@@ -30,7 +30,7 @@ I noticed at my current job that they had implemented a few times their own Link
 <p>
 Although most would quickly deem it worthless of an attempt and clearly trivial, writing the class helped solidify a few deeper understandings for me in C++.</p>
 <ul>
-<li>The use of the keyword <em>typename</em>. Since C++ templates are generated at compile time, they are done in a multipass fashion. During the first pass, certain types are not yet defined however can be referenced, i.e. LinkList<T>::Iterator. In order to tell the compiler that Iterator is a type and not a variable, the keyword typename is used.</li>
+<li>The use of the keyword <em>typename</em>. Since C++ templates are generated at compile time, they are done in a multipass fashion. During the first pass, certain types are not yet defined however can be referenced, i.e. LinkList&lt;T&gt;::Iterator. In order to tell the compiler that Iterator is a type and not a variable, the keyword typename is used.</li>
 <li>Proper <em>const</em> and <em>reference</em> correctness. There were some additional nuances that I was unaware of when working with const types. For instance, when returning a reference via an inspection method (const method), the return type must be const as well.</li>
 <li>You can actually some pretty <em>crazy shit</em> with templates, namely <a href="http://en.wikipedia.org/wiki/Template_metaprogramming">metaprogramming</a>.</li>
 <li>The STL is pretty crazy and I take it for granted in most software projects I do. I was scratching my head for a bit on just how I wanted to implement my Iterator...</li>
@@ -43,7 +43,7 @@ Although most would quickly deem it worthless of an attempt and clearly trivial,
 #ifndef _LINKLIST_H_
 #define _LINKLIST_H_
 
-template<class T>
+template&lt;class T&gt;
 class LinkList
 {
 private:
@@ -120,7 +120,7 @@ public:
         }
         
     private:
-        friend class LinkList<T>;
+        friend class LinkList&lt;T&gt;;
         Iterator(Node * node) : m_current(node){}
         Node * m_current;
         
@@ -151,14 +151,14 @@ public:
     
 };
 
-template<class T>
-LinkList<T>::~LinkList()
+template&lt;class T&gt;
+LinkList&lt;T&gt;::~LinkList()
 {
     this->clear();
 }
 
-template<class T>
-void LinkList<T>::clear()
+template&lt;class T&gt;
+void LinkList&lt;T&gt;::clear()
 {    
     for (unsigned int i = 0 ; i < m_size; ++i)
     {
@@ -166,8 +166,8 @@ void LinkList<T>::clear()
     }
 }
 
-template<class T>
-typename LinkList<T>::Iterator LinkList<T>::find(const_reference_type value) const
+template&lt;class T&gt;
+typename LinkList&lt;T&gt;::Iterator LinkList&lt;T&gt;::find(const_reference_type value) const
 {
     Node * curr = m_head;
     while (curr != NULL)
@@ -183,8 +183,8 @@ typename LinkList<T>::Iterator LinkList<T>::find(const_reference_type value) con
     return Iterator( this->end() );
 }
 
-template<class T>
-void LinkList<T>::push_back(const_reference_type item)
+template&lt;class T&gt;
+void LinkList&lt;T&gt;::push_back(const_reference_type item)
 {
     Node * newNode = new Node(item);
     m_size+=1;
@@ -200,8 +200,8 @@ void LinkList<T>::push_back(const_reference_type item)
     return;
 }
 
-template<class T>
-void LinkList<T>::push_front(const_reference_type item)
+template&lt;class T&gt;
+void LinkList&lt;T&gt;::push_front(const_reference_type item)
 {
     Node * newNode = new Node(item);
     m_size+=1;
@@ -217,8 +217,8 @@ void LinkList<T>::push_front(const_reference_type item)
     return;
 }
 
-template<class T>
-void LinkList<T>::pop_back()
+template&lt;class T&gt;
+void LinkList&lt;T&gt;::pop_back()
 {
     if (this->m_tail != NULL)
     {
@@ -234,8 +234,8 @@ void LinkList<T>::pop_back()
     
 }
 
-template<class T>
-void LinkList<T>::pop_front()
+template&lt;class T&gt;
+void LinkList&lt;T&gt;::pop_front()
 {
     if (this->m_head != NULL)
     {

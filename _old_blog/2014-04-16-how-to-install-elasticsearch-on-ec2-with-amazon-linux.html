@@ -60,9 +60,9 @@ comments:
 <li>cluster.name: pick-a-cluster-name</li>
 <li>discovery.type: ec2</li>
 <li>discovery.ec2.host_type: public_ip</li>
-<li>discovery.ec2.groups: <your-security-group></li>
+<li>discovery.ec2.groups: &lt;your-security-group&gt;</li>
 <li>discovery.ec2.ping_timeout: 5m</li>
-<li>cloud.aws.region: <your-region></li>
+<li>cloud.aws.region: &lt;your-region&gt;</li>
 </ol>
 <p> The security group option is important otherwise the plugin will cause Elasticsearch to try and discover all hosts within that region and fail if they do not have elasticsearch. Limiting the search to only instances with the specified security group will fix that! </p>
 <h3> Run! </h3>

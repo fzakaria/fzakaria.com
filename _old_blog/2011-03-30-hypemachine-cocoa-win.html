@@ -50,7 +50,7 @@ Connection: keep-alive<br />
 Referer: http://hypem.com<br />
 X-Prototype-Version: 1.7<br />
 X-Requested-With: XMLHttpRequest<br />
-User-Agent: <some long stuff involving my browser name><br />
+User-Agent: &lt;some long stuff involving my browser name&gt;<br />
 Accept: text/javascript, text/html, application/xml, text/xml, */*<br />
 Accept-Encoding: gzip deflate, sdch<br />
 Accept-Language: en-US, en; q=0.8</p>
@@ -58,10 +58,10 @@ Accept-Language: en-US, en; q=0.8</p>
 Host: hypem.com<br />
 Connection: keep-alive<br />
 Referer: http://hypem.com<br />
-User-Agent: <my laptop><br />
+User-Agent: &lt;my laptop&gt;<br />
 Accept: */*<br />
 Accept-Encoding: identify<br />
-Cookie: <some long stuff><br />
+Cookie: &lt;some long stuff&gt;<br />
 </code></pre></p>
 <p>
 At first I thought it must've been the <strong>User-Agent </strong>however changing that to be that of a web-browser accomplished nothing. The only real difference happened to be the <strong>Cookie</strong> field. Sure enough, removing the cookie from the Cocoa request caused the site to start returning me <em>valid</em> keys!</p>
