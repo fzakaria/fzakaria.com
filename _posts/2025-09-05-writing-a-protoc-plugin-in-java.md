@@ -5,8 +5,7 @@ date: 2025-09-05 15:37 -0700
 ---
 
 > Know thy enemy.
-> 
-> -- <cite><s>Sun Tzu</s> Anyone who's used Protocol Bufffers</cite>
+> — <s>Sun Tzu</s> Anyone who's used Protocol Buffers
 
 We use Protocol Buffers heavily at _$DAYJOB$_ and it's becoming increasingly a large pain point, most notably due to challenges with coercing multiple versions in a dependency graph.
 

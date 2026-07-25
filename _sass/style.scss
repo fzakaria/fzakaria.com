@@ -574,13 +574,6 @@ blockquote {
   > * + * {
     margin-top: 0.7rem;
   }
-
-  cite {
-    @extend %chrome;
-    display: block;
-    font-style: normal;
-    margin-top: 0.6rem;
-  }
 }
 
 // --- Code ------------------------------------------------------------------
