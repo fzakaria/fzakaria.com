@@ -446,9 +446,13 @@ body {
   }
 
   @media (max-width: $wide) {
+    // No gutter to hang in, so it sits inline ahead of the heading instead of
+    // disappearing — a section is just as worth linking to from a phone.
     .hanchor {
-      // No gutter to hang in; the heading itself is still linkable by id.
-      display: none;
+      position: static;
+      margin-right: 0.4em;
+      font-size: 0.7em;
+      vertical-align: 0.1em;
     }
   }
 
@@ -1524,6 +1528,15 @@ blockquote.alert {
 .archive {
   --accent: var(--ink-faint);
   --accent-wash: #6f685b1a;
+}
+
+// Stands in for a Flash embed that no longer plays. See _plugins/archive.rb.
+.archive-embed {
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--ink-muted);
+  border-left: 2px solid var(--rule-strong);
+  padding: 0.1rem 0 0.1rem 1.1rem;
 }
 
 // An editor's note, not a system message — so it stays in the serif.
