@@ -83,7 +83,6 @@ The _problem_ is that it's returning the **.drv** for chromium; if we were to ca
 The _"trick"_ is to _realise_ it so we get an output-path.
 
 ```console
-
 $ nix-store --query --references $(nix-instantiate shell.nix) | \
     xargs nix-store --realise | \
     xargs nix-store --query --requisites | \

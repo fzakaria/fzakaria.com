@@ -86,7 +86,6 @@ stdenv.mkDerivation {
     sed -i 's/Hello, world!/hello, Nix!/g' src/hello.c
   '';
 }
-
 ```
 
 Let's build it. 🏗️
@@ -98,7 +97,7 @@ $ nix-build lolhello.nix --no-out-link
 
 Now let's try to upload it to our GCS bucket via the S3 integration in Nix.
 
-```bash
+```console?comments=true
 $ nix copy $(nix-build lolhello.nix --no-out-link) \
     --to "s3://nix-cache-testing?endpoint=https://storage.googleapis.com&profile=gcp"
 

@@ -354,7 +354,6 @@ Running the code is quite simple.
 PING 172.31.255.13 (172.31.255.13) 56(84) bytes of data.
 64 bytes from 172.31.255.13: icmp_seq=1 ttl=64 time=6.42 ms
 64 bytes from 172.31.255.13: icmp_seq=2 ttl=64 time=6.33 ms
-
 ```
 
 ### Encryption & NAT

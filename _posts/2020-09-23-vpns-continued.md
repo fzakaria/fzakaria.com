@@ -61,7 +61,7 @@ We will use Linux's support for multiple routing tables,[^2] to accomplish this 
 
 The route table _lametun_, only needs a **single** entry. Route everything through the _tun0_ device!
 
-```bash
+```console?comments=true
 # Add the rule if the src address is our tun0 addr then
 # lookup the lametun routing table
 $ sudo ip rule add from 172.31.255.7 lookup lametun
@@ -74,7 +74,6 @@ $ sudo ip route add default via 172.31.255.7 dev tun0 table lametun
 
 $ sudo ip route show table lametun
 default via 172.31.255.7 dev tun0
-
 ```
 
 Now let's try to use _ping_ but have it select the _source IP_ to that of our _tun0_ device; let's `ping 8.8.8.8`.
@@ -88,7 +87,7 @@ PING 8.8.8.8 (8.8.8.8) from 172.31.255.7 tun0: 56(84) bytes of data.
 
 Let's prove though that this traffic is going through our tunnel by using [tshark](https://www.wireshark.org/docs/man-pages/tshark.html).
 
-```bash
+```console?comments=true
 # Running this on the laptop
 $ sudo tshark -i tun0 icmp
 Running as user "root" and group "root". This could be dangerous.
@@ -129,7 +128,7 @@ For such cases, we will rely on a more thorough setup using _network namespaces_
 > with its own routes, firewall rules, and network devices.
 
 First let's setup the network namespace using a _virtual ethernet device_ that we will use to bridge the network namespace & the host namespace.
-```bash
+```console?comments=true
 # Create a new network namespace
 $ sudo ip netns add lametun
 
@@ -160,7 +159,7 @@ Now let's add Internet access!
 
 > If there is a simpler approach using bridges, macvlan or ipvlan [let me know](mailto:farid.m.zakaria@gmail.com). I didn't want to move the IP address from my main ethernet device to the bridge, so this approach seemed easy enough but it needs _iptables_.
 
-```bash
+```console?comments=true
 # Let's add our default route to go the other veth which will act
 # as our router
 sudo ip netns exec lametun ip route add default via 10.0.0.7

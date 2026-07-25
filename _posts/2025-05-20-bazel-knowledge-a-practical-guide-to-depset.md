@@ -86,7 +86,6 @@ We will need two pieces of information: a _fragment_ of text which are the immed
 
 
 ```python
-
 GraphvizProviderInfo = provider(
   doc = "A provider for graphviz",
   fields = {

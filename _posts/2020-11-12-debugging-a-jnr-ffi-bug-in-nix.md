@@ -101,7 +101,7 @@ j  org.jruby.ext.socket.RubySocket.getifaddrs(Lorg/jruby/runtime/ThreadContext;L
 
 Putting this all together, we can now write a minimal reproducer.
 
-```bash
+```console?comments=true
 $ which jruby
 /nix/store/v0frl1gs13bxs7g3hvlrm3656zq9ra5f-jruby-9.2.13.0/bin/jruby
 

@@ -114,7 +114,6 @@ Sleeping!
 warning: you did not specify '--add-root'; the result might be removed by the garbage collector
 /nix/store/n7jiryhhcik4ps26p4ml4r27c5rc0sdn-basic-using-long-running.drv
 nix-instantiate uses-long-running-complex.nix  0.40s user 0.06s system 2% cpu 16.273 total
-
 ```
 
 _nix-instantiate_ is designed to evaluate quickly and is done serially. Parallelism in Nix enters during realisation of derivations; therefore, any slowing down _nix-instantiate_ simply head-of-line blocks the subsequent building and is no longer eligible to build concurrently potentially.

@@ -87,7 +87,7 @@ Let's hop on _machine B_ and create a network namespace to pretend we do not hav
 > A network namespace is logically another copy of the network stack,
 > with its own routes, firewall rules, and network devices.
 
-```bash
+```console?comments=true
 $ ssh machine-b
 
 # since we won't have any Internet access, hydrate the cache
@@ -107,7 +107,7 @@ ping: google.com: Temporary failure in name resolution
 
 Let's fire up our _nix-shell_ and see if it works.
 
-```bash
+```console?comments=true
 # don't forget we are within our network namespace
 # without access to the Internet
 $ nix-shell shell.nix

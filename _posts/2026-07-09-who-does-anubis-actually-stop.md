@@ -20,7 +20,7 @@ My AI diligently came up with **anubis-fetch**, which you can find at [https://g
 
 > This tool also impersonates a real Chrome TLS/JA3 fingerprint natively via [req](https://req.cool/) so it clears passive Cloudflare blocking too. ☝️
 
-```console
+```console?comments=true
 # HTML to stdout
 $ anubis-fetch https://lore.kernel.org/linux-mm/some-thread/T/
 

@@ -124,7 +124,6 @@ mutex.synchronize do
         mutex.wait
     end
 end
-
 ```
 {: }
 

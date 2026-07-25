@@ -150,7 +150,7 @@ Luckily, Maven itself [has the ability](https://maven.apache.org/guides/mini/gui
 ```
 
 If we try the build again, we are now reproducible.
-```bash
+```console?comments=true
 # let's repeat the build three times
 $ nix-build build.nix --option sandbox relaxed --no-out-link --option repeat 3 --option enforce-determinism true
 building '/nix/store/yvvia00l1vls1qkgypikvjivn2ash498-nixos-java-maven-r8-1.0.drv' (round 1/4)...

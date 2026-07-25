@@ -18,15 +18,14 @@ Nix is a strongly typed language although it is lazily typed.
 The fact that it is strongly typed means that certain type coercion are
 not feasible.
 
-```bash
+```console
 nix-repl> (1 + "Hello")
 error: cannot add a string to an integer, at (string):1:2
 ```
 
 However while playing around with [niv](https://github.com/nmattia/niv); I noticed that the attribute sets could automatically be converted to strings.
 
-```bash
-
+```console
 nix-repl> sources = import ./nix/sources.nix
 
 nix-repl> :p sources.nixpkgs
@@ -59,7 +58,7 @@ if (v.type == tAttrs) {
 
 If the _set_  contains **outPath*; then the set can be coerced into a string!
 
-```bash
+```console
 nix-repl> set = { outPath="Hello World"; }
 
 nix-repl> "${set}"

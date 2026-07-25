@@ -169,7 +169,6 @@ copying path '/nix/store/ifc68r8i5dng7c4vmds81vl3gig6gfpr-b' from 'https://fzaka
 copying path '/nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test' from 'https://fzakaria.cachix.org'...
 /nix/store/232rq7y1f09pn2amk3lcjqmws341vp3q-test
 nix-build --no-out-link large-dummy-a.nix --option max-jobs 0  16.89s user 5.19s system 37% cpu 59.330 total
-
 ```
 
 Hmmm. It still takes the same amount of time roughly **16.89s**.

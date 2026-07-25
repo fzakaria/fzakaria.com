@@ -106,7 +106,6 @@ these paths will be fetched (0.03 MiB download, 0.18 MiB unpacked):
 # run the modified hello after it was pulled from the cache
 /nix/store/95hmzgcfq0499l4ln72p3b4wv4smp9qw-lolhello
 > hello, Nix!
-
 ```
 
 If you wanted to avoid having to add the `--option` for _nix-store_ or even have the caching work with _nix-build_, the **~/.config/nix/nix.conf** file will have to updated.

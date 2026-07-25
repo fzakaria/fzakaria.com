@@ -20,7 +20,7 @@ Since derivation files contain paths to other derivation files, these changes ca
 
 Consider this example that simply changes the derivation by adding a comment to the bash script.
 
-```console
+```console?comments=true
 nix-repl> a = derivation { 
     name = "simple";
     builder = "/bin/sh";

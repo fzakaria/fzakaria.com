@@ -111,7 +111,7 @@ If you want to play with the example above, I've uploaded it to [bazel-workspace
 
 You might be tempted to run the above query but it gives **incorrect** results.
 
-```console
+```console?comments=true
 $ bazel build @workspace//:version
 INFO: Analyzed target @workspace//:version (0 packages loaded, 0 targets configured).
 INFO: Found 1 target...

@@ -122,7 +122,6 @@ root
 tmp
 usr
 var
-
 ```
 Great! Now let's try creating a new mount namespace using **unshare**
 

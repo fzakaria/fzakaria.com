@@ -10,7 +10,7 @@ Need proof? 🕵 How about we build a Guix derivation with Nix.
 
 First let's create a super basic derivation in Guix: _Hello world_.
 
-```bash
+```console?comments=true
 $ guix repl -- /dev/stdin <<'EOF'
   (use-modules (guix derivations) (guix store))
   (with-store %store
@@ -32,7 +32,6 @@ We ask to use `/gnu/store` as the Nix store and have it write its state, databas
 {: .alert .alert-note }
 
 ```
-
 $ cat > /tmp/register.txt <<'EOF'
 /gnu/store/zr0q11srv4yir8a6wrz582js7zsi17ij-simple.drv
 822a79886102e5ca392cd14358aef0866c36ca526ff1b156f1ded2808a2095df
@@ -100,7 +99,7 @@ I, with the help of Claude, built a tool to do just that: [guix-transfer](https:
 
 Confused? Let us see it in action:
 
-```bash
+```console?comments=true
 # generate a Guix derivation
 $ guix build hello --derivations
 /gnu/store/2nfg943asrl9dv64zrr1a4kpb25mfafd-hello-2.12.2.drv
@@ -250,7 +249,7 @@ If writing the `/nix/store` paths raw in the Nix expression is a little _too raw
 
 Let's look at a slightly more complex example that uses Guix's `guile` to build a derivation with dependencies:
 
-```bash
+```console?comments=true
 $ guix repl -- /dev/stdin <<'EOF'
   (use-modules (guix derivations) (guix store) (guix packages)
                (gnu packages bootstrap))
