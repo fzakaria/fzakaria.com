@@ -438,7 +438,9 @@ body {
     font-weight: 600;
     line-height: 1.2;
     letter-spacing: -0.012em;
-    margin-top: calc(var(--step) * 2);
+    // margin-top is set per level below: the space above a heading is a
+    // stronger signal of rank than its type size, so a flat value here left an
+    // h3 subsection opening on the same air as an h1 section break.
     margin-bottom: 0;
     position: relative;
     scroll-margin-top: 1.5rem;
@@ -461,12 +463,15 @@ body {
   // section heading — not the page title.
   h1 {
     font-size: 1.62rem;
+    margin-top: calc(var(--step) * 2);
   }
   h2 {
     font-size: 1.4rem;
+    margin-top: calc(var(--step) * 1.7);
   }
   h3 {
     font-size: 1.18rem;
+    margin-top: calc(var(--step) * 1.35);
   }
   h4,
   h5,
@@ -475,6 +480,7 @@ body {
     font-family: var(--mono);
     font-weight: 600;
     letter-spacing: 0.02em;
+    margin-top: calc(var(--step) * 1.1);
   }
 
   // The section mark hangs in the left gutter, out of the reading path, and is
