@@ -14,8 +14,8 @@ This led me to explore a few other different ways to visualize data, in addition
 
 
 Everything below comes from one synthetic dataset with a fixed seed. The
-full script can be found [here](https://gist.github.com/fzakaria/17c72f0eddc0f10469e008e67e1385cc); it is a single file with a
-`nix-shell` shebang, so you can drop it in a gist, `chmod +x`, and reproduce
+full script can be found [in this gist](https://gist.github.com/fzakaria/17c72f0eddc0f10469e008e67e1385cc). It is a single file with a
+`nix-shell` shebang, so you can reproduce
 every figure exactly as long as you are using [nix](https://nixos.org/).
 
 > **Note**
