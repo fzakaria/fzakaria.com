@@ -25,7 +25,7 @@ every figure exactly as long as you are using [nix](https://nixos.org/).
 
 ### The rollout that "made it worse"
 
-Here is the setup: We operate a typical web-service and we rolled out a new caching tier over a week, hoping to cut request latency.
+Here is the setup: we operate a typical web-service and we rolled out a new caching tier over a week, hoping to cut request latency.
 
 The change is fully deployed, and the latency dashboard that plots the **mean** looks like this:
 
