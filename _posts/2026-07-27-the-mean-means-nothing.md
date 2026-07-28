@@ -119,9 +119,9 @@ We can do something similar, squeezed into a single grid, as a **heatmap**. One 
 
 ![Heatmap of latency density by rollout day; a dark main band descends while a second band appears higher up as the rollout progresses](/assets/images/latency-5b-heatmap.svg)
 
-Whichever you prefer, the point is the same: any aggregate computed over the
-whole week would have blended these seven very different days into one muddy
-number and hidden the trend completely.
+You can sort-of make out a new population emerging faintly.
+
+Any aggregate computed over the whole week would have blended these seven very different days into one muddy number and hidden the trend completely.
 
 ### The bimodality had a cause
 
