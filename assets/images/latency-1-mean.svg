@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="518.4pt" height="259.2pt" viewBox="0 0 518.4 259.2" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>1980-01-01T00:00:00+00:00</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 259.2 
+L 518.4 259.2 
+L 518.4 0 
+L 0 0 
+L 0 259.2 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 47.254738 223.344012 
+L 506.9952 223.344012 
+L 506.9952 44.13405 
+L 47.254738 44.13405 
+L 47.254738 223.344012 
+z
+" style="fill: none"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <path d="M 172.6385 223.344012 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <defs>
+       <path id="m871b6fc0dc" d="M 0 0 
+L 0 2.75 
+" style="stroke: #c2b9a6; stroke-width: 0.3"/>
+      </defs>
+      <g>
+       <use xlink:href="#m871b6fc0dc" x="172.6385" y="223.344012" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="fill: #565046; font: 8px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: middle" x="172.6385" y="234.172763" transform="rotate(-0 172.6385 234.172763)">before</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <path d="M 381.611437 223.344012 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <g>
+       <use xlink:href="#m871b6fc0dc" x="381.611437" y="223.344012" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="fill: #565046; font: 8px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: middle" x="381.611437" y="234.172763" transform="rotate(-0 381.611437 234.172763)">after</text>
+     </g>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_3">
+      <path d="M 47.254738 223.344012 
+L 506.9952 223.344012 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #dcd5c5; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4">
+      <path d="M 47.254738 223.344012 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <defs>
+       <path id="m5b0617001c" d="M 0 0 
+L -2.75 0 
+" style="stroke: #c2b9a6; stroke-width: 0.3"/>
+      </defs>
+      <g>
+       <use xlink:href="#m5b0617001c" x="47.254738" y="223.344012" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="fill: #565046; font: 8px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: end" x="42.504738" y="226.383387" transform="rotate(-0 42.504738 226.383387)">0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_5">
+      <path d="M 47.254738 160.990464 
+L 506.9952 160.990464 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #dcd5c5; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_6">
+      <path d="M 47.254738 160.990464 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <g>
+       <use xlink:href="#m5b0617001c" x="47.254738" y="160.990464" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="fill: #565046; font: 8px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: end" x="42.504738" y="164.029839" transform="rotate(-0 42.504738 164.029839)">50</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_7">
+      <path d="M 47.254738 98.636916 
+L 506.9952 98.636916 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #dcd5c5; stroke-width: 0.4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8">
+      <path d="M 47.254738 98.636916 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <g>
+       <use xlink:href="#m5b0617001c" x="47.254738" y="98.636916" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="fill: #565046; font: 8px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: end" x="42.504738" y="101.676291" transform="rotate(-0 42.504738 101.676291)">100</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_9">
+      <path d="M 47.254738 192.167238 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <defs>
+       <path id="m183a4eb749" d="M 0 0 
+L -1.375 0 
+" style="stroke: #c2b9a6; stroke-width: 0.3"/>
+      </defs>
+      <g>
+       <use xlink:href="#m183a4eb749" x="47.254738" y="192.167238" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_10">
+      <path d="M 47.254738 129.81369 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <g>
+       <use xlink:href="#m183a4eb749" x="47.254738" y="129.81369" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_11">
+      <path d="M 47.254738 67.460142 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 1.5; stroke-linecap: square"/>
+      <g>
+       <use xlink:href="#m183a4eb749" x="47.254738" y="67.460142" style="fill: #c2b9a6; stroke: #c2b9a6; stroke-width: 0.3"/>
+      </g>
+     </g>
+    </g>
+   </g>
+   <g id="PolyCollection_1">
+    <path d="M 115.170942 223.344012 
+L 115.170942 83.161641 
+L 230.106058 83.161641 
+L 230.106058 223.344012 
+z
+" clip-path="url(#pde3947698c)" style="fill: #1a1815"/>
+    <path d="M 324.14388 223.344012 
+L 324.14388 70.817543 
+L 439.078995 70.817543 
+L 439.078995 223.344012 
+z
+" clip-path="url(#pde3947698c)" style="fill: #9e3413"/>
+   </g>
+   <g id="LineCollection_1">
+    <path d="M 158.010394 84.508658 
+L 187.266606 84.508658 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #1a1815; stroke-width: 0.886227"/>
+    <path d="M 158.010394 81.814624 
+L 187.266606 81.814624 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #1a1815; stroke-width: 0.886227"/>
+    <path d="M 172.6385 81.814624 
+L 172.6385 84.508658 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #1a1815; stroke-width: 0.886227"/>
+   </g>
+   <g id="LineCollection_2">
+    <path d="M 366.983332 74.226691 
+L 396.239543 74.226691 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #1a1815; stroke-width: 0.886227"/>
+    <path d="M 366.983332 67.408396 
+L 396.239543 67.408396 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #1a1815; stroke-width: 0.886227"/>
+    <path d="M 381.611437 67.408396 
+L 381.611437 74.226691 
+" clip-path="url(#pde3947698c)" style="fill: none; stroke: #1a1815; stroke-width: 0.886227"/>
+   </g>
+   <g id="text_6">
+    <g clip-path="url(#pde3947698c)">
+     <text style="fill: #1a1815; font: 9px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: middle" x="172.6385" y="78.162653" transform="rotate(-0 172.6385 78.162653)">112 ms</text>
+    </g>
+   </g>
+   <g id="text_7">
+    <g clip-path="url(#pde3947698c)">
+     <text style="fill: #1a1815; font: 9px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: middle" x="381.611437" y="65.818555" transform="rotate(-0 381.611437 65.818555)">122 ms</text>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 47.254738 223.344012 
+L 47.254738 44.13405 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 0.4; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 47.254738 223.344012 
+L 506.9952 223.344012 
+" style="fill: none; stroke: #c2b9a6; stroke-width: 0.4; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+  </g>
+  <g id="text_8">
+   <text style="fill: #1a1815; font: 700 13px &quot;Newsreader, Georgia, &apos;Times New Roman&apos;, serif&quot;; text-anchor: start" x="47.254738" y="21.282769" transform="rotate(-0 47.254738 21.282769)">The dashboard says you made it worse</text>
+  </g>
+  <g id="text_9">
+   <text style="fill: #565046; font: 10px &quot;Newsreader, Georgia, &apos;Times New Roman&apos;, serif&quot;; text-anchor: start" x="47.254738" y="36.870362" transform="rotate(-0 47.254738 36.870362)">Mean request latency before vs. after the rollout (± 95% CI).</text>
+  </g>
+  <g id="text_10">
+   <text style="fill: #6f685b; font: 7px 'JetBrains Mono, ui-monospace, Menlo, monospace'; text-anchor: start" x="413.366919" y="246.339419" transform="rotate(-0 413.366919 246.339419)">synthetic · N=12,000 each</text>
+  </g>
+  <g id="text_11">
+   <text style="fill: #1a1815; font: 11px &quot;Newsreader, Georgia, &apos;Times New Roman&apos;, serif&quot;" transform="translate(19.763081 185.55075) rotate(-90)">mean latency (ms)</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pde3947698c">
+   <rect x="47.254738" y="44.13405" width="459.740462" height="179.209962"/>
+  </clipPath>
+ </defs>
+</svg>
