@@ -19,7 +19,7 @@ full script can be found [here](https://gist.github.com/fzakaria/17c72f0eddc0f10
 every figure exactly as long as you are using [nix](https://nixos.org/).
 
 > **Note**
-> I leverage AI to help generate the data and charts in this post for the story.
+> I leveraged AI to help generate the data and charts in this post for the story.
 > If that bugs you, sorry. 🤷
 {: .alert .alert-note }
 
