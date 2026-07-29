@@ -50,7 +50,7 @@ It's often good practice especially for web-services to look at various percenti
 Now we have a problem, and the problem is that _everyone is right_. The mean says
 the change is a mild regression. The median (p50), says the
 change is a big-win, the typical request got **nearly twice as fast**. The p99
-says it's a SEV, the worst requests more than doubling.
+says it's a SEV[^1], the worst requests more than doubling.
 
 The mean and the median, computed from the very same numbers, point in _opposite
 directions_.
@@ -162,3 +162,5 @@ I was especially impressed with the way the CDF can convey the entire distributi
 
 > "Do not trust any statistics you did not fake yourself."
 > -- Winston Churchill
+
+[^1]: SEV, or "Severity", is a popularized way to describe an incident or outage. A SEV is often numerically ranked in descending order by impact, e.g., SEV0 being the most severe.
