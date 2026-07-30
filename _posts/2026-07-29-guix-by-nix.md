@@ -127,5 +127,5 @@ A more realistic use case is to mix and match GuixPkgs and Nixpkgs packages in a
 
 For now, this project remains a minimal VM demo. If you make it PID 1 on real hardware, please send photos. 🙇
 
-[^1]: It has been extremely fun and rewarding to work with [adeci](https://github.com/adeci) on this project. We nix-pilled him at [PlanetNix](https://planetnix.org/) 2 years ago and since then he has been pushing the boundaries of what Nix can do and is currently employed at [Shopify](https://www.shopify.com/) working on Nix.
+[^1]: It has been extremely fun and rewarding to work with Alex on this project. We nix-pilled him at [PlanetNix](https://planetnix.org/) 2 years ago and since then he has been pushing the boundaries of what Nix can do and is currently employed at [Shopify](https://www.shopify.com/) working on Nix.
 [^2]: Nix's reference scanner can't see inside archives and sneaky paths hide there.
