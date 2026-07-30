@@ -8,7 +8,7 @@ One of the [earliest requested issues](https://github.com/fzakaria/guixpkgs/issu
 
 > "Specifically I would like to see openjdk translated. openjdk is not bootstrapped from source code in nixpkgs" [[issue#3](https://github.com/fzakaria/guixpkgs/issues/3)]
 
-Ever since I learned about the [stage0](https://savannah.nongnu.org/projects/stage0/) bootstrap chain and how Guix [announced full-source](https://guix.gnu.org/en/blog/2023/the-full-source-bootstrap-building-from-source-all-the-way-down/) bootstrap **for all packages** in 2023, I was in awe. They provided a package graph of more than 22,000 nodes rooted in a 357-byte program, including the JDK[^1].
+Ever since I learned about the [stage0](https://savannah.nongnu.org/projects/stage0/) bootstrap chain and how Guix [announced full-source](https://guix.gnu.org/en/blog/2023/the-full-source-bootstrap-building-from-source-all-the-way-down/) bootstrap **for all packages** in 2023, I was in awe. They provided a package graph of more than 22,000 nodes rooted in a 357-byte program, including the JDK.[^1]
 
 GuixPkgs can now build OpenJDK 25 🎉
 
