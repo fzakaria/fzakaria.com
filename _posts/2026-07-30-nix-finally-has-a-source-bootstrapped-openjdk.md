@@ -10,7 +10,8 @@ One of the [earliest requested issues](https://github.com/fzakaria/guixpkgs/issu
 
 Ever since I learned about the [stage0](https://savannah.nongnu.org/projects/stage0/) bootstrap chain and how Guix [announced full-source](https://guix.gnu.org/en/blog/2023/the-full-source-bootstrap-building-from-source-all-the-way-down/) bootstrap **for all packages** in 2023, I was in awe. They provided a package graph of more than 22,000 nodes rooted in a 357-byte program, including the JDK.[^1]
 
-GuixPkgs can now build OpenJDK 25 🎉
+GuixPkgs can now build OpenJDK 25, which means Nix
+now has access to a source-bootstrap build of OpenJDK 🎉
 
 ```console
 $ nix build .#openjdk \
@@ -43,7 +44,9 @@ Hello from a source-bootstrapped JDK
 
 `javac` is written in Java. `HotSpot` is C++, but the class library it needs is Java, and the compiler that compiles the class library is Java, and it runs on a JVM that needs a class library... and so on. This is a bootstrapping problem.
 
-Every distribution resolves this the same way in practice: download a JDK and use it to build your JDK. Debian [documents the pain](https://wiki.debian.org/PortsDocs/BootstrappingOpenJDK), and the Bootstrappable project has [a whole page](https://www.bootstrappable.org/projects/java.html) on it. They are fun reads, I highly recommend them. What makes JDK special is that there is no actively maintained JDK that can be built from source without a JDK. The authors had to go back quite a few years to find one, and bring it back to life.
+Nearly every distribution resolves this the same way in practice: download a JDK and use it to build your JDK. Debian [documents the pain](https://wiki.debian.org/PortsDocs/BootstrappingOpenJDK), and the Bootstrappable project has [a whole page](https://www.bootstrappable.org/projects/java.html) on it. They are fun reads, I highly recommend them. What makes JDK special is that there is no actively maintained JDK that can be built from source without a JDK. The authors had to go back quite a few years to find one, and bring it back to life.
+
+> "Unfortunately, most of the software needed for the bootstrap has been abandoned." -- [Bootstrappable](https://www.bootstrappable.org/projects/java.html)
 
 Nixpkgs does the same. `openjdk-25.0.4` is built by `temurin-bin-25.0.3`: a 135 MB prebuilt-tarball.
 
@@ -84,7 +87,7 @@ I restyled the nodes and edges: dots instead of labelled boxes, and the red to h
 
 ![Two force-directed renderings of complete derivation closures, stacked. The upper panel is nixpkgs' openjdk 25.0.4 with 2758 derivations, and its only red marks are two dots joined by a single short edge. The lower panel is guixpkgs' openjdk 25 with 3556 derivations, visibly wider and denser, with a constellation of 33 red nodes and their connecting edges occupying its lower left.](/assets/images/openjdk-closure-hairballs.png)
 
-The upper panel's entire Java story is those two red dots and the one edge between them: `temurin-bin-25.0.3` → `openjdk-25.0.4`. The lower panel's is the 33-node constellation.
+The upper panel's entire Java story is those two red dots and the one edge between them: `temurin-bin-25.0.3` → `openjdk-25.0.4`. The lower panel's is the 33-node constellation: the nineteen JDKs, plus the fourteen rungs of jikes, Classpath, JamVM, Ant and ecj that had to exist before anything could compile a JDK at all.
 
 Why is the Nix graph still so big if I claimed it was from a binary distribution?
 
@@ -114,6 +117,8 @@ This lines up with our intuition. Nixpkgs only needs **two** derivations to boot
 > **Note**
 > Interestingly, the bootstrap build for JDK has `rustc` in its closure: IcedTea 8 wants GTK 2, which wants its own Mesa, which wants `rust-bindgen` 😱
 {: .alert .alert-note }
+
+The fact that Nix can now build OpenJDK from source is thanks to the amazing work done by Guix developers.
 
 What started off as a fun _art project_, started during [TacoSprint 2026](https://tacosprint.org/), has now found relevance to those interested in bootstraping and reproducible builds.
 
