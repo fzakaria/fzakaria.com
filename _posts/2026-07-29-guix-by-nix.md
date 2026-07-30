@@ -123,6 +123,8 @@ The report includes a lot more information such as the exact Guix channel commit
 
 One obvious next step would be a _normal_ NixOS machine, where every package that exists in GuixPkgs shadows its Nixpkgs equivalent on `$PATH`. GuixPkgs offers such an overlay, but it needs quite a lot of CPU to build all of it....
 
+A more realistic use case is to mix and match GuixPkgs and Nixpkgs packages in a single system. Get the best of both. I heard there were people in the Nix community who still want a non-systemd system, à la [sixos](https://codeberg.org/amjoseph/sixos). 🫠
+
 For now, this project remains a minimal VM demo. If you make it PID 1 on real hardware, please send photos. 🙇
 
 [^1]: It has been extremely fun and rewarding to work with [adeci](https://github.com/adeci) on this project. We nix-pilled him at [PlanetNix](https://planetnix.org/) 2 years ago and since then he has been pushing the boundaries of what Nix can do and is currently employed at [Shopify](https://www.shopify.com/) working on Nix.
