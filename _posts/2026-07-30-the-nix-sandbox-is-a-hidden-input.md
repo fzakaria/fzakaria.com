@@ -154,6 +154,9 @@ Guix was forked from Nix much earlier than [the commit](https://github.com/NixOS
 Guix packages are built on the assumption that `/bin/sh` does not exist.
 As a result when building the OpenJDK, one of the build scripts failed to have it's shebang patched and it was expected to fail. Guix tolerates the failure and carries on. Nix, on the other hand, has `/bin/sh` and the script runs instead of failing, and the build quietly takes a different path which turns out to cause a broken output.
 
+I opened [an issue](https://codeberg.org/guix/guix/issues/10255) on Guix about this accidental behavior.
+{:.aside}
+
 Making matters worse, I had already uploaded this broken output to my binary cache. Even when I discovered the `sandbox-paths` was the issue, I kept generating the same `.drv` and thus the same output hash, and was substituting the broken output.
 
 Since `sandbox-paths` is a trusted user setting, I could have maliciously poisoned my own binary cache anyways by signing a broken input. This is only worse in that I did it unknowingly.
