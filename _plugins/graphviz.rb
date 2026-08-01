@@ -113,7 +113,7 @@ module Graphviz
     def write(dest)
       path = destination(dest)
       FileUtils.mkdir_p(File.dirname(path))
-      File.write(path, @content)
+      File.write(path, @content, encoding: Encoding::UTF_8)
       true
     end
 
@@ -287,14 +287,27 @@ module Graphviz
       %(<pre><code class="language-dot">#{CGI.escapeHTML(source)}</code></pre>)
     end
 
+    # Graphviz writes UTF-8 and this says so, because nothing else in the
+    # pipeline will.
+    #
+    # Ruby tags a subprocess's output with Encoding.default_external, which is
+    # whatever the locale says -- and a Nix build sandbox has no locale, so it
+    # is US-ASCII. The bytes are UTF-8 either way; only the label on them is
+    # wrong, and the first regex to touch a `→` in a node label then dies with
+    # "invalid byte sequence in US-ASCII". Reading the bytes as binary and
+    # naming the encoding once, here, keeps every pattern downstream honest.
     def layout(source, engine)
       svg, error, status = Open3.capture3(
-        engine, "-Tsvg", "-Gbgcolor=transparent", stdin_data: source
+        engine, "-Tsvg", "-Gbgcolor=transparent", stdin_data: source, binmode: true
       )
-      return svg if status.success?
+      return utf8(svg) if status.success?
 
-      Jekyll.logger.warn "Graphviz:", error.strip
+      Jekyll.logger.warn "Graphviz:", utf8(error).strip
       nil
+    end
+
+    def utf8(bytes)
+      bytes.dup.force_encoding(Encoding::UTF_8)
     end
 
     # Graphviz's default ink, in every spelling it emits, handed over to CSS.
@@ -403,7 +416,10 @@ module Graphviz
       path = File.join(cache_root, "#{key}.svg")
       if File.exist?(path)
         @reused += 1
-        return File.read(path)
+        # Stated for the same reason layout states it: a cache hit under a
+        # locale-less build would otherwise come back US-ASCII and take the
+        # build down where a cache miss would have succeeded.
+        return File.read(path, encoding: Encoding::UTF_8)
       end
 
       svg = yield
@@ -411,7 +427,7 @@ module Graphviz
 
       @rendered += 1
       FileUtils.mkdir_p(cache_root)
-      File.write(path, svg)
+      File.write(path, svg, encoding: Encoding::UTF_8)
       svg
     end
 

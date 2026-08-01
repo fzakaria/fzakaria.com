@@ -91,6 +91,14 @@
           # (which just sets TZ) silently resolves to UTC and every post whose
           # local time is late enough gets its permalink bumped a day forward.
           TZDIR = "${pkgs.tzdata}/share/zoneinfo";
+          # Same shape of problem as TZDIR: the sandbox has no locale, so Ruby
+          # falls back to US-ASCII and tags anything it reads from a
+          # subprocess with it -- correct UTF-8 bytes under a wrong label, and
+          # the first regex to meet a `→` raises. The plugins name their own
+          # encodings and do not depend on this; it is here so that the next
+          # thing to shell out does not have to learn the lesson again.
+          # C.UTF-8 is built into glibc, so this costs no locale archive.
+          LANG = "C.UTF-8";
           JEKYLL_ENV = "production";
           PAGES_ENV = "production";
           PAGES_REPO_NWO = "fzakaria/fzakaria.com";
