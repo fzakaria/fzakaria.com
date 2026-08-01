@@ -7,3 +7,4 @@ _site
 result
 node_modules/
 .image-cache
+.graphviz-cache

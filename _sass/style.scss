@@ -877,6 +877,50 @@ svg {
   border-color: var(--rule-strong);
 }
 
+// A Graphviz figure is inline <svg> rather than an <img>, so none of the rules
+// above reach it -- _plugins/graphviz.rb renders a ```graphviz fence at build
+// time and drops the markup straight into the page.
+//
+// The plugin strips the width and height Graphviz writes in points, leaving
+// the viewBox as the only intrinsic size, which hands the box to CSS
+// completely. A graph then fits the column, and is capped in height so that a
+// long chain does not push the prose off the screen; the width follows from
+// the aspect ratio. One figure can want something else --
+// style="--graphviz-height: 20rem" on the fence's figure.
+//
+// Vertical rhythm comes from .prose > * + *, the same as any other block.
+figure.graphviz {
+  --graphviz-height: 30rem;
+
+  // The link has to be a block, and the SVG's width has to stay auto. Any
+  // arrangement where the width comes from the content -- a flex item, an
+  // inline-block -- is circular: the link sizes to the SVG while the SVG is
+  // waiting to be sized by the link, and the graph collapses to a few dozen
+  // pixels whatever --graphviz-height says.
+  //
+  // As a block the link fills the column, so the SVG's auto width resolves to
+  // something real; the aspect ratio the plugin writes then gives a height,
+  // max-height clamps it, and because the width is auto rather than a length
+  // it shrinks to keep the proportions. margin-inline centres what is left.
+  a {
+    display: block;
+  }
+
+  svg {
+    display: block;
+    margin-inline: auto;
+    max-width: 100%;
+    max-height: var(--graphviz-height);
+    width: auto;
+    height: auto;
+
+    // The plugin rewrites Graphviz's black to currentColor, so the graph's
+    // ink and its unstyled strokes follow the theme instead of staying dark
+    // on a dark page. Node fills a diagram sets for itself are untouched.
+    color: var(--ink);
+  }
+}
+
 iframe,
 embed,
 object {

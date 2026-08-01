@@ -116,6 +116,11 @@
           # derivatives. Without it the build still succeeds, but ships the
           # full-size originals.
           pkgs.imagemagick
+          # _plugins/graphviz.rb shells out to `dot` and friends to render
+          # ```graphviz fences. Unlike imagemagick above this is required: a
+          # missing engine fails the build rather than shipping a post whose
+          # diagram is a wall of DOT.
+          pkgs.graphviz
         ];
 
         buildPhase = ''
@@ -188,6 +193,7 @@
             nodejs_22
             wordword.packages.${system}.default
             imagemagick
+            graphviz
           ];
           inputsFrom = [
           ];
