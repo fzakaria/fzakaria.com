@@ -1,7 +1,7 @@
 ---
 layout: post
 title: A C++ toolchain from 357 bytes, in Bazel
-date: 2026-07-31 21:10 -0700
+date: 2026-08-01 14:10 -0700
 ---
 I have been fascinated and amazed by [stage0](https://savannah.nongnu.org/projects/stage0/) for a while now ever since I learnt about it via Guix [using it](https://guix.gnu.org/en/blog/2023/the-full-source-bootstrap-building-from-source-all-the-way-down/) to provide twenty two thousand packages source-bootstrapped from the 357-byte seed.
 
