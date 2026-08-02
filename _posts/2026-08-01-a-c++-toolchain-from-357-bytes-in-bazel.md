@@ -19,7 +19,7 @@ Bazel has given up trying to provide a hermetic C++ toolchain and the upstream [
 
 > Configuring a hermetic toolchain makes your build more deterministic. rules_cc itself does not yet offer a hermetic toolchain distribution
 
-I had attempted to provide a stage0 hermetic C++ toolchain in [October 2024](https://github.com/fzakaria/stage0-bazel) via [https://github.com/fzakaria/stage0-bazel](https://github.com/fzakaria/stage0-bazel). I made substantial process through the bootstrap process but I did not make it far enought to be usabale.
+I had attempted to provide a stage0 hermetic C++ toolchain in [October 2024](https://github.com/fzakaria/stage0-bazel/tree/d22d6b050f66a93c1b843c24b8f17dc519dd4802) via [https://github.com/fzakaria/stage0-bazel](https://github.com/fzakaria/stage0-bazel). I made substantial process through the bootstrap process but I did not make it far enought to be usabale.
 
 To be honest, I was also a little disheartened that no one else in the community thought it was the greatest thing since slice bread. Everyone seems to be content with using prebuilt toolchains as they go deeper into [MODULE.bzl madness]({% post_url 2024-07-02-reproducibility-in-disguise %}).
 
