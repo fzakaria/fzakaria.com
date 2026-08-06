@@ -31,6 +31,16 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y graphviz
       - name: Install ImageMagick
         run: sudo apt-get update && sudo apt-get install -y imagemagick
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Install plotnine
+        # _plugins/plotnine.rb shells out to python3 to render ```plotnine
+        # fences and fails the build if it cannot. Pinned to the version the
+        # flake's nixpkgs provides, so a chart drawn by this job and a chart
+        # drawn by `nix build` are the same chart; see flake.nix.
+        run: python3 -m pip install "plotnine==0.14.1"
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

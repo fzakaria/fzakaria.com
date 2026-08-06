@@ -8,3 +8,4 @@ result
 node_modules/
 .image-cache
 .graphviz-cache
+.plotnine-cache

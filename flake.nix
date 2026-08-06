@@ -51,6 +51,14 @@
         })
     );
 
+    # _plugins/plotnine.rb renders ```plotnine fences by shelling out to this
+    # interpreter. Pinned here rather than left to the ambient python3 so that
+    # a chart drawn on a laptop and a chart drawn in CI are the same chart.
+    pythonEnv = eachSystem (
+      {pkgs, ...}:
+        pkgs.python3.withPackages (ps: [ps.plotnine])
+    );
+
     packages = eachSystem ({
       pkgs,
       system,
@@ -129,6 +137,10 @@
           # missing engine fails the build rather than shipping a post whose
           # diagram is a wall of DOT.
           pkgs.graphviz
+          # _plugins/plotnine.rb runs `python3` to render ```plotnine fences.
+          # Required for the same reason graphviz is: a missing interpreter
+          # would ship a post whose chart is a wall of Python.
+          pythonEnv.${system}
         ];
 
         buildPhase = ''
@@ -202,6 +214,7 @@
             wordword.packages.${system}.default
             imagemagick
             graphviz
+            pythonEnv.${system}
           ];
           inputsFrom = [
           ];

@@ -921,6 +921,25 @@ figure.graphviz {
   }
 }
 
+// A plotnine figure is inline <svg> for the same reason a Graphviz one is --
+// _plugins/plotnine.rb renders a ```plotnine fence at build time -- so it needs
+// the same treatment. The chart is drawn at a fixed aspect by matplotlib, and
+// the sentinel colour the plugin rewrites means axes and labels follow --ink
+// rather than staying matplotlib's dark grey on a dark page.
+figure.plotnine {
+  a {
+    display: block;
+  }
+
+  svg {
+    display: block;
+    margin-inline: auto;
+    max-width: 100%;
+    height: auto;
+    color: var(--ink);
+  }
+}
+
 iframe,
 embed,
 object {
