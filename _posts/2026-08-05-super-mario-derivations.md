@@ -90,7 +90,7 @@ digraph {
 
 The practical consequence is that the store becomes the emulator's savestate history:
 
-```console
+```console?comments=true
 # 3 derivations, cold
 $ nix build '.#game.start4.wait2.right'
 # 1 derivation — prefix reused
