@@ -93,7 +93,7 @@ The practical consequence is that the store becomes the emulator's savestate his
 ```console?comments=true
 # 3 derivations, cold
 $ nix build '.#game.start4.wait2.right'
-# 1 derivation — prefix reused
+# 1 derivation, prefix reused
 $ nix build '.#game.start4.wait2.left'
 # 1 derivation, all of it reused
 $ nix build '.#game.start4.wait2.right.right'
