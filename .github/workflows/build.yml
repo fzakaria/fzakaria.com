@@ -40,7 +40,12 @@ jobs:
         # fences and fails the build if it cannot. Pinned to the version the
         # flake's nixpkgs provides, so a chart drawn by this job and a chart
         # drawn by `nix build` are the same chart; see flake.nix.
-        run: python3 -m pip install "plotnine==0.14.1"
+        #
+        # matplotlib is pinned too, and not left to pip's resolver: plotnine
+        # reaches into matplotlib private API (matplotlib.text._get_textbox),
+        # which newer matplotlib releases have removed. Its floor of
+        # matplotlib>=3.8 is therefore not an upper bound anyone enforces.
+        run: python3 -m pip install "plotnine==0.14.1" "matplotlib==3.9.2"
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
