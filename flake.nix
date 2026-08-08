@@ -137,6 +137,20 @@
           pythonEnv.${system}
         ];
 
+        # Every file in the store carries mtime=1, and jekyll-sitemap stamps
+        # a static file's <lastmod> from its mtime (posts and pages get theirs
+        # from front matter instead). Under the `timezone:` set above that
+        # prints as 1969-12-31T16:00:01-08:00, a pre-1970 date that Google
+        # Search Console rejects with "An invalid date was found", taking the
+        # whole sitemap with it. Restamp the tree with the flake's own
+        # last-modified time: one date per revision, so the build stays
+        # reproducible, and one the sitemap schema accepts. This hangs off
+        # patchPhase rather than preBuild because buildPhase below is a
+        # literal string, which replaces the phase's runHook calls with it.
+        postPatch = ''
+          find . -type f -exec touch -d @${toString self.lastModified} {} +
+        '';
+
         buildPhase = ''
           jekyll build
         '';
