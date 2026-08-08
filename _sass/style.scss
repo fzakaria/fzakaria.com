@@ -916,7 +916,10 @@ figure.graphviz {
 
     // The plugin rewrites Graphviz's black to currentColor, so the graph's
     // ink and its unstyled strokes follow the theme instead of staying dark
-    // on a dark page. Node fills a diagram sets for itself are untouched.
+    // on a dark page. Node fills a diagram sets for itself are untouched, and
+    // so is a label drawn on top of one -- the plugin pins those to a dark ink
+    // that does not follow --ink, because a pale label on a pale fill is what
+    // following it would mean here.
     color: var(--ink);
   }
 }

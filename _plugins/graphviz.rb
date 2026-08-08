@@ -39,8 +39,14 @@ require "open3"
 # with no fill at all, and SVG's initial fill is black. There is nothing there
 # to rewrite; the colour has to be supplied. Every shape Graphviz draws carries
 # an explicit fill, so inheriting from the root reaches the text and nothing
-# else. Node fills a diagram sets for itself are left alone; they are the
-# author's choice, and light fills read on either theme.
+# else.
+#
+# A fourth change undoes the third where it does not apply. Node fills a diagram
+# sets for itself are left alone -- they are the author's choice -- but a label
+# drawn on top of one is not on the page any more, and inheriting the page's ink
+# puts a pale label on a pale fill the moment the reader is in dark mode. Text
+# inside a shape the author filled is pinned to a dark ink instead, so a diagram
+# written in the pastels Graphviz examples use stays readable on both themes.
 #
 # Rendering is cached, because Graphviz is slow enough to notice on a full
 # rebuild and a diagram changes far less often than prose. What is cached is
@@ -339,14 +345,71 @@ module Graphviz
 
     VIEWBOX = /viewBox="[\d.\-]+\s+[\d.\-]+\s+([\d.]+)\s+([\d.]+)"/.freeze
 
+    # A node or cluster, from the <g> that opens it to the first </g>.
+    #
+    # Edges are deliberately not in here. An edge's arrowhead is a filled
+    # polygon, so an edge would look filled to the test below and its label --
+    # which is drawn on the page, not on anything -- would be pinned dark.
+    #
+    # The match is non-greedy and so stops at the first </g>, which is the inner
+    # one when a node carries a URL and Graphviz wraps the shape in <g><a>. That
+    # inner group is where the shape and the text both live, so the block seen
+    # here is the right one either way.
+    NODE_GROUP = %r{<g\b[^>]*\bclass="(?:node|cluster)"[^>]*>.*?</g>}m.freeze
+
+    # The fill on the first thing Graphviz draws for a group: the node's shape,
+    # or the cluster's box.
+    SHAPE_FILL = /<(?:path|polygon|ellipse|rect)\b[^>]*\sfill="([^"]+)"/.freeze
+
+    # Fills that are not fills. The page shows through, so a label over one is
+    # a label on the page and wants the page's ink like any other.
+    UNFILLED = %w[none transparent].freeze
+
+    # Graphviz's default ink on a label, in the spellings it emits. Absent
+    # means the same thing -- SVG's initial fill is black -- so both are treated
+    # as "the author did not choose a colour here".
+    DEFAULT_INK = /\A"(?:black|#000000|#000)"\z/i.freeze
+
+    TEXT_TAG = /<text\b[^>]*?>/.freeze
+
+    TEXT_FILL = /\s+fill=("[^"]*")/.freeze
+
+    # What a label over an author's fill is pinned to: --ink from the light
+    # theme, in _sass/style.scss. Not a currentColor and not a var(), because
+    # the whole point is that this one does not follow the page.
+    FILLED_INK = "#1a1815"
+
     def theme(svg, key)
-      themed = svg
+      themed = pin_labels_over_fills(svg)
         .gsub(BLACK, '"currentColor"')
         .sub(CANVAS, "")
         .sub(ROOT_SIZE, '\\1')
         .sub(/<svg\b/) { |tag| "#{tag}#{ROOT_FILL}#{ratio_style(svg)}" }
 
       namespace_ids(themed, key)
+    end
+
+    # Give every label drawn on top of an author's fill a dark ink of its own,
+    # so that the root's fill="currentColor" reaches only the labels that are
+    # actually on the page.
+    #
+    # This runs before the black-to-currentColor rewrite, because a label whose
+    # fontcolor the author set to black is one that was never given a colour in
+    # any meaningful sense -- it is the default said out loud -- and it has to
+    # still be recognisable as such when it gets here. Any other fontcolor is a
+    # choice made against this fill and is left exactly as it is.
+    def pin_labels_over_fills(svg)
+      svg.gsub(NODE_GROUP) do |group|
+        fill = group[SHAPE_FILL, 1]
+        next group if fill.nil? || UNFILLED.include?(fill.downcase)
+
+        group.gsub(TEXT_TAG) do |tag|
+          chosen = tag[TEXT_FILL, 1]
+          next tag if chosen && !chosen.match?(DEFAULT_INK)
+
+          tag.sub(TEXT_FILL, "").sub(/\A<text\b/, %(<text fill="#{FILLED_INK}"))
+        end
+      end
     end
 
     # Ids Graphviz defines, and the two ways it refers back to one: url(#x)
