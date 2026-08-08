@@ -5,11 +5,7 @@
 # `env` carries the development group too -- ruby-lsp and what it pulls in --
 # and is what `nix develop` gets. `envMinimal` leaves it out and is what
 # nix/site.nix builds against: the site does not depend on a language server,
-# so its build closure should not either. The env exports BUNDLE_WITHOUT for
-# the missing group itself, which Jekyll's own `Bundler.setup` needs.
-# `shell` is gemlock's dev shell: the wrapped Ruby, the gems and a `bundle`
-# whose install, add, remove and update only touch the lock. `lock` is
-# `nix run .#lock`.
+# so its build closure should not either.
 {
   pkgs,
   gemlock,
