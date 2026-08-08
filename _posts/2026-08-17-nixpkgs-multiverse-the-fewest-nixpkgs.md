@@ -172,7 +172,8 @@ We expose this information via a "plan" that is viewable from
 the `mvs` CLI or the Nix API. It is a certificate that the solution is optimal, and it is also useful for debugging.
 
 ```console
-$ mvs solve jq@1.6 fd@8.7.0 ripgrep@13.0.0 hello@2.12.1 neovim@0.10.4 helix@25.01.1
+$ mvs solve jq@1.6 fd@8.7.0 ripgrep@13.0.0 \
+            hello@2.12.1 neovim@0.10.4 helix@25.01.1
 2 revisions · minimal
 5 of 6 pins served by the store-path index
 
