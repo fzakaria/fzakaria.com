@@ -4,6 +4,10 @@ title: 'The holy grail of nixpkgs: version ranges'
 date: 2026-09-01 12:00 -0700
 ---
 
+> **Update**
+> You can try this live at [fzakaria.github.io/grail](https://fzakaria.github.io/grail/) and query nixpkgs version ranges in your browser, the same solver, compiled to WebAssembly.
+{: .alert .alert-note }
+
 Ever since I launched [nixmultiverse.com](https://nixmultiverse.com/), I knew there were so many possibilities to explore. One of the most exciting is the ability to ask questions about the history of nixpkgs that were previously impossible to answer.
 
 I added some basic support for this type of introspection in the `mvs` tool that I demonstrated in [a previous post]({% post_url 2026-08-09-nixpkgs-multiverse-every-version-that-ever-existed %}): figuring out the minimum number of nixpkgs to satisfy a set of package exact version constraints. The real magic happens when you can ask questions about _version ranges_. 🧙
