@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'A Nix store is three functions'
-date: 2026-09-12 09:00 -0700
+date: 2026-09-11 20:00 -0700
 ---
 
 While building [trynix]({% post_url 2026-09-04-any-nix-package-live-in-your-browser %})
