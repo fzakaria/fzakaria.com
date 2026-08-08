@@ -960,13 +960,28 @@ object {
   border: 0;
 }
 
+// An embedded player is a figure like any other, so it gets the same mat,
+// frame and block layout as a screenshot or a screencast.
+//
+// `aspect-ratio` does here what the width and height attributes do on an <img>
+// or a <video>: an iframe has no intrinsic size at all, so without it the box
+// has no height until the player loads and the page reflows around it. 16/9 is
+// what both YouTube and Vimeo serve.
+//
+// `display: block` matters for the same reason it does on a <video> -- an
+// iframe is inline by default, so it sits on the text baseline and leaves a few
+// pixels of descender gap under itself, and the vertical rhythm .prose > * + *
+// hands it does not apply to an inline box.
 iframe[src*="youtube"],
 iframe[src*="vimeo"] {
+  display: block;
   width: 100%;
   aspect-ratio: 16 / 9;
   height: auto;
+  margin-inline: auto;
   border: 1px solid var(--rule);
   border-radius: 3px;
+  background: var(--image-mat);
 }
 
 // --- Sidenotes -------------------------------------------------------------
