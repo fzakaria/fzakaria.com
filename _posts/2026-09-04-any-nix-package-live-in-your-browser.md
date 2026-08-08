@@ -7,7 +7,7 @@ date: 2026-09-04 20:00 -0700
 > **tl;dr** Try it at [https://trynix.dev](https://trynix.dev/). Click [hello](https://trynix.dev/?pkg=hello), or [python 3.6.2 from 2017](https://trynix.dev/?pkg=python3@3.6.2), or [two eras of hello at once](https://trynix.dev/?pkg=hello@2.10&pkg=hello@2.12.2), or [a package that exists in no public cache](https://trynix.dev/?path=/nix/store/awmhh7ci4admi71gs6b73awh0lxgrqqn-hello-trynix-2.12.3&cache=https://trynix.dev/examples/cache%20trynix-examples-1:dZOV2uGWvjHo6IC5ZqCCu0dmIRzLm9pyOQJBDnBsXRY=). A Linux machine boots in the tab and you get a shell with those Nix packages on `PATH`.
 {: .alert .alert-note }
 
-This is my _magnus opus_ of Nix work.
+This is my _magnum opus_ of Nix work.
 
 I knew all the ideas I have been creating were building blogs for something greater: [nixpkgs-multiverse]({% post_url 2026-08-09-nixpkgs-multiverse-every-version-that-ever-existed %}) indexed every version of every package nixpkgs ever shipped, [grail]({% post_url 2026-09-01-the-holy-grail-of-nixpkgs-version-ranges %}) taught it version ranges and [omniflake]({% post_url 2026-08-28-one-flake-to-rule-them-all %}) allowed adding over sixteen thousand flakes from a single input.
 
