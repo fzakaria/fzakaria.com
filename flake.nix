@@ -8,10 +8,6 @@
       url = "github:inscapist/bundix/main";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    wordword = {
-      url = "git+https://codeberg.org/mtlynch/wordword";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = {
@@ -20,7 +16,6 @@
     nixpkgs,
     ruby-nix,
     bundix,
-    wordword,
     ...
   }: let
     eachSystem = f:
@@ -125,7 +120,6 @@
         ];
 
         nativeBuildInputs = [
-          wordword.packages.${system}.default
           pkgs.importNpmLock.hooks.linkNodeModulesHook
           pkgs.nodejs_22
           # _plugins/images.rb shells out to `magick` to build the srcset
@@ -154,9 +148,6 @@
         doCheck = true;
         checkPhase = ''
           npm run prettier-check
-          # TODO: maybe move these to individual flake checks instead
-          # check for duplicate words
-          wordword _posts/
         '';
       };
     });
@@ -211,7 +202,6 @@
             bundix.packages.${system}.default
             gemsets.${system}.env
             nodejs_22
-            wordword.packages.${system}.default
             imagemagick
             graphviz
             pythonEnv.${system}
