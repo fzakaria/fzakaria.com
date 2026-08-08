@@ -45,7 +45,7 @@ jobs:
         # reaches into matplotlib private API (matplotlib.text._get_textbox),
         # which newer matplotlib releases have removed. Its floor of
         # matplotlib>=3.8 is therefore not an upper bound anyone enforces.
-        run: python3 -m pip install "plotnine==0.14.1" "matplotlib==3.9.2"
+        run: python3 -m pip install "plotnine==0.15.1" "matplotlib==3.9.2"
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
