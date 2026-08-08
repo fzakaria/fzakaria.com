@@ -212,7 +212,7 @@ The next bottleneck though is that the kernel gives out at 21,845 presses on my 
 
 The per-argument limit is 131,072 bytes (`MAX_ARG_STRLEN`), and each press is six bytes long (`right.`), so 21,845 presses is the maximum that can be passed to `nix eval` as a single argument.
 
-The escape hatch is to stop passing the run as an argument. and we can feed in the input-sequence as from a file:
+The escape hatch is to stop passing the run as an argument, and feed the input sequence in from a file:
 
 ```console
 $ nix build --impure --expr \
