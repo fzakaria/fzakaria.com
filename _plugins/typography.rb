@@ -138,6 +138,26 @@ module Typography
   end
 end
 
+# Strips footnote machinery out of a rendered fragment.
+#
+# An excerpt is rendered on its own, so kramdown numbers its footnotes from
+# scratch and appends the whole endnote list to it. `Typography.apply` never
+# sees that fragment — the `post_render` hook below only fires for documents
+# and pages — so the index page would otherwise print the citations as part of
+# the teaser. This filter drops both the endnote list and the superscript
+# markers that point at it, leaving just the prose.
+module Jekyll
+  module FootnoteFilter
+    def strip_footnotes(input)
+      return input if input.nil?
+
+      input.to_s.gsub(Typography::FOOTNOTES, "").gsub(Typography::REF, "")
+    end
+  end
+end
+
+Liquid::Template.register_filter(Jekyll::FootnoteFilter)
+
 Jekyll::Hooks.register %i[documents pages], :post_render do |doc|
   next unless doc.output_ext == ".html"
 

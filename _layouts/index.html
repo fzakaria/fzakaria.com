@@ -13,7 +13,7 @@ layout: base
       <a class="index-lead rise" style="--i: 1" href="{{ lead.url | relative_url }}">
         <span class="label">Latest &middot; {{ lead.date | date: '%B %-d, %Y' }}</span>
         <span class="title">{{ lead.title }}</span>
-        <span class="excerpt">{{ lead.excerpt | strip_html | normalize_whitespace | truncate: 240 }}</span>
+        <span class="excerpt">{{ lead.excerpt | strip_footnotes | strip_html | normalize_whitespace | truncate: 240 }}</span>
         <span class="more">Read &rarr;</span>
       </a>
     {% endif %}
