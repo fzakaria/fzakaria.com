@@ -26,7 +26,9 @@ require "tmpdir"
 #
 # The contract is the name `plot`: the snippet binds it to a ggplot object and
 # this saves it. Nothing is printed, nothing is written by the author, and the
-# fence stays pure plot code with no boilerplate about output paths.
+# fence stays pure plot code with no boilerplate about output paths. Size is
+# the one optional extra: `plot.width, plot.height = 7.0, 3.4` after the plot
+# is built, if the default figure is the wrong shape for that chart.
 #
 # The fence is `plotnine` and not `python`, so a post can still quote Python as
 # source -- ```python is left alone and highlighted like any other code.
@@ -72,6 +74,13 @@ module Plotnine
   # in this site's palette, not a colour anyone would reach for. Every
   # structural element is drawn in it and every occurrence is rewritten.
   INK_SENTINEL = "#010203"
+
+  # The figure a fence gets when it does not ask for one, in inches. Wide
+  # enough to fill the column and short enough that a chart does not push the
+  # prose off the screen; a fence that wants another shape assigns
+  # `plot.width` and `plot.height` itself.
+  DEFAULT_WIDTH = 7.0
+  DEFAULT_HEIGHT = 3.6
 
   # Runs the author's snippet and saves `plot`. Kept here rather than in a
   # committed .py file so that the plugin is one file: there is no second thing
@@ -125,8 +134,22 @@ module Plotnine
             "a ```#{LANGUAGE} fence must bind `#{PLOT_NAME}` to a ggplot object"
         )
 
+    # Size is optional: a fence that cares says so by assigning plot.width /
+    # plot.height, and one that does not gets the column's default figure.
+    # Read with getattr because those are the author's own attributes, not
+    # ggplot's -- an unsized plot has no such attribute at all.
+    width = getattr(plot, "width", None) or #{DEFAULT_WIDTH}
+    height = getattr(plot, "height", None) or #{DEFAULT_HEIGHT}
+
+    # facecolor is the matplotlib *figure* patch, which is not the theme's
+    # plot_background and is not reachable from a plotnine theme: plotnine
+    # draws plot_background as its own rectangle on top of a figure canvas
+    # that matplotlib still paints white underneath. Left alone, every chart
+    # carries an opaque white sheet that hides the page in dark mode. This is
+    # forwarded to savefig, where "none" means paint nothing at all.
     plot.save(out_path, format="svg", verbose=False,
-              width=plot.width or 7, height=plot.height or 3.6, dpi=96)
+              width=width, height=height, dpi=96,
+              facecolor="none", edgecolor="none")
   PYTHON
 
   # Kramdown emits one of two shapes depending on whether a highlighter is on.
