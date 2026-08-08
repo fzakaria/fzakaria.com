@@ -70,6 +70,13 @@ module Plotnine
   # expression in a script reads like a mistake.
   PLOT_NAME = "plot"
 
+  # Where the harness looks for the font file to measure and name. Set by
+  # nix/site.nix and nix/dev-shells.nix to the same JetBrains Mono that
+  # assets/fonts serves the page. Unset -- a contributor outside the
+  # devShell -- falls back to matplotlib's own default face and outlined
+  # text, which still renders, just not in the site's typography.
+  FONT_ENV = "PLOTNINE_FONT"
+
   # Chosen to be findable and to belong to nothing: not a plotnine default, not
   # in this site's palette, not a colour anyone would reach for. Every
   # structural element is drawn in it and every occurrence is rewritten.
@@ -89,10 +96,41 @@ module Plotnine
   # matplotlib needs a writable cache directory and no display; both are set by
   # the caller through the environment.
   HARNESS = <<~PYTHON
+    import os
     import sys
 
     import matplotlib
     matplotlib.use("Agg")
+
+    # Text as real <text> elements rather than outlined glyph paths. The
+    # default is "path", which guarantees identical rendering by making the
+    # letters shapes -- at the cost of size, and of text no reader can select
+    # and no screen reader can reach. That trade is only worth taking because
+    # the family registered below is the one the page actually serves.
+    matplotlib.rcParams["svg.fonttype"] = "none"
+
+    from matplotlib import font_manager
+
+    # nix/fonts.nix does this for `dot`, through FONTCONFIG_FILE. It cannot
+    # reach here: matplotlib has a font manager of its own and never consults
+    # fontconfig, so the file has to be registered by hand.
+    #
+    # It matters for the same reason it matters for a diagram. Left alone,
+    # matplotlib measures every label with the first face it happens to find
+    # -- DejaVu Sans in this sandbox -- and then writes a family stack asking
+    # the browser for Helvetica first. A reader with Helvetica renders one
+    # face at coordinates computed for another, and labels drift out of the
+    # space reserved for them. Naming the served font on both sides removes
+    # the disagreement: what renders here is what renders there.
+    FONT = os.environ.get("#{FONT_ENV}")
+    FAMILY = None
+    if FONT:
+        font_manager.fontManager.addfont(FONT)
+        FAMILY = font_manager.FontProperties(fname=FONT).get_name()
+        # Through font.monospace rather than font.family, which would splice
+        # matplotlib's entire monospace list into every text element.
+        matplotlib.rcParams["font.monospace"] = [FAMILY, "monospace"]
+        matplotlib.rcParams["font.family"] = "monospace"
 
     INK = "#{INK_SENTINEL}"
 
@@ -101,7 +139,7 @@ module Plotnine
     # Structural elements all in the sentinel, so the rewrite on the Ruby side
     # has exactly one colour to look for. Anything the author sets afterwards
     # wins, which is intended: an explicit choice should survive the theme.
-    theme_site = plotnine.theme_minimal() + plotnine.theme(
+    theme_site = plotnine.theme_minimal(base_family=FAMILY) + plotnine.theme(
         text=plotnine.element_text(color=INK),
         axis_text=plotnine.element_text(color=INK),
         axis_title=plotnine.element_text(color=INK),
@@ -273,7 +311,7 @@ module Plotnine
 
       key = cache_key(source)
       svg = cached(key) { draw(source, document) }
-      body = strip_prologue(svg)
+      body = fallback_font(strip_prologue(svg))
       href = publish(key, standalone(body))
 
       %(<figure #{figure_attributes(attrs)}>) +
@@ -299,8 +337,17 @@ module Plotnine
         body.gsub(/#{Regexp.escape(INK_SENTINEL)}/i, STANDALONE_INK)
     end
 
+    # The font is in the key because it decides both the metrics every label
+    # was positioned with and the family the SVG names: swapping it redraws
+    # every chart, and a cached figure from the old one would be wrong.
     def cache_key(source)
-      Digest::SHA256.hexdigest("#{version}\0#{INK_SENTINEL}\0#{HARNESS}\0#{source}")
+      Digest::SHA256.hexdigest(
+        "#{version}\0#{INK_SENTINEL}\0#{font_file}\0#{HARNESS}\0#{source}"
+      )
+    end
+
+    def font_file
+      @font_file ||= ENV.fetch(FONT_ENV, "")
     end
 
     # The plotnine version rather than Python's: a plotnine upgrade is what
@@ -341,7 +388,8 @@ module Plotnine
         output, status = Open3.capture2e(
           # MPLCONFIGDIR keeps matplotlib from trying to write a font cache into
           # a home directory that does not exist in the Nix build sandbox.
-          { "MPLCONFIGDIR" => dir, "MPLBACKEND" => "Agg" },
+          { "MPLCONFIGDIR" => dir, "MPLBACKEND" => "Agg",
+            FONT_ENV => font_file },
           python, harness_path, source_path, out_path
         )
 
@@ -353,6 +401,16 @@ module Plotnine
 
         File.read(out_path, encoding: Encoding::UTF_8)
       end
+    end
+
+    # plotnine writes the family it was given and nothing after it, because a
+    # base_family set on the theme replaces matplotlib's own family chain.
+    # That is right for the inline copy, which sits in a page that @font-faces
+    # the family -- and wrong for the standalone one, which opens with no
+    # stylesheet at all and would land on the browser's default face. Adding
+    # the generic keeps the figure monospaced either way.
+    def fallback_font(svg)
+      svg.gsub(/font-family: '([^']+)'(?=[;"])/, "font-family: '\\1', monospace")
     end
 
     # matplotlib writes an XML declaration and a DOCTYPE before the root

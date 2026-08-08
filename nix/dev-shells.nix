@@ -2,9 +2,10 @@
 # formatters, so nothing here has to be installed on the host.
 {pkgs}: {
   default = pkgs.mkShell {
-    # The same fonts `nix build` renders diagrams with, so that a
+    # The same fonts `nix build` renders diagrams and charts with, so that a
     # `jekyll serve` in this shell shows what the deploy will publish.
-    FONTCONFIG_FILE = pkgs.blog-fonts;
+    FONTCONFIG_FILE = pkgs.blog-fonts.conf;
+    PLOTNINE_FONT = pkgs.blog-fonts.file;
 
     # Same reason, for the same variable nix/site.nix sets: nixpkgs' glibc
     # ships no zoneinfo of its own, so the `timezone:` in _config.yml

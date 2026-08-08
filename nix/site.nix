@@ -44,7 +44,9 @@ in
       # C.UTF-8 is built into glibc, so this costs no locale archive.
       LANG = "C.UTF-8";
       # Where `dot` finds the fonts it measures labels with; see nix/fonts.nix.
-      FONTCONFIG_FILE = pkgs.blog-fonts;
+      FONTCONFIG_FILE = pkgs.blog-fonts.conf;
+      # The same font again, for the renderer that cannot read the file above.
+      PLOTNINE_FONT = pkgs.blog-fonts.file;
       JEKYLL_ENV = "production";
       PAGES_ENV = "production";
       PAGES_REPO_NWO = "fzakaria/fzakaria.com";

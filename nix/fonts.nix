@@ -12,7 +12,15 @@
 # lands inside the box it was drawn for instead of spilling past it.
 # Liberation is here so that the generic families older diagrams ask for
 # still resolve to something with real metrics.
-{pkgs}:
-pkgs.makeFontsConf {
-  fontDirectories = [pkgs.jetbrains-mono pkgs.liberation_ttf];
+#
+# matplotlib does not read this file. It carries a font manager of its own and
+# never consults fontconfig, so `_plugins/plotnine.rb` is handed `file` below
+# directly and registers it; see PLOTNINE_FONT in nix/site.nix. Both renderers
+# therefore measure with the same face the page serves.
+{pkgs}: {
+  conf = pkgs.makeFontsConf {
+    fontDirectories = [pkgs.jetbrains-mono pkgs.liberation_ttf];
+  };
+
+  file = "${pkgs.jetbrains-mono}/share/fonts/truetype/JetBrainsMono-Regular.ttf";
 }
