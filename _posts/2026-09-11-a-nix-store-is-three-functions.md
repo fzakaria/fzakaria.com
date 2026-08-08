@@ -50,14 +50,17 @@ Turns out that in order to be a Nix binary cache, you must implement only three 
 [^cppnix]: You can write a Nix plugin to implement a new protocol if you wanted.
 
 ```
-GET  nix-cache-info                →  StoreDir: /nix/store
-GET  <32-char store hash>.narinfo  →  metadata naming an archive
-GET  <the narinfo's URL field>     →  the compressed archive
+GET nix-cache-info
+ →  StoreDir: /nix/store
+GET <32-char hash>.narinfo
+ →  metadata naming an archive
+GET <the narinfo's URL field>
+ →  the compressed archive
 ```
 
 That's it.
 
-Anything that can answer those three requests can be used as a remote <u>Nix store</u>.[^store]
+Anything that can answer those three requests can be used as a remote _Nix store_.[^store]
 
 [^store]: We will see that they need not all be on the same medium, protocol or domain even!
 
