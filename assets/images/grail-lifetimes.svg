@@ -1,0 +1,66 @@
+<svg class="grail-fig" viewBox="0 0 760 387" width="760" height="387" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="version lifetimes of python3 and openssl in nixos-unstable with the coexistence window 2022-06-19 to 2022-09-12 shaded">
+<style>
+  .grail-fig { font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; }
+  .grail-fig text { font-size: 10px; fill: #565046; }
+  .grail-fig .head { font-size: 11px; font-weight: 600; fill: #1a1815; }
+  .grail-fig .grid { stroke: #dcd5c5; stroke-width: 1; }
+  .grail-fig .ctx { fill: #6f685b; opacity: .55; }
+  .grail-fig .hit { fill: #2a78d6; }
+  .grail-fig .win { fill: #cf5d28; opacity: .16; }
+  .grail-fig .wtext { fill: #cf5d28; font-size: 10px; }
+</style>
+<line class="grid" x1="88.2" y1="38" x2="88.2" y2="365"/>
+<text x="88.2" y="381" text-anchor="middle">2013</text>
+<line class="grid" x1="184.1" y1="38" x2="184.1" y2="365"/>
+<text x="184.1" y="381" text-anchor="middle">2015</text>
+<line class="grid" x1="280.2" y1="38" x2="280.2" y2="365"/>
+<text x="280.2" y="381" text-anchor="middle">2017</text>
+<line class="grid" x1="376.1" y1="38" x2="376.1" y2="365"/>
+<text x="376.1" y="381" text-anchor="middle">2019</text>
+<line class="grid" x1="472.2" y1="38" x2="472.2" y2="365"/>
+<text x="472.2" y="381" text-anchor="middle">2021</text>
+<line class="grid" x1="568.1" y1="38" x2="568.1" y2="365"/>
+<text x="568.1" y="381" text-anchor="middle">2023</text>
+<line class="grid" x1="664.2" y1="38" x2="664.2" y2="365"/>
+<text x="664.2" y="381" text-anchor="middle">2025</text>
+<rect class="win" x="542.3" y="38" width="11.2" height="327"/>
+<text class="wtext" x="534.3" y="50" text-anchor="end">both hold: 2022-06-19 → 2022-09-12</text>
+<rect class="hit" x="64" y="16" width="18" height="7" rx="3.5"/>
+<text x="88" y="24">matches the constraint</text>
+<rect class="ctx" x="274" y="16" width="18" height="7" rx="3.5"/>
+<text x="298" y="24">other versions</text>
+<text class="head" x="4" y="48">python3</text>
+<text x="56" y="66" text-anchor="end">3.14</text>
+<rect class="hit" x="736.8" y="60" width="7.1" height="7" rx="3.5"/>
+<text x="56" y="83" text-anchor="end">3.13</text>
+<rect class="hit" x="686.4" y="77" width="50.1" height="7" rx="3.5"/>
+<text x="56" y="100" text-anchor="end">3.12</text>
+<rect class="hit" x="640.9" y="94" width="45.2" height="7" rx="3.5"/>
+<text x="56" y="117" text-anchor="end">3.11</text>
+<rect class="hit" x="607.0" y="111" width="33.2" height="7" rx="3.5"/>
+<text x="56" y="134" text-anchor="end">3.10</text>
+<rect class="hit" x="542.3" y="128" width="64.0" height="7" rx="3.5"/>
+<text x="56" y="151" text-anchor="end">3.9</text>
+<rect class="ctx" x="498.6" y="145" width="43.6" height="7" rx="3.5"/>
+<text x="56" y="168" text-anchor="end">3.8</text>
+<rect class="ctx" x="445.9" y="162" width="52.3" height="7" rx="3.5"/>
+<text x="56" y="185" text-anchor="end">3.7</text>
+<rect class="ctx" x="372.3" y="179" width="73.5" height="7" rx="3.5"/>
+<text x="56" y="202" text-anchor="end">3.6</text>
+<rect class="ctx" x="299.6" y="196" width="70.6" height="7" rx="3.5"/>
+<text x="56" y="219" text-anchor="end">3.5</text>
+<rect class="ctx" x="267.2" y="213" width="31.8" height="7" rx="3.5"/>
+<text x="56" y="236" text-anchor="end">3.3</text>
+<rect class="ctx" x="100.0" y="230" width="28.0" height="7" rx="3.5"/>
+<text x="56" y="253" text-anchor="end">3.2</text>
+<rect class="ctx" x="64.5" y="247" width="31.4" height="7" rx="3.5"/>
+<text class="head" x="4" y="296">openssl</text>
+<text x="56" y="314" text-anchor="end">3.x</text>
+<rect class="ctx" x="553.6" y="308" width="190.3" height="7" rx="3.5"/>
+<text x="56" y="331" text-anchor="end">1.1.x</text>
+<rect class="hit" x="406.9" y="325" width="7.0" height="7" rx="3.5"/>
+<rect class="hit" x="407.1" y="325" width="146.4" height="7" rx="3.5"/>
+<text x="56" y="348" text-anchor="end">1.0.x</text>
+<rect class="ctx" x="64.5" y="342" width="342.2" height="7" rx="3.5"/>
+<rect class="ctx" x="406.9" y="342" width="7.0" height="7" rx="3.5"/>
+</svg>

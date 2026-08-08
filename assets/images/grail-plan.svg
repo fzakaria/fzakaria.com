@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="381pt" height="109pt" viewBox="0.00 0.00 381.12 109.00" class="grail-fig">
+<g id="default" class="graph" transform="scale(1 1) rotate(0) translate(4 105)">
+<title>default</title>
+
+<g id="pin(p0)" class="node">
+<title>pin(p0)</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M101.88,-101C101.88,-101 28.88,-101 28.88,-101 22.88,-101 16.88,-95 16.88,-89 16.88,-89 16.88,-77 16.88,-77 16.88,-71 22.88,-65 28.88,-65 28.88,-65 101.88,-65 101.88,-65 107.88,-65 113.88,-71 113.88,-77 113.88,-77 113.88,-89 113.88,-89 113.88,-95 107.88,-101 101.88,-101" />
+<text text-anchor="middle" x="65.38" y="-79.3" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">ffmpeg 4.4.3</text>
+</g>
+
+<g id="rev(g0)" class="node">
+<title>rev(g0)</title>
+<path fill="#fdeee6" stroke="#cf5d28" d="M118.75,-36C118.75,-36 12,-36 12,-36 6,-36 0,-30 0,-24 0,-24 0,-12 0,-12 0,-6 6,0 12,0 12,0 118.75,0 118.75,0 124.75,0 130.75,-6 130.75,-12 130.75,-12 130.75,-24 130.75,-24 130.75,-30 124.75,-36 118.75,-36" />
+<text text-anchor="middle" x="65.38" y="-21.05" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">r994 · 2023-03-26</text>
+<text text-anchor="middle" x="65.38" y="-7.55" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">glibc 2.35</text>
+</g>
+
+<g id="('pin(p0)', 'rev(g0)')" class="edge">
+<title>pin(p0)-&gt;rev(g0)</title>
+<path fill="none" stroke="#7d7970" d="M65.38,-64.78C65.38,-58.53 65.38,-51.33 65.38,-44.52" />
+<polygon fill="#7d7970" stroke="#7d7970" points="67.83,-44.71 65.38,-37.71 62.93,-44.71 67.83,-44.71" />
+</g>
+
+<g id="rev(g1)" class="node">
+<title>rev(g1)</title>
+<path fill="#fdeee6" stroke="#cf5d28" d="M334.12,-36C334.12,-36 220.62,-36 220.62,-36 214.62,-36 208.62,-30 208.62,-24 208.62,-24 208.62,-12 208.62,-12 208.62,-6 214.62,0 220.62,0 220.62,0 334.12,0 334.12,0 340.12,0 346.12,-6 346.12,-12 346.12,-12 346.12,-24 346.12,-24 346.12,-30 340.12,-36 334.12,-36" />
+<text text-anchor="middle" x="277.38" y="-21.05" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">r1540 · 2026-08-31</text>
+<text text-anchor="middle" x="277.38" y="-7.55" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">glibc 2.42</text>
+</g>
+
+<g id="pin(p1)" class="node">
+<title>pin(p1)</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M252.62,-101C252.62,-101 166.12,-101 166.12,-101 160.12,-101 154.12,-95 154.12,-89 154.12,-89 154.12,-77 154.12,-77 154.12,-71 160.12,-65 166.12,-65 166.12,-65 252.62,-65 252.62,-65 258.62,-65 264.62,-71 264.62,-77 264.62,-77 264.62,-89 264.62,-89 264.62,-95 258.62,-101 252.62,-101" />
+<text text-anchor="middle" x="209.38" y="-79.3" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">ripgrep 15.2.0</text>
+</g>
+
+<g id="('pin(p1)', 'rev(g1)')" class="edge">
+<title>pin(p1)-&gt;rev(g1)</title>
+<path fill="none" stroke="#7d7970" d="M227.96,-64.78C235.6,-57.7 244.57,-49.39 252.75,-41.82" />
+<polygon fill="#7d7970" stroke="#7d7970" points="254.24,-43.78 257.71,-37.22 250.91,-40.18 254.24,-43.78" />
+</g>
+
+<g id="pin(p2)" class="node">
+<title>pin(p2)</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M361.12,-101C361.12,-101 301.62,-101 301.62,-101 295.62,-101 289.62,-95 289.62,-89 289.62,-89 289.62,-77 289.62,-77 289.62,-71 295.62,-65 301.62,-65 301.62,-65 361.12,-65 361.12,-65 367.12,-65 373.12,-71 373.12,-77 373.12,-77 373.12,-89 373.12,-89 373.12,-95 367.12,-101 361.12,-101" />
+<text text-anchor="middle" x="331.38" y="-79.3" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">bat 0.26.1</text>
+</g>
+
+<g id="('pin(p2)', 'rev(g1)')" class="edge">
+<title>pin(p2)-&gt;rev(g1)</title>
+<path fill="none" stroke="#7d7970" d="M316.62,-64.78C310.67,-57.84 303.71,-49.72 297.31,-42.26" />
+<polygon fill="#7d7970" stroke="#7d7970" points="299.51,-41.06 293.1,-37.34 295.79,-44.25 299.51,-41.06" />
+</g>
+</g>
+<script>
+      <script type="text/javascript">
+
+        var edges = Object.values(document.getElementsByClassName('edge'));
+        var nodes = Object.values(document.getElementsByClassName('node'));
+        var elements = edges.concat(nodes);
+        const events = ["click","mouseenter","mouseleave","contextmenu"];
+        window.onload=function(){
+            elements.forEach(elem =&gt; {
+                elem.classList.forEach(c =&gt; {
+                    c_vals = c.split('___')
+                    if (c_vals[0] == 'init'){
+                        property = c_vals[1]
+                        property_val = c_vals[2]
+                        elem.style[property]=property_val
+                    }
+                    if (events.includes(c_vals[0])){
+                        elem.classList.add(c_vals[0]+"_"+c_vals[1])
+                    }
+                })
+            })
+            elements.forEach(elem =&gt; {
+                elem.addEventListener("contextmenu", e =&gt; e.preventDefault());
+                events.forEach(event =&gt; {
+                    elem.addEventListener(event, function() {
+                        console.log(event)
+                        local_event = event;
+                        elem_id = elem.id.split(' ').join('');
+                        class_name = local_event + "___" + elem_id;
+                        var children = elements.filter(el =&gt; Array.from(el.classList).some(cls =&gt; cls.startsWith(class_name)));
+                        children.forEach(c =&gt; {
+                            c.classList.forEach(c_elem =&gt;{
+                                c_vals = c_elem.split('___')
+                                if (c_vals.length == 4){
+                                    if (c_vals[0]==local_event){
+                                        if(c_vals[1]==elem_id){
+                                            property = c_vals[2]
+                                            property_val = c_vals[3]
+                                            c.style[property]=property_val
+                                        }
+                                    }
+                                }
+                            })
+                        })
+
+
+                    })
+                })
+            });
+        }
+      </script>
+
+</script>
+</svg>

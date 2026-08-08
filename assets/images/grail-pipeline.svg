@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="488pt" height="501pt" viewBox="0.00 0.00 487.92 501.34" class="grail-fig">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 497.34)">
+<title>grail</title>
+
+<g id="node1" class="node">
+<title>query</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M187.92,-492.11C187.92,-492.11 12,-492.11 12,-492.11 6,-492.11 0,-486.11 0,-480.11 0,-480.11 0,-468.11 0,-468.11 0,-462.11 6,-456.11 12,-456.11 12,-456.11 187.92,-456.11 187.92,-456.11 193.92,-456.11 199.92,-462.11 199.92,-468.11 199.92,-468.11 199.92,-480.11 199.92,-480.11 199.92,-486.11 193.92,-492.11 187.92,-492.11" />
+<text text-anchor="middle" x="99.96" y="-470.99" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="10.00" fill="#0b0b0b">python3@&gt;=3.10 ^openssl@1.1.*</text>
+</g>
+
+<g id="node3" class="node">
+<title>facts</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M272.92,-413.63C272.92,-413.63 109,-413.63 109,-413.63 103,-413.63 97,-407.63 97,-401.63 97,-401.63 97,-385.67 97,-385.67 97,-379.67 103,-373.67 109,-373.67 109,-373.67 272.92,-373.67 272.92,-373.67 278.92,-373.67 284.92,-379.67 284.92,-385.67 284.92,-385.67 284.92,-401.63 284.92,-401.63 284.92,-407.63 278.92,-413.63 272.92,-413.63" />
+<text text-anchor="middle" x="190.96" y="-396.7" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">facts</text>
+<text text-anchor="middle" x="190.96" y="-383.2" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">allowed / run / glibcera</text>
+</g>
+
+<g id="edge1" class="edge">
+<title>query-&gt;facts</title>
+<path fill="none" stroke="#7d7970" d="M120.16,-455.7C132.6,-444.97 148.74,-431.05 162.47,-419.21" />
+<polygon fill="#7d7970" stroke="#7d7970" points="163.74,-421.36 167.44,-414.93 160.54,-417.64 163.74,-421.36" />
+<text text-anchor="middle" x="171.91" y="-431.33" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="9.00" fill="#52514e">specs.py</text>
+</g>
+
+<g id="node2" class="node">
+<title>history</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M328.92,-493.34C328.92,-493.34 237,-493.34 237,-493.34 231,-493.34 225,-487.34 225,-481.34 225,-481.34 225,-466.88 225,-466.88 225,-460.88 231,-454.88 237,-454.88 237,-454.88 328.92,-454.88 328.92,-454.88 334.92,-454.88 340.92,-460.88 340.92,-466.88 340.92,-466.88 340.92,-481.34 340.92,-481.34 340.92,-487.34 334.92,-493.34 328.92,-493.34" />
+<text text-anchor="middle" x="282.96" y="-477.36" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="10.00" fill="#0b0b0b">history.json</text>
+<text text-anchor="middle" x="282.96" y="-464.61" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="10.00" fill="#0b0b0b">1,541 revisions</text>
+</g>
+
+<g id="edge2" class="edge">
+<title>history-&gt;facts</title>
+<path fill="none" stroke="#7d7970" d="M261.16,-454.52C248.83,-444 233.26,-430.72 219.91,-419.34" />
+<polygon fill="#7d7970" stroke="#7d7970" points="221.63,-417.59 214.72,-414.91 218.45,-421.32 221.63,-417.59" />
+</g>
+
+<g id="node5" class="node">
+<title>clingo</title>
+<path fill="#2a78d6" stroke="#2a78d6" d="M291.17,-342.67C291.17,-342.67 248.75,-342.67 248.75,-342.67 242.75,-342.67 236.75,-336.67 236.75,-330.67 236.75,-330.67 236.75,-318.67 236.75,-318.67 236.75,-312.67 242.75,-306.67 248.75,-306.67 248.75,-306.67 291.17,-306.67 291.17,-306.67 297.17,-306.67 303.17,-312.67 303.17,-318.67 303.17,-318.67 303.17,-330.67 303.17,-330.67 303.17,-336.67 297.17,-342.67 291.17,-342.67" />
+<text text-anchor="middle" x="269.96" y="-320.97" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="white">clingo</text>
+</g>
+
+<g id="edge3" class="edge">
+<title>facts-&gt;clingo</title>
+<path fill="none" stroke="#7d7970" d="M213.81,-373.28C222.99,-365.49 233.64,-356.46 243.19,-348.37" />
+<polygon fill="#7d7970" stroke="#7d7970" points="244.67,-350.32 248.43,-343.93 241.51,-346.58 244.67,-350.32" />
+</g>
+
+<g id="node4" class="node">
+<title>rules</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M377.92,-412.88C377.92,-412.88 322,-412.88 322,-412.88 316,-412.88 310,-406.88 310,-400.88 310,-400.88 310,-386.42 310,-386.42 310,-380.42 316,-374.42 322,-374.42 322,-374.42 377.92,-374.42 377.92,-374.42 383.92,-374.42 389.92,-380.42 389.92,-386.42 389.92,-386.42 389.92,-400.88 389.92,-400.88 389.92,-406.88 383.92,-412.88 377.92,-412.88" />
+<text text-anchor="middle" x="349.96" y="-396.9" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="10.00" fill="#0b0b0b">solve.lp</text>
+<text text-anchor="middle" x="349.96" y="-384.15" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="10.00" fill="#0b0b0b">~40 lines</text>
+</g>
+
+<g id="edge4" class="edge">
+<title>rules-&gt;clingo</title>
+<path fill="none" stroke="#7d7970" d="M327.68,-373.99C318.19,-366.05 307.05,-356.72 297.09,-348.39" />
+<polygon fill="#7d7970" stroke="#7d7970" points="298.85,-346.67 291.91,-344.05 295.71,-350.42 298.85,-346.67" />
+</g>
+
+<g id="node6" class="node">
+<title>plan</title>
+<path fill="#fdeee6" stroke="#cf5d28" d="M328.3,-265.42C328.3,-265.42 211.63,-265.42 211.63,-265.42 205.63,-265.42 199.63,-259.42 199.63,-253.42 199.63,-253.42 199.63,-237.46 199.63,-237.46 199.63,-231.46 205.63,-225.46 211.63,-225.46 211.63,-225.46 328.3,-225.46 328.3,-225.46 334.3,-225.46 340.3,-231.46 340.3,-237.46 340.3,-237.46 340.3,-253.42 340.3,-253.42 340.3,-259.42 334.3,-265.42 328.3,-265.42" />
+<text text-anchor="middle" x="269.96" y="-248.49" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">plan</text>
+<text text-anchor="middle" x="269.96" y="-234.99" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">r852 · 2022-09-12</text>
+</g>
+
+<g id="edge5" class="edge">
+<title>clingo-&gt;plan</title>
+<path fill="none" stroke="#7d7970" d="M269.96,-306.53C269.96,-296.99 269.96,-284.89 269.96,-274.05" />
+<polygon fill="#7d7970" stroke="#7d7970" points="272.41,-274.22 269.96,-267.22 267.51,-274.22 272.41,-274.22" />
+<text text-anchor="middle" x="288.34" y="-283.12" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="9.00" fill="#52514e">optimum</text>
+</g>
+
+<g id="node7" class="node">
+<title>lock</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M231.92,-184.21C231.92,-184.21 140,-184.21 140,-184.21 134,-184.21 128,-178.21 128,-172.21 128,-172.21 128,-160.21 128,-160.21 128,-154.21 134,-148.21 140,-148.21 140,-148.21 231.92,-148.21 231.92,-148.21 237.92,-148.21 243.92,-154.21 243.92,-160.21 243.92,-160.21 243.92,-172.21 243.92,-172.21 243.92,-178.21 237.92,-184.21 231.92,-184.21" />
+<text text-anchor="middle" x="185.96" y="-163.09" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="10.00" fill="#0b0b0b">multiverse.lock</text>
+</g>
+
+<g id="edge6" class="edge">
+<title>plan-&gt;lock</title>
+<path fill="none" stroke="#7d7970" d="M249.2,-225.35C237.61,-214.7 223.1,-201.36 210.91,-190.14" />
+<polygon fill="#7d7970" stroke="#7d7970" points="212.69,-188.46 205.88,-185.52 209.37,-192.07 212.69,-188.46" />
+</g>
+
+<g id="node9" class="node">
+<title>mkdrv</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M440.17,-184.21C440.17,-184.21 289.75,-184.21 289.75,-184.21 283.75,-184.21 277.75,-178.21 277.75,-172.21 277.75,-172.21 277.75,-160.21 277.75,-160.21 277.75,-154.21 283.75,-148.21 289.75,-148.21 289.75,-148.21 440.17,-148.21 440.17,-148.21 446.17,-148.21 452.17,-154.21 452.17,-160.21 452.17,-160.21 452.17,-172.21 452.17,-172.21 452.17,-178.21 446.17,-184.21 440.17,-184.21" />
+<text text-anchor="middle" x="364.96" y="-162.51" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">grail.lib.mkDerivation</text>
+</g>
+
+<g id="edge8" class="edge">
+<title>plan-&gt;mkdrv</title>
+<path fill="none" stroke="#7d7970" d="M293.44,-225.35C306.66,-214.6 323.25,-201.11 337.13,-189.84" />
+<polygon fill="#7d7970" stroke="#7d7970" points="338.63,-191.77 342.52,-185.45 335.54,-187.97 338.63,-191.77" />
+<text text-anchor="middle" x="331.02" y="-201.91" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="9.00" fill="#52514e">IFD</text>
+</g>
+
+<g id="node8" class="node">
+<title>consume</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M230.67,-117.21C230.67,-117.21 107.25,-117.21 107.25,-117.21 101.25,-117.21 95.25,-111.21 95.25,-105.21 95.25,-105.21 95.25,-89.25 95.25,-89.25 95.25,-83.25 101.25,-77.25 107.25,-77.25 107.25,-77.25 230.67,-77.25 230.67,-77.25 236.67,-77.25 242.67,-83.25 242.67,-89.25 242.67,-89.25 242.67,-105.21 242.67,-105.21 242.67,-111.21 236.67,-117.21 230.67,-117.21" />
+<text text-anchor="middle" x="168.96" y="-100.28" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">readLock · modules</text>
+<text text-anchor="middle" x="168.96" y="-86.78" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">mvs lock status</text>
+</g>
+
+<g id="edge7" class="edge">
+<title>lock-&gt;consume</title>
+<path fill="none" stroke="#7d7970" d="M181.58,-147.96C179.85,-141.13 177.81,-133.11 175.89,-125.53" />
+<polygon fill="#7d7970" stroke="#7d7970" points="178.33,-125.2 174.24,-119.01 173.58,-126.4 178.33,-125.2" />
+</g>
+
+<g id="node10" class="node">
+<title>mvat</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M467.92,-115.23C467.92,-115.23 280,-115.23 280,-115.23 274,-115.23 268,-109.23 268,-103.23 268,-103.23 268,-91.23 268,-91.23 268,-85.23 274,-79.23 280,-79.23 280,-79.23 467.92,-79.23 467.92,-79.23 473.92,-79.23 479.92,-85.23 479.92,-91.23 479.92,-91.23 479.92,-103.23 479.92,-103.23 479.92,-109.23 473.92,-115.23 467.92,-115.23" />
+<text text-anchor="middle" x="373.96" y="-94.11" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="10.00" fill="#0b0b0b">mv.at "2022-09-12-5f326e2a403e"</text>
+</g>
+
+<g id="edge9" class="edge">
+<title>mkdrv-&gt;mvat</title>
+<path fill="none" stroke="#7d7970" d="M367.28,-147.96C368.26,-140.67 369.42,-132.03 370.5,-124.02" />
+<polygon fill="#7d7970" stroke="#7d7970" points="372.91,-124.42 371.42,-117.15 368.06,-123.76 372.91,-124.42" />
+</g>
+
+<g id="node11" class="node">
+<title>cache</title>
+<path fill="#fcfcfb" stroke="#b5b1a9" d="M425.55,-36C425.55,-36 322.38,-36 322.38,-36 316.38,-36 310.38,-30 310.38,-24 310.38,-24 310.38,-12 310.38,-12 310.38,-6 316.38,0 322.38,0 322.38,0 425.55,0 425.55,0 431.55,0 437.55,-6 437.55,-12 437.55,-12 437.55,-24 437.55,-24 437.55,-30 431.55,-36 425.55,-36" />
+<text text-anchor="middle" x="373.96" y="-14.3" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="11.00" fill="#0b0b0b">cache.nixos.org</text>
+</g>
+
+<g id="edge10" class="edge">
+<title>mvat-&gt;cache</title>
+<path fill="none" stroke="#7d7970" d="M373.96,-79.09C373.96,-68.96 373.96,-55.94 373.96,-44.62" />
+<polygon fill="#7d7970" stroke="#7d7970" points="376.41,-44.87 373.96,-37.87 371.51,-44.87 376.41,-44.87" />
+<text text-anchor="middle" x="400.21" y="-53.7" font-family="&quot;JetBrains Mono&quot;, ui-monospace, Menlo, Consolas, monospace" font-size="9.00" fill="#52514e">substitute</text>
+</g>
+</g>
+</svg>
