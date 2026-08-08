@@ -10,14 +10,19 @@ layout: base
 
   <div class="index-body">
     {% if lead %}
-      <a class="index-lead rise" style="--i: 1" href="{{ lead.url | relative_url }}">
+      {%- comment -%}
+        The card is a div, not an anchor: the excerpt keeps the links its
+        first paragraph had, and an anchor cannot be nested inside another.
+        The title's stretched ::after makes the whole card clickable anyway.
+      {%- endcomment -%}
+      <div class="index-lead rise" style="--i: 1">
         <span class="label">Latest &middot; {{ lead.date | date: '%B %-d, %Y' }}</span>
-        <span class="title">{{ lead.title }}</span>
+        <a class="title" href="{{ lead.url | relative_url }}">{{ lead.title }}</a>
         <span class="excerpt">
-          {{- lead.excerpt | strip_footnotes | strip_html | normalize_whitespace | truncate: 240 -}}
+          {{- lead.excerpt | strip_footnotes | excerpt_html: 240 -}}
         </span>
-        <span class="more">Read &rarr;</span>
-      </a>
+        <span class="more" aria-hidden="true">Read &rarr;</span>
+      </div>
     {% endif %}
 
     {% for year in years %}

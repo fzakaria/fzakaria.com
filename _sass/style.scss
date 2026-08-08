@@ -1357,6 +1357,8 @@ blockquote.alert {
   margin-bottom: calc(var(--step) * 2);
   padding-left: 1rem;
   border-left: 2px solid var(--accent);
+  // Anchors the title's stretched hit area below.
+  position: relative;
 
   .label {
     @extend %chrome;
@@ -1372,6 +1374,23 @@ blockquote.alert {
     letter-spacing: -0.02em;
     text-wrap: balance;
     display: block;
+    color: inherit;
+    text-decoration: none;
+
+    // Stretch the title's click target over the whole card, so the card still
+    // behaves like one big link without being one big <a>.
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+    }
+  }
+
+  // Links the excerpt inherited from the post's first paragraph. They sit
+  // above the stretched title so they stay individually clickable.
+  .excerpt a {
+    position: relative;
+    z-index: 1;
   }
 
   .excerpt {
