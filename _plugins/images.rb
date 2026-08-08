@@ -13,7 +13,11 @@ require "fileutils"
 #      right box and the page stops shifting as images arrive;
 #   2. adds loading="lazy" and decoding="async";
 #   3. generates down-scaled derivatives with ImageMagick and points the tag at
-#      them via srcset, so a 4152px screenshot is never sent to a 700px column.
+#      them via srcset, so a 4152px screenshot is never sent to a 700px column;
+#   4. encodes a WebP tier and offers it through <picture>. This one applies to
+#      every raster image, including those already narrow enough to skip step
+#      3 — being the right number of pixels says nothing about being in the
+#      right container.
 #
 # The ladder is not hardcoded: the widths and the `sizes` attribute are derived
 # from the compiled stylesheet, which publishes --measure, --root-max and
@@ -38,6 +42,10 @@ module Images
 
   CACHE_DIR = ".image-cache"
   DERIVED_DIR = "assets/images/derived"
+
+  # Appended to a derivative's path to name the file holding its measured
+  # distortion. Lives in the cache beside the derivative and is never served.
+  DISTORTION_SUFFIX = ".psnr"
 
   RESIZABLE = %w[.png .jpg .jpeg .webp].freeze
 
@@ -168,19 +176,26 @@ module Images
     # --- Pass two: generate the derivatives ---------------------------------
 
     def build_derivatives
-      wanted = @plans.values.compact.select do |plan|
-        RESIZABLE.include?(plan[:ext]) && plan[:width] > widths.first
-      end
+      wanted = @plans.values.compact.select { |plan| RESIZABLE.include?(plan[:ext]) }
       return if wanted.empty?
 
       if tool.nil?
-        wanted.each do |plan|
+        wanted.select { |plan| oversized?(plan) }.each do |plan|
           @warnings << "#{plan[:rel]} is #{plan[:width]}px wide but displays at most #{widths.first}px"
         end
         return
       end
 
       wanted.each { |plan| generate(plan) }
+    end
+
+    # Wider than it can ever be displayed at, so a down-scaled derivative in
+    # the original format is a straight win. An image at or below the column
+    # is already the right size and only wants the WebP tier, which is about
+    # the container rather than the dimensions: a 620px meme can still be a
+    # 424KB PNG.
+    def oversized?(plan)
+      plan[:width] > widths.first
     end
 
     def generate(plan)
@@ -190,37 +205,44 @@ module Images
       # `compare` needs both images at identical dimensions.
       baseline = {}
 
-      widths.each do |width|
-        # No point emitting a variant that is larger than the original.
-        next if width > plan[:width]
+      # An image that already fits the column skips this entirely and keeps an
+      # empty baseline, which generate_webp reads as "measure against the
+      # original itself".
+      if oversized?(plan)
+        widths.each do |width|
+          # No point emitting a variant that is larger than the original.
+          next if width > plan[:width]
 
-        name = derivative_name(plan[:rel], width)
-        target = File.join(cache_root, name)
+          name = derivative_name(plan[:rel], width)
+          target = File.join(cache_root, name)
 
-        unless fresh?(target, plan[:source])
-          FileUtils.mkdir_p(File.dirname(target))
-          next unless resize(plan[:source], target, width, plan[:ext])
+          unless fresh?(target, plan[:source])
+            FileUtils.mkdir_p(File.dirname(target))
+            next unless resize(plan[:source], target, width, plan[:ext])
+          end
+
+          # Re-encoding can make a file bigger — an indexed-palette PNG comes
+          # back as truecolour, a small JPEG comes back less aggressively
+          # compressed. Only reference a derivative that is an actual win. The
+          # rejected file stays in the cache so the work is not repeated.
+          accepted = File.size(target) < File.size(plan[:source])
+          plan[:derivatives] << { width: width, name: name } if accepted
+
+          baseline[width] = {
+            reference: target,
+            bytes: File.size(accepted ? target : plan[:source]),
+          }
         end
-
-        # Re-encoding can make a file bigger — an indexed-palette PNG comes
-        # back as truecolour, a small JPEG comes back less aggressively
-        # compressed. Only reference a derivative that is an actual win. The
-        # rejected file stays in the cache so the work is not repeated.
-        accepted = File.size(target) < File.size(plan[:source])
-        plan[:derivatives] << { width: width, name: name } if accepted
-
-        baseline[width] = {
-          reference: target,
-          bytes: File.size(accepted ? target : plan[:source]),
-        }
       end
 
       generate_webp(plan, baseline)
     end
 
-    # A WebP tier offered through <picture>. The originals that survive the
-    # palette step are the photographic ones, and PNG is simply the wrong
-    # container for those.
+    # A WebP tier offered through <picture>, for every raster image rather
+    # than only the ones wide enough to need down-scaling. Format and
+    # dimensions are independent problems: a photograph or a screenshot-heavy
+    # meme is badly served by PNG at any width, and the size gate below is
+    # what decides whether the conversion actually paid off.
     def generate_webp(plan, baseline)
       return if plan[:ext] == ".webp"
 
@@ -241,7 +263,7 @@ module Images
 
         next unless File.size(target) < against[:bytes]
         next unless File.exist?(against[:reference])
-        next unless distortion_db(against[:reference], target) >= WEBP_MIN_PSNR
+        next unless cached_distortion_db(against[:reference], target) >= WEBP_MIN_PSNR
 
         { width: width, name: name }
       end
@@ -317,6 +339,49 @@ module Images
       end
     rescue StandardError
       FileUtils.rm_f(candidate)
+    end
+
+    # distortion_db costs about as much as the encode it passes judgement on,
+    # and the derivative was the only half of that pair being cached: every
+    # build re-ran `magick compare` over candidates that had not changed since
+    # the last one. The measurement depends on nothing but the two files, so
+    # it is memoised in a sidecar and reused for as long as that sidecar is
+    # newer than both of them.
+    def cached_distortion_db(reference, target)
+      sidecar = "#{target}#{DISTORTION_SUFFIX}"
+
+      if fresh?(sidecar, reference) && fresh?(sidecar, target)
+        cached = read_distortion(sidecar)
+        return cached unless cached.nil?
+      end
+
+      value = distortion_db(reference, target)
+
+      # A failed measurement is deliberately not written. It has already
+      # warned, and a warning that is recorded once and then replayed from
+      # disk forever is worse than one that returns every build until the
+      # cause is fixed.
+      write_distortion(sidecar, value) unless value == -Float::INFINITY
+      value
+    end
+
+    def read_distortion(sidecar)
+      raw = File.read(sidecar).strip
+      # Two identical images measure zero distortion, which is an infinite
+      # signal-to-noise ratio. Float() will not read that back.
+      return Float::INFINITY if raw == Float::INFINITY.to_s
+
+      Float(raw)
+    rescue StandardError
+      nil
+    end
+
+    # A cache that cannot be written is not an error: the build still has the
+    # measurement it just took, and simply pays for it again next time.
+    def write_distortion(sidecar, value)
+      File.write(sidecar, value.to_s)
+    rescue StandardError
+      nil
     end
 
     # Distortion between two same-sized images, in decibels.
