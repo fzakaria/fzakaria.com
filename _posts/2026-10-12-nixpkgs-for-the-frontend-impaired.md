@@ -5,7 +5,7 @@ date: 2026-10-12 14:00 -0700
 excerpt_separator: <!--more-->
 ---
 
-> **tl;dr** [jinx](https://fzakaria.github.io/jinx) is a tool that compiles Nix to TypeScript. All of nixpkgs, each 231,777 attribute, produces **the exact** drvPath Nix does. [Open the playground](https://fzakaria.github.io/jinx) or [evaluate hello in your browser tab](https://fzakaria.github.io/jinx/nixpkgs/) with no Nix installed anywhere. 😈
+> **tl;dr** [jinx](https://fzakaria.github.io/jinx) is a tool that compiles Nix to TypeScript. All of nixpkgs, each 231,777 attribute, produces **the exact** drvPath Nix does. [Open the playground](https://fzakaria.github.io/jinx) or [evaluate hello in your browser tab](https://fzakaria.github.io/jinx/nixpkgs/#attr=hello) with no Nix installed anywhere. 😈
 {: .alert .alert-note }
 
 Despite my admiration and joy for Nix, the language and tool, it is not what is magical. The store model is the great idea. Any similar tool built
