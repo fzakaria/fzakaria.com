@@ -39,7 +39,9 @@ $ python3@3.6.2 --version
 Python 3.6.2
 ```
 
-That is <u>over fifty thousand</u> top-level binaries available on my `$PATH`, from 2013 to 2026 built by [Nixpkgs](https://github.com/NixOS/nixpkgs), available on-demand, without installing anything.
+That is <u>over fifty thousand</u>[^larger] top-level binaries available on my `$PATH`, from 2013 to 2026 built by [Nixpkgs](https://github.com/NixOS/nixpkgs), available on-demand, without installing anything.
+
+[^larger]: There are actually 881,933 binaries in the tree, but `ls /omnibin/bin` only lists the latest version of each binary. The versioned forms are still available, but they are not listed.
 
 [![oprah shouting you get every version](/assets/images/oprah_every_version_omnibin.png)](/assets/images/oprah_every_version_omnibin.png)
 {: style="--image-width: 20rem"}
