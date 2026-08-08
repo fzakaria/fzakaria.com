@@ -865,7 +865,17 @@ svg {
   height: auto;
 }
 
-.prose img {
+// A screencast is a figure like any other, so it gets the same block layout,
+// mat and frame as a screenshot. `display: block` matters more here than it
+// does for an image: an inline <video> sits on the text baseline and leaves a
+// few pixels of descender gap under itself.
+//
+// The width and height attributes have to be written by hand on a <video> --
+// _plugins/images.rb fills them in for every <img>, but it does not touch
+// media it has no encoder for. Without both, the element has no aspect ratio
+// until the file's metadata arrives and the page reflows around it.
+.prose img,
+.prose video {
   display: block;
   margin-inline: auto;
   border: 1px solid var(--rule);

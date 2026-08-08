@@ -136,7 +136,7 @@ As of August 14 2026, **all 271,187 of them are alive**.  All of them, down to e
 
 There's some other data on [nixmultiverse.com](https://nixmultiverse.com/) about the census, dependency graphs and additional features. Check it out!
 
-<video autoplay loop muted playsinline width="800">
+<video autoplay loop muted playsinline width="800" height="470">
   <source src="/assets/images/multiverse-universe-slider.mp4" type="video/mp4">
 </video>
 
