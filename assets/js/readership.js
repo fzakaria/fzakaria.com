@@ -1373,21 +1373,23 @@
   // ---------------------------------------------------------------------------
 
   const MAP_URL = "/assets/vendor/countries-110m.json";
-  const MAP_ASPECT = 0.52;
   const ANTARCTICA_NUMERIC = "010";
   const MAP_TOP_COUNTRIES = 3;
 
   function drawMap(W, features) {
     const box = byId("fig-map");
-    const H = Math.round(W * MAP_ASPECT);
     const byNumeric = new Map(geography.filter((c) => c.iso_numeric).map((c) => [c.iso_numeric, c]));
     const total = geography.reduce((a, c) => a + c.sessions, 0) || 1;
     const maxLog = Math.log1p(Math.max(...geography.map((c) => c.sessions), 1));
 
-    const projection = d3.geoNaturalEarth1().fitSize([W, H], { type: "Sphere" });
+    // Fit the projection to the countries rather than the whole globe. With
+    // Antarctica filtered out, a globe fit leaves the bottom of the figure
+    // empty, so the height follows the countries' projected extent instead.
+    const land = { type: "FeatureCollection", features };
+    const projection = d3.geoNaturalEarth1().fitWidth(W, land);
     const path = d3.geoPath(projection);
+    const H = Math.ceil(path.bounds(land)[1][1]);
     const root = svg("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": "World map of visits by country" }, box);
-    svg("path", { d: path({ type: "Sphere" }), class: "map-sphere" }, root);
 
     for (const feature of features) {
       const country = byNumeric.get(feature.id);
@@ -1395,7 +1397,7 @@
       const shape = svg("path", {
         d: path(feature),
         class: "map-country",
-        style: `fill: ${country ? heatFill(share) : "var(--paper)"}`,
+        style: `fill: ${heatFill(share)}`,
       }, root);
       const name = country ? country.country : feature.properties.name;
       const visits = country ? country.sessions : 0;

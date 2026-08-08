@@ -813,16 +813,7 @@ $table-cards: 36rem;
     }
   }
 
-  // World map: the globe's outline and country borders in the rule colours.
-  // The outline takes no pointer: a phone widens a tap to the finger's area
-  // and hands it to the nearest target, and a tap on a country at the globe's
-  // rim would otherwise land on the outline and open nothing.
-  .map-sphere {
-    fill: none;
-    stroke: var(--rule);
-    pointer-events: none;
-  }
-
+  // World map: country borders in the paper colour, darkening on hover.
   .map-country {
     stroke: var(--paper);
     stroke-width: 0.5;
