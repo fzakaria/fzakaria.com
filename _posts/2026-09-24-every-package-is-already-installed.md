@@ -155,7 +155,7 @@ ffmpeg@3.1.7  ffmpeg  0.4 MB  /nix/store/0adpc3…-ffmpeg-3.1.7-bin/bin/ffmpeg
 ffmpeg@3.2.4  ffmpeg  0.4 MB  /nix/store/nhfgdv…-ffmpeg-3.2.4-bin/bin/ffmpeg
 ```
 
-Lastly, there is a `/omnibin/README.md` whose entire job is to tell whatever is exploring the filesystem to stop exploring the filesystem and query the database instead. 🤖
+Lastly, there is a [/omnibin/README.md](https://github.com/fzakaria/omnibin/blob/b3acd8773a92b9acac9adc80997fac56ef9bac6b/src/mount-readme.md) whose entire job is to tell whatever is exploring the filesystem to stop exploring the filesystem and query the database instead. 🤖
 
 ## What's the catch?
 
