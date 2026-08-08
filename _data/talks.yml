@@ -24,6 +24,8 @@ sections:
           walk through the technical obstacles, and sketch what Nix could look
           like in environments without root or unprivileged namespaces.
         links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=jeLJ5ObNKDg
           - label: Event
             url: https://cfp.nix.vegas/2026/talk/SRRBTB/
           - label: Slides
@@ -43,6 +45,8 @@ sections:
           conventional Linux distributions, weakens Nix. I argue for diverging
           harder and aiming at bigger problems instead.
         links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=q2-fspvj18U
           - label: Event
             url: https://cfp.nix.vegas/2026/talk/88PNDU/
           - label: Blog post
@@ -58,6 +62,8 @@ sections:
           [TacoSprint 2026]({% post_url 2026-06-29-a-tacosprint-2026-retrospective %})
           project to make every Guix package importable into the Nix ecosystem.
         links:
+          - label: Video
+            url: https://www.youtube.com/watch?v=oTsXNxMapj8
           - label: Event
             url: https://cfp.nix.vegas/2026/talk/BD9ZKX/
           - label: Slides
