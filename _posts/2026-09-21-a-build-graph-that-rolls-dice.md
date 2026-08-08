@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'A build graph that rolls dice'
-date: 2026-09-21 12:00 -0700
+date: 2026-09-20 18:00 -0700
 ---
 
 We are right around the corner from [NixCon 2026](https://2026.nixcon.org/). Another year where I sadly won't be present. 
