@@ -76,34 +76,35 @@ The listing is a map from derivation name to store path. The multiverse index is
 ```graphviz
 digraph join {
   rankdir=TB
-  fontname="sans-serif"
-  node [shape=box style=rounded fontname="sans-serif" fontsize=11 margin="0.16,0.10"]
-  edge [fontname="sans-serif" fontsize=10 arrowsize=0.7]
-  nodesep=0.5 ranksep=0.5 pad=0.2
+  // JetBrains Mono, and nothing else, because it is the one font the page
+  // itself serves: an HTML-label table is drawn to the width Graphviz
+  // measures here, and any face the browser substitutes instead would push
+  // the text past the cell borders. flake.nix puts the same file fontconfig
+  // finds here in front of the reader as a @font-face.
+  fontname="JetBrains Mono"
+  node [shape=plaintext fontname="JetBrains Mono" fontsize=11]
+  edge [fontname="JetBrains Mono" fontsize=10 arrowsize=0.7]
+  nodesep=0.6 ranksep=0.5 pad=0.2
 
-  index [shape=plaintext label=<
-    <table border="0" cellborder="1" cellspacing="0" cellpadding="5">
-      <tr><td colspan="3"><b>multiverse index</b></td></tr>
+  index [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6">
+      <tr><td colspan="3">multiverse index</td></tr>
       <tr><td>attribute</td><td>version</td><td>revision</td></tr>
-      <tr><td><font face="monospace">python3</font></td>
-          <td><font face="monospace">3.8.9</font></td>
-          <td><font face="monospace"><b>967d40bec14b</b></font></td></tr>
-      <tr><td><font face="monospace">python3</font></td>
-          <td><font face="monospace">3.9.6</font></td>
-          <td><font face="monospace">2846d0dc2eb1</font></td></tr>
+      <tr><td>python3</td><td>3.8.9</td>
+          <td><font color="#b1201d">967d40bec14b</font></td></tr>
+      <tr><td>python3</td><td>3.9.6</td><td>2846d0dc2eb1</td></tr>
     </table>>]
 
-  listing [shape=plaintext label=<
-    <table border="0" cellborder="1" cellspacing="0" cellpadding="5">
-      <tr><td colspan="2"><b>store-paths.xz</b> @ <font face="monospace"><b>967d40bec14b</b></font></td></tr>
+  listing [label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="6">
+      <tr><td colspan="2">store-paths.xz @ <font color="#b1201d">967d40bec14b</font></td></tr>
       <tr><td>name</td><td>store path</td></tr>
-      <tr><td><font face="monospace">bash-5.1-p8</font></td>
-          <td><font face="monospace">/nix/store/1ck5…-bash-5.1-p8</font></td></tr>
-      <tr><td><font face="monospace"><b>python3-3.8.9</b></font></td>
-          <td><font face="monospace">/nix/store/6cfa…-python3-3.8.9</font></td></tr>
+      <tr><td>bash-5.1-p8</td><td>/nix/store/1ck5…-bash-5.1-p8</td></tr>
+      <tr><td>python3-3.8.9</td><td>/nix/store/6cfa…-python3-3.8.9</td></tr>
     </table>>]
 
-  out [label="fast.versions.python3.\"3.8.9\".out\n/nix/store/6cfa…-python3-3.8.9"
+  out [shape=box style=rounded margin="0.25,0.14"
+       label=<fast.versions.python3."3.8.9".out<br/>/nix/store/6cfa…-python3-3.8.9>
        color="#b1201d" fontcolor="#b1201d"]
 
   { rank=same; index; listing }
