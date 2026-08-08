@@ -309,6 +309,6 @@ the link graph.
 
 What are the bounds of this primitive? I don't know.
 
-The size of the graph now is only limited by whether Nix stops emitting successors. There is no depth limit for the store layer, no `max-call-depth` equivalent. My longest honest chain was in the die-roll was 46 deep, and I had rigged examples that went to 500.
+The size of the graph now is only limited by whether Nix stops emitting successors. There is no depth limit for the store layer, no `max-call-depth` equivalent. My longest honest chain in the die-roll was 46 deep, but I had rigged examples that went to 500. How far can it go?
 
 I am so brainwashed to thinking about making a plan before I start for my build systems, that the idea of making it up as I go is a little scary. 😨
