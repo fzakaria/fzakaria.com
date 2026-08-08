@@ -2,6 +2,7 @@
 layout: post
 title: 'Every package is already installed'
 date: 2026-09-24 19:14 -0700
+excerpt_separator: <!--more-->
 ---
 
 > **tl;dr;** [omnibin](https://github.com/fzakaria/omnibin) is a FUSE filesystem that puts **every binary nixpkgs ever shipped** on your `$PATH`. Nothing is installed. Nothing needs building. 0 bytes on disk until something actually reads a file. 😈
@@ -15,6 +16,8 @@ It's 2026, why am I still installing packages individually?[^dhh]
 {: style="--image-width: 20rem"}
 
 Why must I go through the ritual of adding a package to my `configuration.nix`, running `nix-shell` or succumb to the hellscape of `nix-env -iA`.
+
+<!--more-->
 
 Nix gives us the power of having packages installed side-by-side without conflict. Why do I have to pick which ones I want to install? 
 
