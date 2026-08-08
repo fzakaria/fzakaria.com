@@ -80,10 +80,9 @@ Unfortunately, this has a lot of footguns, such as causing
 [`nix-instantiate` to take ten seconds]({% post_url 2025-03-10-an-early-look-at-nix-dynamic-derivations %}),
 and why nixpkgs _bans the technique outright_.
 
-Whereas _import from derivation_ is a bind in the evaluator, dynamic derivations now adds bind in the scheduler. The difference is that the scheduler can run builders in parallel, and it can ship them to remote machines, and it can substitute their results from a cache. The evaluator cannot do any of that.
+Whereas _import from derivation_ is a bind in the evaluator, dynamic derivations now adds bind in the scheduler. The difference is that the scheduler can run builders in parallel, ship them to remote machines, and it can substitute their results from a cache. The evaluator cannot do any of that.
 
-Dynamic derivations do not add the bind. The bind was always there. What
-changes is which layer performs it:
+Dynamic derivations do not add the bind. The bind was always there. What changes is which layer performs it. 🤓
 
 ## Let's roll some dice
 
