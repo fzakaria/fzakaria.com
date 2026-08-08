@@ -2,6 +2,7 @@
 layout: post
 title: Orange Site Vanity
 date: 2026-09-14 15:04 -0700
+excerpt_separator: <!--more-->
 ---
 
 > "Curiosity is only vanity. We usually only want to know something so that we can talk about it"
@@ -9,6 +10,8 @@ date: 2026-09-14 15:04 -0700
 
 I enjoy writing. Most of the time I write for myself, or that is what I tell myself. The act of writing is me trying to deeply understand something and then recording my thought process.
 It has paid dividends already as I have gone back numerous times to reference myself.
+
+<!--more-->
 
 When I am honest with myself though, I deeply enjoy knowing when others read my work as well. Knowing that something I found interesting and insightful landed for someone else too is incredibly satisfying. If I could have helped someone understand something better while having done so for myself, pure joy.
 
@@ -28,4 +31,6 @@ Turns out building the vanity site was itself rewarding. I got a better understa
 
 The data is fetched offline and periodically updated via a [GitHub Actions workflow](https://github.com/fzakaria/fzakaria.com/blob/942ebae88aa63ee3b8e5f76eabd5141b847080f7/.github/workflows/readership.yml) and included in the site, of course, as a Nix derivation.
 
-Pascal was probably right. I tell myself I write to understand things, and that part is true, but I have now built a daily pipeline whose only job is to tell me who else was listening. Curiosity is only vanity. Mine now has a dashboard.
+Pascal was probably right. I tell myself I write to understand things, and that part is true, but I have now built a daily pipeline whose only job is to tell me who else was listening. Curiosity is only vanity. My curiosity now has a dashboard.
+
+A goal of mine is to have [Fareed Zakaria](https://fareedzakaria.com/) mistaken for me instead of the other way around. 😅
