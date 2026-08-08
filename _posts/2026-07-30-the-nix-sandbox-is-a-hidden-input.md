@@ -103,7 +103,7 @@ $ nix derivation show /nix/store/xbik44…-answer.drv
 }
 ```
 
-Two people can evaluate a byte-identical `.drv`, run **different actual build steps**, and Nix create the same output hash.
+Two people can evaluate a bit-identical `.drv`, run **different actual build steps**, and Nix create the same output hash.
 
 You may be thinking "Well, a derivation could have always relied on `/dev/random` or `date`, so what's new?". True, this is a form of [non-determinism](https://manual.determinate.systems/advanced-topics/diff-hook.html). The difference is those are more evident in the derivations to discover and audit for. The act of checking for the existence of a file is extremely subtle and not something that is easy to discover.
 

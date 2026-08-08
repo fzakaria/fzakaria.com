@@ -453,7 +453,7 @@ sql = "SELECT attr, COUNT(*) AS versions FROM versions
 **That is a real full SQLite** with all the bells and whistles: query planner, aggregates and subqueries, b-tree descent through an index, executing inside the Nix evaluator.
 All through WebAssembly. 🤯
 
-Every one of those answers is byte-identical to what the `sqlite3` CLI gives for the same query.
+Every one of those answers is bit-identical to what the `sqlite3` CLI gives for the same query.
 
 
 ## Benchmark

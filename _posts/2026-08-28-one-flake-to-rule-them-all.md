@@ -215,7 +215,7 @@ formats per evaluation. This turned out to be quadratic time complexity in the n
 
 The fix was relatively simple: remember the highest suffix used per name and resume from
 there. I submitted [NixOS/nix#16387](https://github.com/NixOS/nix/pull/16387), and
-the lock files it writes are byte-identical to before.
+the lock files it writes are bit-identical to before.
 
 ```plotnine
 import pandas as pd

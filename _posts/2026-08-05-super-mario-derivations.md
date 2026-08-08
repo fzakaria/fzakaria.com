@@ -221,7 +221,7 @@ $ nix build --impure --expr \
         ./runs/world1-1.txt'
 ```
 
-This produces the byte-identical derivation to the equivalent attribute path, so a run kept in a file still shares the same store paths.
+This produces a derivation bit-identical to the one built from the attribute path, so a run kept in a file still shares the same store paths.
 
 
 All of this was to simply _evaluate_ the Nix expression. Now we have to build it. Although Nix is great at building derivations in parallel, the recursion here is tail-recursive and therefore serial.
