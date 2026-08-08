@@ -7,6 +7,8 @@ date: 2026-08-24 17:00 -0700
 I was pleasantly surprised and happy to see that my article '[Your executable is a SQLite database]({% post_url 2026-08-23-your-executable-is-a-sqlite-database %})' resonated with people. It is a format I have been thinking about for a while, and the idea seems to have
 struck a chord with others.
 
+![meme of Danny from Ted Lasso saying sqlite is life](/assets/images/sqlite_is_life.png)
+
 A quick recap: **SELF**, a format where the program is a SQLite database. We can use [binfmt_misc](https://docs.kernel.org/admin-guide/binfmt-misc.html) to trigger a custom
 interpreter that maps the rows in the `segments` table and jumps to the entry point,
 and a whole class of binary tooling collapses into SQL.
