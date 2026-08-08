@@ -24,6 +24,14 @@ require "fileutils"
 # --layout-breakpoint for exactly this purpose. Widen the prose column and the
 # images follow on the next build.
 #
+# An image can also opt out of filling the column -- style="--image-width:
+# 20rem" in the markdown, the escape hatch style.scss documents -- and then the
+# column is the wrong number to size it against. A capped image gets its own
+# ladder from its own displayed width, so a meme shown at 390px is served a
+# 390px file and not the 702px one the column would have asked for. Where one
+# image is used at several caps, the ladder is built for the widest of them and
+# each tag still states its own width in `sizes`.
+#
 # ImageMagick is optional. Without it, steps 1 and 2 still happen and the build
 # logs which images are larger than they can ever display.
 module Images
@@ -31,6 +39,7 @@ module Images
   # degrades to the previous behaviour instead of producing nonsense.
   FALLBACK_COLUMN_PX = 700
   FALLBACK_BREAKPOINT_PX = 1081
+  FALLBACK_ROOT_PX = 19.5
 
   # 1x and 2x. A 3x tier is not worth the bytes at this column width.
   DENSITIES = [1, 2].freeze
@@ -75,6 +84,10 @@ module Images
   IMG_TAG = %r{<img\s+([^>]*?)\s*/?>}i
   ATTRIBUTE = /([a-zA-Z][a-zA-Z0-9-]*)\s*=\s*"([^"]*)"/
 
+  # The per-image cap, as style.scss reads it. rem is the unit worth writing
+  # in a post; px is accepted because refusing it would be a surprise.
+  IMAGE_WIDTH = /--image-width:\s*([\d.]+)(rem|px)/i
+
   class << self
     def process(site)
       @site = site
@@ -105,21 +118,53 @@ module Images
       {
         column: (Float(measure) * Float(root_max)).round,
         breakpoint: (Float(breakpoint) * MEDIA_QUERY_REM).round,
+        root: Float(root_max),
       }
     rescue StandardError => e
       @warnings << "could not read layout from the stylesheet (#{e.message}); using defaults"
-      { column: FALLBACK_COLUMN_PX, breakpoint: FALLBACK_BREAKPOINT_PX }
+      { column: FALLBACK_COLUMN_PX, breakpoint: FALLBACK_BREAKPOINT_PX,
+        root: FALLBACK_ROOT_PX }
     end
 
-    # The srcset ladder: the rendered column at each pixel density.
-    def widths
-      @widths ||= DENSITIES.map { |density| @layout[:column] * density }
+    # The displayed width a tag asks for, in px, or nil for "fill the column".
+    #
+    # rem resolves against --root-max rather than the actual root font size,
+    # which clamps *below* it on a narrow screen. That is the same convention
+    # the column above is computed with, and it is the conservative one: the
+    # ladder is built for the widest the image can ever be drawn.
+    def cap_of(attrs)
+      value, unit = attrs["style"].to_s.match(IMAGE_WIDTH)&.captures
+      return nil if value.nil?
+
+      px = unit.casecmp("rem").zero? ? Float(value) * @layout[:root] : Float(value)
+      px.round.clamp(1, @layout[:column])
+    rescue StandardError
+      nil
     end
 
-    # How wide the image actually renders: the column above the layout
-    # breakpoint, the full viewport below it.
-    def sizes
-      @sizes ||= "(min-width: #{@layout[:breakpoint]}px) #{@layout[:column]}px, 100vw"
+    # The srcset ladder: the width this image displays at, at each pixel
+    # density. Uncapped that is the column; capped it is the cap, and the whole
+    # ladder shrinks with it.
+    def widths_for(plan)
+      DENSITIES.map { |density| display_width(plan) * density }
+    end
+
+    def display_width(plan)
+      plan[:cap] || @layout[:column]
+    end
+
+    # How wide the image actually renders.
+    #
+    # Uncapped that is the column above the layout breakpoint and the full
+    # viewport below it. Capped it is min(100vw, cap) at *every* width, which
+    # needs no media query: above the breakpoint the viewport exceeds the
+    # column, which exceeds the cap, so the min is the cap; below it the
+    # element is whichever of the two is smaller. One expression, correct
+    # everywhere.
+    def sizes_for(cap)
+      return "(min-width: #{@layout[:breakpoint]}px) #{@layout[:column]}px, 100vw" if cap.nil?
+
+      "min(100vw, #{cap}px)"
     end
 
     def documents(site)
@@ -130,10 +175,30 @@ module Images
 
     def scan(html)
       html.scan(IMG_TAG) do |(raw_attrs)|
-        src = attributes(raw_attrs)["src"]
+        attrs = attributes(raw_attrs)
+        src = attrs["src"]
         next if src.nil?
 
-        plan_for(src)
+        plan = plan_for(src)
+        next if plan.nil?
+
+        note_cap(plan, cap_of(attrs))
+      end
+    end
+
+    # One image can appear in several places under different caps, so the plan
+    # records the widest of them and every use is served from that ladder. A
+    # single uncapped use pins it to the column and wins over any cap, since
+    # that use needs the full-width rungs and a narrower one can always be
+    # handed a file bigger than it needs.
+    def note_cap(plan, cap)
+      return if plan[:uncapped]
+
+      if cap.nil?
+        plan[:uncapped] = true
+        plan[:cap] = nil
+      else
+        plan[:cap] = [plan[:cap] || 0, cap].max
       end
     end
 
@@ -158,6 +223,8 @@ module Images
         rel: src.sub(%r{\A/assets/images/}, ""),
         derivatives: [],
         webp: [],
+        cap: nil,
+        uncapped: false,
       }
     end
 
@@ -181,7 +248,8 @@ module Images
 
       if tool.nil?
         wanted.select { |plan| oversized?(plan) }.each do |plan|
-          @warnings << "#{plan[:rel]} is #{plan[:width]}px wide but displays at most #{widths.first}px"
+          @warnings << "#{plan[:rel]} is #{plan[:width]}px wide but displays at most " \
+                       "#{widths_for(plan).first}px"
         end
         return
       end
@@ -195,7 +263,7 @@ module Images
     # the container rather than the dimensions: a 620px meme can still be a
     # 424KB PNG.
     def oversized?(plan)
-      plan[:width] > widths.first
+      plan[:width] > widths_for(plan).first
     end
 
     def generate(plan)
@@ -209,7 +277,7 @@ module Images
       # empty baseline, which generate_webp reads as "measure against the
       # original itself".
       if oversized?(plan)
-        widths.each do |width|
+        widths_for(plan).each do |width|
           # No point emitting a variant that is larger than the original.
           next if width > plan[:width]
 
@@ -279,8 +347,9 @@ module Images
     # short of the top rung — otherwise a <picture> would cap a retina display
     # below the resolution the plain <img> fallback could have given it.
     def webp_widths(plan)
-      list = widths.select { |width| width <= plan[:width] }
-      list << plan[:width] if plan[:width] < widths.last
+      ladder = widths_for(plan)
+      list = ladder.select { |width| width <= plan[:width] }
+      list << plan[:width] if plan[:width] < ladder.last
       list.uniq.sort
     end
 
@@ -459,14 +528,17 @@ module Images
         attrs["width"] ||= plan[:width].to_s
         attrs["height"] ||= plan[:height].to_s
         already_authored = attrs.key?("srcset")
-        apply_srcset(attrs, plan)
+        # The ladder is the plan's, shared by every use; `sizes` is this tag's,
+        # because this is the one that knows how wide it renders.
+        cap = cap_of(attrs)
+        apply_srcset(attrs, plan, cap)
 
         tag = "<img #{serialize(attrs)}>"
-        already_authored ? tag : wrap_in_picture(tag, plan)
+        already_authored ? tag : wrap_in_picture(tag, plan, cap)
       end
     end
 
-    def apply_srcset(attrs, plan)
+    def apply_srcset(attrs, plan, cap)
       return if plan[:derivatives].empty?
       return if attrs.key?("srcset")
 
@@ -477,10 +549,10 @@ module Images
       # If the original is smaller than the 2x variant we would have liked,
       # keep it in the running: dropping it would leave a retina display with
       # less detail than it had before this plugin existed.
-      candidates << { url: attrs["src"], width: plan[:width] } if plan[:width] < widths.last
+      candidates << { url: attrs["src"], width: plan[:width] } if plan[:width] < widths_for(plan).last
 
       attrs["srcset"] = candidates.map { |c| "#{c[:url]} #{c[:width]}w" }.join(", ")
-      attrs["sizes"] ||= sizes
+      attrs["sizes"] ||= sizes_for(cap)
       # Point src at the largest candidate, so an oversized original is only
       # ever fetched when a post links to it directly.
       attrs["src"] = candidates.max_by { |c| c[:width] }[:url]
@@ -488,11 +560,12 @@ module Images
 
     # The <img> stays exactly as it was and becomes the fallback; browsers that
     # understand WebP take the <source> instead.
-    def wrap_in_picture(tag, plan)
+    def wrap_in_picture(tag, plan, cap)
       return tag if plan[:webp].empty?
 
       srcset = plan[:webp].map { |w| "#{derivative_url(w[:name])} #{w[:width]}w" }.join(", ")
-      %(<picture><source type="image/webp" srcset="#{srcset}" sizes="#{sizes}">#{tag}</picture>)
+      %(<picture><source type="image/webp" srcset="#{srcset}" ) +
+        %(sizes="#{sizes_for(cap)}">#{tag}</picture>)
     end
 
     def derivative_url(name)

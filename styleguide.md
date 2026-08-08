@@ -218,6 +218,28 @@ paragraphs, so the spacing inside the box can be checked too.
 
 ![A photo of my dog Moose](/assets/images/avatar-164.png)
 
+An image fills the column. This one is 2336px wide and is served down-scaled to
+whatever the column is worth at the reader's pixel density.
+
+![A Bazel action graph, wide and short](/assets/images/action_graph_bazel.png)
+
+### Capping an image's width
+
+A tall image at full width is a screenful the reader has to scroll past. One
+image can cap itself with `--image-width`, the same shape of escape hatch a
+Graphviz figure gets from `--graphviz-height`. It stays centred at any width.
+
+```markdown
+![alt text](/assets/images/thing.png){: style="--image-width: 20rem"}
+```
+
+![The same Bazel action graph, capped at 20rem](/assets/images/action_graph_bazel.png){: style="--image-width: 20rem"}
+
+`rem` resolves against `--root-max`, so `20rem` is 390px here. `_plugins/images.rb`
+reads the cap off the tag and sizes the whole `srcset` ladder from it, so a
+capped image is served a file that matches how small it is drawn rather than
+one built for the full column.
+
 ## Horizontal rule
 
 ---

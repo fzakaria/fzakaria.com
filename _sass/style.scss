@@ -874,9 +874,16 @@ svg {
 // _plugins/images.rb fills them in for every <img>, but it does not touch
 // media it has no encoder for. Without both, the element has no aspect ratio
 // until the file's metadata arrives and the page reflows around it.
+// A figure fills the column unless it says otherwise. Some do want otherwise:
+// a tall image at full width is a wall of pixels the reader has to scroll
+// past, and a meme is not worth a screenful. One image can cap itself --
+// style="--image-width: 20rem" on the image in the markdown -- which is the
+// same escape hatch a Graphviz figure gets through --graphviz-height. It stays
+// centred at any width because of the auto inline margin below.
 .prose img,
 .prose video {
   display: block;
+  max-width: var(--image-width, 100%);
   margin-inline: auto;
   border: 1px solid var(--rule);
   border-radius: 3px;
