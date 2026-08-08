@@ -2,12 +2,15 @@
 layout: post
 title: 'Visualizing Nix closures'
 date: 2026-09-15 20:00 -0700
+excerpt_separator: <!--more-->
 ---
 
 > **tl;dr** [seenix.dev](https://seenix.dev/) lays every byte of a Nix closure out on a map, one pixel per byte, and lets you zoom from a whole NixOS system down to the hex of `libc.so.6`. Try [hello](https://seenix.dev/?path=/nix/store/xl1h9i29pgq2q5cszjhm5wpfxfbbqwyi-hello-2.12.3), [firefox](https://seenix.dev/?path=/nix/store/5l9n8bw1wifj5kdr8gzlrkk1b510dfiv-firefox-155.0.1) or [a GNOME desktop](https://seenix.dev/?path=/nix/store/5ryb0d1a261bgvxqqd436yx8i7j44qlc-nixos-system-nixos-26.11pre1074086.efe6f071ede9&mode=package). Nothing runs on a server.
 {: .alert .alert-note }
 
 With the advent of LLMs I keep tugging at any _crazy_ question I ask myself. I know there is the _anti-AI_ crowd and they will happily proclaim anything pursued in this vein as "slop" but I am feeling fortunate to be able to explore these questions.
+
+<!--more-->
 
 My recent _itch_ was to ask "what does a Nix closure look like?" and to answer it in a way that is _interactive_ and _visual_. I wanted to see the bytes, not just the store paths. I had come across [binvis.io](https://binvis.io) on Hacker News and I found it a compelling way to look at data. I personally never found a need for it, but I found it fascinating none-the-less.[^cortesi] 
 
