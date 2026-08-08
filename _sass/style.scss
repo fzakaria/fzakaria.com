@@ -880,10 +880,19 @@ svg {
 // style="--image-width: 20rem" on the image in the markdown -- which is the
 // same escape hatch a Graphviz figure gets through --graphviz-height. It stays
 // centred at any width because of the auto inline margin below.
+//
+// The cap is a *cap*, not a width: min() keeps it from ever exceeding the
+// column. Without that, a cap wider than the column on a narrow screen -- a
+// 26rem meme on a 360px phone -- replaces the 100% instead of tightening it,
+// the image is laid out at 26rem, and because an over-constrained box resolves
+// its auto margins to zero rather than going negative, it pushes the whole
+// document wider than the viewport and every page gets a horizontal scrollbar.
+// This is also the width _plugins/images.rb already assumes when it writes
+// `sizes="min(100vw, <cap>px)"` onto the tag.
 .prose img,
 .prose video {
   display: block;
-  max-width: var(--image-width, 100%);
+  max-width: min(var(--image-width, 100%), 100%);
   margin-inline: auto;
   border: 1px solid var(--rule);
   border-radius: 3px;
