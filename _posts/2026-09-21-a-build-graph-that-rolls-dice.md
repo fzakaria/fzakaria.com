@@ -256,10 +256,7 @@ Every dynamic derivations demo so far, mine included, has been a build system:
 [MakeNix](https://github.com/fzakaria/MakeNix) for C,
 [NpmNix](https://github.com/fzakaria/NpmNix) for node,
 [cargo-dyndrv](https://github.com/obsidiansystems/cargo-dyndrv) for Rust,
-[nix-ninja](https://github.com/pdtpartners/nix-ninja) for ninja. That is a
-reasonable place to start and it undersells the primitive. What you have been
-handed is **build until a predicate over build output holds**, with the store as
-the memo table.
+[nix-ninja](https://github.com/pdtpartners/nix-ninja) for ninja. That is a reasonable place to start but it does not capture the full power of the primitive. What other ideas can we explore?
 
 **Mario.** In [Super Mario Derivations]({% post_url 2026-08-05-super-mario-derivations %})
 the attribute path is the button sequence and I have to supply the press count.
