@@ -10,11 +10,10 @@ I needed somewhere to host a store-path that did not exist on
 
 [^cachix]: I was also waiting for [@domenkozar](https://github.com/domenkozar) to enable CORS on [cache.nixos.org](https://cache.nixos.org) so I could use it.
 
-
-The only requirement seemed to be a lenient [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS) policy, `access-control-allow-origin: *`, because the fetch happens in JavaScript. 
+The only requirement seemed to be a lenient [Cross-Origin Resource Sharing (CORS)](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/CORS) policy, `access-control-allow-origin: *`, because the fetch happens in JavaScript.
 
 Turns out that GitHub Pages sets that header on every file it
-serves. 😈 I committed the output of `nix copy --to file://` to my [Git repository](https://github.com/fzakaria/trynix/tree/main/site/examples/cache) and voilà, I have a _free_ Nix substituter. 
+serves. 😈 I committed the output of `nix copy --to file://` to my [Git repository](https://github.com/fzakaria/trynix/tree/main/site/examples/cache) and voilà, I have a _free_ Nix substituter.
 
 I seem to be late to the party on this discovery. [tomberek's github-store](https://github.com/tomberek/github-store) is a cache assembled out of GitHub release assets.[^nar]
 
@@ -42,15 +41,13 @@ $ curl -sL $B/0hkyywarmj4frwvs6p4lz4yl6z5q5halphswlqksh7lbkn4r75si.nar.xz | wc -
 6514112
 ```
 
-GitHub Pages or Releases are a static file server. It has no idea what Nix is. If a humble file server can be a Nix binary cache, what else could we use?
+GitHub Pages and Releases are static file servers. They have no idea what Nix is. If a humble file server can be a Nix binary cache, what else could we use?
 
 ## The interface
 
-Turns out that in order to be a Nix binary cache, you must implement only three simple functions. The Nix client does not care what medium you use to implement them although HTTP is the most common and included by default in [CppNix](https://github.com/NixOS/nix)[^cppnix].
+Turns out that in order to be a Nix binary cache, you must implement only three simple functions. The Nix client does not care what medium you use to implement them, although HTTP is the most common and included by default in [CppNix](https://github.com/NixOS/nix).[^cppnix]
 
 [^cppnix]: You can write a Nix plugin to implement a new protocol if you wanted.
-
-
 
 ```
 GET  nix-cache-info                →  StoreDir: /nix/store
@@ -62,7 +59,7 @@ That's it.
 
 Anything that can answer those three requests can be used as a remote <u>Nix store</u>.[^store]
 
-[^store]: We will see that that they must not all be all on the same medium, protocol or domain even!
+[^store]: We will see that they need not all be on the same medium, protocol or domain even!
 
 ## What about the signatures!?
 
@@ -76,7 +73,6 @@ Once the archive is fetched, Nix decompresses it and checks that the `NarHash` m
 This is the _special sauce_ of how packages that were signed by [cache.nixos.org](https://cache.nixos.org) can be fetched from any other binary cache as an intermediary, and the signature still validates.
 
 The `URL` field does not even have to be on the same host as the narinfo. It can be anywhere on the internet, and it can be a different protocol than HTTP. Nix does not care. The only thing that matters is that the archive fetched from `URL` has the same `NarHash` as the narinfo.
-
 
 ## Alternative Stores
 
@@ -118,7 +114,7 @@ packages.${system}.default = pkgs.hello.overrideAttrs (old: {
 ```
 
 It is dynamically linked against glibc, so the closure is five paths and
-roughly ~36 MiB:
+roughly 36 MiB:
 
 ```console
 $ nix path-info -rSh result
@@ -174,21 +170,21 @@ Hello from the npm registry!
 ```
 
 > **Note**
-> We have to use `bwrap` to run the binary because `./npmstore` is a _chroot store_ and all the
+> We have to use `bwrap` to run the binary because `./npmstore` is a _chroot store_ and all the paths
 > are still under `/nix/store`. If we had [relocatable binaries]({% post_url 2026-06-21-nix-needs-relocatable-binaries %}) we could run it directly.
 {: .alert .alert-note }
 
 That is Nix fetching the complete closure from npm and running it. 🤯
 We can distribute Nix packages to non-Nix users, let the infection spread!
 
-As an added bonus, similar to Nixpkg and NixOS we can get nice "channel" semantics by using npm's dist-tags. The `latest` tag is mutable and points to the latest version, while each version is immutable and points to a specific store path.
+As an added bonus, similar to Nixpkgs and NixOS we can get nice "channel" semantics by using npm's dist-tags. The `latest` tag is mutable and points to the latest version, while each version is immutable and points to a specific store path.
 
 ```console
 $ npm dist-tag add @fzakaria/hello-nix-cache@1.0.5 staging
 $ npm dist-tag add @fzakaria/hello-nix-cache@1.0.4 production
 ```
 
-The major downside of this approach is that npm ahs no incremental publishing.
+The major downside of this approach is that npm has no incremental publishing.
 Every version is a whole tarball, so fifty closures sharing glibc upload glibc fifty times.
 
 We _could_ fix that by publishing each store path as a separate package, and then having a small index package that points at them. Each store path would then be uploaded exactly once.
