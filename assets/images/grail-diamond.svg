@@ -1,0 +1,40 @@
+<svg viewBox="0 0 480 330" width="480" height="330" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="the diamond dependency problem: your app links libfoo-2 and libbar-1, libbar-1 links libfoo-1, so one process carries both libfoos">
+<style>
+  text { font-family: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace; font-size: 13px; fill: #1a1815; }
+  .node { fill: #fcfcfb; stroke: #b5b1a9; }
+  .bad { fill: #fdeee6; stroke: #cf5d28; }
+  .edge { stroke: #6f685b; fill: none; }
+  .arrow { fill: #6f685b; stroke: none; }
+  .clash { stroke: #cf5d28; stroke-dasharray: 5 4; fill: none; }
+  .clashtext { fill: #cf5d28; font-size: 12px; }
+  .caption { fill: #565046; font-size: 12px; }
+</style>
+
+<!-- nodes -->
+<rect class="node" x="186" y="14" width="108" height="34" rx="8"/>
+<text x="240" y="36" text-anchor="middle">your app</text>
+
+<rect class="bad" x="62" y="112" width="118" height="34" rx="8"/>
+<text x="121" y="134" text-anchor="middle">libfoo-2</text>
+
+<rect class="node" x="296" y="112" width="118" height="34" rx="8"/>
+<text x="355" y="134" text-anchor="middle">libbar-1</text>
+
+<rect class="bad" x="296" y="216" width="118" height="34" rx="8"/>
+<text x="355" y="238" text-anchor="middle">libfoo-1</text>
+
+<!-- link edges -->
+<path class="edge" d="M 214 48 C 180 70, 150 88, 130 106"/>
+<path class="arrow" d="M 126 100 L 128 111 L 136 103 Z"/>
+<path class="edge" d="M 266 48 C 300 70, 330 88, 350 106"/>
+<path class="arrow" d="M 344 103 L 352 111 L 354 100 Z"/>
+<path class="edge" d="M 355 146 L 355 209"/>
+<path class="arrow" d="M 351 202 L 355 212 L 359 202 Z"/>
+
+<!-- the collision -->
+<path class="clash" d="M 140 150 C 180 210, 240 236, 289 236"/>
+<text class="clashtext" x="52" y="262">same symbols,</text>
+<text class="clashtext" x="52" y="278">different structs</text>
+
+<text class="caption" x="240" y="308" text-anchor="middle">one process image: only one symbol can win</text>
+</svg>
