@@ -111,43 +111,43 @@ to eat. A philosopher may pick up one fork at a time.[^world]
     </marker>
   </defs>
   <circle cx="190" cy="168" r="78" fill="currentColor" opacity="0.06"/>
-  <g class="dp-k1"><line x1="177.7" y1="79.5" x2="157.3" y2="111.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
-  <g class="dp-k2"><line x1="202.3" y1="79.5" x2="222.7" y2="111.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
-  <g class="dp-k3"><line x1="270.4" y1="129.0" x2="233.2" y2="119.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
-  <g class="dp-k4"><line x1="252.0" y1="232.4" x2="249.4" y2="194.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
-  <g class="dp-k5"><line x1="232.1" y1="246.8" x2="196.5" y2="232.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
-  <g class="dp-k6"><line x1="147.9" y1="246.8" x2="183.5" y2="232.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
-  <g class="dp-k7"><line x1="102.0" y1="152.3" x2="126.6" y2="181.8" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
-  <g class="dp-k8"><line x1="202.3" y1="79.5" x2="220.6" y2="108.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
-  <g class="dp-k9"><line x1="278.0" y1="152.3" x2="256.0" y2="178.7" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
-  <g class="dp-k10"><line x1="232.1" y1="246.8" x2="200.2" y2="234.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
-  <g class="dp-k11"><line x1="128.0" y1="232.4" x2="130.3" y2="198.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
-  <g class="dp-k12"><line x1="109.6" y1="129.0" x2="142.9" y2="120.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
-  <rect x="147.6" y="111.8" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="166.5" y="139.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f0</text>
+  <g class="dp-k1"><line x1="202.3" y1="79.5" x2="222.7" y2="111.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
+  <g class="dp-k2"><line x1="177.7" y1="79.5" x2="157.3" y2="111.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
+  <g class="dp-k3"><line x1="109.6" y1="129.0" x2="146.8" y2="119.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
+  <g class="dp-k4"><line x1="128.0" y1="232.4" x2="130.6" y2="194.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
+  <g class="dp-k5"><line x1="147.9" y1="246.8" x2="183.5" y2="232.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
+  <g class="dp-k6"><line x1="232.1" y1="246.8" x2="196.5" y2="232.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
+  <g class="dp-k7"><line x1="278.0" y1="152.3" x2="253.4" y2="181.8" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></g>
+  <g class="dp-k8"><line x1="177.7" y1="79.5" x2="159.4" y2="108.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
+  <g class="dp-k9"><line x1="102.0" y1="152.3" x2="124.0" y2="178.7" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
+  <g class="dp-k10"><line x1="147.9" y1="246.8" x2="179.8" y2="234.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
+  <g class="dp-k11"><line x1="252.0" y1="232.4" x2="249.7" y2="198.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
+  <g class="dp-k12"><line x1="270.4" y1="129.0" x2="237.1" y2="120.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#dp-wait)"/></g>
   <rect x="220.4" y="111.8" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="213.5" y="139.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f1</text>
-  <rect x="243.0" y="181.2" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="228.0" y="184.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f2</text>
+  <text x="213.5" y="139.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f0</text>
+  <rect x="147.6" y="111.8" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="166.5" y="139.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f1</text>
+  <rect x="125.0" y="181.2" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="152.0" y="184.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f2</text>
   <rect x="184.0" y="224.0" width="12" height="12" rx="2" fill="currentColor"/>
   <text x="190.0" y="212.0" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f3</text>
-  <rect x="125.0" y="181.2" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="152.0" y="184.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f4</text>
+  <rect x="243.0" y="181.2" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="228.0" y="184.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f4</text>
   <circle cx="190.0" cy="60.0" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
   <text x="190.0" y="65.0" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P0</text>
   <g class="dp-k13"><text x="190.0" y="27.0" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
-  <circle cx="292.7" cy="134.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="292.7" y="139.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P1</text>
-  <g class="dp-k14"><text x="328.9" y="127.9" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
-  <circle cx="253.5" cy="255.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="253.5" y="260.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P2</text>
-  <g class="dp-k15"><text x="275.8" y="291.1" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
-  <circle cx="126.5" cy="255.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="126.5" y="260.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P3</text>
-  <g class="dp-k16"><text x="104.2" y="291.1" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
   <circle cx="87.3" cy="134.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="87.3" y="139.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P4</text>
-  <g class="dp-k17"><text x="51.1" y="127.9" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
+  <text x="87.3" y="139.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P1</text>
+  <g class="dp-k14"><text x="51.1" y="127.9" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
+  <circle cx="126.5" cy="255.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="126.5" y="260.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P2</text>
+  <g class="dp-k15"><text x="104.2" y="291.1" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
+  <circle cx="253.5" cy="255.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="253.5" y="260.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P3</text>
+  <g class="dp-k16"><text x="275.8" y="291.1" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
+  <circle cx="292.7" cy="134.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="292.7" y="139.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P4</text>
+  <g class="dp-k17"><text x="328.9" y="127.9" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text></g>
   <g class="dp-k18"><text x="190" y="345" font-size="15" text-anchor="middle" fill="currentColor">five philosophers, five forks</text></g>
   <g class="dp-k19"><text x="190" y="345" font-size="15" text-anchor="middle" fill="currentColor">P0 picks up f0</text></g>
   <g class="dp-k20"><text x="190" y="345" font-size="15" text-anchor="middle" fill="currentColor">P0 picks up f1 and eats</text></g>
@@ -298,36 +298,36 @@ All five philosophers are on line 27, waiting for their second fork.
     </marker>
   </defs>
   <circle cx="190" cy="150" r="78" fill="currentColor" opacity="0.06"/>
-  <line x1="177.7" y1="61.5" x2="157.3" y2="93.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="270.4" y1="111.0" x2="233.2" y2="101.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="252.0" y1="214.4" x2="249.4" y2="176.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="147.9" y1="228.8" x2="183.5" y2="214.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="102.0" y1="134.3" x2="126.6" y2="163.8" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="202.3" y1="61.5" x2="220.6" y2="90.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
-  <line x1="278.0" y1="134.3" x2="256.0" y2="160.7" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
-  <line x1="232.1" y1="228.8" x2="200.2" y2="216.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
-  <line x1="128.0" y1="214.4" x2="130.3" y2="180.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
-  <line x1="109.6" y1="111.0" x2="142.9" y2="102.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
-  <rect x="147.6" y="93.8" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="166.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f0</text>
+  <line x1="202.3" y1="61.5" x2="222.7" y2="93.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="109.6" y1="111.0" x2="146.8" y2="101.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="128.0" y1="214.4" x2="130.6" y2="176.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="232.1" y1="228.8" x2="196.5" y2="214.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="278.0" y1="134.3" x2="253.4" y2="163.8" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="177.7" y1="61.5" x2="159.4" y2="90.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
+  <line x1="102.0" y1="134.3" x2="124.0" y2="160.7" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
+  <line x1="147.9" y1="228.8" x2="179.8" y2="216.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
+  <line x1="252.0" y1="214.4" x2="249.7" y2="180.1" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
+  <line x1="270.4" y1="111.0" x2="237.1" y2="102.5" stroke="#b1201d" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#left-first-wait)"/>
   <rect x="220.4" y="93.8" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="213.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f1</text>
-  <rect x="243.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="228.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f2</text>
+  <text x="213.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f0</text>
+  <rect x="147.6" y="93.8" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="166.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f1</text>
+  <rect x="125.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="152.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f2</text>
   <rect x="184.0" y="206.0" width="12" height="12" rx="2" fill="currentColor"/>
   <text x="190.0" y="194.0" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f3</text>
-  <rect x="125.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="152.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f4</text>
+  <rect x="243.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="228.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f4</text>
   <circle cx="190.0" cy="42.0" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
   <text x="190.0" y="47.0" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P0</text>
-  <circle cx="292.7" cy="116.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="292.7" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P1</text>
-  <circle cx="253.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="253.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P2</text>
-  <circle cx="126.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="126.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P3</text>
   <circle cx="87.3" cy="116.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="87.3" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P4</text>
+  <text x="87.3" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P1</text>
+  <circle cx="126.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="126.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P2</text>
+  <circle cx="253.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="253.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P3</text>
+  <circle cx="292.7" cy="116.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="292.7" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P4</text>
   <text x="190" y="312" fill="currentColor" font-size="16" font-weight="600" text-anchor="middle">left fork first</text>
   <text x="190" y="332" fill="#b1201d" font-size="14" text-anchor="middle">every wait is on a held fork: a ring</text>
 </svg>
@@ -368,7 +368,7 @@ Run the tests under `rewind check` on a CI machine with KVM, upload the failing 
 
 How do we fix the deadlock?
 
-We number the forks and always pick up the lower numbered one first. The last Philosophernow reaches for fork 0 before fork 4, so the waits can never cause a deadlock.
+We number the forks and always pick up the lower numbered one first. The last Philosopher now reaches for fork 0 before fork 4, so the waits can never cause a deadlock.
 
 ```diff
 -	/* The fork on the left first, then the fork on the right. */
@@ -389,36 +389,36 @@ We number the forks and always pick up the lower numbered one first. The last Ph
     </marker>
   </defs>
   <circle cx="190" cy="150" r="78" fill="currentColor" opacity="0.06"/>
-  <line x1="177.7" y1="61.5" x2="157.3" y2="93.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="270.4" y1="111.0" x2="233.2" y2="101.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="252.0" y1="214.4" x2="249.4" y2="176.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="147.9" y1="228.8" x2="183.5" y2="214.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="202.3" y1="61.5" x2="222.7" y2="93.9" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="109.6" y1="111.0" x2="146.8" y2="101.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
   <line x1="128.0" y1="214.4" x2="130.6" y2="176.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
-  <line x1="202.3" y1="61.5" x2="220.6" y2="90.5" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
-  <line x1="278.0" y1="134.3" x2="256.0" y2="160.7" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
-  <line x1="232.1" y1="228.8" x2="200.2" y2="216.1" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
-  <line x1="109.6" y1="111.0" x2="142.9" y2="102.5" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
-  <rect x="147.6" y="93.8" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="166.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f0</text>
+  <line x1="232.1" y1="228.8" x2="196.5" y2="214.6" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="252.0" y1="214.4" x2="249.4" y2="176.1" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+  <line x1="177.7" y1="61.5" x2="159.4" y2="90.5" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
+  <line x1="102.0" y1="134.3" x2="124.0" y2="160.7" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
+  <line x1="147.9" y1="228.8" x2="179.8" y2="216.1" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
+  <line x1="270.4" y1="111.0" x2="237.1" y2="102.5" stroke="currentColor" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#lower-first-wait)"/>
   <rect x="220.4" y="93.8" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="213.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f1</text>
-  <rect x="243.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="228.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f2</text>
+  <text x="213.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f0</text>
+  <rect x="147.6" y="93.8" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="166.5" y="121.6" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f1</text>
+  <rect x="125.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="152.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f2</text>
   <rect x="184.0" y="206.0" width="12" height="12" rx="2" fill="currentColor"/>
   <text x="190.0" y="194.0" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f3</text>
-  <rect x="125.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
-  <text x="152.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f4</text>
+  <rect x="243.0" y="163.2" width="12" height="12" rx="2" fill="currentColor"/>
+  <text x="228.0" y="166.4" font-size="13" text-anchor="middle" fill="currentColor" opacity="0.75">f4</text>
   <circle cx="190.0" cy="42.0" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
   <text x="190.0" y="47.0" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P0</text>
-  <circle cx="292.7" cy="116.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="292.7" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P1</text>
-  <circle cx="253.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="253.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P2</text>
-  <circle cx="126.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="126.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P3</text>
-  <text x="126.5" y="275.4" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text>
   <circle cx="87.3" cy="116.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
-  <text x="87.3" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P4</text>
+  <text x="87.3" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P1</text>
+  <circle cx="126.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="126.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P2</text>
+  <circle cx="253.5" cy="237.4" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="253.5" y="242.4" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P3</text>
+  <text x="253.5" y="275.4" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">eats</text>
+  <circle cx="292.7" cy="116.6" r="21" fill="var(--paper, transparent)" stroke="currentColor" stroke-width="1.5"/>
+  <text x="292.7" y="121.6" font-size="16" font-weight="600" text-anchor="middle" fill="currentColor">P4</text>
   <text x="190" y="312" fill="currentColor" font-size="16" font-weight="600" text-anchor="middle">lower numbered fork first</text>
   <text x="190" y="332" fill="currentColor" font-size="14" text-anchor="middle">P4 holds nothing, so f4 stays free</text>
 </svg>
