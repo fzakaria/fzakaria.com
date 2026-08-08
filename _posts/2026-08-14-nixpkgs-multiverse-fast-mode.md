@@ -73,6 +73,47 @@ Every `nixos-unstable` channel bump published a listing of every path Hydra buil
 
 The listing is a map from derivation name to store path. The multiverse index is a map from `(attribute, version)` to the revision that shipped it. By joining the two, every historical version gets a concrete address:
 
+```graphviz
+digraph join {
+  rankdir=TB
+  fontname="sans-serif"
+  node [shape=box style=rounded fontname="sans-serif" fontsize=11 margin="0.16,0.10"]
+  edge [fontname="sans-serif" fontsize=10 arrowsize=0.7]
+  nodesep=0.5 ranksep=0.5 pad=0.2
+
+  index [shape=plaintext label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+      <tr><td colspan="3"><b>multiverse index</b></td></tr>
+      <tr><td>attribute</td><td>version</td><td>revision</td></tr>
+      <tr><td><font face="monospace">python3</font></td>
+          <td><font face="monospace">3.8.9</font></td>
+          <td><font face="monospace"><b>967d40bec14b</b></font></td></tr>
+      <tr><td><font face="monospace">python3</font></td>
+          <td><font face="monospace">3.9.6</font></td>
+          <td><font face="monospace">2846d0dc2eb1</font></td></tr>
+    </table>>]
+
+  listing [shape=plaintext label=<
+    <table border="0" cellborder="1" cellspacing="0" cellpadding="5">
+      <tr><td colspan="2"><b>store-paths.xz</b> @ <font face="monospace"><b>967d40bec14b</b></font></td></tr>
+      <tr><td>name</td><td>store path</td></tr>
+      <tr><td><font face="monospace">bash-5.1-p8</font></td>
+          <td><font face="monospace">/nix/store/1ck5…-bash-5.1-p8</font></td></tr>
+      <tr><td><font face="monospace"><b>python3-3.8.9</b></font></td>
+          <td><font face="monospace">/nix/store/6cfa…-python3-3.8.9</font></td></tr>
+    </table>>]
+
+  out [label="fast.versions.python3.\"3.8.9\".out\n/nix/store/6cfa…-python3-3.8.9"
+       color="#b1201d" fontcolor="#b1201d"]
+
+  { rank=same; index; listing }
+
+  index -> listing [label=" revision "]
+  index -> out [label=" attribute + version " style=dashed]
+  listing -> out [label=" name → store path " color="#b1201d"]
+}
+```
+
 Knowing the path is not enough, especially in the Nix language. We need to convince Nix that a string that looks like a store path actually _is_ a store path. `builtins.storePath` exists but it is an impure function and requires `--impure` to work.
 
 How do we get around this?
