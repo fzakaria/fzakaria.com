@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Always, sometimes, never'
-date: 2026-10-14 12:00 -0700
+date: 2026-10-14 11:00 -0700
 excerpt_separator: <!--more-->
 ---
 
