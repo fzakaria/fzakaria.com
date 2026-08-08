@@ -1,0 +1,3262 @@
+rev,locked,flakes,channel
+1849e695b00a,2017-03-30,1,small release
+120b013e0c08,2018-04-04,1,darwin release
+a7e559a55045,2019-05-19,1,darwin release
+d5291756487d,2019-10-09,30,small release
+3e1be2206b4c,2020-04-01,1,never a channel
+5272327b81ed,2020-04-20,2,darwin release
+6a16787d263c,2020-05-12,1,never a channel
+f45ccd9d20b4,2020-05-20,1,nixos release
+6d68b920eb2d,2020-05-21,1,darwin release
+05a32d8e771d,2020-06-03,1,darwin release
+70717a337f7a,2020-06-08,1,small release
+1d8c44106873,2020-06-09,1,never a channel
+3c22d233e59f,2020-06-09,1,never a channel
+9480bae33709,2020-06-18,1,nixos-unstable
+2b417708c282,2020-06-18,1,darwin release
+7df729147312,2020-07-03,1,never a channel
+76adfc180c0e,2020-07-16,1,darwin release
+b8c367a7bd05,2020-07-22,1,nixpkgs-unstable
+111221b93ad4,2020-08-01,2,never a channel
+d418434d127b,2020-08-03,1,nixpkgs-unstable
+2d6cbbe4627f,2020-08-04,1,nixpkgs-unstable
+4364ff933ebe,2020-08-07,1,darwin release
+bd0e645f0241,2020-08-19,1,nixos-unstable
+b83b54d0a833,2020-08-22,1,darwin release
+14006b724f3d,2020-08-23,2,darwin release
+7a29b4331155,2020-08-29,1,never a channel
+58bb6bf73a91,2020-08-31,1,never a channel
+10aede9bcfe0,2020-09-03,1,darwin release
+42674051d125,2020-09-06,1,darwin release
+2dfcbdb54865,2020-09-11,1,never a channel
+3b8ddb2f1ee6,2020-09-15,1,nixos release
+faf5bdea5d9f,2020-09-17,1,nixos release
+be92e21e2519,2020-09-18,1,never a channel
+05a04d85fd45,2020-09-23,1,never a channel
+84d74ae9c9cb,2020-09-26,2,nixos-unstable
+b4db68ff5638,2020-09-30,1,small release
+c2bb4af48d26,2020-10-05,1,never a channel
+7badbf18c45b,2020-10-05,1,small release
+86e6adc799ef,2020-10-06,1,small release
+420f89ceb267,2020-10-07,1,nixos-unstable
+2c9ffeeda141,2020-10-08,1,never a channel
+d3784204ba1a,2020-10-13,1,small release
+3a10a004bb58,2020-10-13,1,small release
+ad0d20345219,2020-10-14,5,darwin release
+07fef1bea1e3,2020-10-18,1,never a channel
+8310b5a38817,2020-10-18,1,never a channel
+007126eef722,2020-10-19,1,nixos-unstable
+05334ad78526,2020-10-19,1,nixos release
+b7bcf5e2477a,2020-10-22,1,never a channel
+7cfeb7ae7a4b,2020-10-23,1,darwin release
+95d26c9a9f2a,2020-10-24,4,small release
+a26e92a67d88,2020-10-24,1,darwin release
+a7a1447e5d40,2020-10-26,1,never a channel
+1dc37370c489,2020-10-26,1,nixos-unstable
+cd63096d6d88,2020-10-27,2,small release
+3fce27247849,2020-10-28,1,never a channel
+92781c27bd16,2020-11-02,1,never a channel
+d105075a1fd8,2020-11-02,2,darwin release
+a93c3763c7ba,2020-11-04,1,never a channel
+72c424a968c1,2020-11-08,1,small release
+86fa45b0ff1a,2020-11-13,1,darwin release
+58f9c4c7d3a4,2020-11-18,1,darwin release
+8a3b33baed94,2020-11-19,1,never a channel
+ebf2f217a43a,2020-11-20,1,never a channel
+2247d824fe07,2020-11-21,1,nixos-unstable
+19db3e5ea277,2020-11-22,2,darwin release
+13c128fb1c70,2020-11-24,1,never a channel
+af87b1b4830e,2020-11-24,1,darwin release
+49bfd314101f,2020-11-28,1,never a channel
+2335e7354f8a,2020-11-28,1,darwin release
+24eb3f87fc61,2020-11-30,1,nixos-unstable
+555641c50462,2020-12-03,1,nixpkgs-unstable
+45c739f23ac2,2020-12-03,1,never a channel
+99f8282a6582,2020-12-05,1,darwin release
+d183736d699b,2020-12-08,1,never a channel
+e9158eca70ae,2020-12-09,2,nixos-unstable
+b8936e55235b,2020-12-09,1,small release
+7ff5e241a2b9,2020-12-09,2,never a channel
+f02bf8ffb9a5,2020-12-14,7,darwin release
+5d5e970ce049,2020-12-15,1,never a channel
+7d57790bc12e,2020-12-19,1,small release
+a945fdb4839c,2020-12-26,1,never a channel
+e065200fc901,2020-12-28,1,nixos release
+1aa915c09dfe,2020-12-28,1,nixpkgs-unstable
+2b556ea6712c,2020-12-29,1,never a channel
+bea44d5ebe33,2020-12-30,1,nixpkgs-unstable
+c30ad096b2cd,2021-01-07,1,small release
+257cbbcd3ab7,2021-01-09,2,nixos-unstable
+51894963cbdc,2021-01-10,1,nixpkgs-unstable
+187af93c1972,2021-01-11,1,small release
+980c4c3c2f66,2021-01-11,1,nixpkgs-unstable
+b6a1d4f0cca7,2021-01-17,1,never a channel
+7d71001b7963,2021-01-17,8,nixpkgs-unstable
+87a269015fe6,2021-01-25,1,never a channel
+1e38f0bdf98e,2021-01-25,1,never a channel
+693c7cd0f7e6,2021-01-27,1,nixpkgs-unstable
+6e7f25001fe6,2021-01-29,1,darwin release
+1b77b735ea70,2021-01-31,1,nixpkgs-unstable
+a68c03eb1474,2021-01-31,1,never a channel
+add90df40fcc,2021-02-02,1,never a channel
+6c30adbcb377,2021-02-05,1,never a channel
+22a2b332378b,2021-02-05,1,nixos release
+8c8731330b53,2021-02-08,1,nixos-unstable
+d9c6f13e13f8,2021-02-08,1,nixpkgs-unstable
+01d2239359da,2021-02-11,1,never a channel
+27f172ebd13f,2021-02-12,1,never a channel
+2118cf551b99,2021-02-13,1,darwin release
+ff96a0fa5635,2021-02-13,3,nixos-unstable
+8d8fe3528105,2021-02-13,1,never a channel
+f4a9e6c28a10,2021-02-14,1,never a channel
+0547c594124e,2021-02-15,1,never a channel
+54b9a9429fc3,2021-02-18,1,never a channel
+9816b99e71c3,2021-02-19,1,nixos-unstable
+e59a33db58fe,2021-02-20,1,never a channel
+f6b5bfdb470d,2021-02-24,1,nixos-unstable
+1f32038df17a,2021-02-24,1,nixpkgs-unstable
+6d7128414cf2,2021-02-26,1,never a channel
+462c6fe4b115,2021-02-26,1,darwin release
+299a68371897,2021-02-27,1,never a channel
+4d0ee90c6e25,2021-03-02,1,darwin release
+1ac507ba9819,2021-03-05,2,small release
+f3fc074642a2,2021-03-06,1,never a channel
+05f5a9814170,2021-03-06,1,small release
+ecce29eba220,2021-03-08,1,never a channel
+29b0d4d0b600,2021-03-08,3,nixos-unstable
+ec0b40989000,2021-03-10,1,never a channel
+266dc8c3d052,2021-03-15,1,nixos-unstable
+f5e8bdd07d1a,2021-03-19,2,nixos-unstable
+66f4dc4fd1b4,2021-03-20,1,darwin release
+9b8530e3721f,2021-03-20,1,darwin release
+d3f7e969b986,2021-03-23,1,nixos-unstable
+c0e881852006,2021-03-25,3,nixpkgs-unstable
+34f85de51bbc,2021-03-25,1,small release
+1eea37190739,2021-03-25,1,small release
+477812e18e01,2021-03-27,1,never a channel
+9d8e05e088ad,2021-03-28,2,never a channel
+63be3d6498de,2021-03-29,1,never a channel
+3cadb8b32209,2021-04-05,1,never a channel
+6d1a044fc9ff,2021-04-05,1,darwin release
+d1183f3dc44b,2021-04-07,1,nixos-unstable
+9e377a6ce42d,2021-04-08,2,nixos-unstable
+a73020b2a150,2021-04-10,3,nixos-unstable
+adfe1bea6c1a,2021-04-11,1,never a channel
+dec334fa196a,2021-04-13,1,darwin release
+3015c5f9f8f5,2021-04-15,1,never a channel
+f0efbe21f9ae,2021-04-16,1,nixpkgs-unstable
+0a5f5bab0e08,2021-04-18,1,nixos-unstable
+1fe6ed37fd9b,2021-04-24,1,nixos-unstable
+e8dc8adab655,2021-04-25,1,never a channel
+32f7980afb5e,2021-04-26,1,nixpkgs-unstable
+8e4fe32876ca,2021-04-26,1,nixos-unstable
+0fe6b1ccde4f,2021-04-28,1,never a channel
+1db42b7fe387,2021-05-03,15,darwin release
+3ec6977d306b,2021-05-03,1,never a channel
+63586475587d,2021-05-06,1,nixos-unstable
+eb4372d68fc3,2021-05-07,2,never a channel
+94a52465b720,2021-05-10,1,never a channel
+4d8dd0afd2d5,2021-05-11,1,nixpkgs-unstable
+39167dd01410,2021-05-13,1,never a channel
+cc2fc35667b5,2021-05-14,1,never a channel
+83d907fd760d,2021-05-15,2,nixos-unstable
+e83b3f339483,2021-05-15,1,nixpkgs-unstable
+c5a669d3f7c9,2021-05-16,1,never a channel
+1b1faeb2dbbf,2021-05-18,1,small release
+d42cd445dde5,2021-05-20,1,nixos-unstable
+9971c5d1a40d,2021-05-21,2,nixos-unstable
+efee454783c5,2021-05-22,1,nixpkgs-unstable
+900115a4f7fd,2021-05-22,1,nixos-unstable
+4753aa83712b,2021-05-23,1,never a channel
+76ed24ceab9e,2021-05-25,1,darwin release
+84aa23742f6c,2021-05-26,1,nixpkgs-unstable
+6933d068c5d2,2021-05-29,1,nixos-unstable
+eae0cabc1247,2021-05-30,1,darwin release
+7e9b0dff974c,2021-05-31,4,small release
+1c2986bbb806,2021-06-01,1,nixos-unstable
+cee3ca37c68d,2021-06-01,1,darwin release
+5237039cc1e7,2021-06-01,1,small release
+bb8a5e548450,2021-06-01,2,small release
+1ca6b0a0cc38,2021-06-04,1,nixos-unstable
+aa576357673d,2021-06-04,1,darwin release
+6fdb73a3b4ad,2021-06-04,1,never a channel
+5de44c157584,2021-06-05,1,nixos release
+fbfb79400a08,2021-06-06,1,nixos-unstable
+d8eb97e3801b,2021-06-06,1,nixpkgs-unstable
+f63332768e57,2021-06-07,1,never a channel
+51bb9f3e9ab6,2021-06-08,1,nixpkgs-unstable
+85ed11208f8c,2021-06-09,1,darwin release
+86d8a4876235,2021-06-09,1,darwin release
+5e78bbcb4926,2021-06-10,1,never a channel
+5707a8efadbd,2021-06-11,2,never a channel
+fa0326ce5233,2021-06-13,1,nixos-unstable
+115dbbe82eb4,2021-06-13,5,darwin release
+7823c1307451,2021-06-14,1,never a channel
+bb4697102b18,2021-06-17,1,never a channel
+bad3ccd099eb,2021-06-17,3,darwin release
+33d42ad7cf27,2021-06-18,1,nixos-unstable
+24413a5d3a09,2021-06-19,1,never a channel
+f2122ea58156,2021-06-19,1,small release
+6613a30c5e3e,2021-06-19,1,small release
+3c6f3f84af60,2021-06-21,2,darwin release
+1905f5f2e55e,2021-06-23,1,nixos-unstable
+c6a049a3d322,2021-06-24,36,nixpkgs-unstable
+e85975942742,2021-06-25,1,nixpkgs-unstable
+3a8d7958a610,2021-06-28,1,nixos-unstable
+f09173933702,2021-06-30,1,never a channel
+9e2a8a2f4a93,2021-07-01,1,never a channel
+21b696caf392,2021-07-01,1,darwin release
+d8079260a302,2021-07-01,2,nixos-unstable
+357d2c8f6087,2021-07-02,1,nixpkgs-unstable
+f930ea227cec,2021-07-04,1,nixpkgs-unstable
+0a17f3b530f9,2021-07-04,1,never a channel
+e039f03e2265,2021-07-08,1,never a channel
+ad9a2ed50fd9,2021-07-08,1,never a channel
+068984c00e0d,2021-07-09,3,darwin release
+cf59fbd53968,2021-07-10,1,darwin release
+eed20f01e43e,2021-07-11,1,never a channel
+cd4d1621cd0e,2021-07-14,1,never a channel
+67ccd996cef5,2021-07-15,1,never a channel
+bfef28861df7,2021-07-18,1,nixpkgs-unstable
+4181644d09b9,2021-07-19,1,darwin release
+63ee5cd99a2e,2021-07-20,1,darwin release
+16105403bdd8,2021-07-21,2,nixos-unstable
+1bd5157b2c00,2021-07-27,2,never a channel
+8ecc61c91a59,2021-07-27,2,nixos-unstable
+16b7e4900ebb,2021-07-27,1,never a channel
+6463828755b6,2021-07-30,1,never a channel
+16bf3980bfa0,2021-08-01,7,darwin release
+ab5b6828af26,2021-08-01,2,nixpkgs-unstable
+aaf9676fbb7f,2021-08-01,1,nixos-unstable
+d4590d210063,2021-08-02,2,small release
+c464dc811bab,2021-08-02,2,nixos-unstable
+bd27e2e8316a,2021-08-02,1,never a channel
+851f4c9d1a11,2021-08-04,1,never a channel
+9a8eb5a464f3,2021-08-05,1,small release
+67c80531be62,2021-08-07,1,nixpkgs-unstable
+c481b497d5c3,2021-08-08,1,never a channel
+d665f8499a24,2021-08-08,1,never a channel
+6ef4f522d63f,2021-08-08,2,nixos-unstable
+c792caaf60b8,2021-08-10,1,never a channel
+10bb03648613,2021-08-11,1,nixpkgs-unstable
+927ce1afc1db,2021-08-11,1,small release
+6fc5211edddd,2021-08-13,1,nixos-unstable
+d7bc7013eda3,2021-08-14,1,small release
+8ac785da9843,2021-08-15,1,darwin release
+e41ba3811405,2021-08-15,1,nixos-unstable
+3788c68def67,2021-08-17,4,nixpkgs-unstable
+253aecf69ed7,2021-08-18,3,nixos-unstable
+a1007637cea3,2021-08-19,1,darwin release
+396b561e2d66,2021-08-20,1,never a channel
+ffac945344f7,2021-08-21,1,never a channel
+870959c7fb3a,2021-08-22,1,nixos-unstable
+503209808cd6,2021-08-24,1,nixpkgs-unstable
+88226ea038e5,2021-08-25,1,nixos-unstable
+74d017edb671,2021-08-27,1,darwin release
+08ef0f28e3a4,2021-08-28,1,nixpkgs-unstable
+8d8a28b47b7c,2021-08-29,1,nixos-unstable
+52008d2a05a5,2021-08-31,1,never a channel
+6cc260cfd60f,2021-09-01,2,nixpkgs-unstable
+03f44bd2251a,2021-09-01,1,never a channel
+6bfe71f2a4e2,2021-09-02,2,small release
+81254b1a1f18,2021-09-04,1,never a channel
+23d5823337f4,2021-09-05,1,nixos-unstable
+5e47a07e9f2d,2021-09-05,6,never a channel
+fd6dba47199a,2021-09-06,1,darwin release
+330aeaff794f,2021-09-06,1,small release
+12eb1d16ae3b,2021-09-08,1,small release
+8b0b81dab177,2021-09-10,1,darwin release
+f6e9e908ccbc,2021-09-11,1,nixos-unstable
+211c1157ad03,2021-09-11,1,never a channel
+b3083bc6933e,2021-09-13,1,nixos release
+8010965b2f0d,2021-09-13,1,never a channel
+d91cd9654f7b,2021-09-14,1,never a channel
+79c444b5bdea,2021-09-16,1,nixos-unstable
+a39ee95a86b1,2021-09-16,1,nixpkgs-unstable
+ebf419e737bb,2021-09-16,1,darwin release
+f12fb7a7d201,2021-09-17,1,small release
+bc9b956714ed,2021-09-18,3,nixos-unstable
+32d34d819be4,2021-09-19,1,never a channel
+e0ce3c683ae6,2021-09-19,5,nixpkgs-unstable
+1a56d76d718a,2021-09-20,1,nixpkgs-unstable
+83413f478097,2021-09-21,2,small release
+d30701f2f17c,2021-09-22,1,small release
+a3a23d9599b0,2021-09-23,1,nixpkgs-unstable
+37280c84c3eb,2021-09-23,1,small release
+a13824fe5e38,2021-09-23,1,darwin release
+056a3c1fae30,2021-09-23,2,small release
+31ffc50c571e,2021-09-26,3,nixos-unstable
+1c15d094be19,2021-09-26,1,never a channel
+d0e4e9b47474,2021-09-27,1,never a channel
+c21ba4f7bb4a,2021-09-28,1,nixos-unstable
+2b71ddd869ad,2021-09-28,2,never a channel
+82891b5e2c23,2021-09-28,28,darwin release
+bd8b494cab07,2021-10-02,1,never a channel
+7daf35532d2d,2021-10-03,1,small release
+ee084c02040e,2021-10-03,3,nixpkgs-unstable
+751110a6f65b,2021-10-04,1,darwin release
+14aef06d9b3a,2021-10-04,1,nixos-unstable
+8e1eab9eae42,2021-10-05,1,nixpkgs-unstable
+6755a884b240,2021-10-07,1,small release
+dacaba9b9a88,2021-10-08,1,never a channel
+df315b7b80a1,2021-10-09,1,never a channel
+93ca5ab64f78,2021-10-10,1,darwin release
+316effbc595e,2021-10-11,1,never a channel
+e4ef597edfd8,2021-10-11,2,nixos-unstable
+564cb4d81d4f,2021-10-13,1,darwin release
+a8010e647f4d,2021-10-13,1,never a channel
+f1220d72a3a0,2021-10-13,2,never a channel
+2cf9db0e3d45,2021-10-13,2,nixos-unstable
+83667ff60a88,2021-10-15,3,darwin release
+61d49535d870,2021-10-15,1,never a channel
+249d3f306ab4,2021-10-17,1,never a channel
+5f0194220f24,2021-10-17,1,nixos-unstable
+5f33ded6018c,2021-10-19,1,never a channel
+70904d4a9927,2021-10-20,1,nixos release
+34ad3ffe08ad,2021-10-20,4,nixos-unstable
+33afbbd4afe4,2021-10-24,1,nixpkgs-unstable
+22a500a3f87b,2021-10-26,1,nixpkgs-unstable
+51acb65b3025,2021-10-27,1,nixpkgs-unstable
+1c1f5649bb9c,2021-10-27,8,darwin release
+d14d83a36911,2021-10-27,1,darwin release
+2deb07f3ac4e,2021-10-27,1,nixos-unstable
+b67e752c29f1,2021-11-02,2,nixos-unstable
+b239cf7ba017,2021-11-02,1,small release
+4789953e5c1e,2021-11-03,1,nixpkgs-unstable
+3adcef25692b,2021-11-04,1,never a channel
+f125d461adaf,2021-11-06,1,never a channel
+c935f5e0add2,2021-11-06,1,nixos-unstable
+f6a3eba5874c,2021-11-07,1,never a channel
+8d197bffd80e,2021-11-07,1,never a channel
+c11d08f02390,2021-11-08,2,nixpkgs-unstable
+db6044d5deba,2021-11-08,1,never a channel
+f5a78628ac67,2021-11-09,1,never a channel
+738c4cf00c92,2021-11-10,1,never a channel
+9cad36c40acc,2021-11-11,1,never a channel
+7e8392413c02,2021-11-12,1,never a channel
+68d4f5970b69,2021-11-13,1,small release
+2fa862644fc1,2021-11-13,3,nixos-unstable
+c0d77bdc811c,2021-11-13,1,darwin release
+e29d818477aa,2021-11-13,1,never a channel
+5cb226a06c49,2021-11-14,1,nixpkgs-unstable
+931ab058daa7,2021-11-15,1,nixos-unstable
+690af63d986d,2021-11-16,1,never a channel
+715f63411952,2021-11-17,1,nixos-unstable
+f54808ee5925,2021-11-17,1,never a channel
+e5537e4de773,2021-11-18,1,never a channel
+a03719be2e67,2021-11-20,1,never a channel
+8afc4e543663,2021-11-20,2,nixpkgs-unstable
+f508ae889415,2021-11-21,1,nixpkgs-unstable
+98747f27ecfe,2021-11-22,1,nixpkgs-unstable
+5201be2d3a10,2021-11-23,1,never a channel
+e623177029f1,2021-11-24,1,never a channel
+91e6a9a6568f,2021-11-24,1,small release
+73369f8d0864,2021-11-25,1,nixos-unstable
+4f37689c8a21,2021-11-26,1,darwin release
+a284564b7f75,2021-11-28,4,darwin release
+db6647ab287e,2021-11-29,1,small release
+f366af7a1b38,2021-11-29,1,nixpkgs-unstable
+8a308775674e,2021-11-29,3,nixos-unstable
+a7ecde854aee,2021-11-29,6,small release
+96b4157790fc,2021-11-30,3,small release
+c7b4ee906c95,2021-11-30,1,never a channel
+01486b481a25,2021-12-01,1,never a channel
+391f93a83c3a,2021-12-01,1,nixpkgs-unstable
+e34c53798668,2021-12-03,3,nixos release
+ca1f2a9ed26e,2021-12-06,1,never a channel
+bc5d68306b40,2021-12-06,1,nixos-unstable
+1bd4bbd49bef,2021-12-07,2,nixos release
+7caa1ae38df6,2021-12-07,1,never a channel
+00a904f61bd9,2021-12-07,1,never a channel
+f225322e3bea,2021-12-07,1,nixpkgs-unstable
+581d2d6c9cd5,2021-12-08,2,nixos-unstable
+47f45c8440e2,2021-12-09,1,nixpkgs-unstable
+573095944e7c,2021-12-10,4,nixos release
+453bcb8380fd,2021-12-11,4,darwin release
+d77cd852ab1d,2021-12-11,1,never a channel
+c473cc871471,2021-12-12,1,nixpkgs-unstable
+32e3ee5193cf,2021-12-12,1,never a channel
+efa903ef36f1,2021-12-13,1,never a channel
+cfdb99fe18ac,2021-12-13,1,nixos-unstable
+fc58c3761e9b,2021-12-14,2,nixpkgs-unstable
+a2e281f57702,2021-12-14,1,nixos-unstable
+9066c52e5ae8,2021-12-16,1,never a channel
+03ec468b1406,2021-12-16,1,nixos-unstable
+2627c4b79510,2021-12-17,1,darwin release
+fc3bf7532734,2021-12-18,1,never a channel
+9ab7d12287ce,2021-12-21,1,darwin release
+0c408a087b47,2021-12-23,1,nixpkgs-unstable
+64c7e3388bbd,2021-12-23,1,darwin release
+ab93217a2b74,2021-12-23,2,nixpkgs-unstable
+5c37ad87222c,2021-12-24,4,nixpkgs-unstable
+04bd2d1a4700,2021-12-26,1,small release
+ac169ec6371f,2021-12-26,1,nixos-unstable
+8588b14a397e,2021-12-29,1,nixos release
+8a053bc22556,2021-12-30,1,nixos release
+adf7f03d3bfc,2022-01-03,1,nixpkgs-unstable
+c6019d8efb55,2022-01-03,1,nixos release
+0432195a4b8d,2022-01-04,2,nixpkgs-unstable
+e114f0a58d76,2022-01-05,1,never a channel
+defafc9a2204,2022-01-05,1,nixpkgs-unstable
+e67c94a1adbb,2022-01-05,1,small release
+77fda7f67272,2022-01-06,1,nixpkgs-unstable
+d77bbfcbb650,2022-01-06,3,nixpkgs-unstable
+ff377a78794d,2022-01-06,1,nixos-unstable
+d1acd89e0116,2022-01-07,1,never a channel
+568e0bc498ee,2022-01-07,2,nixpkgs-unstable
+0ecf7d414811,2022-01-08,1,nixos-unstable
+1b29f6fdb8ca,2022-01-11,1,nixpkgs-unstable
+b458e5133fba,2022-01-11,2,nixpkgs-unstable
+46821ea01c8f,2022-01-13,1,nixpkgs-unstable
+5aaed40d22f0,2022-01-13,1,nixos-unstable
+bc59ba15b64d,2022-01-13,1,nixpkgs-unstable
+fe6f208d68ac,2022-01-14,1,never a channel
+e5a50e8f2995,2022-01-14,1,nixpkgs-unstable
+3ddd960a3b57,2022-01-14,2,nixos release
+0fd9ee1aa36c,2022-01-15,4,darwin release
+f3d9d4bd898c,2022-01-16,7,nixpkgs-unstable
+908929e1de24,2022-01-17,1,never a channel
+77aa71f66fd0,2022-01-19,3,small release
+c7e8747a748f,2022-01-20,1,never a channel
+6f07605b6916,2022-01-20,1,nixos release
+93761fdcc9b0,2022-01-20,1,never a channel
+8400959b349a,2022-01-21,1,never a channel
+689b76bcf360,2022-01-22,1,nixos-unstable
+5b970ac9c224,2022-01-22,1,darwin release
+215d4d0fd80c,2022-01-24,2,never a channel
+c07b471b52be,2022-01-24,1,nixos-unstable
+8bd55a6a5ab0,2022-01-24,1,nixpkgs-unstable
+b05d2077ebe2,2022-01-25,1,nixpkgs-unstable
+1106e43829ee,2022-01-25,1,never a channel
+e722007bf058,2022-01-26,1,nixpkgs-unstable
+8fb76a2ed549,2022-01-26,1,never a channel
+d9e21f284317,2022-01-27,1,nixpkgs-unstable
+5bb20f9dc70e,2022-01-27,1,nixos-unstable
+32aa3d782977,2022-01-28,1,small release
+5efc8ca95427,2022-01-28,27,nixpkgs-unstable
+7f65e4abd5ec,2022-01-29,2,nixpkgs-unstable
+0f316e4d72da,2022-01-29,1,small release
+a529f0c125a7,2022-01-31,1,nixpkgs-unstable
+f6ddd55d5f9d,2022-02-01,1,nixos release
+43e3b6af08f2,2022-02-02,1,never a channel
+554d2d8aa25b,2022-02-02,13,nixos-unstable
+1facc6ad907e,2022-02-02,1,never a channel
+42a14b7fbe9b,2022-02-03,1,never a channel
+942b0817e898,2022-02-06,1,nixpkgs-unstable
+98bb5b77c8c6,2022-02-09,4,nixos-unstable
+7adc9c14ec74,2022-02-09,1,small release
+1882c6b7368f,2022-02-10,2,nixpkgs-unstable
+48d63e924a26,2022-02-10,5,nixos-unstable
+b61bf7a96aa6,2022-02-13,1,darwin release
+a97e45feaee3,2022-02-14,1,never a channel
+2128d0aa28ed,2022-02-16,1,small release
+b66b39216b1f,2022-02-16,3,nixpkgs-unstable
+aefc44db81a5,2022-02-17,1,never a channel
+5c14481fbdf8,2022-02-18,1,never a channel
+530a53dcbc94,2022-02-19,3,darwin release
+d5f237872975,2022-02-19,1,nixos-unstable
+40ef692a55b1,2022-02-20,1,nixos release
+7f9b6e2babf2,2022-02-21,7,nixos-unstable
+fda0e6265601,2022-02-22,1,nixpkgs-unstable
+9222ae36b208,2022-02-23,3,nixpkgs-unstable
+6d9dcdcff0d9,2022-02-23,1,small release
+77a7a4197740,2022-02-23,7,never a channel
+021ba615f620,2022-02-24,1,never a channel
+69c2d450e772,2022-02-25,1,never a channel
+22dc22f8cedc,2022-02-26,1,nixpkgs-unstable
+834dee311464,2022-02-27,1,never a channel
+964ffb4697d1,2022-02-27,1,never a channel
+f006f108ab66,2022-02-27,1,never a channel
+99a306df0220,2022-02-28,1,never a channel
+18bd82edcc75,2022-03-01,2,nixos-unstable
+3e072546ea98,2022-03-02,1,nixos-unstable
+ed02c2ba0384,2022-03-02,1,darwin release
+ad267cc9cf3d,2022-03-03,1,nixpkgs-unstable
+1fc7212a2c39,2022-03-05,3,nixpkgs-unstable
+062a0c5437b6,2022-03-05,1,nixos-unstable
+003478830b47,2022-03-05,1,never a channel
+3e644bd62489,2022-03-05,2,nixpkgs-unstable
+d26d5d868275,2022-03-09,1,never a channel
+fcd48a5a0693,2022-03-10,1,nixos-unstable
+e9545762b032,2022-03-10,1,nixpkgs-unstable
+0f85665118d8,2022-03-12,1,small release
+b0e141e3fe13,2022-03-12,1,nixos-unstable
+bc4ca276a801,2022-03-14,1,never a channel
+64fc73bd74f0,2022-03-14,2,small release
+73ad5f9e147c,2022-03-14,3,nixos-unstable
+be872a7453a1,2022-03-14,1,nixpkgs-unstable
+3eb07eeafb52,2022-03-15,6,nixpkgs-unstable
+6e3ee8957637,2022-03-15,2,small release
+1172fbd64ee3,2022-03-16,1,never a channel
+9bc841fec1c0,2022-03-20,1,nixos-unstable
+1ec61dd4167f,2022-03-21,1,nixos-unstable
+c4233257cffb,2022-03-22,1,never a channel
+c984213d1222,2022-03-23,1,nixpkgs-unstable
+1d08ea2bd83a,2022-03-23,4,nixos-unstable
+4d6008149425,2022-03-23,3,nixpkgs-unstable
+30d3d79b7d36,2022-03-25,14,nixpkgs-unstable
+cd1410a7d467,2022-03-27,1,never a channel
+945fcb5b4179,2022-03-28,1,never a channel
+710fed5a2483,2022-03-30,1,nixos-unstable
+72152ff5ad47,2022-03-31,1,never a channel
+eb40e8633a9b,2022-04-03,1,never a channel
+bc4b9eef3ce3,2022-04-03,2,nixos-unstable
+0c7c76fa9e2f,2022-04-05,1,never a channel
+b6966d911da8,2022-04-05,6,nixos-unstable
+a782a81321ba,2022-04-07,1,never a channel
+2796dcfbdf5c,2022-04-08,1,never a channel
+715dc137b082,2022-04-09,1,small release
+e7d63bd0d50d,2022-04-10,2,darwin release
+33772708c6d0,2022-04-11,1,nixos-unstable
+838eefb4f93f,2022-04-12,1,darwin release
+6826bc67ffb0,2022-04-13,1,never a channel
+2f06b87f64bc,2022-04-14,1,darwin release
+d08394e7cd5c,2022-04-14,1,nixpkgs-unstable
+5181d5945eda,2022-04-14,1,nixos-unstable
+0b43a436fbbf,2022-04-15,1,nixpkgs-unstable
+faad370edcb3,2022-04-16,1,nixpkgs-unstable
+1ffba9f2f683,2022-04-16,3,nixos-unstable
+0bbb65673c0b,2022-04-20,1,nixpkgs-unstable
+5b2aaa628ff2,2022-04-22,1,never a channel
+bc41b01dd7a9,2022-04-23,3,nixos-unstable
+87d34a6b8982,2022-04-24,1,nixos-unstable
+6a323903ad07,2022-04-25,1,nixos-unstable
+293a5455f310,2022-04-25,1,nixpkgs-unstable
+e10da1c7f542,2022-04-26,7,nixos-unstable
+d146577610c1,2022-04-27,1,nixpkgs-unstable
+28b155323e95,2022-04-27,1,small release
+3080554891b4,2022-04-29,1,never a channel
+fd3e33d696b8,2022-04-30,1,darwin release
+b283b64580d1,2022-04-30,1,nixpkgs-unstable
+cbe587c735b7,2022-05-02,4,nixos-unstable
+7f9c7443ae1d,2022-05-03,1,never a channel
+abfd31179174,2022-05-03,2,nixpkgs-unstable
+dff5496b1281,2022-05-04,1,small release
+c777cdf5c564,2022-05-04,1,nixos-unstable
+836c52e62587,2022-05-05,1,small release
+d59dd43e49f2,2022-05-05,1,nixpkgs-unstable
+a2543aa2a3c4,2022-05-08,1,never a channel
+934e076a441e,2022-05-08,2,nixpkgs-unstable
+2a3aac479cae,2022-05-09,1,nixos-unstable
+51d859cdab1e,2022-05-09,3,nixpkgs-unstable
+f419dc5763c2,2022-05-10,1,nixos-unstable
+aa2f845096f7,2022-05-10,1,small release
+41ff747f8829,2022-05-10,2,nixos-unstable
+d2fc6856824c,2022-05-11,1,nixpkgs-unstable
+051448e41537,2022-05-11,4,darwin release
+d89d7af1ba23,2022-05-12,1,nixos-unstable
+ed014c27f4d0,2022-05-13,1,nixpkgs-unstable
+4c560cc7ee57,2022-05-14,1,nixos release
+2fc228efaf48,2022-05-14,1,never a channel
+8b3398bc7587,2022-05-14,1,darwin release
+1d7db1b9e4cf,2022-05-15,1,nixos-unstable
+4f7d4241c2be,2022-05-16,1,never a channel
+ff691ed9ba21,2022-05-16,1,nixpkgs-unstable
+44b8ec5ccb3b,2022-05-17,1,never a channel
+52dc75a4fee3,2022-05-17,2,nixpkgs-unstable
+dfd82985c273,2022-05-20,3,nixos-unstable
+cbd40c72b260,2022-05-20,1,small release
+b5991e497152,2022-05-21,1,darwin release
+3acf859f7469,2022-05-21,1,never a channel
+06db2e219740,2022-05-22,1,small release
+41cc1d5d9584,2022-05-23,1,nixpkgs-unstable
+5ce6597eca7d,2022-05-24,1,nixos-unstable
+fef08a5efc68,2022-05-24,1,never a channel
+5e880240cddf,2022-05-25,1,never a channel
+9bc0e974545d,2022-05-26,1,darwin release
+83658b28fe63,2022-05-26,7,nixos-unstable
+17b62c338f2a,2022-05-28,4,nixpkgs-unstable
+b62ada430501,2022-05-29,1,nixos-unstable
+be5e3632be60,2022-05-30,1,small release
+437c8e655491,2022-05-30,4,never a channel
+ce6aa13369b6,2022-05-30,9,never a channel
+27ba51ca76dc,2022-05-30,1,darwin release
+2fa57ed190fd,2022-05-31,2,small release
+08950a6e29cf,2022-05-31,1,darwin release
+5643714dea56,2022-05-31,1,nixpkgs-unstable
+692517bf851f,2022-05-31,2,nixos-unstable
+236cc2971ac7,2022-06-02,1,nixos-unstable
+7a20c208aacf,2022-06-03,10,darwin release
+0938d73bb143,2022-06-04,1,small release
+c5d810f4c74c,2022-06-04,2,nixpkgs-unstable
+d23be02c22ad,2022-06-06,1,nixpkgs-unstable
+c26e525b410c,2022-06-07,1,never a channel
+e0169d7a9d32,2022-06-08,1,nixos-unstable
+fc909087cc33,2022-06-09,1,never a channel
+7b3e907a6fef,2022-06-10,1,nixpkgs-unstable
+90cd5459a1fd,2022-06-11,1,nixos-unstable
+1f8d88087a37,2022-06-11,1,small release
+72b1ec0a79b1,2022-06-12,1,nixpkgs-unstable
+3c2068d6c90c,2022-06-13,1,nixpkgs-unstable
+9ff91ce2e4c5,2022-06-14,2,darwin release
+6616de389ed5,2022-06-14,1,nixos-unstable
+9ef09e06806e,2022-06-14,1,nixpkgs-unstable
+b1957596ff1c,2022-06-15,1,nixos-unstable
+29769d2a1390,2022-06-16,1,nixpkgs-unstable
+3d7435c638ba,2022-06-16,2,nixos-unstable
+8d64fd7d585b,2022-06-16,1,never a channel
+87d9c84817d7,2022-06-16,1,darwin release
+3802c98cffe6,2022-06-17,1,nixpkgs-unstable
+103a4c0ae46a,2022-06-17,2,nixpkgs-unstable
+7a52648772ff,2022-06-17,1,never a channel
+e0a42267f73e,2022-06-18,4,nixos-unstable
+bf97f8474aaf,2022-06-19,1,never a channel
+1d581029d910,2022-06-21,1,never a channel
+6141b8932a5c,2022-06-23,2,nixos-unstable
+7a1700745cc5,2022-06-24,1,small release
+72d1b0d0fac1,2022-06-24,1,nixpkgs-unstable
+9a17f325397d,2022-06-26,2,nixpkgs-unstable
+cd90e773eae8,2022-06-26,1,small release
+62de360d7541,2022-06-27,1,darwin release
+0c4852c7bc40,2022-06-27,1,nixpkgs-unstable
+16de63fcc54e,2022-06-28,1,nixpkgs-unstable
+8a8a0ad0aa31,2022-06-28,1,small release
+cf3ab54b4afe,2022-06-28,1,nixos-unstable
+95e79164be1f,2022-06-30,3,nixpkgs-unstable
+0ea7a8f1b939,2022-07-02,2,nixos-unstable
+660ac43ff9ab,2022-07-02,1,nixpkgs-unstable
+a27f1085d7d2,2022-07-05,1,never a channel
+a5c867d9fe9e,2022-07-06,2,nixos-unstable
+5754b3bf6164,2022-07-06,1,never a channel
+b39924fc7764,2022-07-08,1,nixos-unstable
+428e122b0007,2022-07-08,1,darwin release
+334ec8b503c3,2022-07-08,1,nixpkgs-unstable
+87e7965bbcdb,2022-07-09,1,nixos-unstable
+de5b3dd17034,2022-07-09,3,small release
+38860c9e91cb,2022-07-11,1,nixos-unstable
+9b0e8f7877f5,2022-07-11,1,never a channel
+d80993b5f885,2022-07-12,3,never a channel
+09066922296d,2022-07-12,2,nixpkgs-unstable
+365e1b3a8592,2022-07-12,24,small release
+8fa57a6538dc,2022-07-13,1,darwin release
+af38697574ea,2022-07-13,1,never a channel
+c06d5fa9c605,2022-07-14,1,darwin release
+07a2e6a4e31e,2022-07-16,1,small release
+d6df226c53d4,2022-07-16,1,nixpkgs-unstable
+34bfa9403e42,2022-07-17,1,never a channel
+2e3f6efdeda4,2022-07-17,1,nixos-unstable
+9eb60f25aff0,2022-07-17,1,nixpkgs-unstable
+4bb03f92e350,2022-07-18,1,never a channel
+8b72dae17b40,2022-07-18,1,never a channel
+e4d49de45a3b,2022-07-18,2,nixos-unstable
+e732e1fdbf79,2022-07-19,2,darwin release
+8949f6984d90,2022-07-19,1,never a channel
+6f884c2f43c7,2022-07-19,1,nixpkgs-unstable
+5342fc6fb59d,2022-07-19,4,never a channel
+614a842b74b7,2022-07-19,1,nixos-unstable
+af7d2aaa0d7f,2022-07-20,2,nixpkgs-unstable
+a65b5b3f5504,2022-07-20,2,nixos-unstable
+a174de16edfc,2022-07-21,1,nixpkgs-unstable
+e3583ad6e533,2022-07-22,1,darwin release
+87cb1156a91a,2022-07-22,1,never a channel
+42ca9bef09e7,2022-07-22,1,nixos-unstable
+8c21ef98fba4,2022-07-23,1,never a channel
+5a0e0d73b944,2022-07-25,3,nixos-unstable
+3bbb296d9a00,2022-07-26,1,nixpkgs-unstable
+d9536b9b1e33,2022-07-27,1,nixos release
+2b0dd45aca6a,2022-07-27,1,nixos-unstable
+9370544d849b,2022-07-28,1,darwin release
+2a93ea177c3d,2022-07-28,1,nixos-unstable
+11b60e4f80d8,2022-07-29,2,nixpkgs-unstable
+a3fddd46a7f3,2022-07-30,1,nixpkgs-unstable
+7b9be38c7250,2022-07-30,2,nixos-unstable
+67f49b2a3854,2022-07-31,2,nixpkgs-unstable
+5857574d4592,2022-07-31,2,nixos-unstable
+a54fb7fc4ce8,2022-07-31,1,small release
+07c6ff07ce85,2022-08-01,1,nixpkgs-unstable
+eabc38219184,2022-08-02,13,darwin release
+478f3cbc8448,2022-08-03,1,darwin release
+81094ccd6a0a,2022-08-03,1,nixpkgs-unstable
+3c8a5fa9a699,2022-08-07,1,darwin release
+2a172dcba992,2022-08-07,1,never a channel
+92fe622fdfe4,2022-08-07,1,darwin release
+022caabb5f22,2022-08-07,4,darwin release
+053fb0069094,2022-08-07,1,nixpkgs-unstable
+a47896bf817e,2022-08-08,1,nixpkgs-unstable
+36cc29d837e7,2022-08-09,1,nixos-unstable
+3a11db5f4080,2022-08-10,2,nixos-unstable
+45c9736ed698,2022-08-11,2,nixos release
+5c211b47aead,2022-08-12,1,small release
+65c15b0a2659,2022-08-13,2,nixpkgs-unstable
+6512b21eabb4,2022-08-14,1,nixos-unstable
+441dc5d51215,2022-08-15,6,nixpkgs-unstable
+3d47bbaa26e7,2022-08-15,1,nixos release
+6c6409e965a6,2022-08-16,4,nixpkgs-unstable
+a55a7db82395,2022-08-17,1,darwin release
+8ea014acc33d,2022-08-18,3,nixos-unstable
+00e376e3f3c2,2022-08-19,1,darwin release
+7e234e5a1a9f,2022-08-19,1,never a channel
+3ed15c29ce0f,2022-08-21,1,nixpkgs-unstable
+0e78cdd168e5,2022-08-22,1,never a channel
+5e804cd8a27f,2022-08-23,3,nixos-unstable
+b9fd420fa535,2022-08-23,1,small release
+0e304ff0d9db,2022-08-24,2,nixpkgs-unstable
+b784c5ae63dd,2022-08-24,1,nixos-unstable
+4a179eac2c64,2022-08-25,1,never a channel
+cbf9a129d273,2022-08-25,1,never a channel
+f3d0897be466,2022-08-25,1,nixos-unstable
+f11e12ac6af5,2022-08-26,1,nixos release
+38e16b192af1,2022-08-26,1,nixos-unstable
+0ba2543f8c85,2022-08-27,1,darwin release
+cc634d9aa08e,2022-08-29,2,darwin release
+c3e4dc4f6d23,2022-08-29,1,nixpkgs-unstable
+2da64a81275b,2022-09-01,3,nixos-unstable
+37d145eafc80,2022-09-01,1,small release
+1bd8d11cc5c8,2022-09-01,1,never a channel
+21de2b973f9f,2022-09-01,6,nixpkgs-unstable
+67e450781411,2022-09-01,3,small release
+0b1090e62edc,2022-09-02,1,never a channel
+cfa78cb43389,2022-09-03,1,never a channel
+a25f0b9bbdfe,2022-09-10,2,nixpkgs-unstable
+a0b7e70db7a5,2022-09-11,3,nixpkgs-unstable
+a81b6401f6b5,2022-09-13,1,never a channel
+d86a4619b7e8,2022-09-13,1,nixos release
+78bce1608960,2022-09-13,1,nixpkgs-unstable
+57ff57107036,2022-09-14,1,never a channel
+e731e6638c77,2022-09-14,1,nixpkgs-unstable
+2277e4c9010b,2022-09-15,2,nixpkgs-unstable
+454887a35de6,2022-09-15,1,nixpkgs-unstable
+0dfa3b283abc,2022-09-16,1,darwin release
+3ceb43327e6d,2022-09-16,1,never a channel
+d529e6962d22,2022-09-16,1,never a channel
+74d81b49086d,2022-09-16,1,never a channel
+f1a49e20e1b4,2022-09-17,1,never a channel
+b47d4447dc2b,2022-09-18,1,darwin release
+f677051b8dc0,2022-09-18,3,nixos-unstable
+a13d59408da1,2022-09-19,2,nixpkgs-unstable
+20dc478985d6,2022-09-19,2,nixos release
+998f0f792419,2022-09-19,1,nixpkgs-unstable
+d6490a0bd9df,2022-09-21,1,nixos-unstable
+e14f9fb57315,2022-09-22,2,nixpkgs-unstable
+7e27b838cd7a,2022-09-23,1,darwin release
+309faedb8338,2022-09-23,1,darwin release
+17ff1e6ca119,2022-09-24,1,small release
+9e212b05b9c9,2022-09-25,1,never a channel
+62228ccc672e,2022-09-26,1,nixos-unstable
+284079785291,2022-09-26,1,small release
+82379884b2e9,2022-09-26,3,small release
+7e52b35fe984,2022-09-27,2,nixos-unstable
+0c97cb06a5b8,2022-09-27,1,small release
+854fdc688817,2022-09-28,1,nixos-unstable
+1b814a134630,2022-09-28,1,never a channel
+13cbe534ebe6,2022-09-29,1,small release
+ec8c0ee845c0,2022-09-29,1,small release
+c6b3881520fe,2022-09-30,1,nixpkgs-unstable
+511213e0ece8,2022-09-30,1,nixpkgs-unstable
+a62844b30250,2022-10-02,1,nixpkgs-unstable
+de80d1d04ee6,2022-10-03,1,nixpkgs-unstable
+fe76645aaf2f,2022-10-04,1,nixos release
+b7a47253e0c8,2022-10-04,1,nixpkgs-unstable
+5f223154a64b,2022-10-05,1,small release
+ca025d52b5b4,2022-10-06,1,small release
+95fda953f6db,2022-10-06,2,nixpkgs-unstable
+9ecc270f02b0,2022-10-07,1,small release
+e16d04eda784,2022-10-07,1,never a channel
+c5924154f000,2022-10-08,3,nixos-unstable
+14ccaaedd95a,2022-10-08,3,nixpkgs-unstable
+6b0b91fee3c0,2022-10-09,1,never a channel
+91d1eb9f2a9c,2022-10-10,1,nixpkgs-unstable
+285e77efe87d,2022-10-10,1,nixos-unstable
+f634d427b022,2022-10-12,10,nixos-unstable
+e06bd4b64bbf,2022-10-12,1,darwin release
+ba187fbdc5e3,2022-10-12,2,nixos-unstable
+4428e2331293,2022-10-14,1,nixos-unstable
+78a37aa630fa,2022-10-14,1,nixos release
+26b7e6ab6a86,2022-10-15,1,nixpkgs-unstable
+db5c049e000d,2022-10-16,1,never a channel
+ec96702d7dbc,2022-10-16,1,nixpkgs-unstable
+ab6176ac5b0e,2022-10-16,1,nixpkgs-unstable
+50add64e1d90,2022-10-17,1,never a channel
+47edaa313fc3,2022-10-17,1,darwin release
+5c77b29073f0,2022-10-18,1,nixpkgs-unstable
+e1a0f8fe5af1,2022-10-18,1,never a channel
+7b38cb118ce4,2022-10-18,1,nixpkgs-unstable
+d2cfe468f81b,2022-10-19,1,nixpkgs-unstable
+db25c4da285c,2022-10-19,1,nixos-unstable
+260eb420a2e5,2022-10-19,1,nixpkgs-unstable
+44fc3cb09732,2022-10-19,1,darwin release
+b7d8c687782c,2022-10-20,2,nixos-unstable
+ac20a8605b0f,2022-10-21,1,small release
+45454cd8ede6,2022-10-21,1,nixpkgs-unstable
+301aada7a648,2022-10-21,1,nixos-unstable
+4f8287f3d597,2022-10-22,2,nixpkgs-unstable
+95aeaf83c247,2022-10-22,1,nixos-unstable
+471d92178b97,2022-10-23,1,nixos release
+0e6df35f3965,2022-10-23,2,nixos-unstable
+074da18a7226,2022-10-24,8,nixpkgs-unstable
+f93f9f43c6b3,2022-10-24,1,small release
+b39fd6e4edef,2022-10-24,1,nixos-unstable
+03a00f66fc4e,2022-10-25,1,nixpkgs-unstable
+f994293d1eb8,2022-10-25,2,nixos-unstable
+f540aeda6f67,2022-10-25,9,nixpkgs-unstable
+1c6eb4876f71,2022-10-26,2,nixpkgs-unstable
+2001e2b31c56,2022-10-27,1,nixos-unstable
+c2259f0c7721,2022-10-27,1,never a channel
+f44ba1be526c,2022-10-27,1,nixpkgs-unstable
+fdc3ca1458c1,2022-10-29,1,never a channel
+fdebb81f45a1,2022-10-29,1,nixos-unstable
+7f9be6a505a3,2022-10-29,1,nixpkgs-unstable
+d40fea9aeb88,2022-10-31,3,nixos-unstable
+1b4722674c31,2022-10-31,1,darwin release
+ef2f213d9659,2022-11-01,2,nixpkgs-unstable
+b3a8f7ed267e,2022-11-01,1,small release
+a704b9029586,2022-11-02,3,nixpkgs-unstable
+636051e35346,2022-11-02,1,nixos-unstable
+3bacde6273b0,2022-11-04,2,nixos-unstable
+cae3751e9f74,2022-11-05,3,nixpkgs-unstable
+f09ad462c5a1,2022-11-05,2,nixos release
+3a835b51efbb,2022-11-06,1,nixpkgs-unstable
+8993cc730d11,2022-11-06,1,nixpkgs-unstable
+ebf65554b18e,2022-11-07,1,small release
+295778ad2180,2022-11-07,1,nixpkgs-unstable
+bc5ad9707805,2022-11-08,1,nixpkgs-unstable
+9f1f990aee8c,2022-11-08,1,nixpkgs-unstable
+872fceeed60a,2022-11-09,1,nixos-unstable
+9bbb7fb6352c,2022-11-09,1,never a channel
+72d8853228c9,2022-11-10,3,nixpkgs-unstable
+5f588eb4a958,2022-11-10,1,nixos-unstable
+d8f2c4d846a2,2022-11-11,1,nixpkgs-unstable
+dad4de1694cd,2022-11-14,2,nixpkgs-unstable
+16f4e04658c2,2022-11-14,2,darwin release
+8872cf637ed3,2022-11-14,1,never a channel
+85d6b3990def,2022-11-15,1,nixos-unstable
+ce5e92705550,2022-11-15,1,never a channel
+c03141948959,2022-11-16,1,nixpkgs-unstable
+3a86856a13c8,2022-11-16,2,nixpkgs-unstable
+52b2ac8ae18b,2022-11-18,4,nixos-unstable
+690ffff026b4,2022-11-19,1,nixos-unstable
+79bb815a1cdc,2022-11-21,3,nixpkgs-unstable
+17a802cdd895,2022-11-21,1,never a channel
+69335c46c48a,2022-11-21,1,nixpkgs-unstable
+2788904d26dd,2022-11-22,3,nixos-unstable
+e8016a90db25,2022-11-23,1,nixos release
+42337aad353c,2022-11-23,1,nixos-unstable
+e35699dd5791,2022-11-24,1,nixpkgs-unstable
+5dc7114b7b25,2022-11-25,1,nixos-unstable
+695b35152518,2022-11-25,1,darwin release
+899e7caf59d1,2022-11-26,1,nixos release
+b45ec953794b,2022-11-26,1,nixpkgs-unstable
+a115bb9bd568,2022-11-27,5,nixos-unstable
+be9e3762e719,2022-11-27,3,nixpkgs-unstable
+9a54ef24b6b1,2022-11-28,1,never a channel
+0244e143dc94,2022-11-29,1,darwin release
+e76c78d20685,2022-11-29,1,nixos-unstable
+227de2b3bbec,2022-11-30,3,nixpkgs-unstable
+4d2b37a84fad,2022-11-30,10,never a channel
+27a7f95fc819,2022-11-30,1,never a channel
+38e591dd05ff,2022-11-30,2,nixpkgs-unstable
+bcb6dbbe30ce,2022-12-01,2,nixpkgs-unstable
+97e88a936cf1,2022-12-01,2,nixos release
+da12bb299b29,2022-12-01,1,never a channel
+a2d2f70b82ad,2022-12-04,1,nixpkgs-unstable
+a08f048bb4af,2022-12-04,2,never a channel
+5b9b93b9be42,2022-12-05,1,small release
+6e51c97f1c84,2022-12-05,1,nixos-unstable
+7e72265b08d4,2022-12-05,1,darwin release
+a5f661b80e4c,2022-12-05,1,nixpkgs-unstable
+52e3e80afff4,2022-12-05,3,nixos release
+1c9ffcf70786,2022-12-06,1,nixos-unstable
+04a75b2eecc0,2022-12-07,2,darwin release
+2787fc7d1e51,2022-12-08,2,nixos-unstable
+f21f11aa2a02,2022-12-08,1,nixpkgs-unstable
+7a6a010c3a1d,2022-12-08,1,darwin release
+f82f0ec1b70b,2022-12-10,1,nixpkgs-unstable
+7b9eeb856cbf,2022-12-10,3,darwin release
+64e0bf055f9d,2022-12-11,1,nixos-unstable
+0e857e0089d7,2022-12-11,1,nixpkgs-unstable
+b9a0cd40ede9,2022-12-14,2,nixpkgs-unstable
+7634c3250b68,2022-12-15,1,nixpkgs-unstable
+0f5996b524c9,2022-12-15,1,nixos-unstable
+0152de25d49d,2022-12-15,1,nixos release
+f30da2c26227,2022-12-15,2,darwin release
+dbc68fa4bb13,2022-12-16,1,never a channel
+9d692a724e74,2022-12-16,1,darwin release
+067bfc6c90a3,2022-12-16,3,nixpkgs-unstable
+80c24eeb9ff4,2022-12-17,1,nixpkgs-unstable
+40f79f003b63,2022-12-17,1,nixos-unstable
+04f574a1c0fd,2022-12-18,2,nixos-unstable
+bb31220cca6d,2022-12-18,11,nixpkgs-unstable
+e37ef84b478f,2022-12-19,1,nixpkgs-unstable
+cbe419ed4c8f,2022-12-20,1,nixos release
+ba6ba2b90096,2022-12-20,2,nixpkgs-unstable
+60ff1ccd98a2,2022-12-21,1,never a channel
+f4eddbd6a88c,2022-12-21,1,small release
+652e92b80649,2022-12-22,2,nixos-unstable
+2c74fcd6c5fc,2022-12-23,2,nixpkgs-unstable
+79e63f30ed2f,2022-12-23,1,darwin release
+bb0359be0a1a,2022-12-23,1,nixpkgs-unstable
+27392c3cb3dd,2022-12-23,2,never a channel
+8351f271f85d,2022-12-24,1,nixpkgs-unstable
+dac57a4eccf1,2022-12-24,1,darwin release
+18ee49839ea8,2022-12-24,1,nixpkgs-unstable
+fad51abd42ca,2022-12-25,3,nixos-unstable
+b139e44d78c3,2022-12-26,2,nixpkgs-unstable
+e58a7747db96,2022-12-28,1,nixpkgs-unstable
+e182da8622a3,2022-12-28,2,nixos-unstable
+57eac8945922,2022-12-29,2,never a channel
+1fc0a0f6c529,2022-12-29,2,nixpkgs-unstable
+677ed08a5093,2022-12-29,2,nixos-unstable
+5d6f45172279,2022-12-30,1,never a channel
+293a28df6d7f,2022-12-30,4,nixpkgs-unstable
+6a0d2701705c,2022-12-30,1,small release
+0c5a734cdead,2022-12-30,1,darwin release
+5353b10bd9a0,2022-12-31,1,small release
+087416863971,2023-01-01,4,darwin release
+a4379d2b0dee,2023-01-01,3,nixpkgs-unstable
+df6f17d69cef,2023-01-02,1,never a channel
+298add347c2b,2023-01-03,3,nixpkgs-unstable
+9813adc7f7c0,2023-01-03,2,nixos-unstable
+f8e4d6d5a6e5,2023-01-03,1,never a channel
+e9ade2c8240e,2023-01-04,2,darwin release
+a518c7714858,2023-01-05,2,nixos-unstable
+2dea8991d89b,2023-01-05,1,small release
+724d96642b12,2023-01-06,1,never a channel
+8c03897e2622,2023-01-06,1,small release
+d87fcbe3cd94,2023-01-07,1,never a channel
+46ee37ca1d9c,2023-01-07,1,never a channel
+0c9aadc8eff6,2023-01-08,2,nixpkgs-unstable
+35f1f865c036,2023-01-09,1,nixpkgs-unstable
+e1f9232310ff,2023-01-10,1,never a channel
+d3b4150929d4,2023-01-10,2,nixpkgs-unstable
+ce1aa2962135,2023-01-10,2,never a channel
+daef14ab647c,2023-01-11,1,never a channel
+6c8644fc37b6,2023-01-11,1,nixos-unstable
+cbf163490ee4,2023-01-11,1,never a channel
+92f9580a4c36,2023-01-12,1,nixpkgs-unstable
+0f213d0fee84,2023-01-12,3,nixos-unstable
+37b97ae3dd71,2023-01-13,4,nixpkgs-unstable
+e285dd0ca97c,2023-01-13,1,nixos release
+befc83905c96,2023-01-13,1,nixos-unstable
+d06d765eeac7,2023-01-15,1,never a channel
+6dccdc458512,2023-01-15,1,nixos-unstable
+2f9fd351ec37,2023-01-15,2,nixos release
+2d38b664b440,2023-01-17,1,nixpkgs-unstable
+b83e7f5a04a3,2023-01-17,2,darwin release
+a841e262264e,2023-01-18,1,small release
+d7705c01ef0a,2023-01-19,2,nixos-unstable
+a4f710e8584d,2023-01-19,1,never a channel
+5ed481943351,2023-01-20,1,nixos-unstable
+cfb43ad7b941,2023-01-20,2,nixpkgs-unstable
+cdead16a444a,2023-01-20,2,small release
+d3883bbfa694,2023-01-21,1,darwin release
+339fc3dcc98f,2023-01-21,2,small release
+ef479383e136,2023-01-21,2,nixpkgs-unstable
+0c9c29cfdb67,2023-01-22,1,never a channel
+ab1254087f4c,2023-01-22,4,nixos release
+9b97ad7b4330,2023-01-25,3,nixos-unstable
+6ddce71da0dd,2023-01-25,1,never a channel
+cdbe7c69c2ac,2023-01-26,1,never a channel
+ce20e9ebe190,2023-01-27,1,darwin release
+0b06495d8989,2023-01-29,1,never a channel
+d2bbcbe6c626,2023-01-29,1,nixpkgs-unstable
+1badc6db75d7,2023-01-29,1,nixpkgs-unstable
+1c02dbee4726,2023-01-31,1,darwin release
+4d7c2644dbac,2023-02-01,1,nixos-unstable
+006c3bd4dd2f,2023-02-01,1,nixpkgs-unstable
+8e8240194eda,2023-02-04,1,darwin release
+0591d6b57bfe,2023-02-04,2,nixos-unstable
+d840126a0890,2023-02-05,1,nixpkgs-unstable
+d25de6654a34,2023-02-05,2,nixpkgs-unstable
+1046c7b92e90,2023-02-06,2,nixpkgs-unstable
+b7ce17b1ebf6,2023-02-06,1,darwin release
+747927516efc,2023-02-07,1,nixpkgs-unstable
+fab09085df1b,2023-02-07,1,nixos-unstable
+49efda9011e8,2023-02-08,1,nixos release
+b2af9d9b7b2b,2023-02-09,1,small release
+6ccc4a59c3f1,2023-02-09,5,nixpkgs-unstable
+724bfc089236,2023-02-09,1,nixos-unstable
+8866a38d4d24,2023-02-09,1,small release
+103fe0800b9d,2023-02-10,2,darwin release
+1b82144edfcd,2023-02-11,1,small release
+7b6cc8561c97,2023-02-12,1,darwin release
+8c619a1f3ced,2023-02-12,1,nixpkgs-unstable
+a45a8916243a,2023-02-12,1,darwin release
+e8b67bd87cbb,2023-02-12,1,small release
+545c7a31e5de,2023-02-13,3,nixos-unstable
+014464d96d79,2023-02-13,1,never a channel
+c43f676c9386,2023-02-14,1,nixos release
+75e0a511d0e6,2023-02-14,1,small release
+a9c9d1924b43,2023-02-14,1,nixpkgs-unstable
+8c66bd1b68f4,2023-02-16,4,nixpkgs-unstable
+ac1f5b72a9e9,2023-02-16,1,nixos-unstable
+fd00212f449f,2023-02-16,1,never a channel
+de5448dab588,2023-02-17,2,small release
+9d344df50a61,2023-02-17,1,never a channel
+e6d5772f3515,2023-02-18,1,small release
+5f4e07deb7c4,2023-02-18,2,nixos-unstable
+0cf4274b5d06,2023-02-19,1,darwin release
+77517d46d2ef,2023-02-19,1,never a channel
+e19f25b587f1,2023-02-20,1,small release
+70414d340baa,2023-02-20,1,nixpkgs-unstable
+be2cc24ae2e6,2023-02-20,1,never a channel
+d0d55259081f,2023-02-21,1,nixos-unstable
+988cc958c57c,2023-02-22,2,nixos-unstable
+c95bf18beba4,2023-02-22,1,small release
+569163eaeef9,2023-02-22,1,darwin release
+38f87b67bc32,2023-02-24,1,small release
+b1f87ca164a9,2023-02-25,1,nixos-unstable
+9952d6bc395f,2023-02-25,16,nixpkgs-unstable
+7f5639fa3b68,2023-02-26,4,nixos-unstable
+3ad64d9e2d5b,2023-02-27,1,nixpkgs-unstable
+9e56d6ec92c8,2023-02-27,1,nixpkgs-unstable
+4aba90e89f6d,2023-02-28,1,never a channel
+111ca8e0378e,2023-02-28,2,never a channel
+d70f5cd5c3be,2023-02-28,1,darwin release
+96a40fa5e8de,2023-02-28,1,never a channel
+ae8bdd2de4c2,2023-02-28,1,nixpkgs-unstable
+fea42519a411,2023-03-01,1,never a channel
+a08d6979dd7c,2023-03-01,9,nixos-unstable
+8da88c64bf61,2023-03-01,1,never a channel
+865857525629,2023-03-01,1,never a channel
+96e18717904d,2023-03-02,1,darwin release
+f5ffd5787786,2023-03-03,4,nixpkgs-unstable
+3c5319ad3aa5,2023-03-04,1,nixos-unstable
+a1240f6b4a0b,2023-03-04,2,nixpkgs-unstable
+6360be075539,2023-03-04,1,never a channel
+c707238dc262,2023-03-07,1,nixos-unstable
+c90c4025bb6e,2023-03-08,2,nixos-unstable
+1e383aada51b,2023-03-08,1,nixpkgs-unstable
+5496585eb876,2023-03-09,2,nixpkgs-unstable
+0c4800d579af,2023-03-10,1,nixos-unstable
+2ce9b9842b5e,2023-03-10,2,nixpkgs-unstable
+4a1c12792864,2023-03-11,1,never a channel
+796b4a3c1d90,2023-03-11,1,nixpkgs-unstable
+b38db2c901b3,2023-03-12,1,nixpkgs-unstable
+51415e67f630,2023-03-12,1,never a channel
+5a1dc8acd977,2023-03-12,1,nixos-unstable
+8e3fad82be64,2023-03-13,1,nixpkgs-unstable
+b8afc8489dc9,2023-03-13,1,nixpkgs-unstable
+c4aec3c02162,2023-03-13,1,small release
+abb2ade261c3,2023-03-14,1,nixpkgs-unstable
+9b8e5abb1832,2023-03-15,5,small release
+126f49a01de5,2023-03-15,39,nixpkgs-unstable
+ac718d02867a,2023-03-15,1,nixos-unstable
+8914c044050c,2023-03-15,1,small release
+194c2aa446b2,2023-03-16,1,nixpkgs-unstable
+b573a7f69484,2023-03-17,3,nixos-unstable
+1603d11595a2,2023-03-18,3,nixos-unstable
+5a05160f7671,2023-03-18,1,nixpkgs-unstable
+eac7da7b519a,2023-03-19,3,darwin release
+e2c97799da5f,2023-03-20,3,small release
+8bc6945b1224,2023-03-20,2,nixpkgs-unstable
+c9ece0059f42,2023-03-21,1,nixpkgs-unstable
+19cf008bb18e,2023-03-21,2,nixos-unstable
+09ad6a72359f,2023-03-22,1,nixpkgs-unstable
+8f1bcd72727c,2023-03-23,4,darwin release
+dbf5322e93bc,2023-03-25,1,nixpkgs-unstable
+da26ae9f6ce2,2023-03-25,2,darwin release
+0cd51a933d91,2023-03-25,3,nixpkgs-unstable
+5f9d1bb572e0,2023-03-25,2,nixos-unstable
+4361baa782dc,2023-03-26,1,nixos-unstable
+deb08e5e5ae4,2023-03-26,1,never a channel
+a1c45f32e645,2023-03-27,1,never a channel
+4bb072f0a8b2,2023-03-27,4,nixos-unstable
+5b7cd5c39bef,2023-03-27,4,small release
+402cc3633cc6,2023-03-28,3,nixpkgs-unstable
+85ea78a5d748,2023-03-29,1,small release
+e779e17ebdf3,2023-03-29,1,nixpkgs-unstable
+e608c90a1cf3,2023-03-29,2,nixpkgs-unstable
+2bc59786e9fc,2023-03-30,1,never a channel
+e3652e0735fb,2023-03-30,5,nixos-unstable
+f30990fc98b8,2023-03-30,1,nixpkgs-unstable
+3364b5b117f6,2023-03-31,3,nixpkgs-unstable
+884e3b68be02,2023-04-01,2,darwin release
+9448487d9f70,2023-04-01,1,never a channel
+b1581c36189e,2023-04-01,1,never a channel
+7c656856e9eb,2023-04-01,1,nixos-unstable
+4228ba604fc8,2023-04-02,1,darwin release
+53dad94e874c,2023-04-02,2,nixos-unstable
+4a65e9f64e53,2023-04-04,1,nixpkgs-unstable
+da7761cacab0,2023-04-05,1,small release
+38263d02cf3a,2023-04-05,1,nixpkgs-unstable
+0e19daa510e4,2023-04-05,2,nixos-unstable
+144133c52604,2023-04-06,1,nixpkgs-unstable
+0040164e4735,2023-04-07,1,nixos release
+2e7d54cfde84,2023-04-07,1,nixpkgs-unstable
+d9f759f2ea8d,2023-04-08,2,nixos-unstable
+fd531dee22c9,2023-04-09,2,nixos-unstable
+da0b0bc6a5d6,2023-04-09,1,nixpkgs-unstable
+ea96b4af6148,2023-04-09,1,darwin release
+115a96e2ac1e,2023-04-10,2,darwin release
+d40d09f18260,2023-04-11,1,never a channel
+6b70761ea8c8,2023-04-11,1,nixpkgs-unstable
+fe2ecaf706a5,2023-04-12,8,nixos-unstable
+96ba1c52e54e,2023-04-12,3,nixpkgs-unstable
+abe7316dd51a,2023-04-14,1,nixos-unstable
+85b081528b93,2023-04-15,1,nixos-unstable
+29176972b4be,2023-04-15,1,nixpkgs-unstable
+f294325aed38,2023-04-16,1,nixos-unstable
+b605a205390e,2023-04-16,1,nixpkgs-unstable
+f00994e78cd3,2023-04-17,1,nixos-unstable
+0a4206a51b38,2023-04-17,1,nixpkgs-unstable
+cd749f58ba83,2023-04-17,1,small release
+e84df5564d7b,2023-04-18,1,never a channel
+645bc49f34fa,2023-04-19,2,nixos-unstable
+3d302c67ab86,2023-04-19,1,nixos release
+543700e81403,2023-04-20,1,small release
+7048a48bc79b,2023-04-20,1,nixpkgs-unstable
+2362848adf8d,2023-04-21,3,nixpkgs-unstable
+fd901ef4bf93,2023-04-21,1,nixos release
+ee7ec1c71adc,2023-04-22,1,darwin release
+e78d25df6f10,2023-04-23,1,nixos-unstable
+f5364316e314,2023-04-23,2,darwin release
+884ac2940184,2023-04-24,3,nixos-unstable
+d6b863fd9b7b,2023-04-26,1,nixos-unstable
+15b75800dce8,2023-04-26,1,darwin release
+8e3b64db39f2,2023-04-26,2,nixpkgs-unstable
+50fc86b75d27,2023-04-27,1,darwin release
+6806b63e824f,2023-04-27,2,nixpkgs-unstable
+7449971a3ecf,2023-04-28,1,darwin release
+373e9eb4c42b,2023-04-28,1,small release
+54abe781c482,2023-04-29,2,nixpkgs-unstable
+3056e9c39564,2023-04-30,1,nixpkgs-unstable
+8b3bc690e201,2023-04-30,1,nixpkgs-unstable
+1a411f23ba29,2023-05-02,1,nixos-unstable
+44f30edf5661,2023-05-02,2,nixpkgs-unstable
+5dab6490fe6d,2023-05-02,1,darwin release
+0d373d5af960,2023-05-02,1,nixpkgs-unstable
+2395e4f1f733,2023-05-03,2,nixpkgs-unstable
+0b6445b61147,2023-05-04,1,nixpkgs-unstable
+3e313808bd2e,2023-05-05,1,nixos-unstable
+bcf4eea3bd7f,2023-05-05,1,never a channel
+caf436a52b25,2023-05-05,1,nixpkgs-unstable
+16b3b0c53b1e,2023-05-06,1,nixpkgs-unstable
+897876e4c484,2023-05-06,13,nixos-unstable
+eb751d65225e,2023-05-06,1,nixpkgs-unstable
+e040aab15638,2023-05-07,2,nixpkgs-unstable
+7629f9b0680d,2023-05-08,1,darwin release
+8d447c5626cf,2023-05-08,1,nixpkgs-unstable
+9524f57dd5b3,2023-05-09,1,nixpkgs-unstable
+ea11a3977f4c,2023-05-13,1,nixpkgs-unstable
+0470f36b02ef,2023-05-14,1,nixos-unstable
+d41eea2839de,2023-05-14,1,small release
+872c89e5a754,2023-05-15,1,small release
+55af203d468a,2023-05-15,1,darwin release
+7e0743a5aea1,2023-05-16,1,nixpkgs-unstable
+48a0fb7aab51,2023-05-17,3,nixos-unstable
+628d4bb6e9f4,2023-05-18,1,nixos release
+b969a89c3e84,2023-05-18,1,nixpkgs-unstable
+3005f20ce0aa,2023-05-20,1,nixos-unstable
+7dc71aef32e8,2023-05-20,1,small release
+7084250df3d7,2023-05-22,2,nixos-unstable
+2c28f1de7cdc,2023-05-22,1,never a channel
+04aaf8511678,2023-05-24,1,small release
+99fe1b870522,2023-05-24,1,small release
+3e01645c40b9,2023-05-25,2,nixos release
+ea60cf854a92,2023-05-25,1,never a channel
+9886352ec9ab,2023-05-25,1,nixos release
+4e37b4e55b60,2023-05-28,1,nixos-unstable
+f2f1ec390714,2023-05-29,1,nixpkgs-unstable
+5e871d8aa6f5,2023-05-29,2,nixos-unstable
+58c85835512b,2023-05-29,2,nixpkgs-unstable
+4ecab3273592,2023-05-31,13,never a channel
+380be19fbd2d,2023-05-31,9,darwin release
+f0ba8235153d,2023-06-01,1,nixos release
+e635192892f5,2023-06-01,7,nixos-unstable
+f3d743463920,2023-06-02,2,nixos release
+eaf03591711b,2023-06-02,1,darwin release
+c37ca420157f,2023-06-03,2,darwin release
+e7603eba51f2,2023-06-04,1,darwin release
+2e56a8507862,2023-06-04,1,nixpkgs-unstable
+7409480d5c85,2023-06-04,2,nixos-unstable
+31cd1b4afbaf,2023-06-04,2,nixpkgs-unstable
+4729ffac6fd1,2023-06-05,1,nixos-unstable
+a558f7ac29f5,2023-06-06,1,small release
+af21c31b2a1e,2023-06-06,5,nixpkgs-unstable
+81ed90058a85,2023-06-08,1,nixos release
+a9fa8f8450a2,2023-06-08,1,nixpkgs-unstable
+66c418d299cd,2023-06-09,1,nixpkgs-unstable
+47c9ecbac352,2023-06-09,1,never a channel
+a30520bf8eab,2023-06-10,1,nixpkgs-unstable
+219511143837,2023-06-10,1,nixos-unstable
+f93429ebe8d0,2023-06-10,1,never a channel
+d3bb401dcfc5,2023-06-10,2,small release
+eef86b8a9429,2023-06-11,1,darwin release
+9401a0c780b4,2023-06-11,2,nixpkgs-unstable
+75a5ebf473cd,2023-06-11,6,nixos-unstable
+bb8b5735d6f7,2023-06-11,4,nixos release
+6b1b72c0f887,2023-06-11,1,nixpkgs-unstable
+7e63eed14556,2023-06-12,3,nixpkgs-unstable
+202850e1a11a,2023-06-12,1,never a channel
+ddf4688dc7ae,2023-06-14,3,nixos release
+7c67f006ea0e,2023-06-15,1,nixos-unstable
+93fddcf640ce,2023-06-16,1,darwin release
+2f9c0ffde850,2023-06-16,1,never a channel
+992ccdd822ec,2023-06-16,1,nixpkgs-unstable
+04af42f3b31d,2023-06-16,3,nixos-unstable
+2c09e8eb8717,2023-06-17,2,nixpkgs-unstable
+e2e2059d1966,2023-06-17,1,darwin release
+91430887645a,2023-06-18,1,nixpkgs-unstable
+ad157fe26e74,2023-06-19,2,small release
+b6c73c5fe53b,2023-06-20,3,nixos release
+d3e0eb0fd8c1,2023-06-20,1,never a channel
+ef0bc3976340,2023-06-21,1,nixos release
+3fb3ce0b6b84,2023-06-21,1,nixpkgs-unstable
+e603dc5f061c,2023-06-21,4,nixos-unstable
+ecb441f22067,2023-06-22,2,nixos release
+3ae20aa58a6c,2023-06-22,4,nixos-unstable
+3d8a93602bc5,2023-06-23,4,nixpkgs-unstable
+2c59f96089a1,2023-06-23,1,never a channel
+33223d479ffd,2023-06-23,1,nixos release
+9dbd51e1f1ed,2023-06-24,1,darwin release
+07059ee2fa34,2023-06-25,3,nixpkgs-unstable
+35130d4b4f0b,2023-06-25,1,darwin release
+9897244e27e7,2023-06-27,1,small release
+a565059a3484,2023-06-27,1,nixpkgs-unstable
+e18dc963075e,2023-06-27,1,nixos-unstable
+7b68b7245925,2023-06-28,1,never a channel
+1c851e8c92b7,2023-06-28,1,nixpkgs-unstable
+60a783e00517,2023-06-28,3,nixpkgs-unstable
+58f16ff9d247,2023-06-29,1,never a channel
+c6643a93d25a,2023-06-29,1,nixos release
+4bc72cae1077,2023-06-29,2,nixos-unstable
+0de860591289,2023-06-30,1,darwin release
+cd99c2b3c9f1,2023-07-01,4,nixpkgs-unstable
+6da98d286230,2023-07-02,1,never a channel
+0fbe93c5a7ca,2023-07-02,2,nixos-unstable
+ea4c80b39be4,2023-07-03,9,darwin release
+453da3c28f7a,2023-07-03,1,nixpkgs-unstable
+78419edadf0f,2023-07-04,1,nixos-unstable
+023b1df88297,2023-07-04,1,nixpkgs-unstable
+f292b4964cb7,2023-07-05,4,nixos-unstable
+e11142026e2c,2023-07-05,4,small release
+5daaa32204e9,2023-07-06,6,nixpkgs-unstable
+3c7487575d94,2023-07-06,2,nixos-unstable
+b4de0d6537df,2023-07-07,1,never a channel
+d8bb6c681cf8,2023-07-07,3,darwin release
+842e90934a35,2023-07-07,1,nixpkgs-unstable
+0b25b4c7c97e,2023-07-08,1,never a channel
+510d721ce097,2023-07-08,1,darwin release
+4ddf98349c79,2023-07-09,1,nixpkgs-unstable
+408c0e8c15a1,2023-07-09,1,nixos-unstable
+b9ebd80c7dbc,2023-07-10,2,nixpkgs-unstable
+4a729ce4b1fe,2023-07-10,2,nixos-unstable
+a187ec43efbe,2023-07-10,1,nixpkgs-unstable
+8163a64662b4,2023-07-10,1,darwin release
+f2406198ea0e,2023-07-11,2,nixos-unstable
+98da3dd0de66,2023-07-11,1,small release
+6fd9edc94426,2023-07-12,1,nixpkgs-unstable
+0e1fc501c607,2023-07-12,1,never a channel
+fcc147b1e935,2023-07-12,1,small release
+686945e0c07d,2023-07-12,1,nixpkgs-unstable
+22d4983e9a32,2023-07-14,1,never a channel
+0c8447e18676,2023-07-14,1,never a channel
+46ed466081b9,2023-07-15,1,nixpkgs-unstable
+3368e885d8ce,2023-07-15,1,small release
+29bcead8405c,2023-07-15,1,nixpkgs-unstable
+6cee3b589309,2023-07-16,2,nixos-unstable
+d0f2758381ca,2023-07-17,1,nixpkgs-unstable
+53657afe2974,2023-07-17,2,small release
+57695599bdc4,2023-07-17,2,nixpkgs-unstable
+684c17c429c4,2023-07-18,3,nixos-unstable
+08700de174bc,2023-07-18,2,nixos release
+7f256d7da238,2023-07-19,1,nixpkgs-unstable
+2d82894fa1e2,2023-07-20,4,nixpkgs-unstable
+5df4d78d54f7,2023-07-20,1,nixos-unstable
+081d7a5712ce,2023-07-20,1,never a channel
+5715a24aed37,2023-07-20,1,never a channel
+fa793b06f568,2023-07-20,3,darwin release
+e43e2448161c,2023-07-21,1,nixpkgs-unstable
+9ca785644d06,2023-07-21,1,nixos-unstable
+12303c652b88,2023-07-22,1,nixos-unstable
+883fd35c940a,2023-07-22,1,nixpkgs-unstable
+af8cd5ded773,2023-07-22,2,nixpkgs-unstable
+ac1acba43b2f,2023-07-23,2,nixos release
+5cd9cccc8e86,2023-07-23,1,never a channel
+b12803b6d90e,2023-07-23,4,nixos-unstable
+ef99fa5c5ed6,2023-07-25,3,nixos-unstable
+a9b47d85504b,2023-07-25,1,nixpkgs-unstable
+f3fbbc36b4e1,2023-07-26,1,darwin release
+db8672b8d0a2,2023-07-27,2,nixpkgs-unstable
+3173ae5d63eb,2023-07-27,1,never a channel
+8cacc05fbfff,2023-07-28,1,never a channel
+e6ab46982deb,2023-07-29,2,nixos-unstable
+3acb5c4264c4,2023-07-30,1,nixpkgs-unstable
+9418167277f6,2023-07-31,1,nixpkgs-unstable
+b7cde1c47b73,2023-07-31,1,small release
+9e1960bc196b,2023-08-01,1,nixos-unstable
+4cd04c8dbf79,2023-08-01,1,never a channel
+4a56ce9727a0,2023-08-02,1,nixpkgs-unstable
+7d050b98e51c,2023-08-04,1,nixpkgs-unstable
+5767e7b931f2,2023-08-04,1,nixpkgs-unstable
+9607b9149c9d,2023-08-05,1,darwin release
+97bd658852ce,2023-08-05,1,nixpkgs-unstable
+240472b7e47a,2023-08-05,1,darwin release
+e365e1db48d0,2023-08-05,1,never a channel
+61676e4dcfee,2023-08-06,1,darwin release
+5a8e9243812b,2023-08-06,2,nixos-unstable
+011567f35433,2023-08-07,1,darwin release
+844ffa82bbe2,2023-08-07,2,nixpkgs-unstable
+4e6868b1aa37,2023-08-08,1,nixpkgs-unstable
+78287547942d,2023-08-08,1,nixos release
+ce5e4a6ef2e5,2023-08-10,2,nixos-unstable
+4d2389b92769,2023-08-10,1,nixpkgs-unstable
+18784aac1013,2023-08-10,1,darwin release
+f0451844bbdf,2023-08-12,2,nixpkgs-unstable
+100a1550b0e7,2023-08-12,1,nixos-unstable
+6e287913f7b1,2023-08-13,2,nixos-unstable
+de2b8ddf94d6,2023-08-14,1,nixpkgs-unstable
+09a137528c3a,2023-08-14,2,small release
+ea95c0917609,2023-08-14,1,nixpkgs-unstable
+be9b7ddbdc81,2023-08-15,1,never a channel
+caac0eb6bdca,2023-08-16,2,nixos-unstable
+d20d5f590d01,2023-08-16,1,never a channel
+b30c68669df7,2023-08-16,1,small release
+ae521bd4e460,2023-08-17,1,darwin release
+8ecc900b2f69,2023-08-18,1,nixos-unstable
+5fc085988400,2023-08-18,1,never a channel
+2f9286912cb2,2023-08-18,3,nixpkgs-unstable
+4cdad15f34e6,2023-08-18,2,darwin release
+d680ded26da5,2023-08-19,4,nixos-unstable
+3476a1047858,2023-08-19,1,nixpkgs-unstable
+0b07d4957ee1,2023-08-20,1,nixpkgs-unstable
+91a22f76cd17,2023-08-21,4,nixos-unstable
+9d757ec49866,2023-08-21,2,nixpkgs-unstable
+a16f7eb56e88,2023-08-22,2,small release
+9201b5ff357e,2023-08-23,28,nixpkgs-unstable
+f3961adf6aa6,2023-08-24,1,never a channel
+18324978d632,2023-08-24,1,nixos-unstable
+42b0d9aac5df,2023-08-24,1,never a channel
+74e5bdc5478e,2023-08-25,1,nixos release
+5690c4271f29,2023-08-25,1,nixos-unstable
+c66ccfa00c64,2023-08-26,1,nixpkgs-unstable
+cf2004afe4d4,2023-08-26,1,nixos-unstable
+cddebdb60de3,2023-08-27,1,nixpkgs-unstable
+a999c1cc0c9e,2023-08-27,3,nixos-unstable
+ea5234e7073d,2023-08-27,2,darwin release
+48a24fce1d15,2023-08-28,1,small release
+c540061ac8d7,2023-08-28,1,darwin release
+a63a64b593dc,2023-08-29,1,nixpkgs-unstable
+e7f38be3775b,2023-08-29,2,nixos-unstable
+841889913dfd,2023-08-30,3,darwin release
+e35f1fd9763f,2023-08-30,1,never a channel
+3e52e76b70d5,2023-08-31,1,nixos-unstable
+da938d190e23,2023-08-31,1,nixpkgs-unstable
+0edab9b48588,2023-09-01,2,never a channel
+fd8ad6308388,2023-09-01,1,nixpkgs-unstable
+e7f35e03abd0,2023-09-02,3,nixpkgs-unstable
+e56990880811,2023-09-02,2,nixos-unstable
+f94004b92ff9,2023-09-02,1,never a channel
+d816b5ab4418,2023-09-02,1,nixpkgs-unstable
+da5adce0ffaf,2023-09-03,3,small release
+3c15feef7770,2023-09-04,2,nixos-unstable
+6a2fd5e262c5,2023-09-04,1,never a channel
+374433bcfbc8,2023-09-04,1,never a channel
+4077a0e4ac33,2023-09-05,1,darwin release
+0bffda19b8af,2023-09-06,1,nixos-unstable
+b200e0df08f8,2023-09-06,1,nixpkgs-unstable
+32f2fb320b86,2023-09-07,1,never a channel
+db9208ab987c,2023-09-08,3,nixos-unstable
+5abdb0e05eaf,2023-09-09,1,never a channel
+78058d810644,2023-09-10,1,nixpkgs-unstable
+a604b522be97,2023-09-10,1,small release
+3a2786eea085,2023-09-11,1,nixos-unstable
+1697b7d48044,2023-09-13,2,nixpkgs-unstable
+dc32d28c2fd2,2023-09-13,1,never a channel
+2f6fe7a29c04,2023-09-14,1,never a channel
+ef7ff2a59740,2023-09-14,1,never a channel
+639e7964231d,2023-09-14,1,never a channel
+360a7d31c30a,2023-09-14,4,small release
+ace5093e36ab,2023-09-15,8,nixos-unstable
+882baeb2c6b0,2023-09-15,1,darwin release
+47585496bcb1,2023-09-15,1,never a channel
+5d017a8822e0,2023-09-17,3,nixos release
+5148520bfab6,2023-09-17,4,nixpkgs-unstable
+970a59bd19ef,2023-09-17,4,nixos-unstable
+9451e1fd630e,2023-09-18,1,never a channel
+1ab0c3013048,2023-09-18,2,never a channel
+5925c27bb782,2023-09-19,1,never a channel
+8b5ab8341e33,2023-09-19,1,nixpkgs-unstable
+f9a5d84f4aad,2023-09-19,1,never a channel
+5ba549eafcf3,2023-09-19,2,nixos-unstable
+2452c22ef1b4,2023-09-19,1,never a channel
+fe977679240a,2023-09-20,1,nixpkgs-unstable
+e12483116b3b,2023-09-21,2,nixpkgs-unstable
+e35dcc04a385,2023-09-21,1,nixos-unstable
+261abe8a44a7,2023-09-24,2,nixos release
+6500b4580c2a,2023-09-25,5,nixos-unstable
+7e5e43ef91a3,2023-09-25,1,never a channel
+f3dab3509afc,2023-09-27,3,nixpkgs-unstable
+bc571a7386d2,2023-09-27,1,never a channel
+8a86b98f0ba1,2023-09-27,4,nixos-unstable
+517501bcf14a,2023-09-27,1,nixpkgs-unstable
+cdd726e1deb4,2023-09-28,1,small release
+f5892ddac112,2023-09-29,7,nixos-unstable
+fdd898f8f79e,2023-10-01,3,nixos-unstable
+fc42b380163d,2023-10-01,1,never a channel
+f902cb49892d,2023-10-02,3,nixpkgs-unstable
+0c7ffbc66e6d,2023-10-02,2,nixpkgs-unstable
+3b79cc4bcd9c,2023-10-03,2,darwin release
+8a4c17493e5c,2023-10-03,1,darwin release
+81e8f48ebdec,2023-10-03,2,nixos-unstable
+7131f3c223a2,2023-10-04,1,nixpkgs-unstable
+35502f30abc1,2023-10-05,1,never a channel
+b3e14b9045a7,2023-10-05,1,small release
+a2eb207f45e4,2023-10-06,1,nixpkgs-unstable
+ea0e428f8695,2023-10-06,1,never a channel
+87828a0e03d1,2023-10-06,8,nixos-unstable
+b604023e0a55,2023-10-06,1,nixpkgs-unstable
+945559664c1d,2023-10-07,2,nixpkgs-unstable
+5a237aecb572,2023-10-07,1,nixos release
+5aabb5780a11,2023-10-07,1,nixpkgs-unstable
+f99e5f03cc0a,2023-10-09,3,nixos-unstable
+af99452de575,2023-10-10,1,never a channel
+bd1cde45c778,2023-10-10,1,darwin release
+01441e14af5e,2023-10-11,1,nixpkgs-unstable
+5e4c2ada4fcd,2023-10-11,5,nixos-unstable
+898cb2064b6e,2023-10-13,3,small release
+9cb540e9c191,2023-10-14,1,never a channel
+12bdeb01ff9e,2023-10-15,4,nixpkgs-unstable
+ad9a253a0d34,2023-10-15,5,never a channel
+9606c209b83b,2023-10-15,1,never a channel
+ca012a02bf83,2023-10-16,1,nixos-unstable
+7c9cc5a6e5d3,2023-10-19,7,nixos-unstable
+038b2922be3f,2023-10-20,2,nixpkgs-unstable
+51d906d2341c,2023-10-21,6,nixpkgs-unstable
+b3ddf9649fda,2023-10-21,1,nixos release
+69919a28af1c,2023-10-23,1,never a channel
+2063178b4dcc,2023-10-23,1,never a channel
+8efd5d1e2836,2023-10-24,4,nixos-unstable
+04f431fe64a5,2023-10-24,1,nixos release
+b5a7f1286c52,2023-10-25,1,never a channel
+75a52265bda7,2023-10-25,3,nixpkgs-unstable
+63678e9f3d3a,2023-10-26,6,nixos-unstable
+808c0d8c53c7,2023-10-26,1,nixpkgs-unstable
+1a3c95e3b23b,2023-10-27,1,nixos release
+90e85bc7c1a6,2023-10-28,3,nixpkgs-unstable
+3e10c80821de,2023-10-28,1,darwin release
+0cbe9f69c234,2023-10-29,5,nixos-unstable
+9eb24edd6a00,2023-11-01,1,never a channel
+c082856b850e,2023-11-01,2,nixpkgs-unstable
+fa804edfb786,2023-11-02,2,nixos-unstable
+dbb68f0b494f,2023-11-02,1,never a channel
+9d5d25bbfe8c,2023-11-04,2,nixpkgs-unstable
+85f1ba3e5167,2023-11-04,14,nixos-unstable
+e583a3b08f2b,2023-11-04,1,nixpkgs-unstable
+aeefe2054617,2023-11-05,2,darwin release
+a0b3b06b7a82,2023-11-05,2,nixpkgs-unstable
+41de143fda10,2023-11-06,1,nixos release
+ec750fd01963,2023-11-06,4,nixpkgs-unstable
+d9cc44b51e9b,2023-11-08,1,never a channel
+da44563672fb,2023-11-08,1,small release
+a5741b3dcfec,2023-11-08,1,never a channel
+c41b26e688ff,2023-11-09,1,darwin release
+da4024d0ead5,2023-11-09,1,nixos release
+78d4812ec70d,2023-11-10,1,never a channel
+911ad1e67f45,2023-11-11,3,nixpkgs-unstable
+bf744fe90419,2023-11-14,4,nixos-unstable
+c67420ca5a91,2023-11-15,1,never a channel
+7414e9ee0b3e,2023-11-15,4,nixpkgs-unstable
+f4b1ed666ec4,2023-11-16,1,never a channel
+c757e9bd77b1,2023-11-16,2,nixos-unstable
+e4ad989506ec,2023-11-19,8,nixos-unstable
+0c5678df521e,2023-11-19,2,nixos release
+3f21a22b5aaf,2023-11-19,2,nixpkgs-unstable
+9ec596ce5d1a,2023-11-20,1,never a channel
+51a01a7e5515,2023-11-20,4,nixpkgs-unstable
+19cbff58383a,2023-11-21,9,nixos-unstable
+5a09cb4b393d,2023-11-23,6,nixos-unstable
+ffcadd021d92,2023-11-24,1,small release
+0bd59c54ef06,2023-11-24,2,nixpkgs-unstable
+5304b1a4eaee,2023-11-25,1,never a channel
+c5180737dbd4,2023-11-26,1,never a channel
+8cfef6986adf,2023-11-26,6,nixos-unstable
+7c4c20509c43,2023-11-27,1,small release
+5630bd0984b3,2023-11-28,1,never a channel
+85306ef2470b,2023-11-28,2,nixpkgs-unstable
+e92039b55bcd,2023-11-29,5,nixos-unstable
+50aa30a13c4a,2023-11-29,1,nixos release
+057f9aecfb71,2023-11-29,17,never a channel
+f5c27c6136db,2023-11-30,4,nixpkgs-unstable
+1bce6a1791a5,2023-11-30,1,small release
+5de0b32be6e8,2023-11-30,2,nixos release
+91050ea1e57e,2023-12-01,5,nixos-unstable
+30e89e4fcdfb,2023-12-01,1,never a channel
+933d7dc15509,2023-12-02,1,nixos release
+59942e77506c,2023-12-02,1,never a channel
+09ec6a0881e1,2023-12-04,1,nixpkgs-unstable
+2c7f3c0fb7c0,2023-12-04,4,nixos-unstable
+8998288f7bf2,2023-12-04,1,never a channel
+325eb628b89b,2023-12-06,1,nixpkgs-unstable
+b4372c4924d9,2023-12-07,2,nixos release
+666fc80e7b2a,2023-12-09,6,nixos-unstable
+e4e2a842524f,2023-12-10,1,never a channel
+781e2a9797ec,2023-12-10,3,nixos release
+eec92ca9df6a,2023-12-10,1,never a channel
+e97b3e4186bc,2023-12-10,16,nixpkgs-unstable
+a9bf124c46ef,2023-12-11,12,nixos-unstable
+cf28ee258fd5,2023-12-11,1,nixos release
+946310306972,2023-12-11,2,nixos release
+aa9d4729cbc9,2023-12-13,8,nixpkgs-unstable
+dff64d4ba6e9,2023-12-14,1,small release
+02357adddd08,2023-12-15,1,small release
+40c3c94c2412,2023-12-15,1,nixos release
+1e2e384c5b7c,2023-12-16,2,darwin release
+08b15dd55750,2023-12-17,1,never a channel
+63dd8e1d2e81,2023-12-19,1,never a channel
+54aac082a4d9,2023-12-19,16,nixos-unstable
+f27bb1216c94,2023-12-20,1,never a channel
+d6863cbcbbb8,2023-12-20,4,nixpkgs-unstable
+6df37dc6a776,2023-12-22,2,nixos-unstable
+7790e078f897,2023-12-23,1,darwin release
+6586ea5fb647,2023-12-23,1,never a channel
+5f64a12a7289,2023-12-24,3,nixos-unstable
+d02d818f22c7,2023-12-24,1,darwin release
+e1fa12d4f6c6,2023-12-25,4,nixpkgs-unstable
+cfc3698c31b1,2023-12-26,5,nixos-unstable
+6db1324e4c9f,2023-12-27,1,never a channel
+95e649933385,2023-12-29,1,never a channel
+b0d36bd0a420,2023-12-30,2,nixos-unstable
+32f63574c85f,2023-12-30,4,small release
+d44d59d2b5bd,2023-12-30,3,nixpkgs-unstable
+2c9c58e98243,2023-12-31,1,small release
+bd39e4e241aa,2023-12-31,1,darwin release
+4f32f9677aad,2024-01-01,1,never a channel
+63143ac2c918,2024-01-01,22,nixpkgs-unstable
+bd645e8668ec,2024-01-02,6,nixos-unstable
+70bdadeb94ff,2024-01-03,20,darwin release
+b0b2c5445c64,2024-01-03,1,nixos release
+efc960b6d6a6,2024-01-03,1,never a channel
+c1be43e8e837,2024-01-04,2,darwin release
+3e2503b324d5,2024-01-05,1,never a channel
+a16b349f3c4c,2024-01-05,1,never a channel
+b4ccf4688c5c,2024-01-05,1,never a channel
+46ae0210ce16,2024-01-06,3,nixos-unstable
+207b14c6bd10,2024-01-07,1,darwin release
+24fe8bb4f552,2024-01-07,2,nixpkgs-unstable
+61402f77f693,2024-01-07,1,never a channel
+317484b1ead8,2024-01-08,7,nixos-unstable
+6723fa4e4f1a,2024-01-08,1,nixos release
+eabe8d3eface,2024-01-09,5,nixpkgs-unstable
+3dc440faeee9,2024-01-10,2,nixos release
+a1982c92d898,2024-01-11,18,darwin release
+2bce5ccff0ad,2024-01-12,20,darwin release
+9b19f5e77dd9,2024-01-13,7,nixos-unstable
+428544ae95ee,2024-01-13,1,darwin release
+e0629618b4b4,2024-01-14,1,nixpkgs-unstable
+c3e128f3c0ec,2024-01-15,1,nixos-unstable
+b8dd8be3c790,2024-01-15,1,darwin release
+e1f1b5bcd2db,2024-01-16,1,never a channel
+f0326542989e,2024-01-16,1,nixpkgs-unstable
+8bf65f17d807,2024-01-16,1,nixos release
+15ee47600479,2024-01-16,1,never a channel
+842d9d80cfd4,2024-01-17,11,nixos-unstable
+b06ff4bf8f4a,2024-01-18,1,nixpkgs-unstable
+908bdacd406c,2024-01-18,1,never a channel
+959e8a242850,2024-01-18,1,never a channel
+4471857c0a4a,2024-01-18,2,nixpkgs-unstable
+d2003f2223cb,2024-01-18,2,darwin release
+a455c5fb3ee5,2024-01-19,2,nixpkgs-unstable
+bbe7d8f876fb,2024-01-19,2,nixos-unstable
+e5d1c87f5813,2024-01-19,2,nixpkgs-unstable
+612f97239e2c,2024-01-21,8,nixos-unstable
+f36cf57e73ad,2024-01-21,1,never a channel
+5f5210aa20e3,2024-01-21,2,nixpkgs-unstable
+9a333eaa8090,2024-01-22,4,never a channel
+4d3d04cfd372,2024-01-22,1,nixpkgs-unstable
+32a39253e05f,2024-01-22,1,never a channel
+b43bb235efea,2024-01-23,1,nixpkgs-unstable
+a77ab169a83a,2024-01-24,3,nixos release
+826606889e22,2024-01-24,1,never a channel
+4fddc9be4eaf,2024-01-25,3,nixpkgs-unstable
+ae5c332cbb58,2024-01-25,6,nixos-unstable
+160b762eda6d,2024-01-27,3,nixpkgs-unstable
+c002c6aa977a,2024-01-27,3,nixos-unstable
+56911ef3403a,2024-01-27,1,nixos release
+bc838f6bd7a7,2024-01-27,1,never a channel
+90f456026d28,2024-01-28,2,nixpkgs-unstable
+f4a8d6d5324c,2024-01-28,1,nixos release
+97b17f32362e,2024-01-29,4,nixos-unstable
+e8c3dda16873,2024-01-29,1,never a channel
+3dc28a618283,2024-01-30,1,never a channel
+5ad9903c1612,2024-01-30,6,nixpkgs-unstable
+269ce7215bb5,2024-01-31,2,nixpkgs-unstable
+53fbe41cf76b,2024-01-31,2,nixos release
+b8b232ae7b8b,2024-01-31,4,nixos-unstable
+03fd917545ea,2024-02-01,1,never a channel
+5c5bca5a97c0,2024-02-01,1,small release
+25e3d4c0d359,2024-02-01,3,small release
+e92b60158819,2024-02-02,3,nixos-unstable
+79a13f1437e1,2024-02-02,4,nixpkgs-unstable
+5064f097b919,2024-02-04,1,never a channel
+9f2ee8c91ac4,2024-02-04,2,nixos release
+faf912b08657,2024-02-04,8,nixos-unstable
+8cc79aa39bbc,2024-02-05,1,nixpkgs-unstable
+f8e2ebd66d09,2024-02-06,5,nixos-unstable
+6832d0d99649,2024-02-07,3,small release
+c0b7a892fb04,2024-02-08,1,nixpkgs-unstable
+62b27fc5602b,2024-02-08,1,never a channel
+442d40799238,2024-02-08,6,nixpkgs-unstable
+20f65b86b648,2024-02-09,1,nixos release
+4bac5f4fe6b9,2024-02-10,1,never a channel
+10b813040df6,2024-02-10,1,nixpkgs-unstable
+809cca784b9f,2024-02-11,1,nixos release
+f9d39fb9aff0,2024-02-11,1,nixos-unstable
+2d627a2a7047,2024-02-12,3,nixpkgs-unstable
+9349d172d47e,2024-02-12,1,never a channel
+01885a071465,2024-02-12,2,darwin release
+35ff7e87ee05,2024-02-13,1,nixos-unstable
+18a10782f0be,2024-02-14,1,never a channel
+f7e8132daca3,2024-02-14,1,nixpkgs-unstable
+a4d4fe8c5002,2024-02-14,3,nixos-unstable
+085589047343,2024-02-15,2,nixpkgs-unstable
+0ca77ade2a34,2024-02-15,1,darwin release
+5863c27340ba,2024-02-16,10,nixos-unstable
+6e2f00c83911,2024-02-16,1,nixpkgs-unstable
+5d874ac46894,2024-02-17,2,never a channel
+e015f24e508c,2024-02-17,2,nixpkgs-unstable
+35c5863c29ce,2024-02-17,1,small release
+045b51a3ae66,2024-02-18,1,nixpkgs-unstable
+e0da498ad77a,2024-02-18,1,darwin release
+b98a4e1746ac,2024-02-18,1,nixos-unstable
+9312b935a538,2024-02-19,1,never a channel
+f33dd27a47eb,2024-02-19,1,nixpkgs-unstable
+45b70ce5a428,2024-02-20,1,never a channel
+0e74ca98a74b,2024-02-20,5,nixos-unstable
+ac4c5a60bebf,2024-02-21,1,nixpkgs-unstable
+98b00b6947a9,2024-02-21,2,nixpkgs-unstable
+3cb4ae6689d2,2024-02-21,1,nixos release
+cbc4211f0aff,2024-02-22,2,nixos-unstable
+48b75eb6e521,2024-02-23,1,nixpkgs-unstable
+c5101e457206,2024-02-23,1,nixos release
+27c12cd057b9,2024-02-23,1,nixpkgs-unstable
+f63ce824cd2f,2024-02-23,1,nixpkgs-unstable
+73de017ef2d1,2024-02-24,8,nixos-unstable
+9a9dae8f6319,2024-02-24,2,nixpkgs-unstable
+5bf1cadb72ab,2024-02-24,1,darwin release
+13aff9b34cc3,2024-02-26,4,nixos-unstable
+b550fe4b4776,2024-02-27,1,darwin release
+c8e74c2f83fe,2024-02-28,2,nixos release
+ebe6e807793e,2024-02-29,1,nixpkgs-unstable
+b5f6e3881acf,2024-02-29,1,nixpkgs-unstable
+1536926ef562,2024-02-29,11,nixos-unstable
+ec869190b56a,2024-03-01,3,nixpkgs-unstable
+79baff8812a0,2024-03-01,2,small release
+458b097d81f9,2024-03-01,2,nixpkgs-unstable
+fa9a51752f1b,2024-03-02,3,nixpkgs-unstable
+66d65cb00b82,2024-03-02,1,small release
+b8697e57f102,2024-03-03,6,nixos-unstable
+207107bbc7d6,2024-03-04,1,small release
+617579a78725,2024-03-04,1,nixos release
+311a4be96d94,2024-03-04,1,nixpkgs-unstable
+9142226ecebb,2024-03-05,1,never a channel
+9df3e30ce24f,2024-03-05,12,nixos-unstable
+f945939fd679,2024-03-06,2,nixpkgs-unstable
+3030f185ba6a,2024-03-08,10,nixos-unstable
+b94a96839afc,2024-03-09,3,nixos release
+db339f1706f5,2024-03-10,1,nixpkgs-unstable
+9c1dfe2db4be,2024-03-11,1,small release
+7eeacecff44e,2024-03-12,2,nixpkgs-unstable
+14feac318eef,2024-03-12,1,never a channel
+0ad13a683344,2024-03-12,4,nixos-unstable
+73bf415737ce,2024-03-12,1,nixpkgs-unstable
+d691274a972b,2024-03-14,3,nixos-unstable
+431fd13c27fa,2024-03-15,1,never a channel
+3e6b090c05a4,2024-03-15,1,darwin release
+b1d47989352f,2024-03-15,1,nixpkgs-unstable
+bda93c2221bc,2024-03-15,1,small release
+9af9c1c87ed3,2024-03-15,1,nixpkgs-unstable
+8ac30a39abc5,2024-03-15,2,darwin release
+c75037bbf909,2024-03-16,6,nixos-unstable
+614b4613980a,2024-03-17,2,darwin release
+34ad8c9f29a1,2024-03-17,1,nixpkgs-unstable
+e367f7a1fb93,2024-03-18,2,nixpkgs-unstable
+b06025f1533a,2024-03-18,6,nixos-unstable
+7872526e9c53,2024-03-19,2,nixpkgs-unstable
+0754322c1741,2024-03-20,1,never a channel
+20f77aa09916,2024-03-20,6,nixos-unstable
+a3ed7406349a,2024-03-22,1,nixpkgs-unstable
+56528ee42526,2024-03-22,3,nixos release
+44d0940ea560,2024-03-22,10,nixos-unstable
+e1d501922fd7,2024-03-23,3,nixpkgs-unstable
+57e6b3a9e4eb,2024-03-24,5,nixos-unstable
+07262b18b970,2024-03-25,2,nixpkgs-unstable
+44733514b72e,2024-03-26,2,darwin release
+b776d8d98eaa,2024-03-26,1,never a channel
+9d6ddb13cee3,2024-03-26,1,small release
+2726f127c15a,2024-03-27,9,nixos-unstable
+219951b495fc,2024-03-28,4,darwin release
+9b09bde6e3fc,2024-03-28,2,nixpkgs-unstable
+d8fe5e6c92d0,2024-03-29,16,nixos-unstable
+807c549feabc,2024-03-29,2,nixpkgs-unstable
+7848d6f048d3,2024-03-30,2,never a channel
+ec835aa3dc86,2024-03-31,1,never a channel
+292a4d8fa119,2024-03-31,1,small release
+2a1fd0fd6862,2024-04-01,1,darwin release
+08b9151ed403,2024-04-02,2,nixos-unstable
+fd281bd6b7d3,2024-04-03,8,nixos-unstable
+f480f9d09e4b,2024-04-03,1,nixpkgs-unstable
+23ff7d9dc4f3,2024-04-04,1,nixpkgs-unstable
+72da83d9515b,2024-04-05,1,nixos release
+841e26462b69,2024-04-05,1,never a channel
+e38d7cb66ea4,2024-04-06,2,darwin release
+ff0dbd94265a,2024-04-06,8,nixos-unstable
+600b15aea1b3,2024-04-06,20,nixpkgs-unstable
+298edc8f1e0d,2024-04-06,1,small release
+cea802fc743e,2024-04-07,1,never a channel
+b0dab7cc34ef,2024-04-07,1,nixpkgs-unstable
+d272ca50d1f7,2024-04-08,2,nixos release
+4cba8b53da47,2024-04-08,5,nixos-unstable
+a76c4553d7e7,2024-04-09,2,nixpkgs-unstable
+b2cf36f43f9e,2024-04-10,3,nixos release
+d6b3ddd253c5,2024-04-10,4,nixpkgs-unstable
+1042fd8b148a,2024-04-10,4,nixos-unstable
+f173d0881eff,2024-04-11,3,nixpkgs-unstable
+51651a540816,2024-04-11,4,darwin release
+a0c9e3aee100,2024-04-11,2,nixpkgs-unstable
+92323443a56f,2024-04-12,3,never a channel
+623ac957cb99,2024-04-12,1,never a channel
+cfd6b5fc90b1,2024-04-12,5,nixos-unstable
+90055d5e616b,2024-04-13,1,nixos release
+2748d22b45a9,2024-04-14,4,nixpkgs-unstable
+53a2c32bc66f,2024-04-14,1,nixos release
+5672bc9dbf9d,2024-04-15,4,nixos-unstable
+2fd19c8be255,2024-04-16,1,nixpkgs-unstable
+30b424fd784f,2024-04-16,1,never a channel
+66adc1e47f87,2024-04-16,5,nixos-unstable
+68142254d202,2024-04-16,1,never a channel
+e402c3eb6d88,2024-04-17,2,darwin release
+2e359fb3162c,2024-04-17,1,nixpkgs-unstable
+392320f29b07,2024-04-17,1,small release
+d764f230634f,2024-04-18,1,nixpkgs-unstable
+5c24cf2f0a12,2024-04-19,5,nixos-unstable
+92d295f58863,2024-04-19,1,nixpkgs-unstable
+bc194f70731c,2024-04-19,1,darwin release
+c0f9060ec393,2024-04-20,1,small release
+74574c385779,2024-04-20,1,darwin release
+f2d7a289c5a5,2024-04-21,2,nixpkgs-unstable
+eaf5ec98fe5b,2024-04-21,1,never a channel
+6143fc5eeb9c,2024-04-21,8,nixos-unstable
+a5e4bbcb4780,2024-04-21,2,nixos release
+1e1dc66fe689,2024-04-22,3,nixpkgs-unstable
+572af610f615,2024-04-23,2,nixos-unstable
+4f6ebb60e63f,2024-04-24,1,never a channel
+dd37924974b9,2024-04-24,3,darwin release
+bf182c39d943,2024-04-25,1,nixpkgs-unstable
+7bb2ccd8cdc4,2024-04-25,9,nixos-unstable
+4c86138ce486,2024-04-25,1,nixpkgs-unstable
+58a1abdbae32,2024-04-27,16,nixos-unstable
+12430e43bd9b,2024-04-27,3,darwin release
+cf8cc1201be8,2024-04-28,3,nixpkgs-unstable
+bb54a0c19776,2024-04-29,2,never a channel
+097de5af2172,2024-04-30,1,never a channel
+0638fe2715d9,2024-04-30,3,nixos release
+63c3a29ca824,2024-05-02,3,nixos-unstable
+94035b482d18,2024-05-02,1,nixpkgs-unstable
+5fd8536a9a59,2024-05-03,1,nixpkgs-unstable
+e9be42459999,2024-05-03,2,nixos-unstable
+651b4702e27a,2024-05-03,2,darwin release
+d32560238207,2024-05-04,1,nixpkgs-unstable
+dd1e778bf69f,2024-05-04,1,never a channel
+25865a40d14b,2024-05-05,6,nixos-unstable
+ee4a6e0f566f,2024-05-05,1,nixpkgs-unstable
+27c13997bf45,2024-05-05,1,small release
+fea02c5bb5ae,2024-05-06,1,never a channel
+ad7efee13e0d,2024-05-06,3,nixpkgs-unstable
+b211b392b848,2024-05-07,1,nixos-unstable
+c4200cb341ee,2024-05-08,1,nixpkgs-unstable
+9a9960b98418,2024-05-08,1,darwin release
+ac34158a823c,2024-05-08,1,nixpkgs-unstable
+f1010e0469db,2024-05-09,1,nixos-unstable
+71bae31b7dbc,2024-05-10,3,darwin release
+e4e7a43a9db7,2024-05-11,1,nixpkgs-unstable
+062ca2a9370a,2024-05-11,3,nixos-unstable
+8e47858badee,2024-05-11,1,darwin release
+af8b9db5c00f,2024-05-12,2,nixpkgs-unstable
+db4171f3e241,2024-05-12,1,never a channel
+3281bec7174f,2024-05-12,1,nixpkgs-unstable
+205781405197,2024-05-12,5,nixos-unstable
+44072e24566c,2024-05-12,2,nixos release
+abd6d48f8c77,2024-05-13,2,nixpkgs-unstable
+b3fcfcfabd01,2024-05-15,2,nixpkgs-unstable
+33d1e753c82f,2024-05-15,3,nixos-unstable
+3eedfcec6b94,2024-05-16,1,never a channel
+bf446f08bff6,2024-05-16,1,nixpkgs-unstable
+4a6b83b05df1,2024-05-17,3,nixos-unstable
+0837fbf22736,2024-05-17,1,nixpkgs-unstable
+4d91d168651e,2024-05-17,1,never a channel
+04496f014fcf,2024-05-18,1,small release
+fdfdc52e33e1,2024-05-18,1,never a channel
+02923630b89a,2024-05-18,4,nixpkgs-unstable
+6c0b7a92c301,2024-05-19,4,nixos-unstable
+461aad7a5314,2024-05-19,1,never a channel
+5a5ac83292c7,2024-05-20,1,nixpkgs-unstable
+a8695cbd09a7,2024-05-20,2,darwin release
+641daa314d5b,2024-05-20,2,nixpkgs-unstable
+3eaeaeb6b1e0,2024-05-21,2,nixos-unstable
+e381a1288138,2024-05-21,2,nixpkgs-unstable
+5710852ba686,2024-05-21,15,nixos-unstable
+3f316d2a5069,2024-05-21,3,nixpkgs-unstable
+46397778ef1f,2024-05-22,2,nixos release
+372f1a521e61,2024-05-22,1,never a channel
+1a7abfa62e8a,2024-05-22,1,darwin release
+bfb7a882678e,2024-05-23,10,nixos-unstable
+d12251ef6e8e,2024-05-24,5,nixos release
+69cbb6b7b66d,2024-05-25,1,never a channel
+9d29cd266ceb,2024-05-25,1,nixos release
+e2dd4e18cc1c,2024-05-26,5,nixpkgs-unstable
+9ca3f6496142,2024-05-26,5,nixos-unstable
+2ab53fad6273,2024-05-27,1,never a channel
+6c25325ec30a,2024-05-28,1,nixpkgs-unstable
+ad57eef4ef06,2024-05-28,5,nixos-unstable
+104e6908c1b2,2024-05-30,1,never a channel
+805a384895c6,2024-05-31,3,nixos release
+a62e6edd6d5e,2024-05-31,70,nixos release
+63dacb46bf93,2024-05-31,15,never a channel
+57610d2f8f09,2024-05-31,15,nixos-unstable
+4a4ecb0ab415,2024-06-03,5,nixpkgs-unstable
+88269ab30441,2024-06-03,1,never a channel
+3b01abcc2484,2024-06-03,2,nixpkgs-unstable
+a2e1d0414259,2024-06-04,1,nixos release
+0b8e7a1ae5a9,2024-06-04,3,nixos release
+e8057b67ebf3,2024-06-05,6,nixos-unstable
+818dbe2f96df,2024-06-05,1,nixpkgs-unstable
+9b5328b7f761,2024-06-06,2,darwin release
+d226935fd750,2024-06-07,3,nixpkgs-unstable
+051f920625ab,2024-06-07,9,nixos-unstable
+3f3a01219b4a,2024-06-08,1,small release
+cd18e2ae9ab8,2024-06-08,3,nixpkgs-unstable
+3bcedce9f4de,2024-06-08,1,nixpkgs-unstable
+7d916e720af6,2024-06-09,1,small release
+cfbeda848e75,2024-06-09,1,never a channel
+47b604b07d1e,2024-06-10,1,nixos release
+2975732531b5,2024-06-11,1,darwin release
+e913ae340076,2024-06-11,3,nixpkgs-unstable
+57d6973abba7,2024-06-11,7,nixos-unstable
+cc54fb41d137,2024-06-12,3,nixos release
+a9858885e197,2024-06-12,1,nixpkgs-unstable
+3f84a279f1a6,2024-06-13,1,nixpkgs-unstable
+5dde575c3c4a,2024-06-13,1,never a channel
+e9ee548d90ff,2024-06-13,9,nixos-unstable
+23bcbb6dfd7b,2024-06-14,1,never a channel
+752c634c09ce,2024-06-15,2,nixos release
+b60ebf54c155,2024-06-16,3,nixos-unstable
+3b97a2e9ba4d,2024-06-16,1,never a channel
+a039c9721c0d,2024-06-16,1,never a channel
+38d3352a65ac,2024-06-16,4,nixpkgs-unstable
+c00d587b1a1a,2024-06-18,13,nixos-unstable
+03d771e513ce,2024-06-19,2,small release
+dd457de7e08c,2024-06-19,4,darwin release
+9b10b8f00cb5,2024-06-20,1,nixpkgs-unstable
+d603719ec6e2,2024-06-20,4,nixos-unstable
+90338afd6177,2024-06-21,2,nixpkgs-unstable
+81aff3c1def1,2024-06-21,1,never a channel
+1eae5f88019f,2024-06-22,1,never a channel
+a71e967ef369,2024-06-22,5,nixos-unstable
+9693852a2070,2024-06-22,3,nixpkgs-unstable
+dd868b7bd4d1,2024-06-22,1,darwin release
+906320ae02f7,2024-06-22,1,nixos release
+e4509b3a560c,2024-06-23,1,nixos release
+fc07dc3bdf29,2024-06-24,1,darwin release
+2893f56de080,2024-06-24,7,nixos-unstable
+9c513fc6fb75,2024-06-25,2,nixpkgs-unstable
+89c49874fb15,2024-06-26,2,nixos release
+66f253e5b2d6,2024-06-26,1,darwin release
+c66e984bda09,2024-06-26,2,nixpkgs-unstable
+1e3deb3d8a86,2024-06-26,4,nixpkgs-unstable
+b2852eb9365c,2024-06-27,7,nixos-unstable
+2741b4b489b5,2024-06-29,3,nixos-unstable
+12a9c0004bc9,2024-06-30,1,nixpkgs-unstable
+b9014df496d5,2024-07-01,1,nixpkgs-unstable
+d032c1a6dfad,2024-07-01,1,nixos release
+00d80d13810d,2024-07-01,6,nixos-unstable
+0f56e3221392,2024-07-01,1,nixpkgs-unstable
+0aeab749216e,2024-07-02,2,nixpkgs-unstable
+706eef542dec,2024-07-02,2,small release
+7144d6241f02,2024-07-02,1,darwin release
+9f4128e00b0a,2024-07-03,8,nixos-unstable
+6842b061970b,2024-07-03,1,nixpkgs-unstable
+c0d0be00d4ec,2024-07-04,1,nixos release
+4284c2b73c8b,2024-07-05,5,nixpkgs-unstable
+ab82a9612aa4,2024-07-07,3,nixpkgs-unstable
+194846768975,2024-07-07,2,nixos release
+655a58a72a66,2024-07-07,2,nixos-unstable
+106e145e1d45,2024-07-08,1,nixpkgs-unstable
+bb1588c3045c,2024-07-08,1,small release
+205fd4226592,2024-07-09,18,small release
+249fbde2a178,2024-07-09,2,nixos release
+212defe03769,2024-07-10,1,nixpkgs-unstable
+a046c1202e11,2024-07-11,2,nixos release
+7e7c39ea35c5,2024-07-12,3,nixos-unstable
+8b5a3d5a1d95,2024-07-12,1,nixpkgs-unstable
+b729601a9e6c,2024-07-13,1,nixpkgs-unstable
+74348da2f3a3,2024-07-13,1,small release
+53e81e790209,2024-07-14,2,nixos release
+693bc46d169f,2024-07-14,10,nixos-unstable
+3c1241c8ce90,2024-07-14,1,never a channel
+a14c5d651cee,2024-07-14,1,nixpkgs-unstable
+b2c1f10bfbb3,2024-07-15,1,nixpkgs-unstable
+ad0b5eed1b60,2024-07-16,7,nixos-unstable
+c716603a63ac,2024-07-17,2,darwin release
+ede8a2b8473f,2024-07-17,1,small release
+5d0ced7b8a29,2024-07-18,1,never a channel
+af9c15bc7a31,2024-07-19,1,nixpkgs-unstable
+1d9c2c9b3e71,2024-07-19,6,nixos-unstable
+6e14bbce7bea,2024-07-20,1,nixpkgs-unstable
+d43f0636fc94,2024-07-20,1,nixpkgs-unstable
+63d37ccd2d17,2024-07-21,1,nixos release
+68c9ed8bbed9,2024-07-21,5,nixos-unstable
+575f3027caa1,2024-07-22,1,nixos release
+dc14ed91132e,2024-07-23,1,nixos-unstable
+6a68f91003dc,2024-07-24,1,darwin release
+5ad6a14c6bf0,2024-07-25,1,nixos-unstable
+2122a9b35b35,2024-07-25,2,nixpkgs-unstable
+574f1a6205e6,2024-07-25,1,never a channel
+48bacf585a51,2024-07-26,1,nixpkgs-unstable
+b73c2221a46c,2024-07-26,7,nixos-unstable
+e36e9f57337d,2024-07-27,16,nixpkgs-unstable
+8c5066250910,2024-07-27,2,nixos release
+038fb464fcfa,2024-07-27,2,nixpkgs-unstable
+4d10225ee46c,2024-07-28,1,never a channel
+ed5f791303c4,2024-07-28,1,never a channel
+52ec9ac3b123,2024-07-28,5,nixos-unstable
+12bf09802d77,2024-07-28,3,darwin release
+cf05eeada35e,2024-07-30,2,nixos release
+184957277e88,2024-07-30,1,never a channel
+c3392ad349a5,2024-07-31,5,nixpkgs-unstable
+9f918d616c53,2024-07-31,5,nixos-unstable
+799bc8d7b16e,2024-07-31,1,nixpkgs-unstable
+05405724efa1,2024-08-01,2,nixos release
+d04953086551,2024-08-02,5,nixos-unstable
+81610abc161d,2024-08-02,1,nixpkgs-unstable
+f3834de3782b,2024-08-03,1,nixpkgs-unstable
+cb9a96f23c49,2024-08-04,15,nixos-unstable
+883180e6550c,2024-08-05,1,small release
+d3f42bd62aa8,2024-08-05,1,nixpkgs-unstable
+21cc704b5e91,2024-08-06,1,nixos release
+f5129fb42b9c,2024-08-07,3,nixpkgs-unstable
+2cfe109525eb,2024-08-08,1,never a channel
+13fe00cb6c75,2024-08-08,1,nixpkgs-unstable
+5e0ca22929f3,2024-08-08,10,nixos-unstable
+154bcb95ad51,2024-08-09,1,nixpkgs-unstable
+619d29bb0099,2024-08-10,1,never a channel
+1d215eb38017,2024-08-10,1,never a channel
+a58bc8ad7796,2024-08-11,2,nixos-unstable
+a731b45590a5,2024-08-11,1,nixos release
+33c8b1a7202d,2024-08-12,1,never a channel
+4877ea239f4d,2024-08-13,1,nixpkgs-unstable
+19674872444b,2024-08-13,1,nixpkgs-unstable
+c3aa7b8938b1,2024-08-14,11,nixos-unstable
+c3d4ac725177,2024-08-14,3,nixos release
+8b908192e642,2024-08-14,1,nixpkgs-unstable
+e88a41614f83,2024-08-15,1,never a channel
+a0d6390cb3e8,2024-08-17,1,nixpkgs-unstable
+c42fcfbdfeae,2024-08-17,1,darwin release
+882dc0360486,2024-08-18,1,never a channel
+8a3354191c0d,2024-08-18,4,nixos-unstable
+e9b5094b8f6e,2024-08-18,1,nixpkgs-unstable
+d13fa5a45a34,2024-08-20,1,nixpkgs-unstable
+c374d94f1536,2024-08-21,11,nixos-unstable
+797f7dc49e0b,2024-08-22,3,small release
+34a25acb7cd0,2024-08-22,1,never a channel
+c33918d57ccb,2024-08-22,1,never a channel
+ae815cee91b4,2024-08-22,3,nixpkgs-unstable
+d0e1602ddde6,2024-08-23,8,nixos-unstable
+2527da1ef492,2024-08-24,1,small release
+9f28e30252b2,2024-08-25,1,never a channel
+36bae4507766,2024-08-26,2,small release
+a6292e34000d,2024-08-27,2,nixpkgs-unstable
+71e91c409d1e,2024-08-27,15,nixos-unstable
+8843893c9b84,2024-08-29,2,never a channel
+b96f849e7253,2024-08-29,1,nixpkgs-unstable
+6e99f2a27d60,2024-08-30,2,nixos release
+5629520edecb,2024-08-31,2,nixpkgs-unstable
+12228ff1752d,2024-08-31,10,nixos-unstable
+4a9443e2a4e0,2024-08-31,1,nixpkgs-unstable
+262dd81ca644,2024-09-01,1,never a channel
+b833ff01a0d6,2024-09-01,5,nixpkgs-unstable
+66a352a3f27a,2024-09-02,1,small release
+6f6c45b5134a,2024-09-03,4,nixos release
+ad416d066ca1,2024-09-03,6,nixos-unstable
+9bb1e7571aad,2024-09-05,4,nixpkgs-unstable
+8b16862469fc,2024-09-05,1,small release
+574d1eac1c20,2024-09-06,22,nixos-unstable
+68e7dce0a653,2024-09-07,1,nixos release
+61ddb09cfaa7,2024-09-08,1,small release
+add0443ee587,2024-09-08,3,nixpkgs-unstable
+f4c846aee8e1,2024-09-08,1,nixos release
+f6b2548c6042,2024-09-09,1,never a channel
+44a71ff39c18,2024-09-09,1,small release
+7438ebd94312,2024-09-10,1,never a channel
+1355a0cbfeac,2024-09-10,7,nixos-unstable
+159be5db480d,2024-09-11,1,nixpkgs-unstable
+4f807e894028,2024-09-11,2,nixos-unstable
+111ed8812c10,2024-09-11,1,nixpkgs-unstable
+280db3decab4,2024-09-12,2,nixpkgs-unstable
+345c263f2f53,2024-09-13,2,nixos-unstable
+8f7492cce289,2024-09-14,2,nixos release
+039b72d0c738,2024-09-15,2,nixpkgs-unstable
+086b448a5d54,2024-09-15,3,darwin release
+99dc8785f6a0,2024-09-15,3,nixos-unstable
+20f9370d5f58,2024-09-16,2,nixpkgs-unstable
+931494da4b60,2024-09-16,1,never a channel
+658e7223191d,2024-09-17,1,nixpkgs-unstable
+268bb5090a3c,2024-09-19,1,nixpkgs-unstable
+c04d5652cfa9,2024-09-19,3,nixos-unstable
+c6088c08c251,2024-09-19,1,never a channel
+944b2aea7f0a,2024-09-20,2,darwin release
+a1d92660c6b3,2024-09-20,1,nixpkgs-unstable
+9357f4f23713,2024-09-21,12,nixos-unstable
+30be25c7abf0,2024-09-22,1,never a channel
+568bfef547c1,2024-09-23,1,nixpkgs-unstable
+30439d93eb8b,2024-09-23,3,nixos-unstable
+189e5f171b16,2024-09-23,1,nixpkgs-unstable
+e0464e47880a,2024-09-24,1,never a channel
+759537f06e69,2024-09-25,5,nixos release
+1925c603f17f,2024-09-26,12,nixos-unstable
+f65141456289,2024-09-26,1,nixos release
+760c41ba9dcc,2024-09-27,1,never a channel
+0c839cfcda89,2024-09-27,1,small release
+b5b2fecd0cad,2024-09-28,1,nixpkgs-unstable
+fbca5e745367,2024-09-28,2,nixos release
+7eee17a8a586,2024-09-29,2,nixpkgs-unstable
+6710d0dd013f,2024-09-29,1,never a channel
+06cf0e1da420,2024-09-29,3,nixos-unstable
+4e0c36e4dd53,2024-09-29,1,nixpkgs-unstable
+1719f27dd95f,2024-09-29,3,small release
+b5b22b42c0d1,2024-09-30,2,nixpkgs-unstable
+27e30d177e57,2024-10-01,5,nixos-unstable
+bc63f402fdf4,2024-10-02,1,never a channel
+5966581aa04b,2024-10-02,1,small release
+2497fcbfa209,2024-10-02,1,nixpkgs-unstable
+bc947f541ae5,2024-10-03,12,nixos-unstable
+fdfdc819d9ff,2024-10-05,1,never a channel
+17ae88b569bb,2024-10-05,1,small release
+ecbc1ca8ffd6,2024-10-05,2,darwin release
+8e55f3d606e0,2024-10-06,1,never a channel
+c31898adf5a8,2024-10-06,5,nixos-unstable
+c8a17040be4a,2024-10-06,1,nixpkgs-unstable
+1bfbbbe5bbf8,2024-10-07,1,nixos release
+1366d1af8f58,2024-10-08,2,nixpkgs-unstable
+5633bcff0c61,2024-10-09,12,nixos-unstable
+0bb634c7ce44,2024-10-09,1,never a channel
+b69de56fac8c,2024-10-09,11,nixpkgs-unstable
+a3f9ad65a0bf,2024-10-12,3,darwin release
+97ad9186cabd,2024-10-13,1,never a channel
+a3c0b3b21515,2024-10-13,8,nixos-unstable
+c9f0b4a39528,2024-10-14,1,small release
+3d85bae2431f,2024-10-14,1,never a channel
+7881fbfd2e3e,2024-10-15,3,nixpkgs-unstable
+dc2e0028d274,2024-10-15,2,darwin release
+4eb33fe664af,2024-10-17,1,nixos release
+4c2fcb090b1f,2024-10-18,5,nixos-unstable
+ccc0c2126893,2024-10-18,3,nixpkgs-unstable
+1997e4aa5143,2024-10-20,5,nixos-unstable
+89172919243d,2024-10-20,1,small release
+56c7c4a3f5fd,2024-10-21,1,nixpkgs-unstable
+87c6221b509d,2024-10-22,1,never a channel
+dfffb2e7a52d,2024-10-22,2,nixpkgs-unstable
+2768c7d042a3,2024-10-22,4,nixos-unstable
+be79af5ec63f,2024-10-23,1,nixpkgs-unstable
+32e940c7c420,2024-10-23,2,small release
+6301495959cf,2024-10-23,1,nixpkgs-unstable
+13008b3cc170,2024-10-23,1,never a channel
+41dea55321e5,2024-10-25,6,nixpkgs-unstable
+9801748d7884,2024-10-25,1,small release
+18536bf04cd7,2024-10-25,9,nixos-unstable
+cd3e8833d706,2024-10-26,2,darwin release
+86e78d3d2084,2024-10-26,1,nixpkgs-unstable
+0fcb98acb663,2024-10-27,1,nixpkgs-unstable
+b6b90562f769,2024-10-28,1,never a channel
+a2d0a4b685b8,2024-10-28,1,never a channel
+75e28c029ef2,2024-10-28,1,small release
+30c9efeef01e,2024-10-28,1,nixpkgs-unstable
+807e9154dcb1,2024-10-29,8,nixos-unstable
+2d2a9ddbe3f2,2024-10-30,6,nixpkgs-unstable
+080166c15633,2024-10-30,1,small release
+0dcf0297ce98,2024-11-01,1,never a channel
+7ffd9ae656ae,2024-11-02,19,nixos-unstable
+bfdd1148ed70,2024-11-02,1,never a channel
+3c2f1c4ca372,2024-11-02,1,darwin release
+5012ef792674,2024-11-03,1,small release
+d063c1dd113c,2024-11-04,1,darwin release
+45207138f734,2024-11-04,1,never a channel
+a04d33c0c3f1,2024-11-04,8,nixpkgs-unstable
+4aa36568d413,2024-11-04,2,nixos-unstable
+dba414932936,2024-11-06,4,nixos release
+5ed245d62a75,2024-11-06,1,never a channel
+85f7e662eda4,2024-11-06,5,nixpkgs-unstable
+83fb6c028368,2024-11-06,1,small release
+76612b17c0ce,2024-11-09,12,nixos-unstable
+9256f7c71a19,2024-11-10,1,nixos release
+dc460ec76cbf,2024-11-11,4,nixos-unstable
+5b79f369d236,2024-11-11,1,never a channel
+689fed12a013,2024-11-11,2,nixos release
+a0292698ca0f,2024-11-12,1,never a channel
+02c2c29c7bc3,2024-11-13,1,small release
+8b27c1239e5c,2024-11-14,4,never a channel
+c46290747b2a,2024-11-14,1,never a channel
+c21b77913ea8,2024-11-14,1,nixos release
+5e4fbfb6b3de,2024-11-15,15,nixos-unstable
+34a626458d68,2024-11-15,1,nixpkgs-unstable
+057f63b6dc1a,2024-11-16,2,nixos release
+c69a9bffbecd,2024-11-16,1,nixpkgs-unstable
+e8c38b73aeb2,2024-11-16,1,small release
+cd43d6867192,2024-11-16,1,never a channel
+5083ec887760,2024-11-17,5,nixpkgs-unstable
+04386ac325a8,2024-11-18,1,small release
+23e89b7da85c,2024-11-19,12,nixos-unstable
+5624e1334b26,2024-11-20,1,never a channel
+50bbfb5788f8,2024-11-21,1,never a channel
+8edf06bea5bc,2024-11-21,6,nixpkgs-unstable
+0c582677378f,2024-11-23,2,nixos release
+4633a7c72337,2024-11-24,8,nixos-unstable
+af51545ec9a4,2024-11-26,6,nixpkgs-unstable
+6f6076c37180,2024-11-26,1,nixos release
+0c5b4ecbed5b,2024-11-27,1,small release
+226216574ada,2024-11-27,1,nixpkgs-unstable
+970e93b9f82e,2024-11-28,3,nixos-unstable
+564e219aa5ca,2024-11-28,1,small release
+809802e9ab4b,2024-11-30,1,small release
+f40efe1ce90f,2024-11-30,1,nixpkgs-unstable
+62c435d93bf0,2024-11-30,5,nixos release
+ac35b104800b,2024-11-30,5,nixos-unstable
+2c27ab2e6050,2024-11-30,1,nixpkgs-unstable
+31d66ae40417,2024-12-01,2,nixpkgs-unstable
+f9f0d5c5380b,2024-12-01,1,nixos release
+55d15ad12a74,2024-12-02,19,nixos-unstable
+566e53c2ad75,2024-12-03,2,nixpkgs-unstable
+0fe78ee9eb14,2024-12-03,1,never a channel
+b681065d0919,2024-12-03,1,nixos release
+b8bdfa8d19a9,2024-12-04,1,never a channel
+2f9d395f057a,2024-12-04,1,nixpkgs-unstable
+190c31a89e5e,2024-12-04,1,nixos release
+d0797a04b81c,2024-12-05,1,nixos-unstable
+4dc2fc4e62db,2024-12-05,6,nixos release
+7822cb34f86b,2024-12-05,1,never a channel
+e27f6137cc74,2024-12-05,1,never a channel
+e2605d0744c2,2024-12-06,3,nixos release
+22c3f2cf41a0,2024-12-07,6,nixos-unstable
+93dc9803a1ee,2024-12-08,1,nixpkgs-unstable
+63169766000e,2024-12-08,1,never a channel
+bc27f0fde01c,2024-12-09,2,nixpkgs-unstable
+a73246e2eef4,2024-12-09,6,nixos-unstable
+a0f3e10d9435,2024-12-09,7,nixos release
+5a48e3c2e435,2024-12-11,2,nixpkgs-unstable
+5d67ea6b4b63,2024-12-11,4,nixos-unstable
+3566ab724667,2024-12-13,7,nixos-unstable
+71a6392e367b,2024-12-13,2,nixpkgs-unstable
+394571358ce8,2024-12-15,4,nixos release
+48d12d5e70ee,2024-12-16,2,never a channel
+948a31b4b765,2024-12-16,1,small release
+d3c42f187194,2024-12-17,17,nixos-unstable
+4989a246d7a3,2024-12-17,3,nixpkgs-unstable
+72d11d40b987,2024-12-18,1,darwin release
+dcb74af36981,2024-12-19,1,never a channel
+b47fd6fa00c6,2024-12-19,1,nixos release
+d70bd19e0a38,2024-12-19,14,nixos-unstable
+1c6e20d41d6a,2024-12-20,1,small release
+1807c2b91223,2024-12-22,3,nixos release
+d6a12543974e,2024-12-22,1,never a channel
+de1864217bfa,2024-12-23,5,nixpkgs-unstable
+0a4b89adfe91,2024-12-23,1,small release
+4005c3ff7505,2024-12-25,2,nixos release
+1dd8f51e62c0,2024-12-25,1,small release
+d49da4c08359,2024-12-26,4,nixos release
+7cc0bff31a3a,2024-12-26,2,nixpkgs-unstable
+634fd4680144,2024-12-27,3,nixos-unstable
+c0b0a559cfda,2024-12-27,1,small release
+9e09ce2d47c7,2024-12-27,1,nixpkgs-unstable
+88195a94f390,2024-12-29,10,nixos-unstable
+3ffbbdbac056,2024-12-29,3,darwin release
+0e82ab234249,2024-12-30,2,nixpkgs-unstable
+b134951a4c9f,2024-12-30,39,small release
+1e7a8f391f1a,2024-12-30,1,darwin release
+0da3c44a9460,2024-12-31,5,small release
+edf04b75c13c,2024-12-31,3,small release
+6df24922a140,2025-01-02,6,nixos-unstable
+d3780c92e644,2025-01-03,1,never a channel
+d29ab98cd4a7,2025-01-03,2,nixos release
+a4c40a8a970c,2025-01-03,1,darwin release
+8f3e1f807051,2025-01-04,9,nixos-unstable
+14c58c591842,2025-01-04,1,small release
+bf689c40d035,2025-01-04,1,nixpkgs-unstable
+cbd8ec4de446,2025-01-04,2,nixos release
+cc5c0b205896,2025-01-05,1,never a channel
+b30f97d8c32d,2025-01-06,1,nixpkgs-unstable
+a8af4a1033a3,2025-01-06,1,never a channel
+3f0a8ac25fb6,2025-01-06,1,small release
+8c9fd3e56472,2025-01-07,3,nixpkgs-unstable
+4bc9c909d9ac,2025-01-07,2,nixpkgs-unstable
+bffc22eb1217,2025-01-08,8,nixos-unstable
+130595eba610,2025-01-10,4,nixos-unstable
+1dab772dd4a6,2025-01-10,3,nixos release
+2f9e2f85cb14,2025-01-11,3,nixpkgs-unstable
+2fdec2c2e68b,2025-01-12,1,nixpkgs-unstable
+ed4a395ea001,2025-01-12,2,nixos-unstable
+4c5b06d87526,2025-01-12,1,never a channel
+9abb87b552b7,2025-01-13,2,nixos-unstable
+2b1fca3296dd,2025-01-13,2,nixpkgs-unstable
+733994ea0658,2025-01-14,1,nixpkgs-unstable
+eb62e6aa39ea,2025-01-14,6,nixos-unstable
+08f43449444b,2025-01-14,1,never a channel
+0bd024d34eb0,2025-01-14,1,nixpkgs-unstable
+e24b4c09e963,2025-01-14,4,small release
+ae06b9c2d83c,2025-01-15,2,nixpkgs-unstable
+5df43628fdf0,2025-01-16,9,nixos-unstable
+0ab8bdef1a34,2025-01-16,1,darwin release
+041c867bad68,2025-01-17,1,nixpkgs-unstable
+6d97045efd64,2025-01-19,1,never a channel
+61d7cc96bdff,2025-01-19,1,never a channel
+300081d0cc72,2025-01-20,4,nixpkgs-unstable
+ae584d90cbd0,2025-01-20,1,nixos release
+9e4d5190a948,2025-01-21,5,nixos-unstable
+5757bbb8bd7c,2025-01-21,3,nixpkgs-unstable
+2ed6f0de1ef4,2025-01-22,1,never a channel
+47addd76727f,2025-01-22,2,nixos release
+035f8c0853c2,2025-01-23,2,small release
+ecd26a469ac5,2025-01-24,1,nixpkgs-unstable
+8e39f04b54a4,2025-01-24,1,darwin release
+825479c345a7,2025-01-24,2,nixos-unstable
+e8c30997398f,2025-01-25,1,never a channel
+852ff1d9e153,2025-01-26,5,nixos-unstable
+4e96537f163f,2025-01-26,2,small release
+88a55dffa4d4,2025-01-26,2,nixpkgs-unstable
+e7d1ad8950c9,2025-01-26,1,darwin release
+3a35781f85fe,2025-01-28,1,never a channel
+9d3ae807ebd2,2025-01-29,11,nixos-unstable
+762a39889257,2025-01-29,1,nixpkgs-unstable
+666e1b3f09c2,2025-01-30,1,nixos release
+9189ac18287c,2025-01-30,6,nixpkgs-unstable
+3a228057f5b6,2025-02-01,5,nixos-unstable
+f6687779bf4c,2025-02-01,2,nixos release
+01d7c7caba0f,2025-02-01,1,never a channel
+c6e957d81b96,2025-02-02,3,nixos-unstable
+fecfeb863283,2025-02-03,2,nixos release
+95ea544c84eb,2025-02-03,1,nixpkgs-unstable
+799ba5bffed0,2025-02-04,8,nixos-unstable
+5b2753b0356d,2025-02-04,1,nixpkgs-unstable
+1da52dd49a12,2025-02-05,5,nixpkgs-unstable
+a01189f647c3,2025-02-06,1,never a channel
+d98abf5cf591,2025-02-07,1,nixpkgs-unstable
+e8d0b02af095,2025-02-07,1,nixpkgs-unstable
+fa35a3c8e17a,2025-02-08,1,nixpkgs-unstable
+a79cfe0ebd24,2025-02-08,11,nixos-unstable
+a45fa362d887,2025-02-08,1,small release
+3f1f76f19338,2025-02-09,1,small release
+b2243f41e860,2025-02-09,1,nixpkgs-unstable
+44534bc021b8,2025-02-10,2,nixos release
+64e75cd44acf,2025-02-10,3,nixos-unstable
+0ff09db9d034,2025-02-12,2,nixos release
+c95a8ce2a5bb,2025-02-12,1,never a channel
+2ff53fe64443,2025-02-13,5,nixos-unstable
+1128e89fd5e1,2025-02-13,1,nixpkgs-unstable
+8bb37161a048,2025-02-14,1,nixos-unstable
+6d3b5347984f,2025-02-15,1,never a channel
+d74a2335ac9c,2025-02-16,5,nixos-unstable
+27855fb32313,2025-02-16,1,never a channel
+c618e28f7025,2025-02-16,2,darwin release
+632f04521e84,2025-02-17,2,nixpkgs-unstable
+73cf49b8ad83,2025-02-18,13,nixos-unstable
+340311d2296c,2025-02-18,1,nixos release
+36864ed72f23,2025-02-18,2,small release
+dad564433178,2025-02-19,2,nixpkgs-unstable
+32fb99ba93fe,2025-02-21,3,nixos-unstable
+a1caee51d8a4,2025-02-21,1,never a channel
+11415c7ae853,2025-02-21,1,small release
+04ef94c4c158,2025-02-23,1,small release
+060b03c5d950,2025-02-23,1,darwin release
+0196c0175e91,2025-02-23,6,nixos-unstable
+3349acd765bd,2025-02-23,1,never a channel
+5d7db4668d7a,2025-02-24,2,nixos release
+3a05eebede89,2025-02-25,4,nixpkgs-unstable
+5135c5949198,2025-02-26,4,nixos-unstable
+f44bd8ca21e0,2025-02-26,1,small release
+d6fde23c7a50,2025-02-26,1,small release
+6313551cd054,2025-02-27,5,nixos-unstable
+624ad1673840,2025-02-28,1,small release
+9114ab05304c,2025-02-28,1,small release
+303bd8071377,2025-03-01,4,nixos-unstable
+3819cf0226e2,2025-03-01,1,never a channel
+b1282fc93939,2025-03-01,1,small release
+3f03580b9a26,2025-03-01,1,never a channel
+5ef6c4259808,2025-03-01,5,darwin release
+b58e19b11fe7,2025-03-02,1,nixpkgs-unstable
+1546c45c5386,2025-03-02,1,small release
+ba487dbc9d04,2025-03-03,12,nixos-unstable
+02032da4af07,2025-03-03,3,nixpkgs-unstable
+b617c9e93246,2025-03-04,1,darwin release
+1eeeaa084343,2025-03-04,1,never a channel
+59e3cd3bfcd5,2025-03-05,1,small release
+d69ab0d71b22,2025-03-05,2,nixos-unstable
+102c779543e7,2025-03-05,1,never a channel
+10069ef4cf86,2025-03-05,5,nixos-unstable
+de0fe301211c,2025-03-06,2,nixpkgs-unstable
+20755fa05115,2025-03-06,1,nixos release
+82f4b643c2ed,2025-03-07,1,never a channel
+36fd87baa908,2025-03-07,10,nixos-unstable
+297f2c4266ed,2025-03-07,1,never a channel
+ed0b1881565c,2025-03-07,1,nixpkgs-unstable
+e3e32b642a31,2025-03-09,14,nixos-unstable
+e607ef1af098,2025-03-11,1,never a channel
+6607cf789e54,2025-03-13,7,nixos-unstable
+cdd2ef009676,2025-03-13,4,nixos release
+573c650e8a14,2025-03-13,4,nixpkgs-unstable
+c80f6a7e10b3,2025-03-15,10,nixos-unstable
+a1185f4064c1,2025-03-16,1,nixos release
+9bc8a9093126,2025-03-17,1,nixpkgs-unstable
+354953266373,2025-03-17,1,nixpkgs-unstable
+b6eaf97c6960,2025-03-18,8,nixos-unstable
+6c8e4e454614,2025-03-18,1,darwin release
+fb9a9ddebc6c,2025-03-18,2,never a channel
+7dc58b828587,2025-03-19,1,never a channel
+b75693fb46bf,2025-03-19,1,small release
+a84ebe20c6bc,2025-03-19,13,nixos-unstable
+750fef2a6310,2025-03-20,1,never a channel
+7105ae395770,2025-03-20,3,small release
+94c4dbe77c07,2025-03-21,2,nixpkgs-unstable
+5e571f9e52b2,2025-03-21,1,never a channel
+1e5b653dff12,2025-03-22,3,nixos-unstable
+dd613136ee91,2025-03-22,2,nixpkgs-unstable
+f0946fa5f1fb,2025-03-23,3,nixos release
+698214a32beb,2025-03-25,12,nixos-unstable
+d02d88f8de5b,2025-03-25,3,darwin release
+bd3bac8bfb54,2025-03-26,22,nixpkgs-unstable
+6c5963357f3c,2025-03-27,2,nixpkgs-unstable
+5e5402ecbcb2,2025-03-27,3,nixos-unstable
+b25d37292b5b,2025-03-27,1,small release
+40169ef9fc47,2025-03-28,1,never a channel
+eb0e0f21f15c,2025-03-29,2,nixpkgs-unstable
+9eb0e7f29dca,2025-03-29,2,small release
+52faf482a388,2025-03-29,9,nixos-unstable
+4a8e787879f2,2025-03-31,1,never a channel
+77b584d61ff8,2025-03-31,2,nixos-unstable
+02f2af8c8a8c,2025-04-01,2,nixos release
+b7ba7f9f45c5,2025-04-01,1,nixpkgs-unstable
+44a69ed68878,2025-04-01,1,small release
+2c8d3f48d339,2025-04-02,13,nixos-unstable
+2bfc08095515,2025-04-03,2,nixpkgs-unstable
+bdb91860de2f,2025-04-03,1,small release
+7819a0d29d1d,2025-04-04,2,darwin release
+250b695f41e0,2025-04-04,1,nixpkgs-unstable
+42a1c966be22,2025-04-04,12,nixos-unstable
+58a813438464,2025-04-05,1,never a channel
+74a40410369a,2025-04-06,3,nixpkgs-unstable
+063dece00c5a,2025-04-06,1,nixos-unstable
+a880f49904d6,2025-04-06,2,nixos release
+e42eb725b123,2025-04-07,1,never a channel
+c8cd81426f45,2025-04-08,6,nixos-unstable
+f675531bc7e6,2025-04-09,5,nixos-unstable
+d19cf9dfc633,2025-04-10,4,nixpkgs-unstable
+26d499fc9f1d,2025-04-11,7,nixos release
+2631b0b7abce,2025-04-12,13,nixos-unstable
+86484f6076aa,2025-04-12,1,darwin release
+18dd725c2960,2025-04-13,27,nixpkgs-unstable
+63d95d78f073,2025-04-14,1,never a channel
+ebe4301cbd8f,2025-04-16,10,nixpkgs-unstable
+b024ced1aac2,2025-04-17,13,nixos-unstable
+c112db2c3101,2025-04-19,1,never a channel
+c11863f1e964,2025-04-21,5,nixos-unstable
+ccb73a4cad2b,2025-04-21,1,never a channel
+507b63021ada,2025-04-22,5,nixpkgs-unstable
+8a2f738d9d1f,2025-04-22,7,nixos-unstable
+5630cf13ccea,2025-04-24,1,nixos release
+48d97d2812b5,2025-04-24,1,small release
+f771eb401a46,2025-04-24,10,nixos-unstable
+26245db0cb55,2025-04-27,3,nixos release
+5461b7fa65f3,2025-04-27,3,nixos-unstable
+ffa0bb043c25,2025-04-28,1,nixpkgs-unstable
+46e634be05ce,2025-04-29,7,nixos-unstable
+cf3ffa5d1408,2025-04-30,2,never a channel
+3afd19146cac,2025-04-30,1,nixpkgs-unstable
+f02fddb8acef,2025-05-01,7,nixos-unstable
+032bc6539bd5,2025-05-01,3,nixpkgs-unstable
+bf3287dac860,2025-05-02,1,nixos release
+9a7caecf30a0,2025-05-02,1,nixpkgs-unstable
+dabd6a12d65d,2025-05-02,1,never a channel
+7a2622e2c0db,2025-05-02,3,nixos-unstable
+537ee9821870,2025-05-03,1,darwin release
+979daf34c8ca,2025-05-03,9,nixos-unstable
+93e8cdce7afc,2025-05-04,10,never a channel
+ed30f8aba416,2025-05-04,4,nixpkgs-unstable
+5b35d248e920,2025-05-04,1,nixos release
+fd1e5d95bfa6,2025-05-05,1,never a channel
+3730d8a308f9,2025-05-05,10,nixos-unstable
+1cb1c02a6b1b,2025-05-06,1,nixpkgs-unstable
+39b847c159e9,2025-05-06,1,never a channel
+1d3aeb5a193b,2025-05-06,3,nixos release
+428b49b28ebc,2025-05-06,1,never a channel
+b3582c75c7f2,2025-05-06,2,nixpkgs-unstable
+dda3dcd3fe03,2025-05-07,9,nixos-unstable
+16762245d811,2025-05-07,1,small release
+d89fc19e405c,2025-05-10,10,nixos-unstable
+a39ed32a651f,2025-05-11,2,nixos release
+40909cce0f2c,2025-05-12,1,darwin release
+eaeed9530c76,2025-05-12,4,nixpkgs-unstable
+2e1da60850ce,2025-05-12,1,nixpkgs-unstable
+adaa24fbf467,2025-05-13,7,nixos-unstable
+b1bebd0fe266,2025-05-15,2,nixpkgs-unstable
+e06158e58f3a,2025-05-15,6,nixos-unstable
+ba8b70ee098b,2025-05-15,1,darwin release
+8309e9e8d610,2025-05-15,1,never a channel
+b965e4c28306,2025-05-16,1,small release
+12a55407652e,2025-05-16,1,nixpkgs-unstable
+2e1496bf8652,2025-05-16,1,small release
+3fcbdcfc707e,2025-05-17,1,nixpkgs-unstable
+9b5ac7ad4529,2025-05-17,1,nixos release
+8406224e30c2,2025-05-17,1,nixpkgs-unstable
+292fa7d4f651,2025-05-17,4,nixos-unstable
+63fa397da610,2025-05-18,1,never a channel
+72841a4a8761,2025-05-19,1,nixos release
+2795c506fe8f,2025-05-20,9,nixos-unstable
+cd2812de55cf,2025-05-21,3,nixos release
+8c441601c432,2025-05-21,1,nixpkgs-unstable
+2baa12ff6991,2025-05-21,1,darwin release
+5f9f736accea,2025-05-22,1,never a channel
+55d1f923c480,2025-05-22,1,darwin release
+fe51d34885f7,2025-05-22,1,nixpkgs-unstable
+063f43f2dbde,2025-05-23,8,nixos-unstable
+11cb3517b3af,2025-05-23,8,never a channel
+f09dede81861,2025-05-23,1,darwin release
+7c43f080a7f2,2025-05-25,10,nixos release
+bdac72d387dc,2025-05-25,1,nixpkgs-unstable
+62b852f6c674,2025-05-25,8,nixos-unstable
+b26c8c4da0fe,2025-05-25,1,darwin release
+3108eaa516ae,2025-05-25,1,nixpkgs-unstable
+79277868d574,2025-05-25,1,never a channel
+7848cd8c982f,2025-05-26,1,nixos release
+fd695452f4da,2025-05-27,1,never a channel
+e0042dedfbc9,2025-05-27,3,nixpkgs-unstable
+8e177b1a5d86,2025-05-27,1,never a channel
+4faa5f532132,2025-05-27,5,nixos-unstable
+6cefce164ed3,2025-05-27,1,never a channel
+7282cb574e06,2025-05-28,2,nixos release
+c742ae7908a8,2025-05-28,1,never a channel
+96ec055edbe5,2025-05-28,3,nixos-unstable
+3866ad91cfc1,2025-05-29,2,nixpkgs-unstable
+59138c7667b7,2025-05-30,1,nixpkgs-unstable
+910796cabe43,2025-05-31,9,nixos-unstable
+5929de975bcf,2025-06-01,1,nixpkgs-unstable
+c2a03962b8e2,2025-06-02,8,nixos-unstable
+3731ffed1467,2025-06-03,1,never a channel
+8eb3b6a2366a,2025-06-03,1,nixos release
+4792576cb003,2025-06-04,5,small release
+d3d2d80a2191,2025-06-05,8,nixos-unstable
+ed29f002b6d6,2025-06-05,1,nixos release
+6ad174a6dc07,2025-06-05,2,nixpkgs-unstable
+a4ff0e3c6484,2025-06-06,2,nixpkgs-unstable
+70c74b02eac4,2025-06-06,2,nixos release
+3e3afe5174c5,2025-06-07,12,nixos-unstable
+8207ad0d501d,2025-06-08,2,nixpkgs-unstable
+08fcb0dcb59d,2025-06-08,1,nixpkgs-unstable
+d92e71021bdf,2025-06-09,1,never a channel
+88331c17ba43,2025-06-09,4,nixos release
+cdc68935eba9,2025-06-09,1,nixpkgs-unstable
+a12f3a996148,2025-06-10,1,nixpkgs-unstable
+f72be405a106,2025-06-10,3,nixpkgs-unstable
+1965fd20a39c,2025-06-11,1,nixos release
+8d6cdc775681,2025-06-12,1,nixpkgs-unstable
+6e7721e37bf0,2025-06-12,1,nixpkgs-unstable
+ee930f9755f5,2025-06-12,11,nixos-unstable
+5f4f306bea96,2025-06-13,1,nixos release
+6afe187897be,2025-06-13,1,nixpkgs-unstable
+41da1e3ea8e2,2025-06-14,3,nixpkgs-unstable
+0d2fb4b8e67e,2025-06-15,1,never a channel
+6c64dabd3aa8,2025-06-15,2,nixos release
+e6f23dc08d36,2025-06-16,2,never a channel
+9e83b64f727c,2025-06-16,12,nixos-unstable
+5395fb3ab3f9,2025-06-17,3,nixpkgs-unstable
+08f22084e608,2025-06-19,7,nixos-unstable
+076e8c6678d8,2025-06-19,3,nixpkgs-unstable
+b2485d569675,2025-06-19,4,nixos release
+4206c4cb5675,2025-06-21,10,nixos-unstable
+2ddd28966a19,2025-06-21,1,never a channel
+7fdb20a06912,2025-06-21,1,never a channel
+c7ab75210cb8,2025-06-22,3,nixos release
+1f426f65ac4e,2025-06-22,1,nixos release
+42697a9d0a08,2025-06-23,1,never a channel
+69dfebb3d175,2025-06-23,1,nixpkgs-unstable
+4b1164c3215f,2025-06-23,4,nixos-unstable
+dee6c49f2361,2025-06-24,1,never a channel
+30a61f056ac4,2025-06-24,6,nixos-unstable
+992f916556fc,2025-06-24,2,nixpkgs-unstable
+61c0f5139114,2025-06-25,5,nixpkgs-unstable
+30e2e2857ba4,2025-06-27,9,nixos-unstable
+a684c58d46eb,2025-06-27,1,nixos release
+a47938d89bdf,2025-06-27,5,small release
+a48741b083d4,2025-06-29,1,nixpkgs-unstable
+b43c397f6c21,2025-06-29,2,nixos release
+3016b4b15d13,2025-06-30,6,nixos-unstable
+50ab793786d9,2025-06-30,36,darwin release
+5ab036a8d97c,2025-06-30,4,darwin release
+8735bd145cf8,2025-06-30,1,never a channel
+d31a91c9b3be,2025-07-01,1,nixpkgs-unstable
+b32441ec0fae,2025-07-02,1,nixpkgs-unstable
+f81bb6b77e19,2025-07-02,1,never a channel
+d55716bb59b9,2025-07-02,2,nixpkgs-unstable
+7a732ed41ca0,2025-07-03,1,darwin release
+c860cf0b3a08,2025-07-04,1,nixpkgs-unstable
+29e290002bff,2025-07-05,1,darwin release
+ceb24d94c6fe,2025-07-06,1,nixpkgs-unstable
+1fd8bada0b61,2025-07-06,10,nixos-unstable
+2defa37146df,2025-07-06,1,nixpkgs-unstable
+88983d4b665f,2025-07-07,1,darwin release
+9b008d603929,2025-07-07,9,nixpkgs-unstable
+9807714d6944,2025-07-08,7,nixos-unstable
+2a2130494ad6,2025-07-08,2,nixpkgs-unstable
+be9e214982e2,2025-07-09,17,nixpkgs-unstable
+e46d71147148,2025-07-10,1,never a channel
+10e687235226,2025-07-10,1,nixos release
+650e572363c0,2025-07-12,1,nixos release
+dfcd5b901dba,2025-07-13,2,small release
+a421ac659502,2025-07-13,5,nixpkgs-unstable
+62e0f05ede1d,2025-07-14,5,nixos-unstable
+dab3a6e78155,2025-07-15,2,nixpkgs-unstable
+32a4e8794210,2025-07-15,1,small release
+6e987485eb2c,2025-07-16,11,nixos-unstable
+8131c0ea9df6,2025-07-18,3,nixpkgs-unstable
+6b4955211758,2025-07-18,6,nixpkgs-unstable
+c87b95e25065,2025-07-19,14,nixos-unstable
+e346c2394102,2025-07-19,1,never a channel
+147633ad35ab,2025-07-20,1,small release
+83e677f31c84,2025-07-21,1,nixpkgs-unstable
+fc02ee70efb8,2025-07-22,4,nixos-unstable
+3ff0e34b1383,2025-07-24,1,nixos release
+7fd36ee82c02,2025-07-25,6,nixos-unstable
+6027c30c8e98,2025-07-25,4,nixpkgs-unstable
+13e8d35b7d60,2025-07-25,1,small release
+dc9637876d0d,2025-07-28,9,nixos-unstable
+e44b8dc0882d,2025-07-29,1,nixpkgs-unstable
+8679b16e11be,2025-07-30,1,nixpkgs-unstable
+94def634a204,2025-07-30,6,nixos-unstable
+59e69648d345,2025-07-31,49,small release
+7b6929d8b900,2025-08-02,1,nixpkgs-unstable
+5b09dc45f24c,2025-08-03,4,nixos-unstable
+ce01daebf848,2025-08-04,3,darwin release
+cab778239e70,2025-08-04,3,nixpkgs-unstable
+a683adc19ff5,2025-08-05,2,nixpkgs-unstable
+c2ae88e026f9,2025-08-06,8,nixos-unstable
+b14a5f5b45ee,2025-08-07,1,never a channel
+e728d7ae4bb6,2025-08-07,1,nixos release
+85dbfc7aaf52,2025-08-09,6,nixos-unstable
+1311b9c49fb6,2025-08-09,1,never a channel
+c5f08b62ed75,2025-08-09,3,darwin release
+641d909c4a75,2025-08-09,1,nixpkgs-unstable
+a2eb223c991e,2025-08-11,2,never a channel
+005433b926e1,2025-08-12,3,nixos-unstable
+fbcf476f790d,2025-08-14,11,nixos-unstable
+36bd116f1115,2025-08-15,1,small release
+32f313e49e42,2025-08-15,3,nixpkgs-unstable
+ad7196ae55c2,2025-08-15,3,nixos release
+09906cab24f4,2025-08-16,1,nixpkgs-unstable
+6cbf9f67fc74,2025-08-17,1,never a channel
+48f4c982de68,2025-08-17,1,nixos release
+20075955deac,2025-08-19,19,nixos-unstable
+9cb344e96d5b,2025-08-20,2,nixos release
+f90bda01c396,2025-08-21,1,never a channel
+f937f8ecd1c7,2025-08-21,4,nixpkgs-unstable
+f24c0439ea12,2025-08-22,2,never a channel
+b1b329146965,2025-08-22,1,darwin release
+3b9f00d7a7bf,2025-08-25,2,nixos-unstable
+c53baa668526,2025-08-25,1,nixpkgs-unstable
+84c256e42600,2025-08-25,3,nixpkgs-unstable
+d98ce345cdab,2025-08-25,2,small release
+4e7667a90c16,2025-08-26,2,nixos release
+4c202d26483c,2025-08-26,1,nixpkgs-unstable
+8a6d5427d99e,2025-08-26,3,nixos-unstable
+ddd1826f294a,2025-08-27,1,nixpkgs-unstable
+41d292bfc373,2025-08-29,2,small release
+84fddb6f4ccf,2025-08-29,2,small release
+d7600c775f87,2025-08-30,13,nixos-unstable
+58dcbf1ec551,2025-08-31,2,nixpkgs-unstable
+7c815e513adb,2025-09-01,1,nixos release
+d0fc30899600,2025-09-01,6,nixos-unstable
+0e0a18f576aa,2025-09-01,1,never a channel
+aaff8c16d7fc,2025-09-02,1,nixpkgs-unstable
+0e6684e6c575,2025-09-03,1,nixos release
+c6a788f552b7,2025-09-03,1,nixpkgs-unstable
+fe83bbdde2cc,2025-09-04,2,nixos release
+ca7729638096,2025-09-04,2,nixpkgs-unstable
+8eb28adfa3dc,2025-09-05,9,nixos-unstable
+e9b138453b96,2025-09-05,1,never a channel
+9d1fa9fa2666,2025-09-08,2,nixos release
+b599843bad24,2025-09-08,4,nixos-unstable
+d179d77c139e,2025-09-09,1,nixos release
+ccab06b539ac,2025-09-09,1,never a channel
+ab0f3607a6c7,2025-09-09,4,nixos-unstable
+8cd5ce828d5d,2025-09-10,2,nixos release
+d33e926c80e6,2025-09-11,1,nixpkgs-unstable
+c23193b943c6,2025-09-12,6,nixos-unstable
+9a094440e02a,2025-09-13,1,small release
+88cef159e47c,2025-09-14,1,nixpkgs-unstable
+08b8f92ac635,2025-09-16,1,nixpkgs-unstable
+8d4ddb19d03c,2025-09-16,5,nixos-unstable
+e9b7f2ff62b3,2025-09-16,1,small release
+124b966f89fa,2025-09-18,1,nixpkgs-unstable
+0147c2f1d54b,2025-09-18,6,nixos-unstable
+f4b140d5b253,2025-09-18,1,nixpkgs-unstable
+12bd230118a1,2025-09-18,2,nixpkgs-unstable
+8eaee1103447,2025-09-19,4,nixos-unstable
+b2a3852bd078,2025-09-19,1,small release
+bbf0cc7cd282,2025-09-20,1,never a channel
+554be6495561,2025-09-20,7,nixos-unstable
+a1f79a1770d0,2025-09-21,3,nixpkgs-unstable
+9e16572ad01f,2025-09-21,1,never a channel
+d1d883129b19,2025-09-22,4,nixos release
+e643668fd71b,2025-09-23,8,nixos-unstable
+e57b3b16ad87,2025-09-24,1,nixpkgs-unstable
+25e53aa156d4,2025-09-25,2,nixos release
+536143732685,2025-09-26,2,nixpkgs-unstable
+555a250142e1,2025-09-27,1,never a channel
+e9f00bd89398,2025-09-27,12,nixos-unstable
+cf22f7ad127f,2025-09-28,1,never a channel
+647e5c14cbd5,2025-09-28,8,nixpkgs-unstable
+5ed4e25ab58f,2025-09-29,1,nixos release
+7df7ff7d8e00,2025-10-01,11,nixos-unstable
+dc704e6102e7,2025-10-02,2,nixpkgs-unstable
+3bcc93c5f7a4,2025-10-04,1,nixos release
+d7f52a7a640b,2025-10-04,1,nixpkgs-unstable
+8913c168d1c5,2025-10-05,2,nixos-unstable
+20c4598c84a6,2025-10-06,1,nixos release
+c9b6fb798541,2025-10-07,5,nixos-unstable
+2dad7af78a18,2025-10-08,3,nixpkgs-unstable
+5da4a26309e7,2025-10-09,1,nixos release
+0b4defa25843,2025-10-09,11,nixos-unstable
+f18aed0c4f9f,2025-10-09,1,never a channel
+870493f9a8cb,2025-10-10,1,nixpkgs-unstable
+362791944032,2025-10-10,1,nixpkgs-unstable
+832e3b6db485,2025-10-12,1,nixpkgs-unstable
+cf3f5c4def3c,2025-10-12,8,nixos-unstable
+c12c63cd6c5e,2025-10-13,1,nixpkgs-unstable
+a493e93b4a25,2025-10-13,1,nixos release
+544961dfcce8,2025-10-15,17,nixos-unstable
+35f590344ff7,2025-10-15,1,nixpkgs-unstable
+98ff3f9af268,2025-10-15,2,nixos release
+3cbe716e2346,2025-10-15,1,nixpkgs-unstable
+33561e0eeabc,2025-10-17,1,never a channel
+87f93d54c572,2025-10-17,1,never a channel
+36226520e9f7,2025-10-18,1,nixpkgs-unstable
+33c6dca0c0cb,2025-10-19,1,darwin release
+5e2a59a5b1a8,2025-10-19,8,nixos-unstable
+373d7aac5d78,2025-10-19,1,never a channel
+481cf557888e,2025-10-20,1,nixos release
+01f116e4df6a,2025-10-21,3,nixos-unstable
+c8aa8cc00a5c,2025-10-22,1,nixos release
+d5faa84122bc,2025-10-23,2,nixpkgs-unstable
+6a08e6bb4e46,2025-10-24,12,nixos-unstable
+de69d2ba6c70,2025-10-25,3,nixpkgs-unstable
+75762615e96b,2025-10-25,1,never a channel
+78e34d1667d3,2025-10-26,2,small release
+2ab7841f414c,2025-10-26,2,small release
+daf6dc47aa4b,2025-10-27,3,darwin release
+e99366c665bd,2025-10-28,1,nixpkgs-unstable
+08dacfca559e,2025-10-28,4,nixos-unstable
+a7fc11be66bd,2025-10-30,6,nixpkgs-unstable
+2fb006b87f04,2025-10-31,10,nixos-unstable
+f20b5685cdd4,2025-10-31,1,never a channel
+3de8f8d73e35,2025-11-01,1,small release
+b3d51a0365f6,2025-11-02,10,nixos-unstable
+7241bcbb4f09,2025-11-02,21,nixpkgs-unstable
+ca534a76c4af,2025-11-03,2,small release
+394be911fab9,2025-11-04,1,never a channel
+12c1f0253aa9,2025-11-04,1,nixpkgs-unstable
+ffcdcf99d65c,2025-11-05,3,nixpkgs-unstable
+ae814fd3904b,2025-11-05,8,nixos-unstable
+e1ebeec86b77,2025-11-06,1,nixpkgs-unstable
+6faeb062ee4c,2025-11-06,1,nixos release
+b6a8526db03f,2025-11-08,5,nixos-unstable
+f6b44b240152,2025-11-08,2,nixpkgs-unstable
+ab04d94edcfa,2025-11-09,1,never a channel
+c2448301fb85,2025-11-09,2,nixos release
+37a52ecc83b2,2025-11-10,1,darwin release
+9da7f1cf7f8a,2025-11-10,2,nixos-unstable
+91c9a64ce2a8,2025-11-12,2,nixpkgs-unstable
+c5ae371f1a6a,2025-11-12,12,nixos-unstable
+3acb677ea67d,2025-11-13,1,small release
+1d4c88323ac3,2025-11-14,1,nixpkgs-unstable
+50a96edd8d0d,2025-11-16,3,nixos-unstable
+c543a59edf25,2025-11-16,1,small release
+4c8cdd5b1a63,2025-11-16,3,nixos release
+8b6600824693,2025-11-17,1,nixpkgs-unstable
+89c2b2330e73,2025-11-17,6,nixos-unstable
+6f374686605d,2025-11-18,3,nixpkgs-unstable
+a8d610af3f1a,2025-11-19,6,nixpkgs-unstable
+c58bc7f54593,2025-11-19,1,darwin release
+117cc7f94e80,2025-11-20,4,nixos-unstable
+878e468e02bf,2025-11-22,3,nixpkgs-unstable
+050e09e09111,2025-11-22,4,nixos-unstable
+ee09932cedce,2025-11-23,7,nixpkgs-unstable
+1c8ba8d3f763,2025-11-23,5,nixos release
+5ae3b07d8d65,2025-11-23,14,nixos-unstable
+a320ce8e6e2c,2025-11-24,2,darwin release
+3ae81921625b,2025-11-25,1,never a channel
+75c025c6135c,2025-11-25,1,never a channel
+fb5de30c08f8,2025-11-25,1,never a channel
+bb813de6d224,2025-11-25,1,nixpkgs-unstable
+0d59e0290eef,2025-11-26,1,nixpkgs-unstable
+2fad6eac6077,2025-11-27,11,nixos-unstable
+cd5fedfc384c,2025-11-27,1,nixpkgs-unstable
+9a7b80b6f82a,2025-11-27,2,darwin release
+59b6c96beacc,2025-11-28,3,nixpkgs-unstable
+d542db745310,2025-11-30,1,nixos release
+2d293cbfa5a7,2025-11-30,16,nixos-unstable
+871b9fd269ff,2025-11-30,8,never a channel
+8bb5646e0bed,2025-11-30,4,nixos release
+23258e03aaa4,2025-11-30,1,nixpkgs-unstable
+c419abefe992,2025-11-30,1,never a channel
+c1cb7d097cb2,2025-12-01,1,nixpkgs-unstable
+8c29968b3a94,2025-12-01,1,nixpkgs-unstable
+5f53b0d46d32,2025-12-01,1,small release
+f720de590661,2025-12-01,1,nixpkgs-unstable
+418468ac9527,2025-12-02,5,nixos-unstable
+1aab89277eb2,2025-12-02,2,nixos release
+c97c47f2bac4,2025-12-03,5,nixos release
+ff06bd3398fb,2025-12-04,1,small release
+bd88d6c13ab8,2025-12-04,1,nixpkgs-unstable
+42e29df35be6,2025-12-04,1,nixpkgs-unstable
+00d2457e2f60,2025-12-05,1,darwin release
+a672be65651c,2025-12-05,6,nixpkgs-unstable
+f61125a668a3,2025-12-05,15,nixos-unstable
+d355f89e0014,2025-12-05,1,darwin release
+d9bc5c7dceb3,2025-12-05,5,nixos release
+011f79f55851,2025-12-06,1,never a channel
+f376a52d0dc7,2025-12-07,1,small release
+addf7cf5f383,2025-12-08,19,nixos-unstable
+93ac10d803b3,2025-12-08,1,never a channel
+677fbe97984e,2025-12-09,3,nixpkgs-unstable
+9adea044bced,2025-12-09,2,never a channel
+09eb77e94fa2,2025-12-09,1,nixos release
+5d6bdbddb469,2025-12-10,3,nixpkgs-unstable
+f997fa0f94fb,2025-12-11,1,nixpkgs-unstable
+2fbfb1d73d23,2025-12-11,8,nixos-unstable
+fc8fa7d5e00c,2025-12-12,1,never a channel
+28bb483c11a1,2025-12-12,4,nixos release
+23735a82a828,2025-12-13,1,nixpkgs-unstable
+c8cfcd6ccd42,2025-12-14,5,nixos release
+09b8fda8959d,2025-12-14,1,nixpkgs-unstable
+1306659b587d,2025-12-14,19,nixos-unstable
+ac9a217389ee,2025-12-15,1,nixpkgs-unstable
+c6f52ebd45e5,2025-12-15,5,small release
+d56b1467f392,2025-12-16,1,small release
+af84f9d270d4,2025-12-16,2,nixpkgs-unstable
+2b0d2b456e4e,2025-12-17,4,nixos release
+def3da69945b,2025-12-17,1,nixpkgs-unstable
+c6245e83d836,2025-12-18,6,nixos-unstable
+7d853e518814,2025-12-18,4,nixpkgs-unstable
+fc1645d3d874,2025-12-19,1,never a channel
+b3aad468604d,2025-12-19,5,nixos release
+a6531044f6d0,2025-12-21,8,nixos-unstable
+306ea70f9eb0,2025-12-21,1,nixpkgs-unstable
+26861f5606e3,2025-12-21,1,small release
+8142186f0012,2025-12-23,1,nixpkgs-unstable
+3e2499d5539c,2025-12-25,14,nixos-unstable
+f560ccec6b11,2025-12-26,6,nixos release
+3edc4a30ed39,2025-12-27,2,nixpkgs-unstable
+6405a0a6b783,2025-12-27,1,never a channel
+5c2bc52fb9f8,2025-12-27,2,nixpkgs-unstable
+9ef261221d1e,2025-12-27,1,nixos release
+c0b0e0fddf73,2025-12-27,15,nixos-unstable
+0ab8c4625893,2025-12-28,1,never a channel
+346dd96ad74d,2025-12-29,1,nixpkgs-unstable
+1cabc318c112,2025-12-29,2,never a channel
+89dbf01df72e,2025-12-29,2,nixos release
+cad22e7d996a,2025-12-30,4,nixos-unstable
+f665af0cdb70,2025-12-30,1,nixpkgs-unstable
+c04833a1e584,2025-12-31,1,nixpkgs-unstable
+ac62194c3917,2026-01-01,45,darwin release
+64049ca74d63,2026-01-01,3,darwin release
+16c7794d0a28,2026-01-02,18,nixpkgs-unstable
+c77302b0c1f5,2026-01-02,1,never a channel
+fb7944c166a3,2026-01-02,15,nixos-unstable
+30a3c519afcf,2026-01-03,1,darwin release
+3c9db02515ef,2026-01-05,2,nixos release
+9f0c42f8bc71,2026-01-05,4,nixos-unstable
+5912c1772a44,2026-01-06,11,nixos-unstable
+d351d0653aeb,2026-01-07,6,nixos release
+3497aa5c9457,2026-01-08,4,nixos-unstable
+35588f29848c,2026-01-09,1,darwin release
+45a153068326,2026-01-09,1,nixpkgs-unstable
+d03088749a11,2026-01-09,2,small release
+3146c6aa9995,2026-01-10,2,nixpkgs-unstable
+ffbc9f8cbaac,2026-01-11,14,nixos-unstable
+b4262d9cfe38,2026-01-11,3,small release
+3bb0067937fe,2026-01-11,1,small release
+3fbab70c6e69,2026-01-11,1,nixpkgs-unstable
+6ff5710ca2ad,2026-01-12,1,never a channel
+61db79b0c6b8,2026-01-13,1,nixpkgs-unstable
+1412caf7bf9e,2026-01-13,10,nixos-unstable
+2c3e5ec5df46,2026-01-13,4,nixos release
+ea30586ee015,2026-01-13,1,nixpkgs-unstable
+13868c071cc7,2026-01-14,1,nixpkgs-unstable
+7fa42090cb6c,2026-01-14,1,never a channel
+f4606b01b39e,2026-01-14,1,nixpkgs-unstable
+e4bae1bd10c9,2026-01-16,47,nixos-unstable
+3e3f3c7f9977,2026-01-17,4,darwin release
+3327b113f2ef,2026-01-17,4,nixpkgs-unstable
+a48c9dbce9a4,2026-01-17,1,small release
+77ef7a29d276,2026-01-18,3,small release
+bde090228871,2026-01-18,2,nixpkgs-unstable
+0ef1c5b62bec,2026-01-19,1,never a channel
+ed142ab1b3a0,2026-01-19,3,nixpkgs-unstable
+80e4adbcf899,2026-01-19,12,nixos-unstable
+88d3861acdd3,2026-01-21,9,nixos-unstable
+078d69f03934,2026-01-22,5,nixos release
+c5296fdd05cf,2026-01-23,3,nixos-unstable
+4fc12581a00d,2026-01-23,1,never a channel
+26b0093bc977,2026-01-24,1,nixpkgs-unstable
+1cd347bf3355,2026-01-24,5,nixos release
+48698d12cc10,2026-01-25,2,nixpkgs-unstable
+13b0f9e6ac78,2026-01-26,1,nixpkgs-unstable
+bfc1b8a45741,2026-01-26,25,nixos-unstable
+afce96367b2e,2026-01-27,5,nixpkgs-unstable
+fa83fd837f30,2026-01-28,12,nixos release
+6308c3b21396,2026-01-29,4,nixpkgs-unstable
+62c838296046,2026-01-30,7,nixos-unstable
+41e216c0ca66,2026-01-31,2,nixos release
+cb369ef2efd4,2026-02-01,9,nixos-unstable
+0fe992afb42c,2026-02-02,1,small release
+d04d8548aed3,2026-02-02,1,nixos release
+47472570b1e6,2026-02-02,9,nixpkgs-unstable
+4533d9293756,2026-02-03,15,nixpkgs-unstable
+e6eae2ee2110,2026-02-03,8,nixos-unstable
+e576e3c9cf9b,2026-02-03,3,small release
+41965737c179,2026-02-03,1,nixpkgs-unstable
+aa290c9891fa,2026-02-03,7,nixpkgs-unstable
+bf922a59c5c9,2026-02-03,6,nixos-unstable
+bc16855ba53f,2026-02-04,1,never a channel
+00c21e4c93d9,2026-02-04,9,nixos-unstable
+53264f9cdbe0,2026-02-05,1,small release
+ae67888ff7ef,2026-02-06,2,nixpkgs-unstable
+bec415ed1c7b,2026-02-06,1,never a channel
+23d72dabcb3b,2026-02-07,1,nixos release
+fef9403a3e4d,2026-02-07,2,nixpkgs-unstable
+d6c719321308,2026-02-08,20,nixos-unstable
+2db38e08fdad,2026-02-08,1,nixos release
+49d75834011c,2026-02-09,1,nixpkgs-unstable
+ef153095f544,2026-02-10,1,never a channel
+1c415018b240,2026-02-10,1,never a channel
+6c5e707c6b53,2026-02-10,3,nixos release
+ec7c70d12ce2,2026-02-11,4,nixos-unstable
+2343bbb58f99,2026-02-11,6,nixpkgs-unstable
+a82ccc39b39b,2026-02-13,21,nixos-unstable
+3aadb7ca9eac,2026-02-13,2,darwin release
+ade8a1892d8f,2026-02-13,1,small release
+e3cb16bccd9f,2026-02-15,3,nixpkgs-unstable
+ac055f38c798,2026-02-15,1,nixpkgs-unstable
+29c88d4dea1e,2026-02-15,1,never a channel
+d1c15b7d5806,2026-02-15,6,nixpkgs-unstable
+fa56d7d6de78,2026-02-15,6,nixos release
+007d7747527c,2026-02-15,1,small release
+0182a3613243,2026-02-17,24,nixos-unstable
+6d41bc27aaf7,2026-02-18,4,nixos release
+bcc4a9d9533c,2026-02-18,4,nixpkgs-unstable
+724cf38d99ba,2026-02-18,2,nixpkgs-unstable
+c217913993d6,2026-02-20,3,nixos release
+afbbf774e208,2026-02-21,2,darwin release
+2fc6539b481e,2026-02-23,24,nixos-unstable
+80d901ec0377,2026-02-23,1,nixpkgs-unstable
+6a6c0b0e45e8,2026-02-23,1,never a channel
+e764fc9a4058,2026-02-23,1,darwin release
+ea7f1f06811c,2026-02-24,3,nixpkgs-unstable
+0ca1a30c8ff3,2026-02-24,1,never a channel
+692f2c9a9bfb,2026-02-24,1,never a channel
+1267bb4920d0,2026-02-25,3,nixos release
+c0f3d81a7ddb,2026-02-26,4,nixpkgs-unstable
+dd9b079222d4,2026-02-27,13,nixos-unstable
+0d0766353b70,2026-03-01,1,never a channel
+6d3b61b190a8,2026-03-01,1,never a channel
+cf59864ef8aa,2026-03-01,3,nixos-unstable
+c581273b8d5b,2026-03-02,2,nixos release
+4215e62dc2cd,2026-03-02,1,nixpkgs-unstable
+8c809a146a14,2026-03-03,8,nixos-unstable
+fabb8c9deee2,2026-03-03,3,darwin release
+80bdc1e5ce51,2026-03-04,23,nixos-unstable
+954e9a9127b8,2026-03-05,1,never a channel
+917fec990948,2026-03-05,3,nixpkgs-unstable
+e38213b91d37,2026-03-05,1,nixpkgs-unstable
+aca4d95fce49,2026-03-05,20,nixos-unstable
+71caefce12ba,2026-03-06,3,nixos release
+8fbd4361b3a1,2026-03-06,1,small release
+608d0cadfed2,2026-03-08,6,nixpkgs-unstable
+9dcb002ca169,2026-03-08,10,nixos-unstable
+44bae273f9f8,2026-03-09,1,nixos release
+e607cb5360ff,2026-03-09,2,nixpkgs-unstable
+62dc67aa6a52,2026-03-09,4,nixos-unstable
+d9c8c765bcce,2026-03-10,1,never a channel
+b6067cc0127d,2026-03-10,1,nixpkgs-unstable
+0590cd39f728,2026-03-11,2,small release
+75690239f08f,2026-03-11,4,nixpkgs-unstable
+49a52055790e,2026-03-11,1,never a channel
+63ca4f465b79,2026-03-11,1,never a channel
+8aefa9df2886,2026-03-11,1,never a channel
+fe416aaedd39,2026-03-11,5,nixos-unstable
+3e20095fe3c6,2026-03-12,2,small release
+c06b4ae3d659,2026-03-13,13,nixos-unstable
+f82ce7af0b79,2026-03-14,3,nixpkgs-unstable
+e80236013dc8,2026-03-14,1,nixpkgs-unstable
+f59e980846fe,2026-03-14,1,nixos-unstable
+a25c00daef4f,2026-03-15,1,never a channel
+636806076200,2026-03-15,1,never a channel
+a07d4ce6bee6,2026-03-15,1,nixpkgs-unstable
+f8573b9c935c,2026-03-15,5,nixpkgs-unstable
+5b2c2d84341b,2026-03-16,14,nixos-unstable
+993b198677ac,2026-03-16,1,never a channel
+48652e9d5aea,2026-03-16,1,nixos release
+a6219ef19b53,2026-03-16,1,small release
+cda48547b432,2026-03-17,4,nixos-unstable
+41a2715cc472,2026-03-17,1,small release
+6fd329b2adfe,2026-03-17,1,never a channel
+b40629efe5d6,2026-03-18,23,nixos-unstable
+9cf7092bdd60,2026-03-18,5,nixpkgs-unstable
+27ba396fbbdd,2026-03-19,2,never a channel
+812b3986fd15,2026-03-19,1,nixos release
+6c9a78c09ff4,2026-03-21,14,nixos-unstable
+4724d5647207,2026-03-22,1,nixpkgs-unstable
+4590696c8693,2026-03-22,2,small release
+fdc7b8f7b30f,2026-03-23,8,nixpkgs-unstable
+46db2e09e1d3,2026-03-24,13,nixos-unstable
+1073dad219cb,2026-03-24,4,nixos release
+735a15e91bcb,2026-03-24,4,darwin release
+832efc09b4ca,2026-03-27,1,nixpkgs-unstable
+b63fe7f000ad,2026-03-28,5,nixpkgs-unstable
+8110df5ad7ab,2026-03-28,10,nixos-unstable
+7a1713982355,2026-03-29,1,never a channel
+107cba9eb4a8,2026-03-29,1,nixos release
+15c6719d8c60,2026-03-30,4,nixpkgs-unstable
+2f4fd5e1abf9,2026-03-30,1,small release
+bcd464ccd2a1,2026-03-31,4,nixos release
+6201e203d095,2026-04-01,36,nixos-unstable
+6ebfbc38bdc6,2026-04-01,1,nixpkgs-unstable
+106eb93cbb9d,2026-04-01,1,nixpkgs-unstable
+8d8c1fa5b412,2026-04-02,5,nixpkgs-unstable
+cff6bcc05680,2026-04-02,1,darwin release
+c0879ca9273d,2026-04-02,1,never a channel
+36a601196c4e,2026-04-04,2,nixos release
+5e11f7acce6c,2026-04-05,3,nixpkgs-unstable
+68d8aa3d661f,2026-04-05,19,nixos-unstable
+dc72a9d22820,2026-04-06,1,nixpkgs-unstable
+a3db02183b5d,2026-04-07,1,nixpkgs-unstable
+0fad47a6d70c,2026-04-07,1,never a channel
+ab5ff095a090,2026-04-07,1,never a channel
+4e92bbcdb030,2026-04-07,4,nixos release
+456e8a9468b9,2026-04-08,3,nixpkgs-unstable
+0f7663154ff2,2026-04-08,1,nixpkgs-unstable
+4c1018dae018,2026-04-08,25,nixos-unstable
+9d29d5f667d7,2026-04-09,2,nixpkgs-unstable
+8c11f88bb957,2026-04-10,6,nixpkgs-unstable
+13043924aaa7,2026-04-10,8,nixpkgs-unstable
+bdc8856144fe,2026-04-11,1,never a channel
+7e495b747b51,2026-04-13,3,nixos release
+4bd9165a9165,2026-04-14,24,nixos-unstable
+1766437c5509,2026-04-14,2,nixos release
+b847fec358b4,2026-04-15,1,never a channel
+566acc07c54d,2026-04-15,6,nixpkgs-unstable
+6b3fb3b76b5c,2026-04-15,1,small release
+b86751bc4085,2026-04-16,13,nixpkgs-unstable
+c7f47036d3df,2026-04-17,3,nixos release
+b12141ef619e,2026-04-18,36,nixos-unstable
+e07580dae397,2026-04-18,1,nixos release
+10e7ad5bbcb4,2026-04-20,2,nixos release
+0726a0ecb6d4,2026-04-22,31,nixos-unstable
+6ea81a59ced1,2026-04-23,1,darwin release
+01fbdeef22b7,2026-04-23,8,nixpkgs-unstable
+3f05c8657c70,2026-04-24,5,darwin release
+a4bf06618f0b,2026-04-24,4,nixos release
+f85cb8d4ca52,2026-04-25,2,never a channel
+a7ecea3deccf,2026-04-26,1,never a channel
+1c3fe55ad329,2026-04-26,24,nixos-unstable
+6368eda62c97,2026-04-26,3,nixpkgs-unstable
+ebc08544afa7,2026-04-28,5,nixpkgs-unstable
+755f5aa91337,2026-04-28,6,small release
+36b678fba6c3,2026-04-30,1,never a channel
+d329731f11cb,2026-04-30,1,never a channel
+15f4ee454b1d,2026-04-30,20,nixos-unstable
+c6d65881c562,2026-05-01,6,nixpkgs-unstable
+09af9bad358f,2026-05-01,1,never a channel
+26ef669cffa9,2026-05-01,9,small release
+4b2287113c2f,2026-05-02,2,never a channel
+90c100cb48d6,2026-05-03,1,nixpkgs-unstable
+73c703c22422,2026-05-03,4,nixpkgs-unstable
+04bfce097e6f,2026-05-03,2,never a channel
+afc5551119aa,2026-05-04,2,nixpkgs-unstable
+bc57abace076,2026-05-04,1,nixpkgs-unstable
+549bd84d6279,2026-05-04,58,nixos-unstable
+0c88e1f2bdb9,2026-05-05,3,small release
+ed67bc86e84e,2026-05-05,3,nixpkgs-unstable
+6038bc4f5278,2026-05-05,1,never a channel
+07800bee2b36,2026-05-06,1,nixpkgs-unstable
+68a8af93ff42,2026-05-06,5,nixpkgs-unstable
+b3da656039dc,2026-05-08,6,nixpkgs-unstable
+e87f2714ac88,2026-05-08,1,never a channel
+cb2938ebeac9,2026-05-09,1,never a channel
+8fd9daa3db09,2026-05-10,4,nixos release
+da5ad661ba4e,2026-05-10,35,nixos-unstable
+c6e5ca3c836a,2026-05-10,3,nixpkgs-unstable
+48d91f2c0ce7,2026-05-12,2,nixpkgs-unstable
+da36c0e2ea45,2026-05-12,1,never a channel
+eef00dfd8a71,2026-05-13,6,nixpkgs-unstable
+d7a713c0b7e4,2026-05-13,2,darwin release
+8a1b0127302e,2026-05-14,3,nixpkgs-unstable
+d233902339c0,2026-05-15,45,nixos-unstable
+ff02da1b46c3,2026-05-15,1,never a channel
+5a51fe22e18a,2026-05-16,1,small release
+687f05a9184c,2026-05-18,3,nixos release
+d99b013d5d19,2026-05-19,3,nixpkgs-unstable
+4a29d733e8a7,2026-05-21,1,nixpkgs-unstable
+f83fc3c307e7,2026-05-21,12,nixos-unstable
+b77b3de87756,2026-05-22,3,small release
+a0991c886dc8,2026-05-22,1,nixpkgs-unstable
+299164534138,2026-05-22,15,nixos-unstable
+3d8f0f3f72a6,2026-05-23,5,nixpkgs-unstable
+64c08a7ca051,2026-05-23,42,nixos-unstable
+f9d8b6595035,2026-05-25,4,nixpkgs-unstable
+f44f7788c891,2026-05-26,2,nixpkgs-unstable
+25f538306313,2026-05-26,15,nixos release
+4100e830e085,2026-05-27,3,nixpkgs-unstable
+f830e6112b4d,2026-05-27,1,never a channel
+f5190b692864,2026-05-27,1,small release
+97ae3d51bc94,2026-05-28,1,never a channel
+d60865391188,2026-05-28,1,never a channel
+ec942ba042da,2026-05-28,4,nixos release
+07c3a9fea4c6,2026-05-28,1,never a channel
+5fc22307fffa,2026-05-28,1,never a channel
+e9a7635a5759,2026-05-28,2,nixpkgs-unstable
+e8e446a36117,2026-05-29,1,nixos release
+8c50a710ddca,2026-05-30,6,never a channel
+b9ae31ea0e14,2026-05-30,1,never a channel
+b51242d7d436,2026-05-30,29,small release
+331800de5053,2026-05-31,42,nixos-unstable
+3109eaae18e0,2026-05-31,2,nixpkgs-unstable
+28a11ee15801,2026-05-31,1,never a channel
+f4c6980dc086,2026-06-01,1,never a channel
+4df1b885d76a,2026-06-01,9,nixpkgs-unstable
+ffa10e26ae11,2026-06-01,6,nixpkgs-unstable
+6b316287bae2,2026-06-02,9,small release
+c8560a2e8ad2,2026-06-03,1,small release
+535f3e6942cb,2026-06-03,2,darwin release
+8bb9ed7f1fa4,2026-06-05,1,never a channel
+9b696460ac78,2026-06-06,2,nixos release
+cbb5cf358f50,2026-06-06,8,nixpkgs-unstable
+a799d3e3886d,2026-06-06,31,nixos-unstable
+bd0ff2d3eac2,2026-06-08,10,nixos release
+8c3cede7ddc2,2026-06-08,14,nixpkgs-unstable
+cc6d32041072,2026-06-08,1,never a channel
+e820eb4a444b,2026-06-08,1,small release
+f117b4b2ccc1,2026-06-09,2,small release
+a42b80a5634e,2026-06-09,1,never a channel
+9ae611a455b9,2026-06-09,35,nixos-unstable
+a2e8eec250c2,2026-06-10,2,never a channel
+381da955cb03,2026-06-10,1,never a channel
+b503dde36150,2026-06-10,1,nixpkgs-unstable
+a0374025a863,2026-06-11,17,nixos release
+49a4bd0573c3,2026-06-12,3,nixpkgs-unstable
+747285370f3c,2026-06-13,1,never a channel
+9f11f828c213,2026-06-13,1,nixpkgs-unstable
+c9172fa5143f,2026-06-13,1,small release
+9eac87a12312,2026-06-14,4,nixpkgs-unstable
+8c14fa3ccacd,2026-06-14,2,darwin release
+d6df3513510a,2026-06-15,1,darwin release
+567a49d1913c,2026-06-15,72,nixos-unstable
+3e41b24abd26,2026-06-16,17,nixpkgs-unstable
+bdc60ed90f33,2026-06-16,1,never a channel
+e8210c649915,2026-06-18,3,nixos release
+42342cbe4e6f,2026-06-21,1,never a channel
+34268251cf55,2026-06-22,3,small release
+b3c092d3c36d,2026-06-22,2,nixpkgs-unstable
+89570f24e97e,2026-06-22,12,nixpkgs-unstable
+9a1a7dbb18f0,2026-06-22,1,nixos release
+78810b489be7,2026-06-23,1,never a channel
+27bf2edc037c,2026-06-24,1,small release
+03c72920da82,2026-06-24,1,small release
+4062d36ebeae,2026-06-25,4,nixos release
+5df71f3d167f,2026-06-25,1,small release
+e73de5be04e0,2026-06-26,24,nixos-unstable
+714a5f8c4ead,2026-06-26,4,nixos release
+bcb52fa87abb,2026-06-27,1,never a channel
+1f01958ffb5b,2026-06-28,5,nixos release
+b5aa0fbd5389,2026-06-29,28,nixos-unstable
+7a1a64774a5f,2026-06-29,2,nixpkgs-unstable
+e52c192be9d7,2026-06-30,2,nixpkgs-unstable
+b6018f87da91,2026-06-30,38,nixos release
+95ca1e203c07,2026-06-30,3,nixos release
+612cfb30cb08,2026-06-30,1,never a channel
+cf720c15e108,2026-07-01,1,never a channel
+e8273b29fe13,2026-07-01,12,nixpkgs-unstable
+9e92285f211d,2026-07-01,2,nixpkgs-unstable
+65179426c83b,2026-07-01,8,nixos-unstable
+d33369954a67,2026-07-02,4,nixpkgs-unstable
+6147971a7160,2026-07-02,1,small release
+17abb5854fab,2026-07-03,1,never a channel
+a50de1b7d8a5,2026-07-04,10,small release
+6edbf1a6a03e,2026-07-04,1,nixpkgs-unstable
+d407951447dc,2026-07-04,42,nixos-unstable
+c4013e501c04,2026-07-05,3,nixpkgs-unstable
+f205b5574fd0,2026-07-05,10,nixpkgs-unstable
+cd648d6ea62b,2026-07-06,2,never a channel
+0ad6f47ea4fe,2026-07-06,3,small release
+ab0e663da4ea,2026-07-07,1,never a channel
+c4abbfa59497,2026-07-07,1,never a channel
+0bb7ec54c848,2026-07-08,13,nixos-unstable
+74cc63f702f7,2026-07-08,1,darwin release
+767b0d3ec98a,2026-07-09,4,nixpkgs-unstable
+a0230bd8d5cb,2026-07-09,1,never a channel
+dc29ee8fa098,2026-07-10,2,small release
+8f0500b96605,2026-07-10,2,nixos release
+2b35450a66cf,2026-07-10,1,darwin release
+e7a3ca8092b6,2026-07-11,22,nixos-unstable
+716c7a2664ca,2026-07-11,2,nixpkgs-unstable
+3b32825de172,2026-07-11,1,nixpkgs-unstable
+569d57850992,2026-07-12,4,small release
+76fe02659c00,2026-07-12,1,darwin release
+6cdc7fc76e8b,2026-07-12,5,nixpkgs-unstable
+8431ff8a526b,2026-07-13,1,nixpkgs-unstable
+39bb2ac4f06b,2026-07-13,1,never a channel
+18b9261cb329,2026-07-13,15,nixos-unstable
+8eeec934ae0d,2026-07-13,9,nixos release
+3889d66586e6,2026-07-14,1,nixpkgs-unstable
+35d3407a3816,2026-07-15,3,nixpkgs-unstable
+753cc8a3a874,2026-07-15,19,nixos-unstable
+4382ed2b7a68,2026-07-15,2,nixos release
+59682e0069f0,2026-07-16,1,nixpkgs-unstable
+293d6abedf04,2026-07-17,7,small release
+a47c123a6092,2026-07-17,1,nixpkgs-unstable
+31cd72fdba8f,2026-07-17,1,nixpkgs-unstable
+61b7c44c4073,2026-07-17,34,nixos-unstable
+20535e48e12c,2026-07-18,4,nixpkgs-unstable
+fd1462031fde,2026-07-18,10,darwin release
+b471514bed69,2026-07-19,1,nixpkgs-unstable
+472e4428b5ae,2026-07-19,1,nixpkgs-unstable
+241313f4e8e5,2026-07-19,42,nixos-unstable
+421eebfd0ec7,2026-07-20,11,nixpkgs-unstable
+d035ba30f449,2026-07-20,1,small release
+0c2094806c9e,2026-07-20,4,never a channel
+b3fe9581c906,2026-07-22,4,nixos release
+62052f0bb68c,2026-07-22,1,never a channel
+7525d999cd85,2026-07-22,4,nixpkgs-unstable
+e2587caef70c,2026-07-23,45,nixos-unstable
+6d12004108e0,2026-07-23,2,nixpkgs-unstable
+b6ad4550391d,2026-07-23,1,never a channel
+597283ad8aa0,2026-07-23,4,nixos release
+3a5370418d3a,2026-07-24,1,never a channel
+38affae6a576,2026-07-25,1,nixpkgs-unstable
+328e42b4f861,2026-07-25,1,small release
+329c3d2af6d1,2026-07-26,3,darwin release
+624af665418d,2026-07-26,35,nixos-unstable
+8623c4c20aa4,2026-07-26,3,small release
+d3498f786f97,2026-07-26,2,nixpkgs-unstable
+2f5a153c270b,2026-07-26,2,nixos release
+38a488741157,2026-07-27,8,nixpkgs-unstable
+8507ef13c07f,2026-07-27,1,never a channel
+9bc02893134c,2026-07-28,4,nixpkgs-unstable
+0954f7ee2f6b,2026-07-29,15,nixos-unstable
+21ea275a7c46,2026-07-29,9,nixos release
+a5e9f2fd9ef6,2026-07-30,1,nixpkgs-unstable
+1559d3daa3ec,2026-07-30,26,nixos-unstable
+d19830ed2d4f,2026-07-30,1,never a channel
+59ea0b1c043c,2026-07-31,4,nixpkgs-unstable
+2af722787805,2026-07-31,1,never a channel
+5b4f72e1705a,2026-07-31,1,nixos release
+584b9b1a8000,2026-07-31,1,never a channel
+f8e81fc7eb06,2026-07-31,2,nixpkgs-unstable
+62f407a812aa,2026-07-31,1,never a channel
+148bab9c1c3c,2026-08-01,45,nixos-unstable
+e568f3b19d54,2026-08-01,2,never a channel
+6d65bfc1bcef,2026-08-01,5,nixos release
+a5cbcfe95479,2026-08-01,3,nixpkgs-unstable
+643809054d65,2026-08-02,13,nixos-unstable
+ccdb97fdbee7,2026-08-02,1,small release
+243895692ae2,2026-08-02,1,nixpkgs-unstable
+e435af0d31b5,2026-08-02,1,never a channel
+531670d871c0,2026-08-02,1,small release
+104240a77242,2026-08-03,16,nixpkgs-unstable
+83a1e45a0a61,2026-08-03,1,never a channel
+e72e4f299401,2026-08-04,38,nixos-unstable
+04607e1165ac,2026-08-04,13,small release
+85f62611fa3f,2026-08-04,4,small release
+b7c2ada94fe9,2026-08-05,28,nixos-unstable
+70ce23431213,2026-08-05,5,nixpkgs-unstable
+445d861c6d31,2026-08-05,8,nixos release
+13bbb58a4d92,2026-08-06,1,never a channel
+ee48b147c18c,2026-08-07,6,small release
+afb4584a80bb,2026-08-07,2,nixpkgs-unstable
+f13ff45afd1b,2026-08-07,29,nixos-unstable
+8b8c811c7c25,2026-08-08,3,small release
+279b4a8275f0,2026-08-08,8,nixos-unstable
+fcb8fcd6bf2d,2026-08-09,5,nixos release
+d482ef84049d,2026-08-10,9,nixpkgs-unstable
+2fcb964de67f,2026-08-10,24,nixos-unstable
+8e2eeb9477c9,2026-08-10,3,nixpkgs-unstable
+70cc4559b10a,2026-08-10,4,nixos release
+370968bf671b,2026-08-11,1,never a channel
+867dcbc30baf,2026-08-11,3,nixos-unstable
+044bfe75bfe4,2026-08-12,8,nixpkgs-unstable
+9f78f44a8794,2026-08-12,4,small release
+6b5e5b7a6631,2026-08-12,8,nixpkgs-unstable
+0e251e24a4f2,2026-08-12,47,nixos-unstable
+02e08985a27c,2026-08-14,20,nixos release
+8be7bd0c83f1,2026-08-14,9,nixpkgs-unstable
+fd2da4c15bf0,2026-08-15,1,never a channel
+54ba4bcec404,2026-08-15,1,nixpkgs-unstable
+e5bdc4a41d4c,2026-08-15,22,nixos-unstable
+86038378b414,2026-08-16,1,never a channel
+33da5f36e599,2026-08-16,3,darwin release
+0dd31db7e6db,2026-08-16,3,nixos release
+f4b6996c4e8b,2026-08-17,5,nixpkgs-unstable
+3f0c9317e552,2026-08-17,1,never a channel
+ec2d622de077,2026-08-17,12,nixos-unstable
+c69ae8fb8fae,2026-08-18,3,small release
+b47ad65d73ab,2026-08-18,1,nixpkgs-unstable
+ced43465ad23,2026-08-18,1,small release
+0ae2bc1419c3,2026-08-18,21,nixos-unstable
+b18a4b905f8d,2026-08-18,8,small release
+afe3d8ac4395,2026-08-18,5,nixpkgs-unstable
+ffb3c9b700e7,2026-08-19,52,nixos-unstable
+07e1d92cdc0e,2026-08-19,8,nixpkgs-unstable
+53fe9723d8ae,2026-08-19,1,never a channel
+271998520450,2026-08-19,1,small release
+5880666fd9eb,2026-08-19,21,nixos release
+391b592eb448,2026-08-20,51,nixpkgs-unstable
+5cca3a89405e,2026-08-20,1,small release
+b5bb97e32aba,2026-08-20,1,never a channel
+2ee0d3d5eb7c,2026-08-21,1,never a channel
+6062ba1a1b8b,2026-08-21,1,darwin release
+2c423e03bbaf,2026-08-21,98,nixos-unstable
+a831408e6378,2026-08-21,22,nixpkgs-unstable
+731960f9bf65,2026-08-21,1,small release
+c8f90650c152,2026-08-22,12,nixpkgs-unstable
+a9e6d84f9c2f,2026-08-22,15,nixos release
+174eb786fb68,2026-08-22,12,nixpkgs-unstable
+a91080297932,2026-08-22,1,never a channel
+ae9396d21aa0,2026-08-22,1,small release
+8c420e82e993,2026-08-22,3,never a channel
+52d58e7fb50e,2026-08-22,1,never a channel
+56c02bc00adc,2026-08-23,68,nixos-unstable
+941ede61f9ab,2026-08-23,2,small release
+90fa521eab78,2026-08-23,1,never a channel
+a3b98866eecd,2026-08-23,4,small release
+fd37132eee9f,2026-08-24,1,small release
+ac6b2166e7a9,2026-08-24,21,nixpkgs-unstable
+f4f698677b11,2026-08-24,12,nixos release
+c31f86faf4b0,2026-08-25,1,small release
+a654c7065ee9,2026-08-25,1,never a channel
+3c1f3f50cb8f,2026-08-25,1,never a channel
+9fbb54b33e91,2026-08-26,302,nixos-unstable
+062346a6d85b,2026-08-26,8,nixos release
+eb0b16891e84,2026-08-26,1,small release
+76dbcca3c8c2,2026-08-26,1,never a channel
+73be81192b89,2026-08-26,1,never a channel
+fcaf4be0e0e4,2026-08-26,1,darwin release
+9d20d346653b,2026-08-26,1,small release
+c27cdad491a9,2026-08-27,39,nixpkgs-unstable
+7e0fb958bbf9,2026-08-27,5,small release
+d57af924f160,2026-08-27,13,small release
+7d1a7c21a4c0,2026-08-27,40,nixpkgs-unstable
+bf581a82b438,2026-08-27,1,small release
+83199d0d373d,2026-08-27,18,nixos-unstable
+a8c5d3da4f76,2026-08-28,1,never a channel
+5a683795f9e5,2026-08-28,1,never a channel
+abaa04521f86,2026-08-28,1,small release
+b9e4f2fc131b,2026-08-28,1,never a channel
+84b31b66a21b,2026-08-28,1,never a channel
+66b643c7d4e3,2026-08-28,1,small release
+b0aa699cd56b,2026-08-28,4,small release
+c5c4a43b0e80,2026-08-28,4,small release
+e8be7818e19a,2026-08-28,16,nixpkgs-unstable
+1a7b918034d1,2026-08-28,4,never a channel
+be81e5781191,2026-08-28,1,never a channel
+413a9b88e428,2026-08-29,3,small release
+6ec2357f477d,2026-08-29,3,never a channel
+bb3902be15e0,2026-08-29,19,never a channel
+d2f679497988,2026-08-29,30,nixos-unstable
+97bbaf37c239,2026-08-29,1,never a channel
+89af80241b7c,2026-08-30,1,never a channel
