@@ -8,6 +8,10 @@ on:
     branches:
       - master
 jobs:
+  # The whole of CI. Everything the site needs -- ruby, the gems, graphviz,
+  # imagemagick, the plotnine interpreter, the formatters -- is pinned in the
+  # flake, so there is nothing here to install and nothing to keep in step with
+  # it by hand.
   nix-validate:
     runs-on: ubuntu-latest
     steps:
@@ -19,44 +23,8 @@ jobs:
           name: fzakaria
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
       - name: Build & check
+        # `nix flake check` builds the checks -- formatting -- but only
+        # evaluates `packages`, so the site build is its own step.
         run: |
-          nix fmt -- --check .
+          nix flake check
           nix build
-  validate:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-      - name: Install Graphviz
-        run: sudo apt-get update && sudo apt-get install -y graphviz
-      - name: Install ImageMagick
-        run: sudo apt-get update && sudo apt-get install -y imagemagick
-      - name: Setup Python
-        uses: actions/setup-python@v7
-        with:
-          python-version: "3.12"
-      - name: Install plotnine
-        # _plugins/plotnine.rb shells out to python3 to render ```plotnine
-        # fences and fails the build if it cannot. Pinned to the version the
-        # flake's nixpkgs provides, so a chart drawn by this job and a chart
-        # drawn by `nix build` are the same chart; see flake.nix.
-        #
-        # matplotlib is pinned too, and not left to pip's resolver: plotnine
-        # reaches into matplotlib private API (matplotlib.text._get_textbox),
-        # which newer matplotlib releases have removed. Its floor of
-        # matplotlib>=3.8 is therefore not an upper bound anyone enforces.
-        run: python3 -m pip install "plotnine==0.15.1" "matplotlib==3.9.2"
-      - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          bundler-cache: true
-      - uses: actions/setup-node@v7
-        with:
-          node-version: "20"
-          cache: "npm"
-      - name: Lint
-        run: |
-          npm ci --dev
-          npm run prettier-check
-      - name: Build with Jekyll
-        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"

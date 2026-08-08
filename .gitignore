@@ -5,7 +5,6 @@ _site
 .direnv/
 .DS_Store
 result
-node_modules/
 .image-cache
 .graphviz-cache
 .plotnine-cache
