@@ -60,7 +60,8 @@ Nix used to be solely the former, dynamic derivations add the latter.
 
 ## Actually, nix always had bind
 
-![always has been bind meme](image.png)
+[![always has been bind meme](/assets/images/always_has_been_bind_meme.png)](/assets/images/always_has_been_bind_meme.png)
+{: style="--image-width: 20rem"}
 
 Okay, I guess I should have said "Nix is now monadic in the scheduler". Nix has always had bind in the evaluator. We have been doing monadic builds for years. We call it
 [import from derivation]({% post_url 2020-10-20-nix-parallelism-import-from-derivation %}).
