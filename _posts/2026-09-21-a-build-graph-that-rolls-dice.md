@@ -202,7 +202,8 @@ Either way the file copied into `$out` is a `.drv`, so `builtins.outputOf` works
 
 [^depth]: We actually need a depth parameter to avoid infinite recursion and so that the store-path of the derivations are different since they are content-addressed.
 
-We can see the build graph grow in the denominator as the build progresses. Here is a run that rolled a chain of length 46:
+We can see the build graph grow in the denominator as the build progresses.
+
 
 ![A terminal running nix build on the dice chain. The progress counter starts at one derivation and climbs past fifty as each level emits the next one.](/assets/images/nix-dyndrv-dice.gif)
 
