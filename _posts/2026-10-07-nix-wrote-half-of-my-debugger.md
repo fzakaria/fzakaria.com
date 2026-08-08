@@ -48,7 +48,7 @@ static void deposit(int teller, long amount)
 A teller that runs between the other's read and store writes a stale balance
 over the other's deposits.[^laptop]
 
-[^laptop]: On my laptop, with 16 cores, `bank` comes up short times in 1,000. Pinned to one CPU with `taskset`, it failed 0 times in 1,000.
+[^laptop]: On my 16-core laptop, `bank` lost money in 396 of 1,000 runs. Pinned to a single core with `taskset`, it lost money in none of 1,000: one core alone rarely switches threads in the middle of a deposit, which is why Rewind perturbs the schedule.
 
 <figure>
 <svg viewBox="0 0 440 272" role="img"
