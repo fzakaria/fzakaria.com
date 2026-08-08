@@ -58,10 +58,11 @@ One way to think about the difference is to look at the type signatures of the t
 
 Nix used to be solely the former, dynamic derivations add the latter.
 
-## Actually, nix always has bind
+## Actually, nix always had bind
 
-Okay, I guess I should have said "Nix is now monadic in the scheduler". Nix has always had bind in the evaluator.
-We have been doing monadic builds for years. We call it
+![always has been bind meme](image.png)
+
+Okay, I guess I should have said "Nix is now monadic in the scheduler". Nix has always had bind in the evaluator. We have been doing monadic builds for years. We call it
 [import from derivation]({% post_url 2020-10-20-nix-parallelism-import-from-derivation %}).
 
 ```nix
