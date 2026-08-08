@@ -3,7 +3,7 @@ layout: base
 ---
 {% assign is_archive = false %}
 {% if page.collection == 'old_blog' %}{% assign is_archive = true %}{% endif %}
-{% assign words = content | number_of_words %}
+{% assign words = content | strip_code_blocks | number_of_words %}
 {% assign minutes = words | divided_by: 200 | plus: 1 %}
 
 <article class="column">
