@@ -928,13 +928,22 @@ figure.graphviz {
   // something real; the aspect ratio the plugin writes then gives a height,
   // max-height clamps it, and because the width is auto rather than a length
   // it shrinks to keep the proportions. margin-inline centres what is left.
+  //
+  // -webkit-user-drag is what lets the labels be selected. `dot` writes every
+  // label as real <text>, but a drag beginning inside a link is a link drag,
+  // so the anchor carrying the click-through swallowed the gesture and a
+  // diagram's text could only be selected in the standalone copy. Firefox
+  // honours the draggable="false" the plugin writes; Chrome and Safari want
+  // this, and both are needed.
   a {
     display: block;
+    -webkit-user-drag: none;
   }
 
   svg {
     display: block;
     margin-inline: auto;
+    user-select: text;
     max-width: 100%;
     max-height: var(--graphviz-height);
     width: auto;
@@ -958,6 +967,11 @@ figure.graphviz {
 figure.plotnine {
   a {
     display: block;
+    // The anchor carries the click-through to the standalone SVG, and a drag
+    // beginning inside a link is a link drag rather than a selection. Charts
+    // ship real <text>, so opting out of the drag is what makes those labels
+    // selectable in the page as well as in the file.
+    -webkit-user-drag: none;
   }
 
   svg {
@@ -966,6 +980,7 @@ figure.plotnine {
     max-width: 100%;
     height: auto;
     color: var(--ink);
+    user-select: text;
   }
 }
 

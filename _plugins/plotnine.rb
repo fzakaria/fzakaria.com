@@ -320,8 +320,14 @@ module Plotnine
       body = fallback_font(strip_prologue(svg))
       href = publish(key, standalone(body))
 
+      # draggable="false" is what lets the labels be selected. A drag that
+      # starts inside a link is a link drag, so the anchor that carries the
+      # click-through would otherwise swallow every selection gesture -- and
+      # emitting real text is pointless if no one can pick it up. Firefox
+      # honours the attribute; Chrome and Safari want the CSS in _sass, and
+      # both are needed.
       %(<figure #{figure_attributes(attrs)}>) +
-        %(<a href="#{href}" class="plotnine-full" ) +
+        %(<a href="#{href}" class="plotnine-full" draggable="false" ) +
         %(title="Open this chart on its own">#{theme(body)}</a></figure>)
     end
 

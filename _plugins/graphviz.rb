@@ -256,7 +256,7 @@ module Graphviz
       inline = theme(strip_prologue(svg), key)
 
       %(<figure #{figure_attributes(attrs)}>) +
-        %(<a href="#{href}" class="graphviz-full" ) +
+        %(<a href="#{href}" class="graphviz-full" draggable="false" ) +
         %(title="Open this diagram on its own">#{inline}</a></figure>)
     end
 
