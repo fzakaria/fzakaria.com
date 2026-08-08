@@ -138,6 +138,7 @@ There's some other data on [nixmultiverse.com](https://nixmultiverse.com/) about
 
 <video autoplay loop muted playsinline width="800" height="470">
   <source src="/assets/images/multiverse-universe-slider.mp4" type="video/mp4">
+  <a href="/assets/images/multiverse-universe-slider.mp4">Screencast of the nixmultiverse.com universe slider</a>
 </video>
 
 All of this is also available via the [mvs](https://nixmultiverse.com/docs/cli) command line tool as well for offline use.
