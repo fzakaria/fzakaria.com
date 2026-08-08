@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 840 190" role="img"
+     style="display:block;margin-inline:auto;width:100%;height:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f5f2ec"
+     aria-label="One pipeline: glibc from nixpkgs, the toolchain closure, compile and link, hello, the store path, the NixOS system. A comment changes in glibc, which gets a new name but the same bytes. At the first seam the closure's digest is unchanged, so buck2 reports a cache hit and nothing after it runs. At the second seam the store path is the CAS digest itself, so Nix sees the same path and the system is unchanged.">
+  <style>
+    .co-box { fill: var(--paper-raised, #ebe6da); stroke: var(--rule-strong, #c2b9a6); stroke-width: 1; }
+    .co-t { font-size: 11.5px; fill: var(--ink, #1a1815); }
+    .co-m { font-size: 10px; fill: var(--ink-muted, #565046); }
+    .co-a { font-size: 10px; fill: var(--accent, #9e3413); font-weight: bold; }
+    .co-edge { stroke: var(--ink-faint, #6f685b); stroke-width: 1; }
+    .co-seam { stroke: var(--accent, #9e3413); stroke-width: 1; stroke-dasharray: 3 3; }
+  </style>
+  <defs>
+    <marker id="co-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint, #6f685b)"/>
+    </marker>
+  </defs>
+
+  <!-- boxes: six steps, 110 wide, 140 apart -->
+  <rect class="co-box" x="20" y="60" width="110" height="44" rx="4"/>
+  <text class="co-t" x="75" y="78" text-anchor="middle">glibc</text>
+  <text class="co-a" x="75" y="94" text-anchor="middle">new name</text>
+
+  <rect class="co-box" x="160" y="60" width="110" height="44" rx="4"/>
+  <text class="co-t" x="215" y="78" text-anchor="middle">closure</text>
+  <text class="co-m" x="215" y="94" text-anchor="middle">same digest</text>
+
+  <rect class="co-box" x="300" y="60" width="110" height="44" rx="4"/>
+  <text class="co-t" x="355" y="78" text-anchor="middle">compile, link</text>
+  <text class="co-m" x="355" y="94" text-anchor="middle">cache hit</text>
+
+  <rect class="co-box" x="440" y="60" width="110" height="44" rx="4"/>
+  <text class="co-t" x="495" y="78" text-anchor="middle">hello</text>
+  <text class="co-m" x="495" y="94" text-anchor="middle">same digest</text>
+
+  <rect class="co-box" x="580" y="60" width="110" height="44" rx="4"/>
+  <text class="co-t" x="635" y="78" text-anchor="middle">store path</text>
+  <text class="co-m" x="635" y="94" text-anchor="middle">= digest</text>
+
+  <rect class="co-box" x="720" y="60" width="110" height="44" rx="4"/>
+  <text class="co-t" x="775" y="78" text-anchor="middle">system</text>
+  <text class="co-m" x="775" y="94" text-anchor="middle">unchanged</text>
+
+  <line class="co-edge" marker-end="url(#co-arrow)" x1="130" y1="82" x2="160" y2="82"/>
+  <line class="co-edge" marker-end="url(#co-arrow)" x1="270" y1="82" x2="300" y2="82"/>
+  <line class="co-edge" marker-end="url(#co-arrow)" x1="410" y1="82" x2="440" y2="82"/>
+  <line class="co-edge" marker-end="url(#co-arrow)" x1="550" y1="82" x2="580" y2="82"/>
+  <line class="co-edge" marker-end="url(#co-arrow)" x1="690" y1="82" x2="720" y2="82"/>
+
+  <!-- the two seams -->
+  <line class="co-seam" x1="145" y1="30" x2="145" y2="130"/>
+  <text class="co-m" x="145" y="22" text-anchor="middle">nixpkgs | buck2</text>
+  <text class="co-m" x="145" y="148" text-anchor="middle">name changed, digest did not:</text>
+  <text class="co-m" x="145" y="162" text-anchor="middle">the rename stops here</text>
+
+  <line class="co-seam" x1="565" y1="30" x2="565" y2="130"/>
+  <text class="co-m" x="565" y="22" text-anchor="middle">buck2 | Nix</text>
+  <text class="co-m" x="565" y="148" text-anchor="middle">path = CAS digest:</text>
+  <text class="co-m" x="565" y="162" text-anchor="middle">nothing to import</text>
+
+  <text class="co-m" x="75" y="40" text-anchor="middle">a comment changes</text>
+</svg>

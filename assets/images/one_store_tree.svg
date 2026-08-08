@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 760 400" role="img" xml:space="preserve"
+     style="display:block;margin-inline:auto;width:100%;height:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f5f2ec"
+     aria-label="A file tree. Under an unnamed root: nix/store, containing gcc, glibc and gmp. gcc's bin/gcc has PT_INTERP $ORIGIN/../../glibc/lib/ld-linux-x86-64.so.2 and RUNPATH $ORIGIN/../../glibc/lib; both arrows land inside the sibling glibc directory. cc1, five levels deeper in libexec, has RUNPATH $ORIGIN/../../../../../gmp/lib, and its arrow lands inside the sibling gmp directory. The root is labelled: slash, or buck-out/…/closure/, or an action's input root: the same shape.">
+  <style>
+    .tr-t { font-size: 12.5px; fill: var(--ink, #1a1815); white-space: pre; }
+    .tr-m { font-size: 11px; fill: var(--ink-muted, #565046); }
+    .tr-o { fill: var(--accent, #9e3413); font-weight: bold; }
+    .tr-a { stroke: var(--accent, #9e3413); stroke-width: 1.25; fill: none; }
+    .tr-hit { fill: var(--accent-wash, #9e34131f); }
+  </style>
+  <defs>
+    <marker id="tr-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--accent, #9e3413)"/>
+    </marker>
+  </defs>
+
+  <text class="tr-t" x="20" y="30">&lt;root&gt;/</text>
+  <text class="tr-m" x="100" y="30">= /  or  buck-out/…/closure/  or  an input root</text>
+  <text class="tr-t" x="20" y="52">└── nix/store/</text>
+  <text class="tr-t" x="20" y="74">    ├── 5q6bdx…-gcc-16.2.0/</text>
+  <text class="tr-t" x="20" y="96">    │   ├── bin/gcc</text>
+  <text class="tr-t" x="20" y="118">    │   │     PT_INTERP  <tspan class="tr-o">$ORIGIN</tspan>/../../h4wfwi…-glibc-2.44-25/lib/ld-linux-x86-64.so.2</text>
+  <text class="tr-t" x="20" y="140">    │   │     RUNPATH    <tspan class="tr-o">$ORIGIN</tspan>/../../h4wfwi…-glibc-2.44-25/lib</text>
+  <text class="tr-t" x="20" y="162">    │   └── libexec/gcc/x86_64-unknown-linux-gnu/16.2.0/cc1</text>
+  <text class="tr-t" x="20" y="184">    │         RUNPATH    <tspan class="tr-o">$ORIGIN</tspan>/../../../../../85lj8x…-gmp-6.3.0/lib:…</text>
+
+  <rect class="tr-hit" x="44" y="192" width="230" height="86" rx="3"/>
+  <text class="tr-t" x="20" y="206">    ├── h4wfwi…-glibc-2.44-25/</text>
+  <text class="tr-t" x="20" y="228">    │   └── lib/</text>
+  <text class="tr-t" x="20" y="250">    │       ├── ld-linux-x86-64.so.2</text>
+  <text class="tr-t" x="20" y="272">    │       └── libc.so.6</text>
+
+  <rect class="tr-hit" x="44" y="280" width="230" height="46" rx="3"/>
+  <text class="tr-t" x="20" y="294">    └── 85lj8x…-gmp-6.3.0/</text>
+  <text class="tr-t" x="20" y="316">        └── lib/libgmp.so.10</text>
+
+  <!-- $ORIGIN of gcc is bin/; two steps up is nix/store/; then into the sibling -->
+  <path class="tr-a" marker-end="url(#tr-arrow)" d="M 672 114 C 748 114, 748 250, 312 250"/>
+  <path class="tr-a" marker-end="url(#tr-arrow)" d="M 514 136 C 700 136, 700 228, 196 228"/>
+  <!-- cc1 is five deep, so five steps up -->
+  <path class="tr-a" marker-end="url(#tr-arrow)" d="M 574 180 C 724 180, 724 316, 312 316"/>
+
+  <text class="tr-m" x="20" y="356">$ORIGIN is the file's own directory. bin/gcc climbs two, cc1 climbs five,</text>
+  <text class="tr-m" x="20" y="374">and both arrive at nix/store/. Move &lt;root&gt; anywhere: nothing else moves.</text>
+</svg>

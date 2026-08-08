@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 820 400" role="img"
+     style="display:block;margin-inline:auto;width:100%;height:auto;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#f5f2ec"
+     aria-label="An animated data-flow diagram. On the host, the gcc closure in /nix/store is declared to buck2 by its digest and uploaded to a content-addressed store if it is not there already. A remote worker fetches it into an action's input root, the kernel resolves gcc's $ORIGIN interpreter, gcc runs and links hello. hello is uploaded to the content-addressed store. buck2 reports its digest to the host, and Nix substitutes /nix/store/&lt;D&gt;-hello straight out of that store, with glibc recorded as a reference.">
+  <style>
+    .fl-box { fill: var(--paper-raised, #ebe6da); stroke: var(--rule-strong, #c2b9a6); stroke-width: 1; }
+    .fl-cas { fill: var(--accent-wash, #9e34131f); stroke: var(--accent, #9e3413); stroke-width: 1; }
+    .fl-t { font-size: 12.5px; fill: var(--ink, #1a1815); }
+    .fl-m { font-size: 10.5px; fill: var(--ink-muted, #565046); }
+    .fl-h { font-size: 10px; fill: var(--ink-faint, #6f685b); letter-spacing: .08em; }
+    .fl-edge { stroke: var(--ink-faint, #6f685b); stroke-width: 1; fill: none; }
+    .fl-dot-tc { fill: var(--accent, #9e3413); }
+    .fl-dot-out { fill: var(--ink, #1a1815); }
+    .fl-kernel { fill: none; stroke: var(--accent, #9e3413); stroke-width: 2; }
+    @keyframes fl-flash { 0%, 100% { opacity: 0 } 50% { opacity: 1 } }
+    @media (prefers-reduced-motion: reduce) { .fl-dot { display: none } .fl-kernel { opacity: .6 } }
+  </style>
+  <defs>
+    <marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--ink-faint, #6f685b)"/>
+    </marker>
+    <path id="fl-p1" d="M140 90 L140 130"/>
+    <path id="fl-p2" d="M260 155 L360 155"/>
+    <path id="fl-p3" d="M460 85 L560 85"/>
+    <path id="fl-p4" d="M680 110 L680 150"/>
+    <path id="fl-p5" d="M680 200 L680 240"/>
+    <path id="fl-p6" d="M560 265 L460 265"/>
+    <path id="fl-p7" d="M360 265 L260 265"/>
+    <path id="fl-p8" d="M360 355 L260 355"/>
+  </defs>
+
+  <text class="fl-h" x="140" y="22" text-anchor="middle">HOST</text>
+  <text class="fl-h" x="410" y="22" text-anchor="middle">CAS</text>
+  <text class="fl-h" x="680" y="22" text-anchor="middle">WORKER</text>
+
+  <!-- host -->
+  <rect class="fl-box" x="20" y="40" width="240" height="50" rx="4"/>
+  <text class="fl-t" x="140" y="60" text-anchor="middle">/nix/store/&lt;h&gt;-gcc-16.2.0</text>
+  <text class="fl-m" x="140" y="76" text-anchor="middle">nixpkgs, relocatable</text>
+
+  <rect class="fl-box" x="20" y="130" width="240" height="50" rx="4"/>
+  <text class="fl-t" x="140" y="150" text-anchor="middle">toolchain closure</text>
+  <text class="fl-m" x="140" y="166" text-anchor="middle">&lt;h&gt;-gcc, declared by digest</text>
+
+  <rect class="fl-box" x="20" y="240" width="240" height="50" rx="4"/>
+  <text class="fl-t" x="140" y="260" text-anchor="middle">buck2 build //:hello</text>
+  <text class="fl-m" x="140" y="276" text-anchor="middle">learns digest D; downloads nothing</text>
+
+  <rect class="fl-box" x="20" y="330" width="240" height="50" rx="4"/>
+  <text class="fl-t" x="140" y="350" text-anchor="middle">/nix/store/&lt;D&gt;-hello</text>
+  <text class="fl-m" x="140" y="366" text-anchor="middle">references: &lt;h&gt;-glibc-2.44-25</text>
+
+  <!-- cas -->
+  <rect class="fl-cas" x="360" y="40" width="100" height="340" rx="4"/>
+  <text class="fl-t" x="410" y="200" text-anchor="middle">content-</text>
+  <text class="fl-t" x="410" y="214" text-anchor="middle">addressed</text>
+  <text class="fl-m" x="410" y="230" text-anchor="middle">by digest</text>
+
+  <!-- worker -->
+  <rect class="fl-box" x="560" y="60" width="240" height="50" rx="4"/>
+  <text class="fl-t" x="680" y="80" text-anchor="middle">input root/buck-out/…/closure/</text>
+  <text class="fl-m" x="680" y="96" text-anchor="middle">nix/store/&lt;h&gt;-gcc  (same bytes)</text>
+
+  <rect class="fl-box" x="560" y="150" width="240" height="50" rx="4"/>
+  <rect class="fl-kernel fl-dot" x="558" y="148" width="244" height="54" rx="5" style="animation: fl-flash 8s linear infinite; animation-delay: 3.6s"/>
+  <text class="fl-t" x="680" y="170" text-anchor="middle">exec gcc, cc1, as, ld</text>
+  <text class="fl-m" x="680" y="186" text-anchor="middle">kernel resolves $ORIGIN → ld.so</text>
+
+  <rect class="fl-box" x="560" y="240" width="240" height="50" rx="4"/>
+  <text class="fl-t" x="680" y="260" text-anchor="middle">hello, linked</text>
+  <text class="fl-m" x="680" y="276" text-anchor="middle">this store: no gcc, no binutils</text>
+
+  <!-- edges -->
+  <use href="#fl-p1" class="fl-edge" marker-end="url(#fl-arrow)"/>
+  <use href="#fl-p2" class="fl-edge" marker-end="url(#fl-arrow)"/>
+  <use href="#fl-p3" class="fl-edge" marker-end="url(#fl-arrow)"/>
+  <use href="#fl-p4" class="fl-edge" marker-end="url(#fl-arrow)"/>
+  <use href="#fl-p5" class="fl-edge" marker-end="url(#fl-arrow)"/>
+  <use href="#fl-p6" class="fl-edge" marker-end="url(#fl-arrow)"/>
+  <use href="#fl-p7" class="fl-edge" marker-end="url(#fl-arrow)"/>
+  <use href="#fl-p8" class="fl-edge" marker-end="url(#fl-arrow)"/>
+
+  <text class="fl-m" x="150" y="114">digest</text>
+  <text class="fl-m" x="310" y="148" text-anchor="middle">upload</text>
+  <text class="fl-m" x="510" y="78" text-anchor="middle">fetch</text>
+  <text class="fl-m" x="510" y="282" text-anchor="middle">upload</text>
+  <text class="fl-m" x="310" y="282" text-anchor="middle">digest</text>
+  <text class="fl-m" x="310" y="372" text-anchor="middle">substitute</text>
+
+  <!-- the toolchain's journey: 8 second loop, one edge per second -->
+  <circle class="fl-dot fl-dot-tc" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0;0.125;1"><mpath href="#fl-p1"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="1;1;0;0" keyTimes="0;0.12;0.125;1"/>
+  </circle>
+  <circle class="fl-dot fl-dot-tc" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.125;0.25;1"><mpath href="#fl-p2"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.125;0.13;0.245;0.25;1"/>
+  </circle>
+  <circle class="fl-dot fl-dot-tc" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.25;0.375;1"><mpath href="#fl-p3"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.25;0.255;0.37;0.375;1"/>
+  </circle>
+  <circle class="fl-dot fl-dot-tc" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.375;0.5;1"><mpath href="#fl-p4"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.375;0.38;0.495;0.5;1"/>
+  </circle>
+  <!-- the output's journey -->
+  <circle class="fl-dot fl-dot-out" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.5;0.625;1"><mpath href="#fl-p5"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.5;0.505;0.62;0.625;1"/>
+  </circle>
+  <circle class="fl-dot fl-dot-out" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.625;0.75;1"><mpath href="#fl-p6"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.625;0.63;0.745;0.75;1"/>
+  </circle>
+  <circle class="fl-dot fl-dot-out" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.75;0.875;1"><mpath href="#fl-p7"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1;0;0" keyTimes="0;0.75;0.755;0.87;0.875;1"/>
+  </circle>
+  <circle class="fl-dot fl-dot-out" r="5">
+    <animateMotion dur="8s" repeatCount="indefinite" calcMode="linear" keyPoints="0;0;1;1" keyTimes="0;0.875;1;1"><mpath href="#fl-p8"/></animateMotion>
+    <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.875;0.88;1"/>
+  </circle>
+</svg>
