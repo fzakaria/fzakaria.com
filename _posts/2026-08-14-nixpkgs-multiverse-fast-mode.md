@@ -48,7 +48,7 @@ $ python3 --version
 Python 3.8.9
 ```
 
-No Nixpkgs is fetched. Nothing is evaluated. No experimental features and no `--impure` needed for this to work.[^tomberek]
+No Nixpkgs is fetched. Nothing is evaluated. No experimental features and no `--impure` needed for this to work.
 
 The complete Nix API, except for releases, works with this fast path.
 
