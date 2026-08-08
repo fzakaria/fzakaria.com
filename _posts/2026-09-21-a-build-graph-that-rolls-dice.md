@@ -92,6 +92,38 @@ In the true _monadic_ sense, the build graph can be defined as the build progres
 
 Here is a really simple example, `chain.nix` & `step.sh`, that rolls a die and either stops or continues the chain by adding a new derivation step to the build graph. The depth of the chain is random, and the result of the build is how deep we got.
 
+Only the leftmost box exists when you run `nix-instantiate`. Everything to the
+right of it is written by a builder, while the build is already underway.
+
+```graphviz
+digraph {
+  rankdir=LR
+  node [shape=box style=rounded fontname="sans-serif" fontsize=10 margin="0.16,0.10"]
+  edge [arrowsize=0.7 fontname="sans-serif" fontsize=9 fontcolor="#6f685b"]
+
+  subgraph cluster_eval {
+    label="in chain.nix"
+    fontname="sans-serif" fontsize=9 color="#6f685b" fontcolor="#6f685b"
+    step [label="step-N\nroll a d6"]
+  }
+
+  subgraph cluster_run {
+    label="written by step.sh, mid-build"
+    fontname="sans-serif" fontsize=9 color="#6f685b" fontcolor="#6f685b"
+    res  [label="dice-result\necho N > $out" color="#1a7f37" fontcolor="#1a7f37"]
+    pass [label="passthrough-N\ncp $inner $out" color="#e08a45" fontcolor="#e08a45"]
+    next [label="step-N+1\ndepth + 1" color="#e08a45" fontcolor="#e08a45"]
+  }
+
+  more [label="…" shape=plaintext]
+
+  step -> res  [label="six" color="#1a7f37" fontcolor="#1a7f37"]
+  step -> pass [label="anything else" color="#e08a45" fontcolor="#e08a45"]
+  pass -> next [label="input: ^out^out" style=dashed color="#e08a45" fontcolor="#e08a45"]
+  next -> more [style=dashed color="#e08a45"]
+}
+```
+
 <details markdown="1">
 <summary>Show chain.nix</summary>
 
@@ -199,7 +231,7 @@ The general idea of this derivation is:
 - **roll a six** and we write a derivation that echoes the depth. Ordinary, nothing dynamic about it. This terminates the build graph.
 - **roll anything else** and we write a *passthrough*: a derivation whose only job is `cp $inner $out`, where `inner` is `import chain.nix { depth = n + 1; }`.
 
-Either way the file copied into `$out` is a `.drv`, so `builtins.outputOf` worksthe same on a chain that stopped and a chain that kept going.[^depth]
+Either way the file copied into `$out` is a `.drv`, so `builtins.outputOf` works the same on a chain that stopped and a chain that kept going.[^depth]
 
 [^depth]: We actually need a depth parameter to avoid infinite recursion and so that the store-path of the derivations are different since they are content-addressed.
 
