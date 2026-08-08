@@ -4,11 +4,71 @@
 # order within a year is the only thing that matters here. `note` is markdown.
 # `id` is a permanent anchor — external links point at these, so do not rename
 # one without leaving the old id in place.
+#
+# Both `note` and every `links[].url` are rendered as Liquid before use (see
+# _plugins/liquify.rb), so a link to something on this site should be written
+# as `{% post_url 2026-06-08-relocatable-derivations %}` rather than a
+# hand-written `/2026/06/08/...` path that breaks when the post is renamed.
 
 sections:
   - id: talks
     title: Talks
     items:
+      - id: talk-relocatable-nix-binaries
+        year: 2026
+        title: Relocatable Nix Binaries
+        venue: Nix Vegas @ DEFCON 34
+        note: >-
+          Nix's absolute `/nix/store` paths buy reproducibility at the cost of
+          deployment flexibility. I make the case for relocatable Nix binaries,
+          walk through the technical obstacles, and sketch what Nix could look
+          like in environments without root or unprivileged namespaces.
+        links:
+          - label: Event
+            url: https://cfp.nix.vegas/2026/talk/SRRBTB/
+          - label: Slides
+            url: /assets/pdfs/Relocatable_Nix_Binaries.pdf
+          - label: Nix needs relocatable binaries
+            url: "{% post_url 2026-06-21-nix-needs-relocatable-binaries %}"
+          - label: "Linux kernel will support $ORIGIN, sort of"
+            url: "{% post_url 2026-07-20-linux-kernel-will-support-origin-sort-of %}"
+
+      - id: talk-piss-off-nix-friends
+        year: 2026
+        title: How to piss off your Nix friends
+        venue: Nix Vegas @ DEFCON 34
+        note: >-
+          A deliberately provocative argument that chasing: universal
+          accessibility, multiple platforms, macOS support, familiarity with
+          conventional Linux distributions, weakens Nix. I argue for diverging
+          harder and aiming at bigger problems instead.
+        links:
+          - label: Event
+            url: https://cfp.nix.vegas/2026/talk/88PNDU/
+          - label: Blog post
+            url: "{% post_url 2026-07-18-how-to-piss-off-your-nix-friends %}"
+
+      - id: talk-guixpkgs
+        year: 2026
+        title: GuixPkgs
+        venue: Nix Vegas @ DEFCON 34
+        note: >-
+          A talk on
+          [guix-transfer](https://github.com/fzakaria/guix-transfer), a
+          [TacoSprint 2026]({% post_url 2026-06-29-a-tacosprint-2026-retrospective %})
+          project to make every Guix package importable into the Nix ecosystem.
+        links:
+          - label: Event
+            url: https://cfp.nix.vegas/2026/talk/BD9ZKX/
+          - label: Slides
+            url: /assets/pdfs/Guix_by_Nix.pdf
+          - label: Guix by Nix
+            url: "{% post_url 2026-07-29-guix-by-nix %}"
+          - label: "GuixPkgs: every Guix package, as a Nix flake"
+            url: "{% post_url 2026-06-25-guixpkgs-every-guix-package-as-a-nix-flake %}"
+          - label: The Guix Nix Abomination
+            url: "{% post_url 2026-06-05-the-guix-nix-abomination-leveraging-guix-derivations-in-nix %}"
+
       - id: talk-learn-nix
         year: 2025
         title: Learn Nix The Fun Way
@@ -20,8 +80,8 @@ sections:
         links:
           - label: Video
             url: https://www.youtube.com/watch?v=hX1aRF_Rnu0
-          - label: Slides
-            url: https://fzakaria.com/2024/07/05/learn-nix-the-fun-way
+          - label: Blog post
+            url: "{% post_url 2024-07-05-learn-nix-the-fun-way %}"
 
       - id: talk-looker-nix
         year: 2024

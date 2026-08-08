@@ -45,12 +45,12 @@ layout: base
                   {%- endif %}
                 </p>
                 {% if item.note %}
-                  <div class="talk__note">{{ item.note | markdownify }}</div>
+                  <div class="talk__note">{{ item.note | liquify | markdownify }}</div>
                 {% endif %}
                 {% if item.links %}
                   <p class="talk__links">
                     {% for link in item.links %}
-                      <a href="{{ link.url | escape }}">{{ link.label }}</a>
+                      <a href="{{ link.url | liquify | escape }}">{{ link.label }}</a>
                       {%- unless forloop.last -%}
                         <span class="sep" aria-hidden="true">·</span>
                       {%- endunless -%}
