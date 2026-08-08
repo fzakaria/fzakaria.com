@@ -97,7 +97,10 @@ def run_release_notes(args: argparse.Namespace) -> None:
     previous = (
         json.loads(args.previous_summary.read_text()) if args.previous_summary else None
     )
-    notes = release_notes.render_notes(args.tag, summary, previous, data, args.files)
+    stale = dict(pair.split("=", 1) for pair in args.stale)
+    notes = release_notes.render_notes(
+        args.tag, summary, previous, data, args.files, stale
+    )
     args.notes_out.write_text(notes)
     args.summary_out.write_text(json.dumps(summary, indent=1) + "\n")
     print(
@@ -235,6 +238,13 @@ def parser() -> argparse.ArgumentParser:
     )
     notes_p.add_argument(
         "--files", nargs="*", default=[], help="names of the files the release carries"
+    )
+    notes_p.add_argument(
+        "--stale",
+        nargs="*",
+        default=[],
+        metavar="FILE=TAG",
+        help="files carried over from release TAG because their fetch failed",
     )
     notes_p.set_defaults(run=run_release_notes)
 

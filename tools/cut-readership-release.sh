@@ -13,9 +13,14 @@
 # Needs `gh` authenticated with repo scope, the host's `nix` for `nix hash
 # path`, and the fetchers' output in data/readership.
 #
+# A fetcher that failed is named with --stale: the pinned copy of its file is
+# downloaded into data/readership, so the file keeps its pin and the summary
+# still counts its rows, and the notes say the file was not refreshed.
+#
 # Usage:
 #   nix run .#cut-readership-release               # tag readership-<today, UTC>
 #   nix run .#cut-readership-release -- --dry-run  # write the notes, publish nothing
+#   nix run .#cut-readership-release -- --stale reddit_submissions.parquet
 set -euo pipefail
 
 ROOT="$PWD"
@@ -27,18 +32,23 @@ SUMMARY_NAME="summary.json"
 DAY="$(date -u +%Y%m%d)"
 
 DRY_RUN=false
-if [ "${1:-}" = "--dry-run" ]; then
-  DRY_RUN=true
-fi
-
-# nullglob rather than compgen: nixpkgs' non-interactive bash has no compgen.
-shopt -s nullglob
-PARQUET=("$DATA"/*.parquet)
-shopt -u nullglob
-if [ ${#PARQUET[@]} -eq 0 ]; then
-  echo "cut-readership-release: no Parquet files in $DATA; run the fetchers first" >&2
-  exit 1
-fi
+STALE_NAMES=()
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --dry-run)
+      DRY_RUN=true
+      shift
+      ;;
+    --stale)
+      STALE_NAMES+=("${2:?--stale needs a file name}")
+      shift 2
+      ;;
+    *)
+      echo "cut-readership-release: unknown argument $1" >&2
+      exit 1
+      ;;
+  esac
+done
 
 WORK="$(mktemp -d)"
 trap 'rm -rf "$WORK"' EXIT
@@ -52,6 +62,36 @@ if os.path.exists(pins_file):
     print(json.load(open(pins_file))["files"].get(name, {}).get(field, ""))
 PY
 }
+
+# Put each stale file's pinned bytes back in $DATA. The narHash check means a
+# bad download fails here rather than being uploaded as a change.
+STALE=()
+for name in "${STALE_NAMES[@]}"; do
+  tag="$(pin_field "$name" tag)"
+  if [ -z "$tag" ]; then
+    echo "cut-readership-release: $name has no pin to fall back on" >&2
+    exit 1
+  fi
+
+  mkdir -p "$DATA"
+  curl -fsSL -o "$DATA/$name" "$BASE_URL/$tag/$name"
+  if [ "$(nix hash path --sri --type sha256 "$DATA/$name")" != "$(pin_field "$name" narHash)" ]; then
+    echo "cut-readership-release: $name from $tag does not match its pinned narHash" >&2
+    exit 1
+  fi
+
+  echo "cut-readership-release: $name not refreshed; carrying over $tag" >&2
+  STALE+=("$name=$tag")
+done
+
+# nullglob rather than compgen: nixpkgs' non-interactive bash has no compgen.
+shopt -s nullglob
+PARQUET=("$DATA"/*.parquet)
+shopt -u nullglob
+if [ ${#PARQUET[@]} -eq 0 ]; then
+  echo "cut-readership-release: no Parquet files in $DATA; run the fetchers first" >&2
+  exit 1
+fi
 
 # Only bytes that moved get uploaded: compare each file's narHash to its pin.
 CHANGED=()
@@ -94,7 +134,8 @@ python3 -m readership release-notes \
   "${PREVIOUS[@]}" \
   --notes-out "$WORK/notes.md" \
   --summary-out "$WORK/$SUMMARY_NAME" \
-  --files "${NAMES[@]}"
+  --files "${NAMES[@]}" \
+  --stale "${STALE[@]}"
 
 if [ "$DRY_RUN" = true ]; then
   cat "$WORK/notes.md"

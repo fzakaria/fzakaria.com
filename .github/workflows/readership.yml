@@ -67,7 +67,12 @@ jobs:
       - name: Fetch Lobsters
         run: nix run .#fetch-lobsters
 
+      # Arctic Shift has gone down for a day or more at a time. A failure here
+      # should not hold back the other sources, so the release carries the
+      # pinned Reddit file over and its notes say Reddit was not refreshed.
       - name: Fetch Reddit
+        id: reddit
+        continue-on-error: true
         run: nix run .#fetch-reddit
 
       # Uploads before the commit below: a failed push leaves an unreferenced
@@ -76,7 +81,14 @@ jobs:
       - name: Cut the data release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: nix run .#cut-readership-release
+          REDDIT_OUTCOME: ${{ steps.reddit.outcome }}
+        run: |
+          args=()
+          if [ "$REDDIT_OUTCOME" = failure ]; then
+            echo "::warning::Reddit fetch failed; carrying over the pinned reddit_submissions.parquet"
+            args+=(--stale reddit_submissions.parquet)
+          fi
+          nix run .#cut-readership-release -- "${args[@]}"
 
       - name: Commit the pins
         run: |

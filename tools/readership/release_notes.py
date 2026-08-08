@@ -92,10 +92,29 @@ def _submission_line(s: dict) -> str:
 
 
 def render_notes(
-    tag: str, summary: dict, previous: dict | None, data: dict, files: list[str]
+    tag: str,
+    summary: dict,
+    previous: dict | None,
+    data: dict,
+    files: list[str],
+    stale: dict[str, str] | None = None,
 ) -> str:
-    """Markdown notes for release `tag`, compared against `previous` when there is one."""
+    """Markdown notes for release `tag`, compared against `previous` when there is one.
+
+    `stale` maps each file whose fetcher failed to the release tag its
+    carried-over copy comes from.
+    """
     out = [MANIFEST_NOTE, ""]
+
+    # Files a failed fetcher left at their previous release go first, so the
+    # top of the notification email says which sources did not refresh.
+    if stale:
+        out.append("### Not refreshed")
+        out.append("")
+        out.append("These fetches failed, so the previous release's copy carries over:")
+        out.append("")
+        out.extend(f"- `{name}`, still from {stale[name]}" for name in sorted(stale))
+        out.append("")
 
     if files:
         out.append("Carries " + ", ".join(f"`{name}`" for name in sorted(files)) + ".")

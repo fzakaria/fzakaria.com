@@ -149,3 +149,28 @@ def test_release_reports_changes_and_names_new_submissions():
         in notes
     )
     assert "peak #7" in notes
+
+
+def test_release_names_files_carried_over_from_a_failed_fetch():
+    # A fetcher that failed leaves the previous release's copy of its file in
+    # place. The notes open by naming that file and the release it still comes
+    # from, so the email shows the source went stale.
+    data = _page_data()
+    notes = render_notes(
+        TAG,
+        summarize(data),
+        summarize(data),
+        data,
+        files=[],
+        stale={"reddit_submissions.parquet": "readership-20261008"},
+    )
+    assert "### Not refreshed" in notes
+    assert "- `reddit_submissions.parquet`, still from readership-20261008" in notes
+    assert notes.index("### Not refreshed") < notes.index("| | now | change |")
+
+
+def test_release_without_stale_files_has_no_not_refreshed_section():
+    # When every fetcher succeeded there is nothing carried over to report.
+    data = _page_data()
+    notes = render_notes(TAG, summarize(data), summarize(data), data, files=[])
+    assert "### Not refreshed" not in notes
