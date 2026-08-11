@@ -6,20 +6,19 @@ date: 2026-08-11 08:30 -0700
 
 _Every package manager on earth picks one version for you. Nixpkgs picked one too. It never had to._
 
-I shipped [nixpkgs-multiverse]({% post_url 2026-08-09-nixpkgs-multiverse-every-version-that-ever-existed %}) recently: one flake input that hands you every version of every package that ever shipped in Nixpkgs.
+I shared [nixpkgs-multiverse]({% post_url 2026-08-09-nixpkgs-multiverse-every-version-that-ever-existed %}) recently: one flake input that hands you every version of every package that ever shipped in Nixpkgs.
 
-I love how unbelieable audacious Nix lets me be, _audacitymaxxing_.
+I love how unbelievable audacious Nix lets me be, _audacitymaxxing_.
 
 As of this writing, you have access to 31,783 packages and
 304,484 distinct package version pairs pulled from 1,537 revisions. 🤯
 
-The fact most distributions only give you one version of each package is not a bug. It is often considered a feature: a single, self-consistent set of software that boots and runs together.
-
+The fact most distributions only give you one version of each package is not a bug. It is often considered a feature: a single self-consistent set of software that boots and runs together.
 It falls directly out of a shared global filesystem, the [filesystem hierarchy standard](https://refspecs.linuxfoundation.org/FHS_3.0/fhs/index.html) (FHS), like `/usr`, `/lib` and `/etc`.
 
 The purpose and existence of Nix is to eschew from that convention and allow multiple versions of the same package to coexist. Nixpkgs is a distribution built on that capability, and yet, it has been doing the same thing as every other distribution: picking one version of everything.
 
-[nixpkgs-multiverse](https://github.com/fzakaria/nixpkgs-multiverse) only supports _at the moment_, top-level attributes that are packages but already the sheer volume of
+[nixpkgs-multiverse](https://github.com/fzakaria/nixpkgs-multiverse) only supports, _at the moment_, top-level attributes that are packages but already the sheer volume of
 installable software dwarfs `nixpkgs-unstable`.[^repology]
 
 [^repology]: The data was fetched from the [Repology](https://repology.org/repositories/graphs) repository size map.
@@ -67,7 +66,7 @@ plot = (
 plot.width, plot.height = 7.0, 4.0
 ```
 
-Nix's answer to the FHS was audacious in 2003 and is still audacious now. A package lives at `/nix/store/<hash>-python3-3.12.10`, where the hash is derived from every input that went into building it, the [intensional model]({% post_url 2025-03-08-demystifying-nix-s-intensional-model %}).
+Nix's answer to the FHS was audacious in 2003 and is still audacious now. A package lives at `/nix/store/<hash>-python3-3.12.10`, where the hash is derived from every input that went into building it: the [intensional model]({% post_url 2025-03-08-demystifying-nix-s-intensional-model %}).
 
 How audacious are we? How about 246 distinct CPython versions, from 2.6.8 forward, all installable side by side, all built and cached, all addressable by version number instead of commit hash.[^python_repology]
 
@@ -112,11 +111,12 @@ To re-iterate, these are distinct versions of CPython, including their transitiv
 
 People want to pin to a version. Upgrading software can be disruptive, and some people have to stay on a particular version but that should not impede the rest of the world from moving forward.
 
-The [nixpkgs-multiverse](https://github.com/fzakaria/nixpkgs-multiverse) helped solve one of the oldest [devenv.sh](https://devenv.sh/) issues: [cachix/devenv#16](https://github.com/cachix/devenv/issues/16).
+The [nixpkgs-multiverse](https://github.com/fzakaria/nixpkgs-multiverse) helped solve one of the oldest [devenv.sh](https://devenv.sh/) issues, [cachix/devenv#16](https://github.com/cachix/devenv/issues/16),
+the desire to pin a specific package.
 
 > "It is not really practical to pin a separate version of nixpkgs for every different version of a tool needed in a dev environment. Normally we have at least 20-30 different tools all with a specific pinned version that we would want to specify." -- [itpropro](https://github.com/cachix/devenv/issues/16#issuecomment-4150126963)
 
-The issue, "Pinning a specific package", was opened on 2022-11-10 and is now closed. devenv` [now documents](https://devenv.sh/pinning/#pinning-an-individual-package-version) the multiverse as the solution.
+The issue, "Pinning a specific package", was opened on 2022-11-10 and is now closed. devenv [now documents](https://devenv.sh/pinning/#pinning-an-individual-package-version) the multiverse as the solution. 💪
 
 The audacity of the multiverse is not technical. Nix took care of that. There is no clever trick in here; it's 5 MB of JSON, about 200 lines of Nix and a `builtins.fetchTree` behind a memo table.
 
