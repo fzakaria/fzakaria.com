@@ -121,7 +121,7 @@ Where does this leaves us?
 
 I'll be tracking the Linux kernel releases and, once this lands in `-next` and ships in a tagged release, I plan to upstream a **NixOS module** that registers the `$ORIGIN` support at boot. 🎉
 
-The plan is to gate it on a new `PT_INTERP_NIX` segment rather than matching every `ELF` file. That keeps things **backwards compatible**: the BPF handler only kicks in for binaries that explicitly opt-in by carrying the new segment. This means Nix produced binaries continue to work without the BFP handler but those that have it may elevate themselves to _relocatable status_.
+The plan is to gate it on a new `PT_INTERP_NIX` segment rather than matching every `ELF` file. That keeps things **backwards compatible**: the BPF handler only kicks in for binaries that explicitly opt-in by carrying the new segment. This means Nix produced binaries continue to work without the BPF handler but those that have it may elevate themselves to _relocatable status_.
 
 > A ship in harbor is safe, but that is not what ships are built for.
 >  — John A. Shedd
