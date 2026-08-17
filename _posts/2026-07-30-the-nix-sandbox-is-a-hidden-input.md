@@ -4,7 +4,7 @@ title: The Nix sandbox is a hidden input
 date: 2026-07-30 21:55 -0700
 ---
 
-The whole beauty of Nix was that it was incredibly pragmatic to achieve "reproducibility", which is quite an overloaded term. The default model for Nix is the [intensional-model](%{post_url 2025-03-08-demystifying-nix-s-intensional-model}) which is _input-addressed_: the hash of a store path is derived from the _recipe_ (derivation) that produced it, and not the _bytes_ that came out of it. In that framing Nix achieves _repeatability_. Nix, by default, was never bit-for-bit reproducible.[^1]
+The whole beauty of Nix was that it was incredibly pragmatic to achieve "reproducibility", which is quite an overloaded term. The default model for Nix is the [extensional-model]({% post_url 2025-03-08-demystifying-nix-s-intensional-model %}) which is _input-addressed_: the hash of a store path is derived from the _recipe_ (derivation) that produced it, and not the _bytes_ that came out of it. In that framing Nix achieves _repeatability_. Nix, by default, was never bit-for-bit reproducible.[^1]
 
 [^1]: Nix has a `ca-derivations` feature that makes the output path a hash of the output bytes, which is a _different_ model (_extensional-model_).
 
