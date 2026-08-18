@@ -145,7 +145,7 @@ We then wrap that in an attrset that resembles like a derivation and the Nix CLI
 
 This is [tomberek](https://github.com/tomberek)'s `mkFakeDerivation` trick from [fastpkgs](https://github.com/tomberek/fastpkgs), and it is an amazing trick to circumvent needing `--impure`.
 
-Everything about this remains pure evaluation, and the resulting graph is gauranteed to
+Everything about this remains pure evaluation, and the resulting graph is guaranteed to
 be bit-for-bit identical to what Nixpkgs would have produced if it had been evaluated. The only difference is that we skip the evaluation of Nixpkgs itself, and instead use the store path directly.
 
 The eval path _derives_ the address, the fast path _remembers_ it.
