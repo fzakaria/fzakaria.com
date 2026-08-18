@@ -261,7 +261,7 @@ This turns each decision into two, causing the algorithmic complexity to become 
 
 This is the part I got wrong. I looked at the problem and saw constraints being satisfied, which I pattern-matched to SAT. 
 
-Turns out by by not having a second choice, we get to stay in polynomial time. The fix is to not have a second choice. A pin is defined to take the **newest** of its stretches and only that one which simplifies our problem. Our greedy algorithm is now optimal.
+Turns out by not having a second choice, we get to stay in polynomial time. The fix is to not have a second choice. A pin is defined to take the **newest** of its stretches and only that one which simplifies our problem. Our greedy algorithm is now optimal.
 
 ## Minor footgun
 
