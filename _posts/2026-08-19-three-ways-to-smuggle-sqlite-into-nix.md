@@ -416,22 +416,44 @@ static int nixRead(sqlite3_file *f, void *buf,
 > Unfortunately `builtins.wasm` gives every call a **fresh instance**. This is deliberate from the implementation, meaning we pay some startup code each time although not quite as drastic as a `fork` & `exec`
 {: .alert .alert-note }
 
-Using it looks like this:[^patched]
+The `sqlite_nix` WASM module takes an attrset of `{ db, sql }` and returns one attrset per row.[^gist]
 
-[^patched]: Don't forget that this is needs our patched version of [Determiante System's Nix](https://github.com/DeterminateSystems/nix-src).
+[^gist]: The full `sqlite_nix.c`, the VFS, the build derivation and the Nix patch are all [in this gist](https://gist.github.com/fzakaria/8fe754ee7db752a24cb9c55b38492844).
 
-```console?comments=true
-$ nix eval --extra-experimental-features wasm-builtin \
-      --expr 'builtins.wasm { path = ./sqlite_nix.wasm; }
-                { db = ./index.db; attr = "hello"; }'
-{
-  "2.10" = 728; "2.12" = 822; "2.12.1" = 1369;
-  "2.12.2" = 1486; "2.12.3" = null; "2.7" = 0; "2.8" = 13;
+We can provide it any arbitrary SQL and now query our dataset!
+
+```nix
+# query.nix
+builtins.wasm { path = ./sqlite_nix.wasm; } {
+  db  = ./index.db;
+  sql = "SELECT version, rev FROM versions
+         WHERE attr = 'hello' ORDER BY version";
 }
 ```
 
-**That is a real full SQLite** with all the bells and whistles: prepared statement, bound parameter, b-tree descent through an index, executing inside the Nix evaluator. All through WebAssembly. 🤯
+```console
+$ nix eval --extra-experimental-features wasm-builtin -f query.nix
+[ { rev = 728; version = "2.10"; } { rev = 822; version = "2.12"; }
+  { rev = 1369; version = "2.12.1"; } { rev = 1486; version = "2.12.2"; }
+  { rev = null; version = "2.12.3"; } { rev = 0; version = "2.7"; }
+  { rev = 13; version = "2.8"; } ]
+```
 
+The benefit of SQL is that now we are not limited to the shape of the data in JSON.
+
+```nix
+# which packages have shipped the most versions?
+sql = "SELECT attr, COUNT(*) AS versions FROM versions
+       GROUP BY attr ORDER BY versions DESC LIMIT 3";
+# => [ { attr = "linux"; versions = 548; }
+#      { attr = "linux_latest"; versions = 540; }
+#      { attr = "freefall"; versions = 534; } ]
+```
+
+**That is a real full SQLite** with all the bells and whistles: query planner, aggregates and subqueries, b-tree descent through an index, executing inside the Nix evaluator.
+All through WebAssembly. 🤯
+
+Every one of those answers is byte-identical to what the `sqlite3` CLI gives for the same query.
 
 
 ## Benchmark
