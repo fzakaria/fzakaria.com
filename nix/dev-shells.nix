@@ -6,6 +6,14 @@
     # `jekyll serve` in this shell shows what the deploy will publish.
     FONTCONFIG_FILE = pkgs.blog-fonts;
 
+    # Same reason, for the same variable nix/site.nix sets: nixpkgs' glibc
+    # ships no zoneinfo of its own, so the `timezone:` in _config.yml
+    # resolves to UTC and an evening post previews a day later here than it
+    # publishes. Set unconditionally rather than deferring to an ambient
+    # TZDIR, because the host's zoneinfo is exactly what should not be
+    # deciding permalinks.
+    TZDIR = "${pkgs.tzdata}/share/zoneinfo";
+
     buildInputs =
       [
         # The gems the site builds against plus the development group -- rake,
