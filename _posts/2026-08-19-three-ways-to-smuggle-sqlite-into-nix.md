@@ -186,9 +186,46 @@ $ nix eval --impure \
 ```
 
 
-## Three: `builtins.wasm`
+## Three: a giant Nix file
 
-Determinate Systems [shipped a third option](https://determinate.systems/blog/builtins-wasm/) in March of 2026: `builtins.wasm`, which calls a function inside a WebAssembly module.[^eelco] The motivation was similar to wanting to extend Nix surface area but avoid expanding `builtins`. Wasm is sandboxed and deterministic, so unlike the two builtins above, the goal is to provide a _safe escape-hatch_.
+*This section was added after publishing based on an idea from [rickynils](https://github.com/rickynils).*
+
+Nix is often described as resembling JSON and there is a very easy translation from JSON to Nix.
+What if instead of reading JSON we read the same contents but as a `.nix` file?
+
+Theoretically it should have no parser boundary, no `fromJSON`, and no serialisation format at all.
+The index becomes an expression the evaluator already knows how to read.
+
+The idea would be to leverage Nix's laziness. Nix attribute set values are thunks, so in principle you should be able
+to `import` a very large expression, touch one attribute, and never pay for instantiating the rest.
+
+Transforming the index is a dozen lines of Python, and produces something very similar to the JSON:
+
+```nix
+{
+  revisionCount = 1534;
+  attrs = {
+    "2048-in-terminal" = { "2015-01-15" = 157; "2017-11-29" = 166; };
+    "2bwm" = { "0.2" = 166; };
+    "389-ds-base" = { "1.3.3.9" = 14; "1.3.5.15" = 100; "1.3.5.19" = 166; };
+    # ... 31,901 more
+  };
+}
+```
+
+6.0 MiB of Nix, against 5.3 MiB of JSON, holding identical data.
+
+```console
+$ nix eval --impure --expr '(import ./index.nix).attrs.hello'
+{
+  "2.10" = 728; "2.12" = 822; "2.12.1" = 1369;
+  "2.12.2" = 1486; "2.12.3" = null; "2.7" = 0; "2.8" = 13;
+}
+```
+
+## Four: `builtins.wasm`
+
+Determinate Systems [shipped another option](https://determinate.systems/blog/builtins-wasm/) in March of 2026: `builtins.wasm`, which calls a function inside a WebAssembly module.[^eelco] The motivation was similar to wanting to extend Nix surface area but avoid expanding `builtins`. Wasm is sandboxed and deterministic, so unlike the two builtins above, the goal is to provide a _safe escape-hatch_.
 
 [^eelco]: Eelco gave a talk about this at [SCALE 23x](https://www.socallinuxexpo.org/scale/23x/presentations/builtinswasm-nix-meets-webassembly).
 
@@ -399,7 +436,8 @@ $ nix eval --extra-experimental-features wasm-builtin \
 
 ## Benchmark
 
-How do these four approaches compare? Here are all four approaches answering the same question: "which revisions shipped this package?" against the same 22 MB SQLite build of the index.
+How do these compare? Here is every approach answering the same question: "which revisions shipped this package?" either against the same 22 MB SQLite build of the index or the
+whole-file JSON/Nix equivalent.
 
 ```plotnine
 import pandas as pd
@@ -407,10 +445,11 @@ from plotnine import *
 
 # Best of five runs each. Random attributes drawn from the real index.
 # `nix eval --expr '1+1'` costs 0.03s, the floor every line sits on.
-# The first three run on stock Nix 2.34.7; the wasm line needs the patched
+# The first four run on stock Nix 2.34.7; the wasm line needs the patched
 # Determinate Nix, whose baseline is the same 0.03s.
 rows = [
     ("builtins.fromJSON",     [0.29, 0.30, 0.27, 0.29]),
+    ("giant .nix file",       [0.51, 0.57, 0.50, 0.51]),
     ("builtins.exec",         [0.05, 0.08, 0.22, 0.74]),
     ("builtins.importNative", [0.05, 0.04, 0.05, 0.05]),
     ("SQLite in wasm",        [2.79, 2.46, 3.10, 4.37]),
@@ -429,6 +468,7 @@ plot = (
     + scale_x_log10(breaks=queries, labels=[str(q) for q in queries])
     + scale_y_log10()
     + scale_color_manual(values={"builtins.fromJSON":     "#8a8580",
+                                 "giant .nix file":       "#3f7f5f",
                                  "builtins.exec":         "#4c72b0",
                                  "builtins.importNative": "#b1201d",
                                  "SQLite in wasm":        "#d1892f"},
@@ -441,6 +481,8 @@ plot.width, plot.height = 7.0, 3.8
 
 As we initially complained, **`fromJSON` is a flat line in the wrong place.** It is 0.29s whether you ask one question or two hundred, because the 5.3 MB parse happens once and dominates everything after it.
 
+**The giant `.nix` file is the same flat line, drawn higher.** It is roughly twice the time and 1.7× the memory of the JSON it replaced. Surprisngly, laziness never gets a chance to help: importing the file and touching *nothing at all* already costs 0.53s. The baseline cost is the parse, and the parse is eager as we well. Turns out parsing Nix expressions is even more expensive than JSON. Nix has run the file through its Bison grammar, build an AST for all 305,492 entries, and add every attribute name into the symbol table. `fromJSON` skips the AST entirely and goes straight from bytes to values, which is why the format with a "serialisation boundary" beats the one without.
+
 **`builtins.exec` starts the cheapest and climbs**, roughly 3.8 ms per query of `fork` + `exec` + Nix-parsing the output. It crosses `fromJSON` somewhere around eighty queries.
 
 **`builtins.importNative` is flat and nearly free**, 0.05s across the whole range since we _reuse SQLite instantiations_ across multiple invocations. The database is opened once for the entire evaluation and the pages stay warm.
@@ -452,7 +494,7 @@ For a lock file pinning thirty packages, `fromJSON` still wins outright at the c
 
 ## What I actually want
 
-None of these three is right for shipping the multiverse index, and I am not going to make `nixpkgs-multiverse` depend on `allow-unsafe-native-code-during-evaluation`. Asking people to run their evaluator with native code loading enabled so my flake can be faster is not a worthwhile request _at the moment_.
+None of these is right for shipping the multiverse index, and I am not going to make `nixpkgs-multiverse` depend on `allow-unsafe-native-code-during-evaluation`. Asking people to run their evaluator with native code loading enabled so my flake can be faster is not a worthwhile request _at the moment_.
 
 For now, the index stays JSON and I'm holding back on some of the more loftier ideas I have that require _a lot more data_.
 
