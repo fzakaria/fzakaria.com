@@ -185,9 +185,15 @@ module Plotnine
     # that matplotlib still paints white underneath. Left alone, every chart
     # carries an opaque white sheet that hides the page in dark mode. This is
     # forwarded to savefig, where "none" means paint nothing at all.
+    # bbox_inches="tight" sizes the canvas to what was actually drawn instead
+    # of to the figure rectangle. Without it a label wider than the space
+    # matplotlib reserved is simply cut off at the edge -- which the switch to
+    # a monospaced face made visible on three existing charts, since the same
+    # strings are wider in it. width/height stay the shape the fence asked
+    # for; this only stops the edges from cropping text.
     plot.save(out_path, format="svg", verbose=False,
               width=width, height=height, dpi=96,
-              facecolor="none", edgecolor="none")
+              facecolor="none", edgecolor="none", bbox_inches="tight")
   PYTHON
 
   # Kramdown emits one of two shapes depending on whether a highlighter is on.
