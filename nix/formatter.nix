@@ -33,6 +33,14 @@
     ];
   };
 
+  # The Python in tools/ and tests/. black rather than a linter: the point is
+  # that nobody argues about where a call wraps.
+  settings.formatter.black = {
+    command = pkgs.black;
+    options = ["--quiet"];
+    includes = ["*.py"];
+  };
+
   # The templates, with the parser forced. Prettier picks its parser from the
   # file extension, and for `.html` that is the built-in HTML parser even when
   # the Liquid plugin is loaded, so asking for it by name is the only way to

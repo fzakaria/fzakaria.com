@@ -1,0 +1,101 @@
+# Refreshes the data behind /readership once a day: fetches Search Console,
+# GA4, Hacker News, Lobsters and Reddit, publishes whatever changed as a dated
+# release, and commits data-pins.json, which is what the site build fetches.
+#
+# The commit is pushed with the default GITHUB_TOKEN, and GitHub does not start
+# workflows from pushes made with it, so deploy_site.yml runs after this
+# workflow through workflow_run rather than on the push.
+#
+# One-time setup:
+#   - secret READERSHIP_GOOGLE_CREDENTIALS: the readership service account's
+#     JSON key, with Restricted access in Search Console and Viewer in GA4.
+#   - variable GA4_PROPERTY: the numeric GA4 property id.
+name: readership
+
+on:
+  schedule:
+    # Search Console finalises a day's data two to three days late and GA4
+    # about a day late; the fetchers leave that lag out of their windows, so
+    # the hour only needs to be after midnight Pacific.
+    - cron: "17 10 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Two runs must never cut releases or push pins at the same time.
+concurrency:
+  group: readership
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      # The branch tip, not the triggering commit, so the push below
+      # fast-forwards even when this run waited behind another.
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+
+      - uses: cachix/cachix-action@v17
+        with:
+          name: fzakaria
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      # Writes a credentials file and points GOOGLE_APPLICATION_CREDENTIALS
+      # at it, which is what the Search Console and GA4 fetchers read.
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: "${{ secrets.READERSHIP_GOOGLE_CREDENTIALS }}"
+
+      - name: Fetch Search Console
+        run: nix run .#fetch-gsc
+
+      - name: Fetch Google Analytics
+        env:
+          GA4_PROPERTY: ${{ vars.GA4_PROPERTY }}
+        run: nix run .#fetch-ga4
+
+      - name: Fetch Hacker News
+        run: nix run .#fetch-hn
+
+      - name: Fetch Lobsters
+        run: nix run .#fetch-lobsters
+
+      - name: Fetch Reddit
+        run: nix run .#fetch-reddit
+
+      # Uploads before the commit below: a failed push leaves an unreferenced
+      # release that tomorrow's run supersedes, while the reverse order would
+      # commit pins naming bytes that were never uploaded.
+      - name: Cut the data release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: nix run .#cut-readership-release
+
+      - name: Commit the pins
+        run: |
+          if git diff --quiet -- data-pins.json; then
+            echo "no new release; nothing to commit"
+            exit 0
+          fi
+
+          tag=$(python3 -c 'import json; print(json.load(open("data-pins.json"))["files"]["summary.json"]["tag"])')
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data-pins.json
+          git commit -m "Update readership data to ${tag}"
+
+          # A person may have pushed while this ran. Rebase onto whatever
+          # landed and try once more; a conflict in data-pins.json is a real
+          # disagreement and should fail the job.
+          git push || {
+            echo "push rejected; rebasing onto the current tip and retrying"
+            git pull --rebase origin "${{ github.ref_name }}"
+            git push
+          }

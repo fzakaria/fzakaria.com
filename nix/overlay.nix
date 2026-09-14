@@ -32,6 +32,8 @@
     inherit self;
   };
   blog-serve = import ./serve.nix {pkgs = final;};
+  # The programs in tools/: their wrappers, descriptions and tests.
+  blog-tools = import ./tools.nix {pkgs = final;};
 
   # Regenerates gemset.nix from Gemfile.lock. A flake package rather than a
   # nixpkgs one because it is the fork that handles platform-dependent gems;

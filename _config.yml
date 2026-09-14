@@ -52,6 +52,16 @@ exclude:
   - vendor/ruby/
   - .direnv/
   - .jj/
+  # The readership fetchers, their tests and the data they write locally. The
+  # page reads only _data/readership.json, which is generated from them.
+  - tools/
+  - tests/
+  - data/
+  # Python tooling caches. Listed so the `jekyll serve` watcher ignores them;
+  # an editor's type checker rewrites hundreds of these at a time.
+  - .mypy_cache/
+  - .pytest_cache/
+  - __pycache__/
 collections:
   old_blog:
     output: true

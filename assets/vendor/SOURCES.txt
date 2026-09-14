@@ -1,0 +1,6 @@
+# Third-party files for /readership, fetched from the npm registry via jsdelivr.
+# Update by re-downloading the named version and replacing the hash.
+80aa70d0cd17dabddf6d056494ea17926a45a69da8b7850220aace331bad671d  d3-array.min.js  npm:d3-array@3.2.4/dist/d3-array.min.js
+23e574f1e8d4716d622bce45356a379b66a277162b145f5f147e4c8daefb73d2  d3-geo.min.js  npm:d3-geo@3.1.1/dist/d3-geo.min.js
+25cd02ae486cc5063e0215a4e4cfb15de83700c87ac48bac4d57dc6aaf3ebb89  topojson-client.min.js  npm:topojson-client@3.1.0/dist/topojson-client.min.js
+2516c915867c7baf18ddec727aec46c315541a07cfb3d79a6559b05d5e94eee8  countries-110m.json  npm:world-atlas@2.0.2/countries-110m.json

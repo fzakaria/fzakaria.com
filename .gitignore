@@ -8,3 +8,12 @@ result
 .image-cache
 .graphviz-cache
 .plotnine-cache
+# Python tooling caches from tools/ and tests/.
+.mypy_cache/
+.pytest_cache/
+__pycache__/
+# `nix run .#fetch-*` writes here when hydrating the readership data locally.
+/data/
+# Generated from the data above by `nix run .#build-readership-data`, and by
+# nix/site.nix from the pinned release in a real build.
+/_data/readership.json

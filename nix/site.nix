@@ -4,6 +4,10 @@
   self,
 }: let
   fs = pkgs.lib.fileset;
+
+  # The readership page's data from the pinned release, or null before the
+  # first release; see nix/readership-data.nix.
+  readershipJson = import ./readership-data.nix {inherit pkgs;};
 in
   pkgs.stdenv.mkDerivation {
     name = "fzakaria.com";
@@ -17,6 +21,7 @@ in
         ../keybase.txt
         ../old_blog.md
         ../publickey.txt
+        ../readership.md
         ../styleguide.md
         ../talks.md
         ../_config.yml
@@ -71,9 +76,15 @@ in
     # reproducible, and one the sitemap schema accepts. This hangs off
     # patchPhase rather than preBuild because buildPhase below is a
     # literal string, which replaces the phase's runHook calls with it.
-    postPatch = ''
-      find . -type f -exec touch -d @${toString self.lastModified} {} +
-    '';
+    postPatch =
+      ''
+        find . -type f -exec touch -d @${toString self.lastModified} {} +
+      ''
+      # _data/readership.json is git-ignored, so the source never carries it;
+      # the build supplies the one generated from the pinned release.
+      + pkgs.lib.optionalString (readershipJson != null) ''
+        cp ${readershipJson} _data/readership.json
+      '';
 
     buildPhase = ''
       jekyll build

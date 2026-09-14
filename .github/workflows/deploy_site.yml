@@ -4,6 +4,12 @@ on:
   # Runs on pushes targeting the default branch
   push:
     branches: "master"
+  # After the daily readership refresh. Its data-pins.json commit is pushed
+  # with the default GITHUB_TOKEN, which never triggers the push event above.
+  workflow_run:
+    workflows: [readership]
+    types: [completed]
+    branches: [master]
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -22,10 +28,16 @@ concurrency:
 jobs:
   # Build job
   build:
+    # A failed readership run published nothing new, so there is nothing to deploy.
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     steps:
+      # Pinned to the branch: under workflow_run the triggering sha is the
+      # commit before the pins were pushed.
       - name: Checkout
         uses: actions/checkout@v7
+        with:
+          ref: master
       - name: Install Nix
         uses: DeterminateSystems/nix-installer-action@main
       - uses: cachix/cachix-action@v17

@@ -41,10 +41,12 @@
 
     packages = eachSystem (pkgs: {default = pkgs.blog-site;});
 
-    # `nix flake check` builds this but only evaluates `packages`, so CI runs
+    # `nix flake check` builds these but only evaluates `packages`, so CI runs
     # `nix build` as a separate step.
     checks = eachSystem (pkgs: {
       formatting = pkgs.blog-treefmt.config.build.check self;
+      # tests/ against tools/; see nix/tools.nix.
+      tools = pkgs.blog-tools.tests;
     });
 
     apps = eachSystem (pkgs: import ./nix/apps.nix {inherit pkgs;});
