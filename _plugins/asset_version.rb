@@ -4,9 +4,9 @@ require "digest"
 
 # Publishes a short content hash of the stylesheet sources as `site.css_version`.
 #
-# base.css keeps a stable filename, so after a redesign a browser will happily
-# keep serving the copy it cached — which is exactly what happened on the first
-# deploy of this design. Appending ?v=<hash> to the link makes the URL change
+# base.css and readership.css keep stable filenames, so after a redesign a
+# browser will happily keep serving the copy it cached — which is exactly what
+# happened on the first deploy of this design. Appending ?v=<hash> to the link makes the URL change
 # whenever the CSS does, and only when it does: a hash of the sources rather
 # than the commit means an ordinary new post does not force every reader to
 # re-download the stylesheet.

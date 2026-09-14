@@ -1,5 +1,6 @@
 ---
 layout: base
+stylesheet: readership
 ---
 {%- comment -%}
   Every figure on this page is drawn by assets/js/readership.js from the JSON
@@ -8,6 +9,9 @@ layout: base
   data release in a real build. Without that file the page still renders, with
   each section saying its data is missing. The world map also reads the
   country outlines vendored in assets/vendor; see SOURCES.txt there.
+
+  The page's styles are in _sass/pages/readership.scss, compiled to a readership.css
+  that base.html links only because of `stylesheet` above.
 
   data-requires marks an empty state shown while a source is missing;
   data-section marks a figure shown only once every source it names exists.

@@ -1,0 +1,23 @@
+// ---------------------------------------------------------------------------
+// What base.css and readership.css are both built from. Nothing here emits CSS
+// on its own, so each stylesheet can use this file without carrying the
+// other's rules.
+// ---------------------------------------------------------------------------
+
+// The single breakpoint that matters: above it there is room for a left gutter
+// and a right margin column, below it the page is one honest column.
+$wide: 67.5625rem;
+
+// Small uppercase mono for structural chrome: dates, labels, nav, captions.
+// base.css extends it through its %chrome placeholder; readership.css, which
+// is compiled on its own and cannot extend a placeholder in base.css, includes
+// it instead.
+@mixin chrome {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-faint);
+}
