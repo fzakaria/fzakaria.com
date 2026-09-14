@@ -2394,13 +2394,19 @@ blockquote.alert {
   }
 
   // Drag-to-zoom: a crosshair cursor over zoomable charts, and the dragged
-  // span drawn as a translucent band. On a touch screen the browser would
-  // otherwise claim every drag for scrolling and cancel the pointer; pan-y
-  // leaves it vertical swipes, so the page still scrolls past the chart, and
-  // hands a sideways drag to the zoom.
+  // span drawn as a translucent band.
   .zoomable {
     cursor: crosshair;
-    touch-action: pan-y;
+  }
+
+  // On a touch screen the browser would otherwise claim every drag for
+  // scrolling and cancel the pointer. pan-y leaves it vertical swipes, so the
+  // page still scrolls past the chart, and hands a sideways drag to the zoom;
+  // pinch-zoom keeps the page zoomable. Set on the chart's HTML box rather
+  // than the SVG hit area, because Chromium ignores touch-action on elements
+  // inside an SVG.
+  .plot:has(.zoomable) {
+    touch-action: pan-y pinch-zoom;
   }
 
   .zoom-band {
@@ -2427,9 +2433,13 @@ blockquote.alert {
   }
 
   // World map: the globe's outline and country borders in the rule colours.
+  // The outline takes no pointer: a phone widens a tap to the finger's area
+  // and hands it to the nearest target, and a tap on a country at the globe's
+  // rim would otherwise land on the outline and open nothing.
   .map-sphere {
     fill: none;
     stroke: var(--rule);
+    pointer-events: none;
   }
 
   .map-country {

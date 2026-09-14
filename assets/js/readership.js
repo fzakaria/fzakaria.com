@@ -104,42 +104,174 @@
     return el;
   }
 
-  // One tooltip, placed beside the pointer and kept inside the viewport.
-  const tip = byId("readership-tip");
-  function showTip(html, event) {
-    tip.innerHTML = html;
-    tip.hidden = false;
-    const pad = 14;
-    const r = tip.getBoundingClientRect();
-    let x = event.clientX + pad;
-    let y = event.clientY + pad;
-    if (x + r.width > window.innerWidth - 8) {
-      x = event.clientX - r.width - pad;
+  // How a tooltip sits against the point it describes. A mouse pointer is
+  // small, so the tooltip goes beside it; a finger covers the area around a
+  // tap, so the tooltip goes above the tap, clear of the thumb.
+  const TipPlacement = Object.freeze({ BESIDE: "beside", ABOVE: "above" });
+  const TIP_BESIDE_PX = 14;
+  const TIP_ABOVE_PX = 36;
+  const TIP_EDGE_PX = 8;
+  const TOUCH_POINTER = "touch";
+  const NOOP = () => {};
+
+  // Where a tooltip of `size` goes for `point`, as [left, top].
+  function tipPosition(point, size, placement) {
+    // Above a tap and centred on it; below it only where there is no room above.
+    if (placement === TipPlacement.ABOVE) {
+      const above = point.clientY - size.height - TIP_ABOVE_PX;
+      const top = above < TIP_EDGE_PX ? point.clientY + TIP_ABOVE_PX : above;
+      return [point.clientX - size.width / 2, top];
     }
-    if (y + r.height > window.innerHeight - 8) {
-      y = event.clientY - r.height - pad;
+
+    // Beside a pointer, flipped to its other side at the viewport's edges.
+    let left = point.clientX + TIP_BESIDE_PX;
+    let top = point.clientY + TIP_BESIDE_PX;
+    if (left + size.width > window.innerWidth - TIP_EDGE_PX) {
+      left = point.clientX - size.width - TIP_BESIDE_PX;
     }
-    tip.style.left = Math.max(8, x) + "px";
-    tip.style.top = Math.max(8, y) + "px";
-  }
-  function hideTip() {
-    tip.hidden = true;
+    if (top + size.height > window.innerHeight - TIP_EDGE_PX) {
+      top = point.clientY - size.height - TIP_BESIDE_PX;
+    }
+    return [left, top];
   }
 
-  // Anything carrying data-tip explains itself on hover, and on keyboard focus
-  // for readers who cannot hover.
+  // One tooltip, placed by the point it describes and kept inside the viewport.
+  const tip = byId("readership-tip");
+  function showTip(html, point, placement = TipPlacement.BESIDE) {
+    tip.innerHTML = html;
+    tip.hidden = false;
+    const r = tip.getBoundingClientRect();
+    const [left, top] = tipPosition(point, r, placement);
+    tip.style.left = Math.max(TIP_EDGE_PX, Math.min(left, window.innerWidth - r.width - TIP_EDGE_PX)) + "px";
+    tip.style.top = Math.max(TIP_EDGE_PX, top) + "px";
+  }
+
+  // The tooltip a tap opened: the chart that opened it, the mark it describes,
+  // and the function that removes that chart's highlight. Null when the
+  // tooltip is closed or follows a mouse.
+  let tapped = null;
+
+  // The kind of pointer that pressed last. Not every browser says which
+  // pointer fired a click, so a tap is told apart from a mouse click by the
+  // pointerdown before it.
+  let lastPointerType = null;
+
+  // The click a tap tooltip handled, so the page-wide click handler below
+  // does not close the tooltip that click just opened.
+  let claimedClick = null;
+
+  function hideTip() {
+    tip.hidden = true;
+    if (!tapped) {
+      return;
+    }
+    const { clear } = tapped;
+    tapped = null;
+    clear();
+  }
+
+  // A tap on a mark closes any tooltip a tap opened and opens this mark's,
+  // unless this mark's tooltip was the one open: then the tap only closes it.
+  function toggleTapTip(click, owner, pick, clear) {
+    claimedClick = click;
+    const previous = tapped;
+    hideTip();
+    const hit = pick(click);
+    if (!hit) {
+      return;
+    }
+    if (previous && previous.owner === owner && previous.key === hit.key) {
+      clear();
+      return;
+    }
+    showTip(hit.html, click, TipPlacement.ABOVE);
+    tapped = { owner, key: hit.key, clear };
+  }
+
+  // Tooltips for the marks of a chart. `pick(event)` finds the mark under a
+  // pointer, draws the chart's highlight for that mark, and returns
+  // { key, html }, where equal keys mean the same mark; with no mark there,
+  // `pick` removes the highlight and returns null. `clear()` removes the
+  // highlight.
+  //
+  // A mouse hovers: the tooltip follows the pointer and leaves with it. A
+  // finger cannot hover, and a long press opens the phone's own menus, so a
+  // tap toggles the tooltip instead, and the tooltip stays up until the next
+  // tap or a scroll.
+  function markTips(el, pick, clear) {
+    el.addEventListener("pointermove", (e) => {
+      if (e.pointerType === TOUCH_POINTER) {
+        return;
+      }
+      const hit = pick(e);
+      if (!hit) {
+        hideTip();
+        return;
+      }
+      showTip(hit.html, e);
+    });
+    el.addEventListener("pointerleave", (e) => {
+      if (e.pointerType === TOUCH_POINTER) {
+        return;
+      }
+      clear();
+      hideTip();
+    });
+
+    // The chart's box outlives its redraws, so a mark keeps its owner when a
+    // tap redraws the chart under it.
+    el.addEventListener("click", (e) => {
+      if (lastPointerType !== TOUCH_POINTER) {
+        return;
+      }
+      toggleTapTip(e, el.closest(".plot") ?? el, pick, clear);
+    });
+  }
+
+  // A click that no tooltip claimed closes the tooltip a tap opened, and a
+  // scroll closes any tooltip, which would otherwise float over whatever
+  // scrolled under it.
+  document.addEventListener(
+    "pointerdown",
+    (e) => {
+      lastPointerType = e.pointerType;
+    },
+    { capture: true },
+  );
+  document.addEventListener("click", (e) => {
+    if (e === claimedClick || !tapped) {
+      return;
+    }
+    hideTip();
+  });
+  window.addEventListener("scroll", hideTip, { passive: true });
+
+  // Anything carrying data-tip explains itself on hover or a tap, and on
+  // keyboard focus for readers who can do neither.
   function setUpDefinitionTips() {
     const article = document.querySelector(".readership");
     article.addEventListener("pointerover", (e) => {
       const target = e.target.closest("[data-tip]");
-      if (target) {
+      if (target && e.pointerType !== TOUCH_POINTER) {
         showTip(esc(target.dataset.tip), e);
       }
     });
     article.addEventListener("pointerout", (e) => {
-      if (e.target.closest("[data-tip]")) {
+      if (e.target.closest("[data-tip]") && e.pointerType !== TOUCH_POINTER) {
         hideTip();
       }
+    });
+
+    // The definition itself is the key: tapping a header sorts and redraws the
+    // table, so the element tapped does not survive to be compared with the
+    // next tap's.
+    article.addEventListener("click", (e) => {
+      const target = e.target.closest("[data-tip]");
+      if (!target || lastPointerType !== TOUCH_POINTER) {
+        return;
+      }
+      const definition = target.dataset.tip;
+      toggleTapTip(e, article, () => ({ key: definition, html: esc(definition) }), NOOP);
     });
     article.addEventListener("focusin", (e) => {
       const target = e.target.closest("[data-tip]");
@@ -149,7 +281,16 @@
       const r = target.getBoundingClientRect();
       showTip(esc(target.dataset.tip), { clientX: r.left, clientY: r.bottom });
     });
-    article.addEventListener("focusout", hideTip);
+    // Focus leaving closes only a tooltip that focus opened. Tapping a header
+    // sorts the table, and the redraw removes the focused button, which fires
+    // a focusout that would otherwise close the definition the tap just opened
+    // and forget it, so the next tap on the term could not close it.
+    article.addEventListener("focusout", () => {
+      if (tapped) {
+        return;
+      }
+      hideTip();
+    });
   }
 
   // Redraw a chart when its container's width changes, or when asked to.
@@ -314,7 +455,7 @@
   // Drag across a time chart to zoom into the dragged span. `overlay` is the
   // chart's hit area, `toTime` maps an x in the chart to a timestamp, and
   // `onZoom` receives [start, end]. A press that barely moves is left to the
-  // hover handlers; a double-click resets. Returns nothing: the chart is
+  // tooltip handlers; a double-click resets. Returns nothing: the chart is
   // redrawn by the caller from the new span.
   const ZOOM_MIN_DRAG_PX = 8;
   const ZOOM_MIN_SPAN_MS = 2 * DAY_MS;
@@ -633,11 +774,12 @@
       svg("circle", { cx, cy, r: 4, fill: "var(--accent)", "fill-opacity": 0.65, stroke: "var(--paper)", "stroke-width": 1.5 }, root);
     }
 
-    // Nearest-dot hover, so small dots are easy to hit.
+    // Nearest dot to the pointer or tap, so small dots are easy to hit.
     const HIT_PX = 28;
     const ring = svg("circle", { r: 8, fill: "none", stroke: "var(--ink)", "stroke-width": 1.5, visibility: "hidden" }, root);
     const overlay = svg("rect", { x: m.l, y: m.t, width: pw, height: ph, fill: "transparent" }, root);
-    overlay.addEventListener("pointermove", (e) => {
+    const hideRing = () => ring.setAttribute("visibility", "hidden");
+    const pick = (e) => {
       const r = root.getBoundingClientRect();
       const px = e.clientX - r.left;
       const py = e.clientY - r.top;
@@ -651,24 +793,20 @@
         }
       }
       if (!best) {
-        ring.setAttribute("visibility", "hidden");
-        hideTip();
-        return;
+        hideRing();
+        return null;
       }
       ring.setAttribute("cx", best.cx);
       ring.setAttribute("cy", best.cy);
       ring.setAttribute("visibility", "visible");
-      showTip(
-        `<b>${esc(titleOf(best.d.path))}</b>
+      return {
+        key: best.d,
+        html: `<b>${esc(titleOf(best.d.path))}</b>
         <div class="row"><span>Clicks from Google</span><span>${fmt.format(best.d.clicks)}</span></div>
         <div class="row"><span>Reading time per visit</span><span>${duration(best.d.seconds)}</span></div>`,
-        e,
-      );
-    });
-    overlay.addEventListener("pointerleave", () => {
-      ring.setAttribute("visibility", "hidden");
-      hideTip();
-    });
+      };
+    };
+    markTips(overlay, pick, hideRing);
   }
 
   // ---------------------------------------------------------------------------
@@ -823,23 +961,20 @@
     const nearest = drawLanes(root, { top: m.t, laneHeight: LANE_H, left: m.l, right: W - m.r, x, start, end });
 
     const overlay = svg("rect", { x: m.l, y: m.t, width: pw, height: SITES.length * LANE_H, fill: "transparent", class: "zoomable" }, root);
-    overlay.addEventListener("pointermove", (e) => {
+    const hideGuide = () => guide.setAttribute("visibility", "hidden");
+    const pick = (e) => {
       const r = root.getBoundingClientRect();
       const best = nearest(e.clientX - r.left, e.clientY - r.top);
       if (!best) {
-        guide.setAttribute("visibility", "hidden");
-        hideTip();
-        return;
+        hideGuide();
+        return null;
       }
       guide.setAttribute("x1", best.cx);
       guide.setAttribute("x2", best.cx);
       guide.setAttribute("visibility", "visible");
-      showTip(submissionTip(best.s), e);
-    });
-    overlay.addEventListener("pointerleave", () => {
-      guide.setAttribute("visibility", "hidden");
-      hideTip();
-    });
+      return { key: best.s, html: submissionTip(best.s) };
+    };
+    markTips(overlay, pick, hideGuide);
     enableDragZoom(root, overlay, {
       top: m.t,
       height: SITES.length * LANE_H,
@@ -998,12 +1133,12 @@
       }
     }
 
-    // Hover finds the story whose line passes closest to the pointer; a click
-    // selects it.
+    // Hover or a tap finds the story whose line passes closest to the pointer;
+    // a click or the tap selects it.
     const HIT_PX = 14;
-    let hovered = null;
     const overlay = svg("rect", { x: m.l, y: m.t, width: pw, height: ph, fill: "transparent" }, root);
-    overlay.addEventListener("pointermove", (e) => {
+    const hideHover = () => hover.setAttribute("visibility", "hidden");
+    const pick = (e) => {
       const r = root.getBoundingClientRect();
       const px = e.clientX - r.left;
       const py = e.clientY - r.top;
@@ -1024,32 +1159,32 @@
           }
         }
       }
-      hovered = best ? best.line : null;
       if (!best) {
-        hover.setAttribute("visibility", "hidden");
-        hideTip();
-        return;
+        hideHover();
+        return null;
       }
       hover.setAttribute("d", pathOf(best.line.runs));
       hover.setAttribute("visibility", "visible");
       const s = best.line.s;
-      showTip(
-        `<b>${esc(s.title)}</b>
+      return {
+        key: `${s.id}@${best.bucket}`,
+        story: s,
+        html: `<b>${esc(s.title)}</b>
         <div class="row"><span>${(best.bucket / MINUTES_PER_HOUR).toFixed(1)}h in</span><span>#${best.rank}</span></div>
         <div class="row"><span>Peak</span><span>#${s.peak_rank}</span></div>
         <div class="row"><span>Hours in the top 30</span><span>${s.front_page_hours}</span></div>`,
-        e,
-      );
-    });
-    overlay.addEventListener("pointerleave", () => {
-      hover.setAttribute("visibility", "hidden");
-      hideTip();
-    });
-    overlay.addEventListener("click", () => {
-      if (!hovered) {
+      };
+    };
+    markTips(overlay, pick, hideHover);
+
+    // Registered after the tooltip's own click handler, which runs first and
+    // opens the tooltip before the selection redraws the chart.
+    overlay.addEventListener("click", (e) => {
+      const hit = pick(e);
+      if (!hit) {
         return;
       }
-      selectRankStory(hovered.s.id);
+      selectRankStory(hit.story.id);
     });
   }
 
@@ -1168,25 +1303,24 @@
     const guide = svg("line", { y1: m.t, y2: lanesTop + SITES.length * LANE_H, stroke: "var(--ink-faint)", "stroke-width": 1, visibility: "hidden" }, root);
     const nearest = drawLanes(root, { top: lanesTop, laneHeight: LANE_H, left: m.l, right: W - m.r, x, start, end: end + DAY_MS });
 
-    // One hit area over the chart and the lanes: hover shows the day's visits,
-    // or the nearest submission when over a lane; dragging zooms.
+    // One hit area over the chart and the lanes: hover or a tap shows the
+    // day's visits, or the nearest submission when over a lane; dragging zooms.
     const overlay = svg("rect", { x: m.l, y: m.t, width: pw, height: lanesTop + SITES.length * LANE_H - m.t, fill: "transparent", class: "zoomable" }, root);
-    overlay.addEventListener("pointermove", (e) => {
+    const hideGuide = () => guide.setAttribute("visibility", "hidden");
+    const pick = (e) => {
       const r = root.getBoundingClientRect();
       const px = e.clientX - r.left;
       const py = e.clientY - r.top;
       if (py >= lanesTop) {
         const best = nearest(px, py);
         if (!best) {
-          guide.setAttribute("visibility", "hidden");
-          hideTip();
-          return;
+          hideGuide();
+          return null;
         }
         guide.setAttribute("x1", best.cx);
         guide.setAttribute("x2", best.cx);
         guide.setAttribute("visibility", "visible");
-        showTip(submissionTip(best.s), e);
-        return;
+        return { key: best.s, html: submissionTip(best.s) };
       }
       const i = clamp(Math.round(((px - m.l) / pw) * (days.length - 1)), 0, days.length - 1);
       const d = days[i];
@@ -1196,12 +1330,9 @@
       const rows = TRAFFIC_SERIES.map((s, k) => `<div class="row"><span>${esc(s.name)}</span><span>${fmt.format(d.values[k])}</span></div>`)
         .reverse()
         .join("");
-      showTip(`<b>${d.date}</b>${rows}<div class="row"><span>Total</span><span>${fmt.format(totals[i])}</span></div>`, e);
-    });
-    overlay.addEventListener("pointerleave", () => {
-      guide.setAttribute("visibility", "hidden");
-      hideTip();
-    });
+      return { key: d, html: `<b>${d.date}</b>${rows}<div class="row"><span>Total</span><span>${fmt.format(totals[i])}</span></div>` };
+    };
+    markTips(overlay, pick, hideGuide);
     enableDragZoom(root, overlay, { top: m.t, height: ph, toTime, onZoom, onReset });
   }
 
@@ -1266,17 +1397,12 @@
         class: "map-country",
         style: `fill: ${country ? heatFill(share) : "var(--paper)"}`,
       }, root);
-      shape.addEventListener("pointermove", (e) => {
-        const name = country ? country.country : feature.properties.name;
-        const visits = country ? country.sessions : 0;
-        showTip(
-          `<b>${esc(name)}</b>
+      const name = country ? country.country : feature.properties.name;
+      const visits = country ? country.sessions : 0;
+      const html = `<b>${esc(name)}</b>
           <div class="row"><span>Visits</span><span>${fmt.format(visits)}</span></div>
-          <div class="row"><span>Share</span><span>${pct(visits / total)}</span></div>`,
-          e,
-        );
-      });
-      shape.addEventListener("pointerleave", hideTip);
+          <div class="row"><span>Share</span><span>${pct(visits / total)}</span></div>`;
+      markTips(shape, () => ({ key: feature, html }), NOOP);
     }
   }
 
@@ -1389,15 +1515,10 @@
           rx: 2,
           style: `fill: ${heatFill(sessions / max)}`,
         }, root);
-        rect.addEventListener("pointermove", (e) => {
-          showTip(
-            `<b>${WEEKDAY_NAMES[day]}, ${hh(h)}:00 to ${hh((h + 1) % HOURS_PER_DAY)}:00</b>
+        const html = `<b>${WEEKDAY_NAMES[day]}, ${hh(h)}:00 to ${hh((h + 1) % HOURS_PER_DAY)}:00</b>
             <div class="row"><span>Visits</span><span>${fmt.format(sessions)}</span></div>
-            <div class="row"><span>Share of the week</span><span>${pct(sessions / total)}</span></div>`,
-            e,
-          );
-        });
-        rect.addEventListener("pointerleave", hideTip);
+            <div class="row"><span>Share of the week</span><span>${pct(sessions / total)}</span></div>`;
+        markTips(rect, () => ({ key: rect, html }), NOOP);
       });
     });
   }
