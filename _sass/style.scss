@@ -14,6 +14,9 @@
 // and a right margin column, below it the page is one honest column.
 $wide: 67.5625rem;
 
+// Readership tables narrower than this draw each row as a card.
+$table-cards: 36rem;
+
 // --- Fonts -----------------------------------------------------------------
 // Self-hosted so there is no third-party DNS + TLS handshake on first paint.
 // Both families are weight-variable; unicode-range keeps the -ext subsets from
@@ -2179,6 +2182,14 @@ blockquote.alert {
     max-width: 100%;
   }
 
+  // A label's implicit grid column is sized to its widest content, which is
+  // the select's longest option. Rank's post titles made that 700px on a
+  // 390px phone, widening the whole page; a column that may shrink to zero
+  // lets the select's max-width take hold.
+  .controls label {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   // A long post title would otherwise stretch its select across the row and
   // push the sliders beside it onto a line of their own.
   .controls select {
@@ -2200,6 +2211,121 @@ blockquote.alert {
     th:last-child,
     td:last-child {
       padding-right: 0.9rem;
+    }
+  }
+
+  // Tables narrower than their columns draw each row as a card: the title
+  // across the top and the numbers in a grid beneath it, each under its
+  // column's name (data-label, set by sortableTable). A container query, so
+  // the switch follows the table's own width rather than the screen's.
+  .table-scroll {
+    container-type: inline-size;
+  }
+
+  @container (max-width: #{$table-cards}) {
+    table,
+    tbody {
+      display: block;
+    }
+
+    // The header row becomes a wrapping row of sort buttons, pinned to the
+    // top of the table while it scrolls.
+    thead {
+      display: block;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      padding-block: 0.2rem 0.6rem;
+      background: var(--paper);
+      border-bottom: 1px solid var(--rule-strong);
+    }
+
+    thead tr {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    // !important overrides the inline widths sortableTable sets for the
+    // full table layout.
+    thead th,
+    thead th:first-child,
+    thead th:last-child {
+      position: static;
+      width: auto !important;
+      min-width: 0;
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+
+    // As specific as the `.readership table th .sort` rule that strips a sort
+    // button's border in the full table layout.
+    table th .sort {
+      padding: 0.25rem 0.45rem;
+      border: 1px solid var(--rule-strong);
+      border-radius: 2px;
+    }
+
+    table th[aria-sort] .sort {
+      border-color: var(--ink);
+    }
+
+    tbody tr {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem 0.6rem;
+      padding-block: 0.75rem;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    tbody tr:hover td {
+      background: none;
+    }
+
+    td,
+    td:first-child,
+    td:last-child {
+      min-width: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    td:first-child {
+      grid-column: 1 / -1;
+    }
+
+    // Values sit inset in their cell, so a heat-shaded cell reads as a tile
+    // with its label inside it rather than text touching the shading's edge.
+    // Scoped to .table-scroll to outrank the reset above and the scrollbar
+    // clearance a tall table gives its last column.
+    .table-scroll td:not(:first-child) {
+      padding: 0.3rem 0.45rem;
+    }
+
+    td.num {
+      text-align: left !important;
+    }
+
+    td + td::before {
+      content: attr(data-label);
+      display: block;
+      margin-bottom: 0.1rem;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+  }
+
+  // Cards are several times taller than rows, so on a phone a tall table gets
+  // most of the screen rather than a fixed 30rem. A media query, since a
+  // container query cannot style the container it measures.
+  @media (max-width: $table-cards) {
+    .table-scroll--tall {
+      max-height: 75svh;
     }
   }
 
@@ -2240,6 +2366,21 @@ blockquote.alert {
     margin-left: auto;
   }
 
+  // A zoomable chart's "Reset zoom" button and date ranges stay on one line.
+  // On a 390px phone the two missed fitting by 0.2px at the usual gap; with a
+  // narrower gap they fit, and on a still narrower screen the date ranges wrap
+  // among themselves beside the button rather than dropping below it.
+  .bar-row:has(> .zoom-reset) {
+    flex-wrap: nowrap;
+    column-gap: 0.6rem;
+
+    // The date ranges give way on a narrow screen, not the button, whose
+    // label would otherwise break onto two lines.
+    .zoom-reset {
+      flex: none;
+    }
+  }
+
   .legend--above {
     margin-bottom: 0.6rem;
   }
@@ -2253,9 +2394,13 @@ blockquote.alert {
   }
 
   // Drag-to-zoom: a crosshair cursor over zoomable charts, and the dragged
-  // span drawn as a translucent band.
+  // span drawn as a translucent band. On a touch screen the browser would
+  // otherwise claim every drag for scrolling and cancel the pointer; pan-y
+  // leaves it vertical swipes, so the page still scrolls past the chart, and
+  // hands a sideways drag to the zoom.
   .zoomable {
     cursor: crosshair;
+    touch-action: pan-y;
   }
 
   .zoom-band {
@@ -2325,6 +2470,16 @@ blockquote.alert {
 
   .ridge-peak--active {
     fill: var(--accent);
+  }
+
+  // Clicking a row picks its source; the ridge under the pointer darkens so
+  // the target is plain before the click.
+  .ridge-hit {
+    cursor: pointer;
+  }
+
+  .ridge--hover:not(.ridge--active) {
+    stroke: var(--ink);
   }
 
   // A term with a definition: dotted underline, definition in the tooltip.

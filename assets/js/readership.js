@@ -221,6 +221,11 @@
     return [{ key: column.key, direction: column.first }];
   }
 
+  // A rendered cell with its column's name attached. On a narrow screen each row
+  // is drawn as a card with no header row above it, and every value is labelled
+  // from this attribute instead.
+  const labelCell = (cell, label) => cell.replace(/^<td/, `<td data-label="${esc(label)}"`);
+
   // A table whose headers sort it. Each column gives a `value` to sort by, a
   // `cell` to render, an optional `tip` defining it and `width` to fix its
   // share of the table, and `first`: the direction a first click sorts in, so
@@ -276,7 +281,7 @@
         <thead><tr>${columns.map(header).join("")}</tr></thead>
         <tbody>${sorted
           .slice(0, maxRows)
-          .map((row) => `<tr>${columns.map((c) => c.cell(row)).join("")}</tr>`)
+          .map((row) => `<tr>${columns.map((c) => labelCell(c.cell(row), c.label)).join("")}</tr>`)
           .join("")}</tbody>
       </table>`;
     };
@@ -1416,8 +1421,9 @@
 
   // One row per source: visits by hour of the day, summed over the week and
   // scaled to that source's busiest hour. The source picked above is drawn in
-  // the accent.
-  function drawRidgeline(W) {
+  // the accent. `onPick`, when given, receives a source's key when its row is
+  // clicked.
+  function drawRidgeline(W, onPick) {
     const box = byId("fig-ridgeline");
     const rows = HOURS_SOURCES.filter(([key]) => key === ALL_SOURCES || (hours.by_source && hours.by_source[key]));
     const ROW_H = 48;
@@ -1436,6 +1442,7 @@
       svgText(root, x(h), H - 6, `${hh(h)}:00`, { class: "ax", "text-anchor": "middle" });
     }
 
+    const ridges = [];
     rows.forEach(([key, name], i) => {
       const base = key === ALL_SOURCES ? hours.sessions : hours.by_source[key];
       const grid = shiftGrid(base);
@@ -1452,10 +1459,10 @@
 
       // Rows are drawn top to bottom and filled with the page's own colour,
       // so each ridge hides the part of the one behind it that it overlaps.
-      svg("path", {
+      ridges.push(svg("path", {
         d: `M${x(0)},${baseline}L${points[0][0].toFixed(1)},${points[0][1].toFixed(1)}${curve}L${x(HOURS_PER_DAY - 1)},${baseline}Z`,
         class: active ? "ridge ridge--active" : "ridge",
-      }, root);
+      }, root));
       svg("line", { x1: m.l, x2: W - m.r, y1: baseline, y2: baseline, class: "base" }, root);
 
       const labelY = baseline - ROW_H / 2 + 4;
@@ -1465,6 +1472,19 @@
         svgText(root, m.l - 12, labelY + 13, `peak ${hh(peak)}:00`, { class: "ax", "text-anchor": "end" });
         svg("circle", { cx: points[peak][0], cy: points[peak][1], r: 2.5, class: active ? "ridge-peak ridge-peak--active" : "ridge-peak" }, root);
       }
+    });
+
+    // A transparent band over each row, label included, drawn above every
+    // ridge. The bands do not overlap, so a click picks the row it lands in
+    // even where the ridge below rises into that row.
+    if (!onPick) {
+      return;
+    }
+    rows.forEach(([key], i) => {
+      const hit = svg("rect", { x: 0, y: m.t + i * ROW_H, width: W, height: ROW_H, fill: "transparent", class: "ridge-hit" }, root);
+      hit.addEventListener("pointerenter", () => ridges[i].classList.add("ridge--hover"));
+      hit.addEventListener("pointerleave", () => ridges[i].classList.remove("ridge--hover"));
+      hit.addEventListener("click", () => onPick(key));
     });
   }
 
@@ -1476,30 +1496,30 @@
       .join("");
     select.value = hoursZone;
 
-    const fillZone = () => {
-      for (const el of document.querySelectorAll('[data-field="time-zone"]')) {
-        el.textContent = zoneLabel(hoursZone);
-      }
+    // Picking a source, from its button or by clicking its ridge, marks the
+    // button pressed and redraws both charts. There is nothing to pick without
+    // a per-source breakdown.
+    let pressSource = () => {};
+    const pickSource = (value) => {
+      hoursSource = value;
+      pressSource(value);
+      redraw();
     };
+
     const redrawHeat = mount(byId("fig-hours"), drawHours);
-    const redrawRidges = mount(byId("fig-ridgeline"), drawRidgeline);
+    const redrawRidges = mount(byId("fig-ridgeline"), (W) => drawRidgeline(W, hours.by_source ? pickSource : null));
     const redraw = () => {
-      fillZone();
       redrawHeat();
       redrawRidges();
     };
 
     if (hours.by_source) {
-      segmented(byId("hours-source"), HOURS_SOURCES, hoursSource, (value) => {
-        hoursSource = value;
-        redraw();
-      });
+      pressSource = segmented(byId("hours-source"), HOURS_SOURCES, hoursSource, pickSource);
     }
     select.addEventListener("change", () => {
       hoursZone = select.value;
       redraw();
     });
-    fillZone();
   }
 
   // ---------------------------------------------------------------------------
