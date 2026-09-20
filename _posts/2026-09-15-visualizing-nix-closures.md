@@ -80,7 +80,7 @@ That is `.text` of `libc.so.6`, in your browser tab, fetched from [cache.nixos.o
 
 Does everything need a purpose? Sometimes something is fun to make and to use with no real purpose.
 
-For fun, I even added a Save PNG button, and it saves the view at the canvas's full resolution. The ultimate ricing of your NixOS system: a pixel image of your desktop closure. Can [Omarchy](https://omarchy.com/) do that? 😎
+For fun, I even added a Save PNG button, and it saves the view at the canvas's full resolution. The ultimate ricing of your NixOS system: a pixel image of your desktop closure. Can [Omarchy](https://omarchy.org/) do that? 😎
 
 Anything you can export works:
 
