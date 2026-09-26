@@ -2,70 +2,70 @@
  "baseUrl": "https://github.com/fzakaria/fzakaria.com/releases/download",
  "files": {
   "ga4_country_day.parquet": {
-   "narHash": "sha256-mM9ee2pwYbLHP76O5AwisHhIe07t+lTssnjlkKzDIu8=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-/GwEnDW7xxLRSWkQJbsHk1xqrbtVieP8DYpOKtNxsBk=",
+   "tag": "readership-20260926"
   },
   "ga4_events_day.parquet": {
-   "narHash": "sha256-rNrxqJBWI/92RF4Y/fHq/cTEw1y4KhnFdh6SWsywTZw=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-/nQlc37NJGgjEaPxlg4mClRljvAmypurktaSpRHPRUU=",
+   "tag": "readership-20260926"
   },
   "ga4_landing_source_day.parquet": {
-   "narHash": "sha256-EKEC3JswXyJ4y2m70Eaprjm1FsvX9n/hb4p0PowKHiE=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-CmHKekgk13+5onL06I4XOi9A1e9OQBQf9cMztrkJWk4=",
+   "tag": "readership-20260926"
   },
   "ga4_page_day.parquet": {
-   "narHash": "sha256-EpPVQB/bXLOavR4Gie+BJQ0jtI0pje/B3A3lIUVt4SE=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-eunHL/zjxha3a4nQabWfrgsFQtSTGpvEEsQniTGBRCw=",
+   "tag": "readership-20260926"
   },
   "ga4_platform_day.parquet": {
-   "narHash": "sha256-RNLD3qy0AwQ2bsjas6FSaS8nPLTp4NinYqFtRlq6Sro=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-ikgET2z64btetNEaUSKOvWyfOmCJ7nvwyjhdGM2zGB4=",
+   "tag": "readership-20260926"
   },
   "ga4_property.parquet": {
    "narHash": "sha256-uw4GNMOlQQZF1gaOTwKSkz6av0+3Ec7EnsLBoIxr2W8=",
    "tag": "readership-20260914"
   },
   "ga4_weekday_hour.parquet": {
-   "narHash": "sha256-3+Qqn8sawtjpOfuDzWMjPCopRoAdI1wCgsR9hvpvxj4=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-GzkUVHEqjXbBfLeXp37LBeKMYSBn9T3zuLO4frhjWCI=",
+   "tag": "readership-20260926"
   },
   "ga4_weekday_hour_source.parquet": {
-   "narHash": "sha256-0fjWPHh0HtKlCnMEzFVhDnnpeYyQWWFw0JOrfU7NtQQ=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-Bz6d6KI6CBZj4cd3F9HpkV1wquhScVrnaxI/LODB0as=",
+   "tag": "readership-20260926"
   },
   "gsc_day.parquet": {
-   "narHash": "sha256-GgWx6yQU8gPCEXI0qyAGXW6V7yjdzwBHWOvZAGzyQm0=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-lnEmu7t0kadxsnqcv1Nq4R3rgAvD7Ip3w0Zy36YC0Ug=",
+   "tag": "readership-20260926"
   },
   "gsc_page_day.parquet": {
-   "narHash": "sha256-iHjFfaP7I6+9MweGlYP73VpiaqapwIXuzWK7OOmz220=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-Ap7hqf9ZsnIhzW6wx674piy5iDuesqTtYwCPf8aDGF0=",
+   "tag": "readership-20260926"
   },
   "gsc_page_query_day.parquet": {
-   "narHash": "sha256-0qnhvwQen/e0SOnyt1VRFpJh1f9QpTrzEJoS4PoxsHE=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-b4aSa2A3Yw88aD4tKbNHaXGwNnQH9BvjyOU9dcYlXcs=",
+   "tag": "readership-20260926"
   },
   "hn_ranks.parquet": {
-   "narHash": "sha256-8tWsXclfkPJ0hZzg8aPF3KQAQpa3TH9TgowZ135y5xY=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-JeMsCJhh2rR/P54MRgsVu37hestDwFcAnTQtpCMzsP0=",
+   "tag": "readership-20260926"
   },
   "hn_submissions.parquet": {
-   "narHash": "sha256-FcC8qeYiRAaQst5rX7e7gh2U7Om6hySy3INWnNEd6ws=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-VjdSRbhCHxVdIkxuBXkYUbnP7ZwOugVkuEb76BmqLu8=",
+   "tag": "readership-20260926"
   },
   "lobsters_submissions.parquet": {
-   "narHash": "sha256-49hYyNGfIGyfIIgpt0tUqaGueJ/q4hobTGs6q4mM+3c=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-1KFXQl5ljRPgXIK2TAbplcCMMl/LXGjGKhcLiy3FKl0=",
+   "tag": "readership-20260926"
   },
   "reddit_submissions.parquet": {
    "narHash": "sha256-8m4bCYJ5ik1cjJVixGOvanwRs/J2f9lgizbz1WMlhHs=",
    "tag": "readership-20260925"
   },
   "summary.json": {
-   "narHash": "sha256-E4fE2PqbJ8mLFx7MEtYpQmeM/lFaISQEgiquZhGmcrk=",
-   "tag": "readership-20260925"
+   "narHash": "sha256-s7wh2DE7dCIV8+4bcdKrUU+xuSVOAyd8e4R5MFpLad8=",
+   "tag": "readership-20260926"
   }
  },
- "generatedAt": "2026-09-25T15:21:06+00:00",
+ "generatedAt": "2026-09-26T14:35:19+00:00",
  "version": 1
 }
