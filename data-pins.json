@@ -2,36 +2,36 @@
  "baseUrl": "https://github.com/fzakaria/fzakaria.com/releases/download",
  "files": {
   "ga4_country_day.parquet": {
-   "narHash": "sha256-s4fOzrqIQLKfs32RHOmIKX6jJQ6T7/WkVN1+0Md0V+E=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-3r08O+k/fWYyaL/sqnjppjC0eMNcLVup9qIOoMepNsU=",
+   "tag": "readership-20261004"
   },
   "ga4_events_day.parquet": {
-   "narHash": "sha256-MBr+aWRz6gEw/YR1DAKnqcBMAkUREyw43OzMlZIL484=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-BpcCDrdRGvN76BTJMxJQZoun3dmLzHVdZPwjiSKJVYM=",
+   "tag": "readership-20261004"
   },
   "ga4_landing_source_day.parquet": {
-   "narHash": "sha256-9c/j018QpfWM5UEa+MB1Uy8oaZBJdYFUBKAD6p3PijY=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-kxOmPlelVpch70+rvxRO1o3lSHdIUhpVQQGBGd3b6I0=",
+   "tag": "readership-20261004"
   },
   "ga4_page_day.parquet": {
-   "narHash": "sha256-SHG1JkGyJzALTs63GHRlLqWj2oIZKlFlTbrLXPitnDw=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-itsvDVKvd6fDbx7iMOph2wZIbdsGIU1+XmdvMCVSjeI=",
+   "tag": "readership-20261004"
   },
   "ga4_platform_day.parquet": {
-   "narHash": "sha256-tfU2NhzwbbbiRzoqb+BW1jq/WLUSrTt3qgo2hoA47mM=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-kEvrFEnrouTXYG5CxStrJvdtTF7SlZ59vi6am/ZT3fQ=",
+   "tag": "readership-20261004"
   },
   "ga4_property.parquet": {
    "narHash": "sha256-uw4GNMOlQQZF1gaOTwKSkz6av0+3Ec7EnsLBoIxr2W8=",
    "tag": "readership-20260914"
   },
   "ga4_weekday_hour.parquet": {
-   "narHash": "sha256-2ffofMzbx9HJlb71GBPWHOVZVMYopIMPx3vsEkb73Fw=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-Fg7aSLSEyzC4aj7CB1ckKGgStZMFs2nz6diQMalxN5I=",
+   "tag": "readership-20261004"
   },
   "ga4_weekday_hour_source.parquet": {
-   "narHash": "sha256-0e2L90Ei9302SjTbADsO6KHrfMrshAaY9p+xISO2v3Y=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-4X4euoGrKtH0ZpwoqPvrqyAqkIVQXFXPqu8h9iZ/Z7c=",
+   "tag": "readership-20261004"
   },
   "gsc_day.parquet": {
    "narHash": "sha256-P3GSTzwyD7GAOCnegrxW7PwxNsIut59TIHkV4D0KOGY=",
@@ -62,10 +62,10 @@
    "tag": "readership-20260927"
   },
   "summary.json": {
-   "narHash": "sha256-ogrpFwYcu7wchCIIZrEw51TQMooVUnL2llWNAT4oHJo=",
-   "tag": "readership-20261003"
+   "narHash": "sha256-Oe52MCnggd34wK5RbU6+5MO1Wigp8eK+KHxUhJzS/78=",
+   "tag": "readership-20261004"
   }
  },
- "generatedAt": "2026-10-03T14:47:36+00:00",
+ "generatedAt": "2026-10-04T15:26:31+00:00",
  "version": 1
 }
