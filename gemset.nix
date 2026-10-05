@@ -228,12 +228,12 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "1nz6kd6qsa160lmjmls4zgx7fwcpp8ac07mpzy80z6zgd7jwldb6";
+      sha256 = "15z8nf8y63b8xrhmwk3k1z65xfv5ig1d70xba3ava2xj502angbh";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "0.16.0";
+    version = "0.17.0";
   };
   jekyll-sass-converter = {
     dependencies = ["sass-embedded"];
