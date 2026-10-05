@@ -254,12 +254,12 @@
     platforms = [];
     source = {
       remotes = ["https://rubygems.org"];
-      sha256 = "0lk83j1nmqybq7hmc9girgc3z25jnxswdc6zbhcvzy8xird02q02";
+      sha256 = "0gh952d154jyb9vsa6sk1yvsxgi99bw5dy09j7pvcj0h15x7ap7d";
       target = "ruby";
       type = "gem";
     };
     targets = [];
-    version = "2.9.0";
+    version = "2.9.1";
   };
   jekyll-sitemap = {
     dependencies = ["jekyll"];
