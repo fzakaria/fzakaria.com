@@ -110,9 +110,9 @@ It is the same beauty of what made Nix hermetic but taken to the next maximum: t
 
 Once a closure is a shape, the two build systems stop competing for the same job. 👏
 
-Everyone loves Nix for its replicability but are furstrated by the needless rebuilds due to the input-address (extensional) model.
+Everyone loves Nix for its replicability but are frustrated by the needless rebuilds due to the input-address (extensional) model.
 
-On the other hand, tools like buck2 and Bazel only allow content-addressed (intensional) inputs,. Coupled with a fine-grained action graph, this allows for incremental builds and remote execution, but they don't truly model the world of packages and their dependencies, which is where Nix excels.
+On the other hand, tools like buck2 and Bazel only allow content-addressed (intensional) inputs. Coupled with a fine-grained action graph, this allows for incremental builds and remote execution, but they don't truly model the world of packages and their dependencies, which is where Nix excels.
 
 Each has spent years badly imitating the other. Buck2 users hand-roll toolchain downloads; Nix users wait for a whole derivation to rebuild because one file changed.
 
