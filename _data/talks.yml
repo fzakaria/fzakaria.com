@@ -14,6 +14,26 @@ sections:
   - id: talks
     title: Talks
     items:
+      - id: talk-building-massive-binaries
+        year: 2026
+        title: Building massive binaries
+        venue: 2026 LLVM Developers' Meeting
+        note: >-
+          Growing codebases hit 32-bit limits that stop binaries from linking.
+          We cover why the existing code-models fall short and the new large
+          code-model we've proposed for the x86-64 psABI.
+        links:
+          - label: Event
+            url: https://llvm.swoogo.com/2026devmtg/session/4409422/building-massive-binaries
+          - label: Slides
+            url: https://docs.google.com/presentation/d/e/2PACX-1vQIhC9CW9fH2xDaLIAagZha8uBCpwNUJpG3nwn-k-Ly9tIHqiqollFqZWAl90GAswvOWyqs6o0ZrsjG/pub?start=false&loop=false&delayms=3000
+          - label: psABI RFC
+            url: https://groups.google.com/g/x86-64-abi/c/hz28LNnlBEc/m/J211uZASAgAJ
+          - label: Huge binaries
+            url: "{% post_url 2025-12-28-huge-binaries %}"
+          - label: Does anyone actually use the large code-model?
+            url: "{% post_url 2026-03-27-does-anyone-actually-use-the-large-code-model %}"
+
       - id: talk-relocatable-nix-binaries
         year: 2026
         title: Relocatable Nix Binaries
