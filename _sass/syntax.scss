@@ -21,6 +21,9 @@
   --syn-del-bg: #b1201d14;
   --syn-ins-fg: #1a6d33;
   --syn-del-fg: #a3231f;
+  // A marked line's band: the type ochre as a wash, so a highlight reads as
+  // a highlighter pen and not as a link.
+  --syn-mark: #7a61141a;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,6 +42,7 @@
     --syn-del-bg: #ec8b7f1a;
     --syn-ins-fg: #8fd0a1;
     --syn-del-fg: #ef9a8f;
+    --syn-mark: #ddc47724;
   }
 }
 

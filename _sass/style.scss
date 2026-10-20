@@ -714,6 +714,29 @@ pre {
     font-size: inherit;
     color: inherit;
   }
+
+  // A block with lines marked by `{: data-mark="…"}` lays its code out as
+  // one box at least as wide as the block and as wide as its longest line,
+  // so every mark's band spans the block, scrolled or not.
+  code:has(mark.line) {
+    display: inline-block;
+    min-width: 100%;
+  }
+
+  // A marked line: a band across the code box, out over the block's
+  // padding to its edges, with its text in full ink, output included,
+  // which the syntax theme otherwise mutes.
+  mark.line {
+    display: block;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+    background: var(--syn-mark);
+    color: var(--ink);
+
+    .go {
+      color: var(--ink);
+    }
+  }
 }
 
 // --- Collapsible blocks ----------------------------------------------------

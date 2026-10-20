@@ -13,6 +13,9 @@
 #      stylesheet can print the language on the code block.
 #   3. Tables are wrapped in a scroll container so a wide table scrolls itself
 #      instead of the whole page.
+#   4. A code block followed by `{: data-mark="2,5-7"}` gets those lines,
+#      counted from 1, wrapped in <mark class="line">, so a post can point at
+#      the lines that matter in a long listing.
 module Typography
   # <div class="footnotes" role="doc-endnotes"><ol> ... </ol></div>
   FOOTNOTES = %r{<div class="footnotes"[^>]*>\s*<ol>(.*?)</ol>\s*</div>}m
@@ -42,11 +45,19 @@ module Typography
   # Languages where a label would be noise rather than information.
   UNLABELLED = %w[text plaintext plain console output].freeze
 
+  # A code block kramdown gave the `data-mark` attribute of an IAL after it:
+  # the lines to mark, the wrapper's classes, then its code.
+  MARKED_BLOCK = %r{<div data-mark="([0-9, -]+)" class="([^"]+)">(.*?<code>)(.*?)(</code>)}m
+
+  # Rouge's markup: the only tags inside a highlighted block.
+  SPAN_TAG = %r{<span[^>]*>|</span>}
+
   module_function
 
   def apply(html)
     html = sidenotes(html)
     html = heading_anchors(html)
+    html = mark_lines(html)
     html = code_labels(html)
     scrollable_tables(html)
   end
@@ -118,6 +129,46 @@ module Typography
   def phrasing(body)
     body.gsub(/<p(\s[^>]*)?>/) { %(<span class="sn-p"#{Regexp.last_match(1)}>) }
         .gsub("</p>", "</span>")
+  end
+
+  # Wrap each marked line of a code block in <mark class="line">, and drop
+  # the attribute so the wrapper looks like any other code block.
+  def mark_lines(html)
+    html.gsub(MARKED_BLOCK) do
+      marks = line_numbers(Regexp.last_match(1))
+      wrapper = Regexp.last_match(2)
+      head = Regexp.last_match(3)
+      code = Regexp.last_match(4)
+      tail = Regexp.last_match(5)
+      %(<div class="#{wrapper}">#{head}#{marked(code, marks)}#{tail})
+    end
+  end
+
+  # "2,5-7" as the line numbers [2, 5, 6, 7].
+  def line_numbers(spec)
+    spec.split(",").flat_map do |part|
+      first, last = part.strip.split("-", 2).map(&:to_i)
+      (first..(last || first)).to_a
+    end
+  end
+
+  # The code's lines with the marked ones wrapped. Rouge lets a span run
+  # across lines, so each line reopens the spans open at its start and
+  # closes those still open at its end, which keeps a wrapped line's markup
+  # whole. A mark is a block and ends its line itself, so it drops the
+  # newline.
+  def marked(code, marks)
+    open = []
+    lines = code.split("\n", -1)
+    lines.each_with_index.map do |line, i|
+      reopened = open.join
+      line.scan(SPAN_TAG) { |tag| tag.start_with?("</") ? open.pop : open.push(tag) }
+      whole = reopened + line + ("</span>" * open.size)
+      next %(<mark class="line">#{whole}</mark>) if marks.include?(i + 1)
+      next whole if i == lines.size - 1
+
+      "#{whole}\n"
+    end.join
   end
 
   def code_labels(html)
