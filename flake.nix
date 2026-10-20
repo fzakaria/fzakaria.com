@@ -4,10 +4,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     systems.url = "github:nix-systems/default";
-    ruby-nix.url = "github:inscapist/ruby-nix";
-    # a fork that supports platform dependant gem
-    bundix = {
-      url = "github:inscapist/bundix/main";
+    # Gems straight from Gemfile.lock; see nix/ruby.nix.
+    gemlock = {
+      url = "github:fzakaria/gemlock.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     treefmt-nix = {
@@ -24,8 +23,7 @@
     self,
     systems,
     nixpkgs,
-    ruby-nix,
-    bundix,
+    gemlock,
     treefmt-nix,
     ...
   }: let
@@ -33,7 +31,7 @@
       nixpkgs.lib.genAttrs (import systems) (
         system:
           f (import ./nix/pkgs.nix {
-            inherit self nixpkgs system ruby-nix bundix treefmt-nix;
+            inherit self nixpkgs system gemlock treefmt-nix;
           })
       );
   in {

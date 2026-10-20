@@ -10,13 +10,12 @@
 # `override` attribute onto it.
 {
   self,
-  ruby-nix,
-  bundix,
+  gemlock,
   treefmt-nix,
 }: final: _prev: {
   blog-ruby = import ./ruby.nix {
     pkgs = final;
-    inherit ruby-nix;
+    inherit gemlock;
   };
   blog-python = import ./python.nix {pkgs = final;};
   blog-render-tools = import ./render-tools.nix {pkgs = final;};
@@ -34,9 +33,4 @@
   blog-serve = import ./serve.nix {pkgs = final;};
   # The programs in tools/: their wrappers, descriptions and tests.
   blog-tools = import ./tools.nix {pkgs = final;};
-
-  # Regenerates gemset.nix from Gemfile.lock. A flake package rather than a
-  # nixpkgs one because it is the fork that handles platform-dependent gems;
-  # see the flake input.
-  blog-bundix = bundix.packages.${final.stdenv.hostPlatform.system}.default;
 }

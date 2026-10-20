@@ -1,23 +1,22 @@
 {
   "nodes": {
-    "bundix": {
+    "gemlock": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1762235257,
-        "narHash": "sha256-QyXFgaXQETr9BmwUbWM/2EtF+my6Arpt71xItZy3NL8=",
-        "owner": "inscapist",
-        "repo": "bundix",
-        "rev": "2233b24084316b4de1d55321483554f457a09cfc",
+        "lastModified": 1792533051,
+        "narHash": "sha256-DM1PAbDpq6sadZAhZOjqXZTi3N6ibdocqOJWBnLn2FQ=",
+        "owner": "fzakaria",
+        "repo": "gemlock.nix",
+        "rev": "d75e98a9934cad732b2b6f94b4c7d321a7534aa9",
         "type": "github"
       },
       "original": {
-        "owner": "inscapist",
-        "ref": "main",
-        "repo": "bundix",
+        "owner": "fzakaria",
+        "repo": "gemlock.nix",
         "type": "github"
       }
     },
@@ -37,45 +36,12 @@
         "type": "github"
       }
     },
-    "nixpkgs_2": {
-      "locked": {
-        "lastModified": 1678875422,
-        "narHash": "sha256-T3o6NcQPwXjxJMn2shz86Chch4ljXgZn746c2caGxd8=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "126f49a01de5b7e35a43fd43f891ecf6d3a51459",
-        "type": "github"
-      },
-      "original": {
-        "id": "nixpkgs",
-        "type": "indirect"
-      }
-    },
     "root": {
       "inputs": {
-        "bundix": "bundix",
+        "gemlock": "gemlock",
         "nixpkgs": "nixpkgs",
-        "ruby-nix": "ruby-nix",
         "systems": "systems",
         "treefmt-nix": "treefmt-nix"
-      }
-    },
-    "ruby-nix": {
-      "inputs": {
-        "nixpkgs": "nixpkgs_2"
-      },
-      "locked": {
-        "lastModified": 1755059052,
-        "narHash": "sha256-yUJmmNIw11ZEIAFogqcqNomk4YV3F/zjwI1f7bYzIyY=",
-        "owner": "inscapist",
-        "repo": "ruby-nix",
-        "rev": "86b498e80058a84461d1f533e121574d85d272d7",
-        "type": "github"
-      },
-      "original": {
-        "owner": "inscapist",
-        "repo": "ruby-nix",
-        "type": "github"
       }
     },
     "systems": {

@@ -1,6 +1,6 @@
 # https://github.com/dependabot/dependabot-core/issues/5962#issuecomment-1303781931
 # https://github.com/nabondance/Trailhead-Stats/blob/4e22be6714904bc6a5053c7f70f6b220be8ab252/.github/workflows/dependabot-build-deps.yml
-name: Dependabot Bundix updates
+name: Dependabot lock updates
 on:
   pull_request:
     types: [opened, synchronize]
@@ -9,7 +9,7 @@ permissions:
   contents: write
   pull-requests: write
 jobs:
-  update-bundix-dependabot:
+  relock-dependabot:
     if: ${{ github.actor == 'dependabot[bot]' }}
     outputs:
       package-ecosystem: ${{ steps.dependabot-metadata.outputs.package-ecosystem }}
@@ -34,16 +34,16 @@ jobs:
         with:
           name: fzakaria
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-      - name: Bundix update and fmt
+      # Dependabot's Bundler writes the lock without checksums or the other
+      # platforms; the lock tool adds both.
+      - name: Relock with checksums
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
-        run: |
-          nix develop --command bash -c "bundix -l"
-          nix fmt -- .
+        run: nix run .#lock
       - name: git update
         if: ${{ steps.dependabot-metadata.outputs.package-ecosystem == 'bundler' }}
         run: |
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git config user.name "github-actions[bot]"
-          git add gemset.nix
-          git commit -m "[dependabot skip] updated gemset.nix"
+          git add Gemfile.lock
+          git commit -m "[dependabot skip] relock with checksums"
           git push

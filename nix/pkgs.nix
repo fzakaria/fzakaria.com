@@ -5,13 +5,12 @@
   self,
   nixpkgs,
   system,
-  ruby-nix,
-  bundix,
+  gemlock,
   treefmt-nix,
 }:
 import nixpkgs {
   inherit system;
   overlays = [
-    (import ./overlay.nix {inherit self ruby-nix bundix treefmt-nix;})
+    (import ./overlay.nix {inherit self gemlock treefmt-nix;})
   ];
 }

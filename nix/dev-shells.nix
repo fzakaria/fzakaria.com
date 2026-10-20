@@ -15,14 +15,14 @@
     # deciding permalinks.
     TZDIR = "${pkgs.tzdata}/share/zoneinfo";
 
+    # gemlock's shell: Ruby, the gems the site builds against plus the
+    # development group -- rake, webrick, ruby-lsp -- which nix/site.nix
+    # deliberately leaves out so that a language server bump does not rebuild
+    # the site, and a `bundle` whose install/add/remove/update relock.
+    inputsFrom = [pkgs.blog-ruby.shell];
+
     buildInputs =
       [
-        # The gems the site builds against plus the development group -- rake,
-        # webrick, ruby-lsp -- which nix/site.nix deliberately leaves out so
-        # that a language server bump does not rebuild the site.
-        pkgs.blog-ruby.env
-        # Regenerates gemset.nix after a Gemfile change.
-        pkgs.blog-bundix
         # `treefmt` runs every formatter at once, exactly as `nix fmt` and
         # `nix flake check` do. The two underneath it are named as well so
         # that a one-off `prettier --check` in the shell is the very same
