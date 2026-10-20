@@ -278,7 +278,7 @@ Turns out there is a third input that can change the output: the order of direct
 
 We can also vary the order of directories in Rewind which helps catch even more non-determinism with `--dirents`. This is useful for builds that depend on the order of files in a directory.
 
-[`plugins`](https://github.com/fzakaria/rewindvm/tree/main/examples/plugins) writes an index of the plugins it ships, in the order `os.listdir` returns them. It builds the same output under every seed, but not under every directory order:[^plugins]
+The [`plugins`](https://github.com/fzakaria/rewindvm/tree/main/examples/plugins) example writes an index of the plugins it ships, in the order `os.listdir` returns. The example builds the same output under every seed, but not under every directory order:[^plugins]
 
 [^plugins]: It is the second example in the [reproducible builds tutorial](https://rewindvm.dev/tutorials/repro.html).
 
