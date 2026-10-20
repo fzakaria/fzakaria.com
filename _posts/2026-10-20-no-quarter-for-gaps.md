@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "No quarter for gaps"
-date: 2026-10-25 09:00 -0700
+date: 2026-10-20 09:00 -0700
 ---
 
 The advent of large language models has changed the economics of closing gaps in software stacks.
