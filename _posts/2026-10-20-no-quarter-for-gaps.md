@@ -14,7 +14,7 @@ This is in the nixpkgs manual, in the Ruby section, under
 > **Aside**
 > There are alternatives that have sprung up but they all have unique gaps or are
 > not widely communicated as _blessed_ solutions. The manual itself also does
-> recommend a workaround for the issue, but in practice I found it to not work in practice.
+> recommend a workaround for the issue, but I found it to not work in practice.
 {: .alert .alert-note }
 
 
