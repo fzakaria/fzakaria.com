@@ -211,7 +211,10 @@ The records are written to a buffer in the guest kernel's memory, a 1MiB buffer,
       <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
     </marker>
   </defs>
-  <text x="10" y="28" font-size="13" fill="currentColor" opacity="0.75">writes and opens</text>
+  <circle cx="16" cy="24" r="6" fill="#b1201d"/>
+  <text x="28" y="28" font-size="13" fill="currentColor" opacity="0.75">write</text>
+  <circle cx="86" cy="24" r="6" fill="none" stroke="#b1201d" stroke-width="2"/>
+  <text x="98" y="28" font-size="13" fill="currentColor" opacity="0.75">open</text>
   <line x1="10" y1="60" x2="610" y2="60" stroke="currentColor" stroke-width="1" opacity="0.4"/>
   <circle cx="60" cy="60" r="6" fill="#b1201d"/>
   <circle cx="95" cy="60" r="6" fill="none" stroke="#b1201d" stroke-width="2"/>
@@ -275,9 +278,9 @@ Turns out there is a third input that can change the output: the order of direct
 
 We can also vary the order of directories in Rewind which helps catch even more non-determinism with `--dirents`. This is useful for builds that depend on the order of files in a directory.
 
-Here is an example of a build that is not reproducible under different directory orders, but is reproducible under every seed[^plugins]:
+[`plugins`](https://github.com/fzakaria/rewindvm/tree/main/examples/plugins) writes an index of the plugins it ships, in the order `os.listdir` returns them. It builds the same output under every seed, but not under every directory order:[^plugins]
 
-[^plugins]: [`plugins`](https://github.com/fzakaria/rewindvm/tree/main/examples/plugins) is the second example in the [reproducible builds tutorial](https://rewindvm.dev/tutorials/repro.html).
+[^plugins]: It is the second example in the [reproducible builds tutorial](https://rewindvm.dev/tutorials/repro.html).
 
 ```console
 $ rewind check --epoch 1790985600 --seeds 1 --schedules 0 --all --no-narrow \
@@ -289,7 +292,62 @@ dirents  3 schedule   0: exited:0       3885 steps  abd7877043a8  run 067e05c27c
 3 of 3 other runs ended differently
 ```
 
-We have four directory orders, and four different outputs. The build is not reproducible under different directory orders, but it is reproducible under every seed. 
+We have four directory orders, and four different outputs. Each one lists the same five plugins in another order:
+
+<figure>
+<svg viewBox="0 0 620 184" role="img"
+     style="display:block;margin-inline:auto;max-width:38rem;width:100%;height:auto;font-family:var(--mono)"
+     aria-label="The order plugins.txt lists the five plugins in. Stock order: sharpen, rotate, resize, crop, blur. Under rewind.dirents=1: sharpen, crop, blur, rotate, resize. Under rewind.dirents=2: sharpen, resize, crop, rotate, blur. With sorted(): blur, crop, resize, rotate, sharpen, under every key.">
+  <text x="0" y="28" font-size="13" fill="currentColor" opacity="0.75">stock order</text>
+  <rect x="150" y="8" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="192" y="28" font-size="13" text-anchor="middle" fill="currentColor">sharpen</text>
+  <rect x="244" y="8" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="286" y="28" font-size="13" text-anchor="middle" fill="currentColor">rotate</text>
+  <rect x="338" y="8" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="380" y="28" font-size="13" text-anchor="middle" fill="currentColor">resize</text>
+  <rect x="432" y="8" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="474" y="28" font-size="13" text-anchor="middle" fill="currentColor">crop</text>
+  <rect x="526" y="8" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="568" y="28" font-size="13" text-anchor="middle" fill="currentColor">blur</text>
+  <text x="0" y="72" font-size="13" fill="currentColor" opacity="0.75">dirents=1</text>
+  <rect x="150" y="52" width="84" height="30" rx="5" fill="none" stroke="#b1201d" stroke-width="1.5"/>
+  <text x="192" y="72" font-size="13" text-anchor="middle" fill="#b1201d">sharpen</text>
+  <rect x="244" y="52" width="84" height="30" rx="5" fill="none" stroke="#b1201d" stroke-width="1.5"/>
+  <text x="286" y="72" font-size="13" text-anchor="middle" fill="#b1201d">crop</text>
+  <rect x="338" y="52" width="84" height="30" rx="5" fill="none" stroke="#b1201d" stroke-width="1.5"/>
+  <text x="380" y="72" font-size="13" text-anchor="middle" fill="#b1201d">blur</text>
+  <rect x="432" y="52" width="84" height="30" rx="5" fill="none" stroke="#b1201d" stroke-width="1.5"/>
+  <text x="474" y="72" font-size="13" text-anchor="middle" fill="#b1201d">rotate</text>
+  <rect x="526" y="52" width="84" height="30" rx="5" fill="none" stroke="#b1201d" stroke-width="1.5"/>
+  <text x="568" y="72" font-size="13" text-anchor="middle" fill="#b1201d">resize</text>
+  <text x="0" y="116" font-size="13" fill="currentColor" opacity="0.75">dirents=2</text>
+  <rect x="150" y="96" width="84" height="30" rx="5" fill="none" stroke="#1f5fa8" stroke-width="1.5"/>
+  <text x="192" y="116" font-size="13" text-anchor="middle" fill="#1f5fa8">sharpen</text>
+  <rect x="244" y="96" width="84" height="30" rx="5" fill="none" stroke="#1f5fa8" stroke-width="1.5"/>
+  <text x="286" y="116" font-size="13" text-anchor="middle" fill="#1f5fa8">resize</text>
+  <rect x="338" y="96" width="84" height="30" rx="5" fill="none" stroke="#1f5fa8" stroke-width="1.5"/>
+  <text x="380" y="116" font-size="13" text-anchor="middle" fill="#1f5fa8">crop</text>
+  <rect x="432" y="96" width="84" height="30" rx="5" fill="none" stroke="#1f5fa8" stroke-width="1.5"/>
+  <text x="474" y="116" font-size="13" text-anchor="middle" fill="#1f5fa8">rotate</text>
+  <rect x="526" y="96" width="84" height="30" rx="5" fill="none" stroke="#1f5fa8" stroke-width="1.5"/>
+  <text x="568" y="116" font-size="13" text-anchor="middle" fill="#1f5fa8">blur</text>
+  <text x="0" y="160" font-size="13" fill="currentColor" opacity="0.75">sorted()</text>
+  <rect x="150" y="140" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="192" y="160" font-size="13" text-anchor="middle" fill="currentColor" font-weight="600">blur</text>
+  <rect x="244" y="140" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="286" y="160" font-size="13" text-anchor="middle" fill="currentColor" font-weight="600">crop</text>
+  <rect x="338" y="140" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="380" y="160" font-size="13" text-anchor="middle" fill="currentColor" font-weight="600">resize</text>
+  <rect x="432" y="140" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="474" y="160" font-size="13" text-anchor="middle" fill="currentColor" font-weight="600">rotate</text>
+  <rect x="526" y="140" width="84" height="30" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
+  <text x="568" y="160" font-size="13" text-anchor="middle" fill="currentColor" font-weight="600">sharpen</text>
+</svg>
+</figure>
+
+The fix is the same as before: `sorted(os.listdir(directory))`, and every key builds the same index.
+
+Look closely and both examples are the same bug. Python iterates a set in hash order, and ext4 lists a directory in hash order. Change the seed behind the hash and the order changes with it.
 
 [![meme about hash order for directories](/assets/images/rewind_always_hash_order_meme.png)](/assets/images/rewind_always_hash_order_meme.png)
 {: style="--image-width: 22rem"}
