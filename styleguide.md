@@ -337,6 +337,35 @@ plot.width, plot.height = 6.0, 2.6
 ```
 {: title="A line rising roughly one second per input, from 1.0 to 5.3 seconds over five inputs"}
 
+### Opening a figure on its own
+
+Every inline SVG figure links to a standalone copy of itself: the diagram and
+the chart above, and any `<svg>` written straight into a `<figure>` in a post.
+`_plugins/figures.rb` adds the link at build time, so a post needs no markup
+for it. The copy lands in `/assets/figures/`, fills the browser window
+instead of the column, and carries the theme's colours and fonts, so it reads
+the same in light and dark. A figure whose `<svg>` is already inside an `<a>`
+keeps the link it has.
+
+A hand-written one, drawn in the theme's variables. Click it to open the copy:
+
+<figure>
+<svg viewBox="0 0 480 80" role="img" style="display:block;width:100%;height:auto;font-family:var(--mono)"
+     aria-label="Three boxes in a row joined by arrows: main.c, cc -c, main.o. The middle box is drawn in the accent colour.">
+  <rect x="8" y="18" width="120" height="44" rx="6" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="68" y="45" text-anchor="middle" font-size="14" fill="var(--ink)">main.c</text>
+  <line x1="128" y1="40" x2="172" y2="40" stroke="var(--ink-muted)" stroke-width="1.5"/>
+  <polygon points="172,35 182,40 172,45" fill="var(--ink-muted)"/>
+  <rect x="182" y="18" width="116" height="44" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+  <text x="240" y="45" text-anchor="middle" font-size="14" fill="var(--accent)">cc -c</text>
+  <line x1="298" y1="40" x2="342" y2="40" stroke="var(--ink-muted)" stroke-width="1.5"/>
+  <polygon points="342,35 352,40 342,45" fill="var(--ink-muted)"/>
+  <rect x="352" y="18" width="120" height="44" rx="6" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+  <text x="412" y="45" text-anchor="middle" font-size="14" fill="var(--ink)">main.o</text>
+</svg>
+<figcaption>An &lt;svg&gt; written straight into the post, linked by the plugin.</figcaption>
+</figure>
+
 ## Horizontal rule
 
 ---

@@ -53,17 +53,7 @@ require "tmpdir"
 module Plotnine
   CACHE_DIR = ".plotnine-cache"
 
-  # Where the click-through copies are written, under the built site. Nothing
-  # lands in the source tree; these are generated the way graphviz.rb does it.
-  ASSET_DIR = "assets/plotnine"
-
   LANGUAGE = "plotnine"
-
-  # The ink for the standalone copy. Inline, the sentinel becomes currentColor
-  # and the page decides; opened on its own there is no page to inherit from
-  # and currentColor would resolve to whatever the browser defaults to. This is
-  # --ink from the light theme, which is what a bare SVG opens against.
-  STANDALONE_INK = "#1a1815"
 
   # The object the snippet is expected to bind. Named rather than "the last
   # expression" because a fence is a script, not a REPL, and a trailing bare
@@ -218,27 +208,6 @@ module Plotnine
     Renderer.new(site).process
   end
 
-  # A file with no file behind it: the bytes were produced a moment ago by
-  # plotnine, so the write is overridden and the emptiness declared. Same
-  # shape as graphviz.rb's, for the same reason.
-  class Generated < Jekyll::StaticFile
-    def initialize(site, dir, name, content)
-      super(site, site.source, dir, name)
-      @content = content
-    end
-
-    def write(dest)
-      path = destination(dest)
-      FileUtils.mkdir_p(File.dirname(path))
-      File.write(path, @content, encoding: Encoding::UTF_8)
-      true
-    end
-
-    def modified?
-      true
-    end
-  end
-
   class Renderer
     def initialize(site)
       @site = site
@@ -318,35 +287,10 @@ module Plotnine
       key = cache_key(source)
       svg = cached(key) { draw(source, document) }
       body = fallback_font(strip_prologue(svg))
-      href = publish(key, standalone(body))
 
-      # draggable="false" is what lets the labels be selected. A drag that
-      # starts inside a link is a link drag, so the anchor that carries the
-      # click-through would otherwise swallow every selection gesture -- and
-      # emitting real text is pointless if no one can pick it up. Firefox
-      # honours the attribute; Chrome and Safari want the CSS in _sass, and
-      # both are needed.
-      %(<figure #{figure_attributes(attrs)}>) +
-        %(<a href="#{href}" class="plotnine-full" draggable="false" ) +
-        %(title="Open this chart on its own">#{theme(body)}</a></figure>)
-    end
-
-    # The same chart as a file, so a figure shrunk to fit the column can be
-    # clicked through to a page of its own where the browser's zoom applies.
-    def publish(key, svg)
-      name = "#{key[0, 16]}.svg"
-      unless @published&.include?(name)
-        (@published ||= []) << name
-        @site.static_files << Generated.new(@site, ASSET_DIR, name, svg)
-      end
-      File.join("", ASSET_DIR, name)
-    end
-
-    # The standalone copy resolves the sentinel to a real colour and keeps the
-    # XML prologue matplotlib wrote, so the file stands up on its own.
-    def standalone(body)
-      %(<?xml version="1.0" encoding="utf-8" standalone="no"?>\n) +
-        body.gsub(/#{Regexp.escape(INK_SENTINEL)}/i, STANDALONE_INK)
+      # The link to a standalone copy is added afterwards by figures.rb, which
+      # does the same for every inline <svg> figure whatever drew it.
+      %(<figure #{figure_attributes(attrs)}>#{theme(body)}</figure>)
     end
 
     # The font is in the key because it decides both the metrics every label
@@ -417,10 +361,12 @@ module Plotnine
 
     # plotnine writes the family it was given and nothing after it, because a
     # base_family set on the theme replaces matplotlib's own family chain.
-    # That is right for the inline copy, which sits in a page that @font-faces
-    # the family -- and wrong for the standalone one, which opens with no
-    # stylesheet at all and would land on the browser's default face. Adding
-    # the generic keeps the figure monospaced either way.
+    # That is right while the family loads, which it does both in the page and
+    # in the standalone copy figures.rb writes, since that copy carries the
+    # @font-face too. It is wrong the moment the font fails to arrive -- a
+    # blocked request, a copy saved to disk and opened from there -- and the
+    # browser lands on its default serif. Adding the generic keeps the figure
+    # monospaced either way.
     def fallback_font(svg)
       svg.gsub(/font-family: '([^']+)'(?=[;"])/, "font-family: '\\1', monospace")
     end

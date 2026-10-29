@@ -60,7 +60,6 @@ We can put the shape under `/`, you have a Nix store. If we put it under `buck-o
 It is the same beauty of what made Nix hermetic but taken to the next maximum: the shape is now relocatable. The same bytes can be in many places at once, and the loader and kernel do not care which one they are in.
 
 <figure>
-<a href="/assets/images/one_store_tree.svg" class="graphviz-full" draggable="false" title="Open this diagram on its own">
 <svg viewBox="0 0 760 400" role="img" xml:space="preserve"
      style="display:block;margin-inline:auto;width:100%;height:auto;font-family:var(--mono)"
      aria-label="A file tree. Under an unnamed root: nix/store, containing gcc, glibc and gmp. gcc's bin/gcc has PT_INTERP $ORIGIN/../../glibc/lib/ld-linux-x86-64.so.2 and RUNPATH $ORIGIN/../../glibc/lib; both arrows land inside the sibling glibc directory. cc1, five levels deeper in libexec, has RUNPATH $ORIGIN/../../../../../gmp/lib, and its arrow lands inside the sibling gmp directory. The root is labelled: slash, or buck-out/…/closure/, or an action's input root: the same shape.">
@@ -103,7 +102,6 @@ It is the same beauty of what made Nix hermetic but taken to the next maximum: t
   <!-- cc1 is five deep, so five steps up -->
   <path class="tr-a" marker-end="url(#tr-arrow)" d="M 574 180 C 724 180, 724 316, 312 316"/>
 </svg>
-</a>
 </figure>
 
 # Two frontends
@@ -158,7 +156,6 @@ Nix could provide buck2 a closure, and buck2 would treat it like any other input
 The "store" in the middle is not a daemon or a filesystem. It is an agreement about layout. One build, seen through that agreement:
 
 <figure>
-<a href="/assets/images/one_store_flow.svg" class="graphviz-full" draggable="false" title="Open this diagram on its own">
 <svg viewBox="0 0 820 400" role="img"
      style="display:block;margin-inline:auto;width:100%;height:auto;font-family:var(--mono)"
      aria-label="An animated data-flow diagram. On the host, the gcc closure in /nix/store is declared to buck2 by its digest and uploaded to a content-addressed store if it is not there already. A remote worker fetches it into an action's input root, the kernel resolves gcc's $ORIGIN interpreter, gcc runs and links hello. hello is uploaded to the content-addressed store. buck2 reports its digest to the host, and Nix substitutes /nix/store/&lt;D&gt;-hello straight out of that store, with glibc recorded as a reference.">
@@ -282,7 +279,6 @@ The "store" in the middle is not a daemon or a filesystem. It is an agreement ab
     <animate attributeName="opacity" dur="8s" repeatCount="indefinite" values="0;0;1;1" keyTimes="0;0.875;0.88;1"/>
   </circle>
 </svg>
-</a>
 <figcaption>Both ends are a store path on the host. Everything in between is a digest.</figcaption>
 </figure>
 

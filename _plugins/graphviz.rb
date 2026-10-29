@@ -55,11 +55,6 @@ require "open3"
 module Graphviz
   CACHE_DIR = ".graphviz-cache"
 
-  # Where the click-through copies are written, under the built site. Nothing
-  # lands in the source tree: these are generated the way images.rb generates
-  # its derivatives.
-  ASSET_DIR = "assets/graphviz"
-
   # The one fence that renders. ```dot stays a code block, so DOT can be
   # quoted as source in a post about DOT.
   LANGUAGE = "graphviz"
@@ -105,27 +100,6 @@ module Graphviz
 
   def self.process(site)
     Renderer.new(site).process
-  end
-
-  # A file with no file behind it. Jekyll writes static files by copying from
-  # source, and there is no source here -- the bytes were produced a moment ago
-  # by Graphviz -- so the write is overridden and the emptiness declared.
-  class Generated < Jekyll::StaticFile
-    def initialize(site, dir, name, content)
-      super(site, site.source, dir, name)
-      @content = content
-    end
-
-    def write(dest)
-      path = destination(dest)
-      FileUtils.mkdir_p(File.dirname(path))
-      File.write(path, @content, encoding: Encoding::UTF_8)
-      true
-    end
-
-    def modified?
-      true
-    end
   end
 
   class Renderer
@@ -252,29 +226,9 @@ module Graphviz
         return failed(source)
       end
 
-      href = publish(key, svg)
-      inline = theme(strip_prologue(svg), key)
-
-      %(<figure #{figure_attributes(attrs)}>) +
-        %(<a href="#{href}" class="graphviz-full" draggable="false" ) +
-        %(title="Open this diagram on its own">#{inline}</a></figure>)
-    end
-
-    # The same graph as a file, so the figure can be clicked through to a page
-    # of its own where the browser's zoom and pan apply. A diagram that has
-    # been shrunk to fit a column is not always readable in it.
-    #
-    # What is written is Graphviz's untouched output, not the copy that goes
-    # inline. Inline, black is rewritten to currentColor so the graph follows
-    # the page; standalone there is no page to follow, and currentColor would
-    # resolve to whatever the browser defaults to.
-    def publish(key, svg)
-      name = "#{key[0, 16]}.svg"
-      unless @published&.include?(name)
-        (@published ||= []) << name
-        @site.static_files << Generated.new(@site, ASSET_DIR, name, svg)
-      end
-      File.join("", ASSET_DIR, name)
+      # The link to a standalone copy is added afterwards by figures.rb, which
+      # does the same for every inline <svg> figure whatever drew it.
+      %(<figure #{figure_attributes(attrs)}>#{theme(strip_prologue(svg), key)}</figure>)
     end
 
     # A graph the author got wrong must not take the build down -- a typo in a

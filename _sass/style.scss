@@ -947,6 +947,54 @@ svg {
   border-color: var(--rule-strong);
 }
 
+// An inline <svg> figure -- a ```graphviz or ```plotnine fence, or an <svg>
+// written into the post -- is wrapped by _plugins/figures.rb in a link to a
+// standalone copy of itself, which fills the window in the theme's colours.
+// The link should change nothing about how the figure looks; it only says it
+// can be clicked.
+//
+// The link has to be a block, and the SVG's width has to stay auto. Any
+// arrangement where the width comes from the content -- a flex item, an
+// inline-block -- is circular: the link sizes to the SVG while the SVG is
+// waiting to be sized by the link, and a Graphviz figure collapses to a few
+// dozen pixels whatever --graphviz-height says. As a block the link fills the
+// column, so the SVG's auto width resolves to something real and each figure's
+// own rules below size it from there.
+//
+// A link's colour and underline are the page's, not the figure's. Holding the
+// colour at the figure's own keeps anything drawn in currentColor from turning
+// --accent on hover.
+//
+// -webkit-user-drag is what lets the labels be selected. Graphviz and plotnine
+// write every label as real <text>, but a drag beginning inside a link is a
+// link drag, so the anchor swallowed the gesture and a figure's text could only
+// be selected in the standalone copy. Firefox honours the draggable="false"
+// the plugin writes; Chrome and Safari want this, and both are needed.
+//
+// The focus ring goes on the SVG rather than the link. The link is as wide as
+// the column, and a ring around it would frame empty space on either side of
+// a figure narrower than that.
+figure > a.figure-full {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-user-drag: none;
+
+  &:hover {
+    color: inherit;
+  }
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:focus-visible > svg {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+}
+
 // A Graphviz figure is inline <svg> rather than an <img>, so none of the rules
 // above reach it -- _plugins/graphviz.rb renders a ```graphviz fence at build
 // time and drops the markup straight into the page.
@@ -962,28 +1010,10 @@ svg {
 figure.graphviz {
   --graphviz-height: 30rem;
 
-  // The link has to be a block, and the SVG's width has to stay auto. Any
-  // arrangement where the width comes from the content -- a flex item, an
-  // inline-block -- is circular: the link sizes to the SVG while the SVG is
-  // waiting to be sized by the link, and the graph collapses to a few dozen
-  // pixels whatever --graphviz-height says.
-  //
-  // As a block the link fills the column, so the SVG's auto width resolves to
-  // something real; the aspect ratio the plugin writes then gives a height,
-  // max-height clamps it, and because the width is auto rather than a length
-  // it shrinks to keep the proportions. margin-inline centres what is left.
-  //
-  // -webkit-user-drag is what lets the labels be selected. `dot` writes every
-  // label as real <text>, but a drag beginning inside a link is a link drag,
-  // so the anchor carrying the click-through swallowed the gesture and a
-  // diagram's text could only be selected in the standalone copy. Firefox
-  // honours the draggable="false" the plugin writes; Chrome and Safari want
-  // this, and both are needed.
-  a {
-    display: block;
-    -webkit-user-drag: none;
-  }
-
+  // The SVG's width stays auto inside the block link figure > a.figure-full
+  // makes. The aspect ratio the plugin writes then gives a height, max-height
+  // clamps it, and because the width is auto rather than a length it shrinks
+  // to keep the proportions. margin-inline centres what is left.
   svg {
     display: block;
     margin-inline: auto;
@@ -1009,15 +1039,6 @@ figure.graphviz {
 // the sentinel colour the plugin rewrites means axes and labels follow --ink
 // rather than staying matplotlib's dark grey on a dark page.
 figure.plotnine {
-  a {
-    display: block;
-    // The anchor carries the click-through to the standalone SVG, and a drag
-    // beginning inside a link is a link drag rather than a selection. Charts
-    // ship real <text>, so opting out of the drag is what makes those labels
-    // selectable in the page as well as in the file.
-    -webkit-user-drag: none;
-  }
-
   svg {
     display: block;
     margin-inline: auto;
