@@ -815,6 +815,36 @@ pre {
   }
 }
 
+// --- Side by side ----------------------------------------------------------
+// <div class="side-by-side" markdown="1"> holds two listings that say the same
+// thing, such as a C loop and the assembly it stands for, so the reader can
+// read across. The nested-container rhythm above would push the second
+// listing down, so both start flush. On a narrow screen they stack.
+
+.prose .side-by-side {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  align-items: stretch;
+
+  > * {
+    margin: 0;
+  }
+
+  // Each listing fills its cell, so two of different lengths end level.
+  > .highlighter-rouge,
+  > .highlighter-rouge > .highlight,
+  > .highlighter-rouge pre {
+    height: 100%;
+  }
+}
+
+@media (max-width: 34rem) {
+  .prose .side-by-side {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 // --- Tables ----------------------------------------------------------------
 
 .table-scroll {

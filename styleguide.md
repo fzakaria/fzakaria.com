@@ -179,6 +179,56 @@ the page:
 $ readelf --wide --relocs ./build/x86_64-linux-gnu/libmkl_intel_lp64.so.2 | awk '$3 ~ /R_X86_64_PC32/ { print $1, $2, $3, $4, $5 }' | head -20
 ```
 
+### Marked lines
+
+`{: data-mark="…"}` after a fence draws a band across the lines it names, a
+comma-separated list of line numbers and ranges, and prints them in full ink,
+output included, which the syntax theme otherwise mutes.
+
+```console?comments=true
+$ perf stat -e instructions:u,ex_ret_cond:u ./loop
+     2,000,000,911      instructions:u
+     1,000,000,000      ex_ret_cond:u
+
+# a second run of the same program
+$ perf stat -e instructions:u,ex_ret_cond:u ./loop
+     2,000,000,958      instructions:u
+     1,000,000,000      ex_ret_cond:u
+```
+{: data-mark="2,7"}
+
+## Side by side
+
+Two listings that say the same thing, such as a C loop and the assembly it
+stands for, sit next to each other inside
+`<div class="side-by-side" markdown="1">`. Both start flush and end level
+whatever their lengths, and on a narrow screen they stack.
+
+<div class="side-by-side" markdown="1">
+
+```c
+int main(void) {
+  long i = 1000000000;
+  do {
+    i--;
+  } while (i != 0);
+  return 0;
+}
+```
+
+```nasm
+_start:
+    mov  rcx, 1000000000
+.loop:
+    dec  rcx
+    jnz  .loop
+    mov  eax, 60    ; exit(0)
+    xor  edi, edi
+    syscall
+```
+
+</div>
+
 ## Collapsible sections
 
 <details markdown="1">
@@ -239,6 +289,53 @@ Graphviz figure gets from `--graphviz-height`. It stays centred at any width.
 reads the cap off the tag and sizes the whole `srcset` ladder from it, so a
 capped image is served a file that matches how small it is drawn rather than
 one built for the full column.
+
+## Graphviz
+
+A fenced block tagged `graphviz` is rendered by `_plugins/graphviz.rb` at build
+time and lands in the page as inline SVG, so its ink and labels follow the
+theme. It fits the column and is capped in height; one figure can raise or
+lower the cap with `{: style="--graphviz-height: 20rem"}` after the fence. This
+one is capped at `4rem`, since three boxes drawn at full column width would be
+a wall of outline.
+
+```graphviz
+digraph styleguide {
+  rankdir=LR;
+  node [shape=box, style=rounded, fontname="Helvetica", fontsize=10];
+  edge [arrowsize=0.6, fontname="Helvetica", fontsize=9];
+
+  source [label="main.c"];
+  object [label="main.o"];
+  binary [label="main", style="rounded,bold"];
+
+  source -> object [label="cc -c"];
+  object -> binary [label="ld"];
+}
+```
+{: style="--graphviz-height: 4rem"}
+
+## Charts
+
+A fenced block tagged `plotnine` binds `plot` to a ggplot object, and
+`_plugins/plotnine.rb` renders it at build time as inline SVG. Axes, text and
+grid follow the theme; the data colours are left as written. `{: title="…"}`
+after the fence is the chart's text alternative.
+
+```plotnine
+import pandas as pd
+from plotnine import *
+
+df = pd.DataFrame({"n": [1, 2, 3, 4, 5], "seconds": [1.0, 1.9, 3.2, 4.1, 5.3]})
+plot = (
+    ggplot(df, aes("n", "seconds"))
+    + geom_line(color="#b1201d", size=0.9)
+    + geom_point(color="#b1201d", size=2)
+    + labs(x="inputs", y="seconds")
+)
+plot.width, plot.height = 6.0, 2.6
+```
+{: title="A line rising roughly one second per input, from 1.0 to 5.3 seconds over five inputs"}
 
 ## Horizontal rule
 
