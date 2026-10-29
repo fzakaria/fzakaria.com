@@ -7,14 +7,13 @@ excerpt_separator: <!--more-->
 
 _What is time inside a machine you want to replay?_ 🧘
 
-When building [Rewind](http://rewindvm.dev/), a deterministic VM, you come face-to-face with the idea of how to represent time very quickly. You need a way to measure time inside the guest so that on subsequent replays, the guest sees the same time and makes the same decisions. Time is the master variable.
+When building [Rewind](http://rewindvm.dev/), a deterministic VM, you come face-to-face with the idea of how to represent time very quickly. You need a way to measure time inside the guest so that on subsequent replays, the guest sees the same time and makes the same decisions. Time is the ultimate variable.
 
 <!--more-->
 
-You can't simply record the wall-clock time of the host because time spent between two interception points depends on things outside the guest, like host load, CPU frequency, caches and other processes. Therefore the same guest work, a run, takes a different number of nanoseconds on each run.
+You can't simply record the wall-clock time of the host because time spent between two interception points depends on things outside the guest, like host load, CPU frequency, caches and other processes. Therefore the same guest work can take a different amount of time on the host.
 
-In [dafuq is a deterministic VM?]({% post_url 2026-10-24-dafuq-is-a-deterministic-vm %}) I explained how the clock inside [Rewind VM](https://rewindvm.dev) moves 5 microseconds per step. More specifically, that clock, _exit time_, moves only when the guest exits such as from a `syscall`. It treats everything the program does between two exits as **instant**. Therefore a program that is CPU bound and does nothing but math for a full second between two system calls sees only 5µs go by. 🤦🏻‍♂️
-
+In [dafuq is a deterministic VM?]({% post_url 2026-10-24-dafuq-is-a-deterministic-vm %}) I explained how the clock inside [Rewind VM](https://rewindvm.dev) moves 5 microseconds per step. More specifically, that clock, _exit time_, moves only when the guest exits such as from a `syscall`. It treats everything the program does between two exits as **instant**. Therefore a program that is CPU bound such as doing nothing but math for a full second between two system calls, sees only 5µs go by. 🤦🏻‍♂️
 
 Rewind has a second clock mode as well, _counter time_, that tries to account for the work. The clock advances one nanosecond for every **conditional branch** the guest retired.[^rr]
 
