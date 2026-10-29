@@ -104,7 +104,7 @@ A run in Rewind is a full trace of the build: every process, every file it wrote
 </svg>
 </figure>
 
-None of the three knows anything about git, locks or races. They work on any program.
+None of those three commands knows anything about git, locks or races. They work on any program.
 
 ### What ended differently?
 
@@ -170,7 +170,7 @@ Three questions, three commands, and I read one line of git. 🤓
 
 ## Who reads all of this?
 
-The git notes failure is 2,936 steps and 1,937 events in one run, and `rewind check` made 33 runs. Going through one run is a lot of work, and going through all thirty-three is an unrealistic.
+The git notes failure is 2,936 steps and 1,937 events in one run, and `rewind check` made 33 runs. Going through one run is a lot of work, and going through all thirty-three is unrealistic.
 
 Recently, a friend told me AI has been really useful for parsing the [CAN bus](https://en.wikipedia.org/wiki/CAN_bus) of cars. The CAN bus is a firehose of messages from the car from every sensor, every button, every switch, and every light. LLMs have made managing the firehose of data easier.
 
