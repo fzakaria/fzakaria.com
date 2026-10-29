@@ -29,7 +29,9 @@ Rewind can tell you what went wrong, but it cannot read the code for you. Rewind
 > New to Rewind? Start with [a flaky build you only catch once]({% post_url 2026-10-01-rewind-vm-a-flaky-build-you-only-catch-once %}) and [dafuq is a deterministic VM?]({% post_url 2026-10-24-dafuq-is-a-deterministic-vm %})
 {: .alert .alert-note }
 
-This is a small example of a bug that Rewind found in git, and how I used Rewind to find the bug and the line of code that caused it. The bug is in `git notes`, which attaches a note to a commit without changing the commit. The bug is that two notes, on two different commits, at the same time, can lose one of the notes.
+This is a small example of a bug that Rewind found in git, and how I used Rewind to find the bug and the line of code that caused it. The bug is in `git notes`, which attaches a note to a commit without changing the commit. The bug is that two notes, on two different commits, at the same time, can lose one of the notes.[^git]
+
+[^git]: I submitted an [upstream patch](https://lore.kernel.org/git/20261028-fz-notes-concurrent-write-v1-1-3d513e1fdbb7@gmail.com/T/#u) for the bug as well.
 
 ## The bug
 
