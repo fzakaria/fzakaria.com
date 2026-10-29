@@ -162,7 +162,7 @@ The same program and input gives the same conditional branch count, but the inst
 
 Although this loop is CPU bound and only decrements a register, it is still not isolated from the effects of the outside world. Timers tick, network packets arrive, other cores send inter-processor interrupts (IPIs). The program can't see any of that, but the instruction counter we are probing can.
 
-I pinned the loop to a single CPU 5 and counted how many interrupts that CPU took during each run, from `/proc/interrupts`.
+I pinned the loop to a single CPU and counted how many interrupts that CPU took during each run, from `/proc/interrupts`.
 
 ```plotnine
 import pandas as pd
@@ -224,6 +224,8 @@ Why do we care about having a "realistic" representation of time?
 Plenty of programs read the clock and make decisions with it, so the guest's clock has to be at least somewhat realistic. Under exit time, computing is "free". A test that checks some work "finishes within 1 s" always passes. If the bug you're chasing is a timeout, exit time will never reproduce it. 🙃
 
 Races get skewed too with an unrealistic clock. With exit time, a whole burst of work lands in the same instant, which crowds the threads together, so a race can fire far more often in the VM than it ever would on real hardware.
+
+The closer we can emulate the real world, the more likely we are to reproduce a bug that only happens in the real world. Counter time is a better approximation of the real world than exit time, and it is deterministic, so it is the default clock in Rewind.
 
 [![Distracted boyfriend meme: the boyfriend, labelled "Rewind's clock", turns to look at a woman labelled "conditional branches" while his girlfriend, labelled "instructions retired", glares at him](/assets/images/rewind_distracted_branches_meme.png)](/assets/images/rewind_distracted_branches_meme.png)
 {: style="--image-width: 22rem"}
