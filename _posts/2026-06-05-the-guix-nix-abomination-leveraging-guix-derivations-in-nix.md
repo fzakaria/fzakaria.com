@@ -75,9 +75,111 @@ What makes them both special is they both promise the same thing: **hermetic bui
 
 > "Under Nix, a build process will only find resources that have been declared explicitly as dependencies. There’s no way it can build until everything it needs has been correctly declared. If it builds, you will know you’ve provided a complete declaration." -- [Nix OS Website](https://nixos.org/guides/how-nix-works/)
 
-<!-- Dot file also in /assets/images/guix-nix-diagram.dot -->
-<!-- https://dreampuf.github.io/GraphvizOnline/?engine=dot&compressed=CYSw5gTghgDgFgAjAVxADwPoDt0IN4BQCC0WA1qBALwAyASgNxEIBmA9lgC5ZQC2AplQBEACX4AbAG79OIAMZQhTYljbB%2BCANrsuPAcLFSZ8xQBpWHTgGcQAL0EBGAEwBdZQn7AwG7Zb2DRCWlZBSFzHWs7RwAGN2YsfgB3UjIqTghkfncYKGAqaIA6AFZ3VXUrfhh84vcUiqqHAuimZgB6VoRAAFJOhAA5XAAKTjYYAEou7smp6ZnZufnO5itkACNIWEQ5cWQrTn4IbFxCYmJxKBWJYX60JWZT84kAKx3OYXFbk4RdgE9xQWAoFY4J53MQ5GxxGxqEIAMQAFgAwgB2AAcAEEUR8ThFwZDofDkejMaCLFwbPYqA44SSYPwsIkQMBOHAqE4Wp8cJgzlgwA4tGcLuJhOoWFBkOJOAVOWEvnBYIJVHtzD8-lQWCBxH9gOENeJcVDhDCACIIgCiADYAGIOGX6-GI1EYoRxDnoDDcsBOfkPIVCFhnMj8KXoGVA%2BVURX8ZWcX6CdWazw6zV2w0mi3W20Qg2wh1E50kznuqA8gDM3sFwiBEnEwZuyrltIjbCVXxjqvjWqTeqz%2BLTVpt5hTOcJTridwQheAEEkWnH9wrAB4FysAHwFKeSBetVfLiCtFcLiIIGBsEBcAC05ICAE4hCujfsQNIBpoBkI2MhOGFAGQEoxcpl-LcIhXFdTDnWVwwgfg5E4aNY2EDtEwgD8sHUbUVghYAwnAjshxhDEjSKU0nEzPFDVzJ0wM%2BYhaXpRlmVZccx1dTAAX4XgOFnaiEAFS4l1XTlzzYjisC3HcVj3A8jxPM9OEvKJhFvFcrGLYAMLQBAAGoEBWVBxGAIDLBAqjqLDRt1JLbVW3gxDtRw3U8NNFEnKc0jsxhc1PK8oQmPZE5Cw-TguOo3ihX4ldWk5VpdihfhWm-MSDwk-dD0sY9TwvK9FLvQKYE-QyuGM8CzLjTD9jg9tdUTezkx7Q0ACEUSNOFKIQPCigxNESwRHzPmY-y3Q9PlzxXCc3Q3LQ8IozEXQGrli09BARrG1jp0murh0dGaC0Ghay2Wyc1s0KaR228dDpnA7xqgdjOOOjaPK8zz83O67bqwJbRoCz91rI2EOvRbqXuIABfAg2g6boEAAcVQDSBgwzhhl4cYFjR9H5iWVZ1ngNrtl2fYMBQI5x1C4RYZDElQueXY3ixYgVX%2BQFgWAElHLhIokSKc16dJTh2c57neYiLKqRpOkGSZFk2XBz5ifmnk%2BU0MmhByOQyCgbwrAKKw5F4UMGwVZso2syqEys3CHstI0jVNW23PxU0Oa5nnZuIeWix5L1lZ9StvgJ3gdb1g3w0jCq4yqi2HKtm27dNB3DSdwXXZJD2PTLH2KyEXhixAFh%2BF2IP9frUPjfDtVI67PDrdt%2B3BwepOXZe8cPYmzRwLJ8L12nRLdxS6SMrkrKhCUh8ICffgXzfQKfz-ADRgKzgiu4kqqCgmDy79SvkOQVDEww-TsO4y2-phS1EScBESPr0-G6FkzPloyWGKcXzZZOVubpE4LPk75cV3lkJL%2BHBe7JSkmlGSmUFIjzvCpVC6ktI6T0gZVowFQLFUNlQCyVlGYV3Ng-bE0db7ORIQnWET1npvxbnDDAgUf4nD-quVoYAsDIGisMKC8VQGSVSlwdKsl5IUhgSuXK%2BVUFGXQSvTB7B9LlVNhHfBNVuyn0as1Vq7VOpAyoXLGhQ1PpIBoW3AWTc3YGN2l7fRrcjrGKFqYtOe1LGGOsQ3Z2tjU5OMuqNT%2B71fruQoSnahb1v7LQ9nQ%2B6p8AZdR6rNMGEMJgIAACqkCsGcWQnEoAQGQokHSMhEj8DpCQaCIBaRWAmBjWYzArGeJWhgNu440CMNGmYtA550jFisPnCAxBEqSJOJQLBzY4AENwQfOynxq5FBREUBwmICE4itpM6ZszxxP3otLYoBDwRYF2NAWSaooDiAqHMqEcgJA%2BisGkDI-BmBxDBkAA -->
-![Guix Nix Overview](/assets/images/nix_guix_diagram.svg)
+```graphviz
+digraph guix_nix {
+  rankdir=LR;
+  fontname="Helvetica";
+  node [fontname="Helvetica", fontsize=12];
+  edge [fontname="Helvetica", fontsize=10];
+  newrank=true;
+  pad=0.5;
+  nodesep=0.5;
+  ranksep=1.0;
+
+  // ── Nix (top) ──────────────────────────────────────────────
+  subgraph cluster_nix {
+    label="Nix";
+    labeljust="l";
+    style=dashed;
+    color="#4C78A8";
+    fontcolor="#4C78A8";
+    fontsize=14;
+    penwidth=2;
+
+    nix_lang1 [label="default.nix", shape=note, style=filled, fillcolor="#DCE6F1", color="#4C78A8"];
+    nix_lang2 [label="flake.nix", shape=note, style=filled, fillcolor="#DCE6F1", color="#4C78A8"];
+    nix_lang3 [label="shell.nix", shape=note, style=filled, fillcolor="#DCE6F1", color="#4C78A8"];
+
+    nix_drv [
+      label=<<b>.drv</b><br/><font point-size="9">Derive([("out",…)],…)</font>>,
+      shape=rect, style="filled,rounded,bold",
+      fillcolor="#A8D5E2", color="#4C78A8",
+      penwidth=2
+    ];
+
+    nix_daemon [
+      label=<<b>nix-daemon</b><br/><font point-size="9">sandbox + build</font>>,
+      shape=box3d, style=filled,
+      fillcolor="#E8E8E8", color="#666666"
+    ];
+
+    nix_out [
+      label=<<b>/nix/store/…</b><br/><font point-size="9">output</font>>,
+      shape=folder, style=filled,
+      fillcolor="#B8D4A8", color="#5A8A3C"
+    ];
+
+    nix_lang1 -> nix_drv [color="#4C78A8"];
+    nix_lang2 -> nix_drv [color="#4C78A8"];
+    nix_lang3 -> nix_drv [color="#4C78A8"];
+    nix_drv -> nix_daemon [color="#666666"];
+    nix_daemon -> nix_out [color="#5A8A3C"];
+  }
+
+  // ── Guix (bottom) ──────────────────────────────────────────
+  subgraph cluster_guix {
+    label="Guix";
+    labeljust="l";
+    style=dashed;
+    color="#E45756";
+    fontcolor="#E45756";
+    fontsize=14;
+    penwidth=2;
+
+    guix_lang1 [label="packages.scm", shape=note, style=filled, fillcolor="#FDDEDE", color="#E45756"];
+    guix_lang2 [label="system.scm", shape=note, style=filled, fillcolor="#FDDEDE", color="#E45756"];
+    guix_lang3 [label="manifest.scm", shape=note, style=filled, fillcolor="#FDDEDE", color="#E45756"];
+
+    guix_drv [
+      label=<<b>.drv</b><br/><font point-size="9">Derive([("out",…)],…)</font>>,
+      shape=rect, style="filled,rounded,bold",
+      fillcolor="#F4C2C2", color="#E45756",
+      penwidth=2
+    ];
+
+    guix_daemon [
+      label=<<b>guix-daemon</b><br/><font point-size="9">sandbox + build</font>>,
+      shape=box3d, style=filled,
+      fillcolor="#E8E8E8", color="#666666"
+    ];
+
+    guix_out [
+      label=<<b>/gnu/store/…</b><br/><font point-size="9">output</font>>,
+      shape=folder, style=filled,
+      fillcolor="#B8D4A8", color="#5A8A3C"
+    ];
+
+    guix_lang1 -> guix_drv [color="#E45756"];
+    guix_lang2 -> guix_drv [color="#E45756"];
+    guix_lang3 -> guix_drv [color="#E45756"];
+    guix_drv -> guix_daemon [color="#666666"];
+    guix_daemon -> guix_out [color="#5A8A3C"];
+  }
+
+  // ── Translation arrow between recipes ──────────────────────
+  guix_drv -> nix_drv [
+    xlabel=<<b>  guix-transfer  </b>>,
+    dir=both,
+    style=bold,
+    color="#F58518",
+    fontcolor="#F58518",
+    penwidth=2.5,
+    constraint=false,
+    forcelabels=true
+  ];
+}
+```
+{: title="Guix Nix Overview"}
 
 
 Guix, specifically the daemon, was forked from Nix early on, and as a result the two are very similar; they both share the same derivation format, [ATerm](https://nix.dev/manual/nix/2.25/protocols/derivation-aterm), for instance.
