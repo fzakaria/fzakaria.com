@@ -172,8 +172,7 @@ That means changes to _fixed-output-derivations_ didn't cause new outputs in eit
 
 That means in [nixpkgs](https://github.com/NixOS/nixpkgs) changes to _fixed-output_ derivations can cause them to have new store paths for their `.drv` but result in dependent derivations to have the same output path. If the output path had already been stored in the NixOS cache, then we lose the link between the new `.drv` and this output path. 💥
 
-<!--
-
+```graphviz
 digraph NixDerivationMadness {
 
     // Global Styling for consistency
@@ -214,9 +213,8 @@ digraph NixDerivationMadness {
     // The link from the new derivation (V2) to the existing cache entry is MISSING.
     USES_FOD_V2 -> CACHE [label="Missing Cache Mapping for V2", color=red, style=dashed, penwidth=2, arrowhead=cross];
 }
-
- -->
-![Derivation graphic](/assets/images/derivation_madness.svg)
+```
+{: title="Derivation graphic"}
 
 The amount of churn that we are creating in derivations was unbeknownst to me.
 
