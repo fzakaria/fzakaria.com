@@ -90,7 +90,67 @@ When you perform **compilation**, Java resolves classes to validate the public A
 
 A common problem though is what if I am pulling in two libraries that both require the same dependency but were built (compiled) using different versions -- this is known as the "_diamond dependency problem_".
 
-![Diamond Dependency](/assets/images/version-sat.svg)
+<figure>
+<svg class="version-sat" viewBox="-1 -1 296 165" width="296pt" height="165pt" role="img"
+     style="display:block;margin-inline:auto"
+     aria-label="Diamond Dependency">
+<style>
+  .version-sat { --vs-ok: #0432ff; --vs-bad: #ff2600; }
+  @media (prefers-color-scheme: dark) { .version-sat { --vs-ok: #5c7cff; } }
+  .version-sat .box { fill: none; stroke: var(--ink, #1a1815); stroke-linecap: round; stroke-linejoin: round; stroke-width: 1; }
+  .version-sat .ver { fill: none; stroke: var(--ink-muted, #565046); stroke-linecap: round; stroke-linejoin: round; stroke-width: 1; }
+  .version-sat .dep { stroke: var(--ink, #1a1815); stroke-linecap: round; stroke-linejoin: round; stroke-width: 1; }
+  .version-sat .ok { stroke: var(--vs-ok); stroke-linecap: round; stroke-linejoin: round; stroke-width: 1; }
+  .version-sat .bad { stroke: var(--vs-bad); stroke-linecap: round; stroke-linejoin: round; stroke-width: 1; stroke-dasharray: 1,3; }
+  .version-sat .key { stroke-width: .75; }
+  .version-sat text { font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: 500; fill: var(--ink, #1a1815); }
+  .version-sat text.legend { font-family: Helvetica, Arial, sans-serif; font-size: 8px; }
+  .version-sat text.ok { fill: var(--vs-ok); stroke: none; }
+  .version-sat text.bad { fill: var(--vs-bad); stroke: none; }
+</style>
+<defs>
+  <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="version-sat-arrow" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8">
+    <path d="M 8 0 L 0 -3 L 0 3 Z" style="fill: var(--ink, #1a1815); stroke: var(--ink, #1a1815)" stroke-width="1"/>
+  </marker>
+  <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="version-sat-ok" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8">
+    <path d="M 8 0 L 0 -3 L 0 3 Z" style="fill: var(--vs-ok); stroke: var(--vs-ok)" stroke-width="1"/>
+  </marker>
+  <marker orient="auto" overflow="visible" markerUnits="strokeWidth" id="version-sat-bad" viewBox="-1 -4 10 8" markerWidth="10" markerHeight="8">
+    <path d="M 8 0 L 0 -3 L 0 3 Z" style="fill: var(--vs-bad); stroke: var(--vs-bad)" stroke-width="1"/>
+  </marker>
+</defs>
+
+<!-- A depends on B and C -->
+<rect class="box" x="78" y="0" width="76" height="23.5"/>
+<text x="111.998047" y="15.553711" textLength="8.003906">A</text>
+<rect class="box" x="0" y="48" width="76" height="23.5"/>
+<text x="33.998047" y="63.55371" textLength="8.003906">B</text>
+<rect class="box" x="156" y="46" width="76" height="23.5"/>
+<text x="189.666992" y="61.55371" textLength="8.666016">C</text>
+<line class="dep" x1="135.92391" y1="23.5" x2="165.54856" y2="40.97095" marker-end="url(#version-sat-arrow)"/>
+<line class="dep" x1="96.90625" y1="23.5" x2="65.52517" y2="42.811435" marker-end="url(#version-sat-arrow)"/>
+
+<!-- D, in two versions -->
+<rect class="box" x="48" y="117" width="136" height="46.5"/>
+<text x="111.66699" y="155.60742" textLength="8.666016">D</text>
+<rect class="ver" x="59.5" y="128.5" width="47.5" height="23.5"/>
+<text x="66.9111328" y="144.05371" textLength="32.677734">vers 1</text>
+<rect class="ver" x="125" y="128.5" width="47.5" height="23.5"/>
+<text x="132.4111328" y="144.05371" textLength="32.677734">vers 2</text>
+
+<!-- B and C each work with one version and break with the other -->
+<line class="ok" x1="44.604814" y1="71.5" x2="71.794145" y2="119.86997" marker-end="url(#version-sat-ok)"/>
+<line class="ok" x1="187.5553" y1="69.5" x2="159.9556" y2="119.81991" marker-end="url(#version-sat-ok)"/>
+<line class="bad" x1="54.16537" y1="71.5" x2="124.57658" y2="122.67925" marker-end="url(#version-sat-bad)"/>
+<line class="bad" x1="178.22652" y1="69.5" x2="106.9628" y2="122.58584" marker-end="url(#version-sat-bad)"/>
+
+<!-- legend -->
+<line class="bad key" x1="199.5" y1="130" x2="275.95" y2="130" marker-end="url(#version-sat-bad)"/>
+<text class="legend bad" x="219.042969" y="128" textLength="44.91406">incompatible</text>
+<line class="ok key" x1="199.5" y1="150" x2="275.95" y2="150" marker-end="url(#version-sat-ok)"/>
+<text class="legend ok" x="222.15625" y="148" textLength="38.6875">compatible</text>
+</svg>
+</figure>
 
 Oftentimes "code just works", especially if the dependency is properly following semantic versioning, you are hopefully not likely to encounter a _ClassNotFoundException_ or _MethodNotFoundException_.
 
