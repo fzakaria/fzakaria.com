@@ -38,7 +38,26 @@ We've been taught to make use of _header files_, especially in C/C++ so that we 
 
 We can visualize this Makefile in the following graph.
 
-![Makefile as a graph](/assets/images/makefile_as_graph.svg)
+```graphviz
+digraph Makefile {
+  rankdir=BT;
+
+  program;
+  "main.c" [shape=box];
+  "utils.c" [shape=box];
+  "main.o";
+  "utils.o";
+  "utils.h" [shape=box];
+
+  "main.o" -> program;
+  "utils.o" -> program;
+  "main.c" -> "main.o";
+  "utils.h" -> "main.o";
+  "utils.c" -> "utils.o";
+  "utils.h" -> "utils.o";
+}
+```
+{: title="Makefile as a graph" style="--graphviz-height: 11.7rem"}
 
 Ok, great! What does this have to do with Java & Bazel ?
 
