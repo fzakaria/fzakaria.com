@@ -106,7 +106,22 @@ onto the tip and gives ffmpeg 4 its own 2023 world:
 $ grail solve 'ffmpeg@4.* ripgrep@>=14 ^bat' --viz plan.svg
 ```
 
-[![the solved plan drawn by clingraph: ripgrep and bat share the tip revision, ffmpeg 4 gets its own 2023 revision](/assets/images/grail-plan.svg)](/assets/images/grail-plan.svg)
+```graphviz
+digraph default {
+  graph [bgcolor=transparent nodesep=0.35 rankdir=TB ranksep=0.4]
+  node [fontname="JetBrains Mono" fontsize=11 shape=box style="rounded,filled"]
+  edge [arrowsize=0.7 color="#7d7970"]
+  "pin(p0)" [label="ffmpeg 4.4.3" color="#b5b1a9" style=rounded]
+  "rev(g1)" [label="r1540 · 2026-08-31\nglibc 2.42" color="#cf5d28" fillcolor="#fdeee6" fontcolor="#0b0b0b"]
+  "rev(g0)" [label="r994 · 2023-03-26\nglibc 2.35" color="#cf5d28" fillcolor="#fdeee6" fontcolor="#0b0b0b"]
+  "pin(p1)" [label="ripgrep 15.2.0" color="#b5b1a9" style=rounded]
+  "pin(p2)" [label="bat 0.26.1" color="#b5b1a9" style=rounded]
+  "pin(p0)" -> "rev(g0)"
+  "pin(p1)" -> "rev(g1)"
+  "pin(p2)" -> "rev(g1)"
+}
+```
+{: title="the solved plan drawn by clingraph: ripgrep and bat share the tip revision, ffmpeg 4 gets its own 2023 revision" style="--graphviz-height: 7.5rem"}
 
 The SAT solver I used also dutifully tells me when a set of constraints is unsatisfiable, and why with a surprising amount of detail:
 
@@ -121,7 +136,76 @@ So for python 3.8 and postgresql 13 no single Nixpkgs revision can satisfy both 
 
 The earlier opening query, `python3@>=3.10 ^openssl@1.1.*`, was satisified though. Drawing its lifetimes against the full index shows how. The shaded band is the overlap of 88 days.
 
-[![version lifetimes of python3 and openssl in nixos-unstable with the coexistence window shaded](/assets/images/grail-lifetimes.svg)](/assets/images/grail-lifetimes.svg)
+<figure>
+<svg class="grail-lifetimes" viewBox="0 0 760 387" width="760" height="387" role="img"
+     style="display:block;margin-inline:auto"
+     aria-label="version lifetimes of python3 and openssl in nixos-unstable with the coexistence window shaded">
+<style>
+  .grail-lifetimes { font-family: var(--mono, "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace); }
+  .grail-lifetimes text { font-size: 10px; fill: var(--ink-muted, #565046); }
+  .grail-lifetimes .head { font-size: 11px; font-weight: 600; fill: var(--ink, #1a1815); }
+  .grail-lifetimes .grid { stroke: var(--rule, #dcd5c5); stroke-width: 1; }
+  .grail-lifetimes .ctx { fill: var(--ink-faint, #6f685b); opacity: .55; }
+  .grail-lifetimes .hit { fill: #2a78d6; }
+  .grail-lifetimes .win { fill: #cf5d28; opacity: .16; }
+  .grail-lifetimes .wtext { fill: #cf5d28; font-size: 10px; }
+</style>
+<line class="grid" x1="88.2" y1="38" x2="88.2" y2="365"/>
+<text x="88.2" y="381" text-anchor="middle">2013</text>
+<line class="grid" x1="184.1" y1="38" x2="184.1" y2="365"/>
+<text x="184.1" y="381" text-anchor="middle">2015</text>
+<line class="grid" x1="280.2" y1="38" x2="280.2" y2="365"/>
+<text x="280.2" y="381" text-anchor="middle">2017</text>
+<line class="grid" x1="376.1" y1="38" x2="376.1" y2="365"/>
+<text x="376.1" y="381" text-anchor="middle">2019</text>
+<line class="grid" x1="472.2" y1="38" x2="472.2" y2="365"/>
+<text x="472.2" y="381" text-anchor="middle">2021</text>
+<line class="grid" x1="568.1" y1="38" x2="568.1" y2="365"/>
+<text x="568.1" y="381" text-anchor="middle">2023</text>
+<line class="grid" x1="664.2" y1="38" x2="664.2" y2="365"/>
+<text x="664.2" y="381" text-anchor="middle">2025</text>
+<rect class="win" x="542.3" y="38" width="11.2" height="327"/>
+<text class="wtext" x="534.3" y="50" text-anchor="end">both hold: 2022-06-19 → 2022-09-12</text>
+<rect class="hit" x="64" y="16" width="18" height="7" rx="3.5"/>
+<text x="88" y="24">matches the constraint</text>
+<rect class="ctx" x="274" y="16" width="18" height="7" rx="3.5"/>
+<text x="298" y="24">other versions</text>
+<text class="head" x="4" y="48">python3</text>
+<text x="56" y="66" text-anchor="end">3.14</text>
+<rect class="hit" x="736.8" y="60" width="7.1" height="7" rx="3.5"/>
+<text x="56" y="83" text-anchor="end">3.13</text>
+<rect class="hit" x="686.4" y="77" width="50.1" height="7" rx="3.5"/>
+<text x="56" y="100" text-anchor="end">3.12</text>
+<rect class="hit" x="640.9" y="94" width="45.2" height="7" rx="3.5"/>
+<text x="56" y="117" text-anchor="end">3.11</text>
+<rect class="hit" x="607.0" y="111" width="33.2" height="7" rx="3.5"/>
+<text x="56" y="134" text-anchor="end">3.10</text>
+<rect class="hit" x="542.3" y="128" width="64.0" height="7" rx="3.5"/>
+<text x="56" y="151" text-anchor="end">3.9</text>
+<rect class="ctx" x="498.6" y="145" width="43.6" height="7" rx="3.5"/>
+<text x="56" y="168" text-anchor="end">3.8</text>
+<rect class="ctx" x="445.9" y="162" width="52.3" height="7" rx="3.5"/>
+<text x="56" y="185" text-anchor="end">3.7</text>
+<rect class="ctx" x="372.3" y="179" width="73.5" height="7" rx="3.5"/>
+<text x="56" y="202" text-anchor="end">3.6</text>
+<rect class="ctx" x="299.6" y="196" width="70.6" height="7" rx="3.5"/>
+<text x="56" y="219" text-anchor="end">3.5</text>
+<rect class="ctx" x="267.2" y="213" width="31.8" height="7" rx="3.5"/>
+<text x="56" y="236" text-anchor="end">3.3</text>
+<rect class="ctx" x="100.0" y="230" width="28.0" height="7" rx="3.5"/>
+<text x="56" y="253" text-anchor="end">3.2</text>
+<rect class="ctx" x="64.5" y="247" width="31.4" height="7" rx="3.5"/>
+<text class="head" x="4" y="296">openssl</text>
+<text x="56" y="314" text-anchor="end">3.x</text>
+<rect class="ctx" x="553.6" y="308" width="190.3" height="7" rx="3.5"/>
+<text x="56" y="331" text-anchor="end">1.1.x</text>
+<rect class="hit" x="406.9" y="325" width="7.0" height="7" rx="3.5"/>
+<rect class="hit" x="407.1" y="325" width="146.4" height="7" rx="3.5"/>
+<text x="56" y="348" text-anchor="end">1.0.x</text>
+<rect class="ctx" x="64.5" y="342" width="342.2" height="7" rx="3.5"/>
+<rect class="ctx" x="406.9" y="342" width="7.0" height="7" rx="3.5"/>
+</svg>
+</figure>
 
 ## A five-minute tour of ASP
 
@@ -222,7 +306,47 @@ Every input can be substituted from [cache.nixos.org](https://cache.nixos.org) b
 
 The derivation didn't pin any Nixpkgs; it stated constraints, and a solver chose one specifically.
 
-[![the grail pipeline from query to facts to clingo to plan to lock and mkDerivation](/assets/images/grail-pipeline.svg){: style="--image-width: 24rem"}](/assets/images/grail-pipeline.svg)
+```graphviz
+digraph grail {
+  rankdir = TB;
+  nodesep = 0.35;
+  ranksep = 0.4;
+  bgcolor = "transparent";
+  node [
+    shape = box,
+    style = "rounded",
+    color = "#b5b1a9",
+    fontname = "JetBrains Mono",
+    fontsize = 11,
+    margin = "0.18,0.09"
+  ];
+  edge [color = "#7d7970", arrowsize = 0.7, fontname = "JetBrains Mono", fontsize = 9];
+
+  query   [label = "python3@>=3.10 ^openssl@1.1.*", fontsize = 10];
+  history [label = "history.json\n1,541 revisions", fontsize = 10];
+  facts   [label = "facts\nallowed / run / glibcera"];
+  rules   [label = "solve.lp\n~40 lines", fontsize = 10];
+  clingo  [label = "clingo", style = "rounded,filled", fillcolor = "#2a78d6", fontcolor = "white", color = "#2a78d6"];
+  plan    [label = "plan\nr852 · 2022-09-12", style = "rounded,filled", fillcolor = "#fdeee6", color = "#cf5d28"];
+  lock    [label = "multiverse.lock", fontsize = 10];
+  consume [label = "readLock · modules\nmvs lock status"];
+  mkdrv   [label = "grail.lib.mkDerivation"];
+  mvat    [label = "mv.at \"2022-09-12-5f326e2a403e\"", fontsize = 10];
+  cache   [label = "cache.nixos.org"];
+
+  query -> facts [label = "specs.py"];
+  history -> facts;
+  facts -> clingo;
+  rules -> clingo;
+  clingo -> plan [label = "optimum"];
+  plan -> lock;
+  lock -> consume;
+  plan -> mkdrv [label = "IFD"];
+  mkdrv -> mvat;
+  mvat -> cache [label = "substitute"];
+}
+```
+{: title="the grail pipeline from query to facts to clingo to plan to lock and mkDerivation" style="--graphviz-height: 24.7rem"}
 
 ## What about glibc?
 
