@@ -48,6 +48,15 @@ require "open3"
 # inside a shape the author filled is pinned to a dark ink instead, so a diagram
 # written in the pastels Graphviz examples use stays readable on both themes.
 #
+# A cluster's fill cannot be handled the same way. Edges that cross a cluster
+# are drawn on top of its box but are not inside its <g> -- Graphviz writes
+# every edge at the top level -- so there is no label to pin, and an edge that
+# leaves the cluster would be dark ink on the dark page the moment it did. The
+# box is dimmed instead: its fill-opacity reads --graphviz-cluster-opacity,
+# which is 1 on the light theme and low on the dark one, so a pastel cluster
+# becomes a faint tint of itself on dark paper and the page's light ink reads
+# on top of it everywhere.
+#
 # Rendering is cached, because Graphviz is slow enough to notice on a full
 # rebuild and a diagram changes far less often than prose. What is cached is
 # Graphviz's own output, untouched; everything above is applied on read, so
@@ -299,21 +308,34 @@ module Graphviz
 
     VIEWBOX = /viewBox="[\d.\-]+\s+[\d.\-]+\s+([\d.]+)\s+([\d.]+)"/.freeze
 
-    # A node or cluster, from the <g> that opens it to the first </g>.
+    # A node, from the <g> that opens it to the first </g>.
     #
-    # Edges are deliberately not in here. An edge's arrowhead is a filled
-    # polygon, so an edge would look filled to the test below and its label --
-    # which is drawn on the page, not on anything -- would be pinned dark.
+    # Clusters are not in here; CLUSTER_GROUP dims their box instead, for the
+    # reason the top of this file gives. Edges are deliberately not in here
+    # either. An edge's arrowhead is a filled polygon, so an edge would look
+    # filled to the test below and its label -- which is drawn on the page, not
+    # on anything -- would be pinned dark.
     #
     # The match is non-greedy and so stops at the first </g>, which is the inner
     # one when a node carries a URL and Graphviz wraps the shape in <g><a>. That
     # inner group is where the shape and the text both live, so the block seen
     # here is the right one either way.
-    NODE_GROUP = %r{<g\b[^>]*\bclass="(?:node|cluster)"[^>]*>.*?</g>}m.freeze
+    NODE_GROUP = %r{<g\b[^>]*\bclass="node"[^>]*>.*?</g>}m.freeze
 
-    # The fill on the first thing Graphviz draws for a group: the node's shape,
-    # or the cluster's box.
+    # A cluster, from its <g> to the first </g>. Graphviz writes a cluster's
+    # nodes and subclusters after it rather than inside it, so the first </g>
+    # is its own.
+    CLUSTER_GROUP = %r{<g\b[^>]*\bclass="cluster"[^>]*>.*?</g>}m.freeze
+
+    # The first thing Graphviz draws for a group, and the fill on it: the
+    # node's shape, or the cluster's box.
+    SHAPE = /<(?:path|polygon|ellipse|rect)\b[^>]*>/.freeze
     SHAPE_FILL = /<(?:path|polygon|ellipse|rect)\b[^>]*\sfill="([^"]+)"/.freeze
+
+    # What a filled cluster's box is dimmed by, defined in _sass/style.scss.
+    # A var() rather than a number, so the dark theme can say a different one
+    # and figures.rb carries both into the standalone copy.
+    CLUSTER_OPACITY = "fill-opacity: var(--graphviz-cluster-opacity)"
 
     # Fills that are not fills. The page shows through, so a label over one is
     # a label on the page and wants the page's ink like any other.
@@ -334,7 +356,7 @@ module Graphviz
     FILLED_INK = "#1a1815"
 
     def theme(svg, key)
-      themed = pin_labels_over_fills(svg)
+      themed = dim_cluster_fills(pin_labels_over_fills(svg))
         .gsub(BLACK, '"currentColor"')
         .sub(CANVAS, "")
         .sub(ROOT_SIZE, '\\1')
@@ -363,6 +385,18 @@ module Graphviz
 
           tag.sub(TEXT_FILL, "").sub(/\A<text\b/, %(<text fill="#{FILLED_INK}"))
         end
+      end
+    end
+
+    # Dim the box of every cluster the author filled, by an amount the theme
+    # chooses. An unfilled cluster is left alone: there is nothing to dim, and
+    # its outline is ink the BLACK rewrite already handles.
+    def dim_cluster_fills(svg)
+      svg.gsub(CLUSTER_GROUP) do |group|
+        fill = group[SHAPE_FILL, 1]
+        next group if fill.nil? || UNFILLED.include?(fill.downcase)
+
+        group.sub(SHAPE) { |shape| shape.sub(/\A<\w+/) { |open| %(#{open} style="#{CLUSTER_OPACITY}") } }
       end
     end
 

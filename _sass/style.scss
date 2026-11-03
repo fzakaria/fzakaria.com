@@ -108,6 +108,11 @@
   // screenshots cover this entirely, so they are unaffected either way.
   --image-mat: #ebe6da;
 
+  // How strongly a Graphviz cluster's own fill is drawn. Full on paper; on the
+  // dark palette a pastel box would sit under light ink, so it is dimmed to a
+  // tint. Read by _plugins/graphviz.rb.
+  --graphviz-cluster-opacity: 1;
+
   // Layout zones. The gutter holds hanging section markers and running heads,
   // the margin holds sidenotes; both collapse to zero on narrow screens and
   // widen again once there is room to spend.
@@ -140,6 +145,7 @@
     --accent: #e08a45;
     --accent-wash: #e08a4526;
     --glow: #1f242b;
+    --graphviz-cluster-opacity: 0.2;
   }
 }
 
