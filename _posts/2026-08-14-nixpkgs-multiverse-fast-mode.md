@@ -14,7 +14,7 @@ date: 2026-08-14 16:20 -0700
 > It continues to blow my mind that this is even possible. It feels like it suddenly
 > unlocks a new dimension of Nixpkgs, and I am still trying to understand what it means.
 > I think this capability is a fundamental change to the way we think about Nixpkgs, and it is not just a new feature. It is a new way of thinking about the entire ecosystem.
-{: .alert .alert-info}
+{: .alert .alert-note}
 
 There was always a penalty at the center of it. Asking for a specific version of `python3`, such as `3.8.9`, meant fetching the whole ~378 MB Nixpkgs tree from 2021 and evaluating it to determine the `outPath`. 
 
