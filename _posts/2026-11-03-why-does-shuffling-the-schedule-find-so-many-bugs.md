@@ -5,18 +5,18 @@ date: 2026-11-03 10:00 -0700
 excerpt_separator: <!--more-->
 ---
 
-Here is something to think about: bugs are not rare, but rather the ordering of events that triggers them are. What do I mean by this?
+Here is something to think about: bugs are not rare, but rather the orderings of events that trigger them are. What do I mean by this?
 
 <!--more-->
 
-Let's start with a simple story. When I worked at AWS on RDS (Relational Database Service), we built the control-plane for the service using workflows, of course using SWF (Simple Workflow). The workflows would execute a series of steps to create, modify or delete a database instance. Every so often we'd see something that looked impossible: a workflow that seemed to run its steps out of order.
+Let's start with a simple story. When I worked at AWS on RDS (Relational Database Service), we built the control plane for the service using workflows, of course using SWF (Simple Workflow). The workflows would execute a series of steps to create, modify or delete a database instance. Every so often we'd see something that looked impossible: a workflow that seemed to run its steps out of order.
 
-What we actually observed was a pause. A worker would pick up a step and then stop for an unexpectedly long time. While it was stopped it stopped heartbeating, so SWF decided it was dead, and reassigned it to another worker. The new worker finished the step and the workflow moved on. Then the first worker woke up. As far as it could tell no time had passed, so it carried on with the step it was holding, causing havoc in it's wake.
+What we actually observed was a pause. A worker would pick up a step and then stop for an unexpectedly long time. While paused it stopped heartbeating, so SWF decided it was dead and reassigned the step to another worker. The new worker finished the step and the workflow moved on. Then the first worker woke up. As far as it could tell no time had passed, so it carried on with the step it was holding, causing havoc in its wake.
 
 <figure>
 <svg viewBox="0 0 720 236" role="img"
      style="display:block;margin-inline:auto;max-width:44rem;width:100%;height:auto;font-family:var(--mono)"
-     aria-label="A timeline with three lanes: worker 1, SWF and worker 2. Worker 1 runs snapshot, starts apply config, then pauses. SWF hears no heartbeat, times the step out and hands apply config to worker 2, which runs it and then reboot. Worker 1 wakes up and finishes apply config after the reboot, and SWF rejects its result. The instance saw snapshot, apply config, reboot, apply config.">
+     aria-label="A timeline with three lanes: worker 1, SWF and worker 2. Worker 1 runs snapshot, starts apply config, then pauses. SWF hears no heartbeat, times the step out and hands apply config to worker 2, which runs it and then runs reboot. Worker 1 wakes up and finishes apply config after the reboot, and SWF rejects its result. The instance saw snapshot, apply config, reboot, apply config.">
   <style>
     .zw-lane { stroke: var(--rule, #dcd5c5); stroke-width: 1; }
     .zw-step { fill: none; stroke: var(--ink, #1a1815); stroke-width: 1.5; }
@@ -76,24 +76,24 @@ What we actually observed was a pause. A worker would pick up a step and then st
 </svg>
 </figure>
 
-We suddenly realized that we were not adequately testing all the possible schedules of events. The workflow code was correct, but the schedule that triggered the bug was not one we had ever seen in our tests. It was a rare schedule, but it was not a rare bug. Thus began adding idempotency tokens to every step and making sure that every step could be run multiple times without breaking anything. It was a lot of work, but it made the system much more robust.
+We suddenly realized that we were not adequately testing all the possible schedules of events. The workflow code was correct, but the schedule that triggered the bug was not one we had ever seen in our tests. It was a rare schedule, but it was not a rare bug. So we began adding idempotency tokens to every step and making sure that every step could be run multiple times without breaking anything. It was a lot of work, but it made the system much more robust.
 
 What's the purpose of this story?
 
-I am building [Rewind VM](https://rewindvm.dev), a deterministic VM. It helps finds bugs in software primarily by running the same code under many different schedules.[^schedule] That mere act of shuffling the schedule has found [many bugs](https://rewindvm.dev/bugs.html) thus far.
+I am building [Rewind VM](https://rewindvm.dev), a deterministic VM. It helps find bugs in software primarily by running the same code under many different schedules.[^schedule] The mere act of shuffling the schedule has found [many bugs](https://rewindvm.dev/bugs.html) thus far.
 
-[^schedule]: I say _schedule_ rather than _thread interleaving_ on purpose. Most of the bugs on that page are races between processes, or between a process and a signal. Only a few are between two threads of one program..
+[^schedule]: I say _schedule_ rather than _thread interleaving_ on purpose. Most of the bugs on that page are races between processes, or between a process and a signal. Only a few are between two threads of one program.
 
-The software under test is not even a distributed system, such as the workflow example above, and yet many of the bugs are still schedule-dependent. No crazy Jepsen test-suite needed. How can this be ? All these projects have tests that validate the code on every change. Why does shuffling the schedule find so many bugs that all those tests never did?
+The software under test is not even a distributed system, such as the workflow example above, and yet many of the bugs are still schedule-dependent. No crazy Jepsen test suite needed. How can this be? All these projects have tests that validate the code on every change. Why does shuffling the schedule find so many bugs that all those tests never did?
 
 
-The bugs aren't rare, the schedules your tests run are. An idle, fast machine runs the same handful of orderings nearly every time. A test passes because the order never changes, and the code may only ever have handled that one order.
+The bugs aren't rare; the schedules your tests run are. An idle, fast machine runs the same handful of orderings nearly every time. A test passes because the order never changes, and the code may only ever have handled that one order.
 
 > **Aside:**
-> New to Rewind? Start with [a flaky build you only catch once]({% post_url 2026-10-01-rewind-vm-a-flaky-build-you-only-catch-once %}) and [dafuq is a deterministic VM?]({% post_url 2026-10-24-dafuq-is-a-deterministic-vm %})
+> New to Rewind? Start with [a flaky build you only catch once]({% post_url 2026-10-01-rewind-vm-a-flaky-build-you-only-catch-once %}) and [dafuq is a deterministic VM?]({% post_url 2026-10-24-dafuq-is-a-deterministic-vm %}).
 {: .alert .alert-note }
 
-It takes different schedules or unforseen long pauses, similar to the workflow story above, trigger these bugs. The bugs are not rare, but the schedules that trigger them are. How rare are they?
+It takes different schedules or unforeseen long pauses, similar to the workflow story above, to trigger these bugs. The bugs are not rare, but the schedules that trigger them are. How rare are they?
 
 The smallest race I know is `counter++` from two threads.
 
@@ -221,7 +221,7 @@ We can visualize the 20 choices as paths on a grid. A step right is a step of th
 </svg>
 </figure>
 
-The shaded square holds the four points where both threads have loaded the counter and neither has stored it. Any path that enters it ends with the counter with a value of 1, with the second writer storing the stale original value.
+The shaded square holds the four points where both threads have loaded the counter and neither has stored it. Any path that enters it ends with the counter at 1, because the second writer stores the stale original value.
 
 Only the two paths along the edges provide the "correct result" of 2, A entirely before B or B entirely before A. That is 18 of 20 orderings that lose an update. If every ordering were equally likely, this race would fire in 9 runs out of 10. 😱
 
@@ -229,7 +229,7 @@ What does this look like on a real machine?
 
 Let's build a small program that runs the two threads and records the order of their steps. The program is a bit more complicated than the simple `counter++` above, because it has to record the order of the steps. It also has to be careful not to introduce any new races in the recording itself. The program leverages Rewind's `rewind_point()` to give Rewind VM a place to switch threads.[^barrier]
 
-[^barrier]: The program also has a version that uses a barrier to make the threads collide on purpose to make the race even more likely.
+[^barrier]: The program also has a version that uses a barrier so the threads collide on purpose, which should make the race even more likely.
 
 <details markdown="1">
 <summary markdown="span">race.c</summary>
@@ -348,7 +348,7 @@ int main(void)
 
 </details>
 
-I ran each one 10,000 times on my laptop, a Ryzen 7 7840U with 16 idle hardware threads.
+I ran both builds, with and without the barrier, 10,000 times each on my laptop, a Ryzen 7 7840U with 16 idle hardware threads.
 
 ```console
 $ for i in $(seq 10000); do ./race; done | sort | uniq -c | sort -rn
@@ -404,7 +404,7 @@ plot.width, plot.height = 7.0, 4.6
 Across 20,000 runs the idle laptop ran 5 of the 20 orderings and lost an update 4 times.
 Interestingly, the barrier was supposed to make them collide. Instead it flipped the order such that 9,957 runs were `BBBAAA`.
 
-A busy machine is a little different. With `stress-ng --cpu 16` keeping every hardware thread busy, the same two binaries ran 13 and 16 of the orderings, and lost an update in 32 and 66 of 10,000 runs. That's still fewer than 1 run in 100 lost an update.
+A busy machine is a little different. With `stress-ng --cpu 16` keeping every hardware thread busy, the same two binaries ran 13 and 16 of the orderings, and lost an update in 32 and 66 of 10,000 runs. That's still fewer than 1 run in 100 losing an update.
 
 [![X, X everywhere meme: Buzz Lightyear, his arm around a worried Woody, points into the distance: "AAABBB", "AAABBB everywhere"](/assets/images/rewind_buzz_aaabbb_meme.png)](/assets/images/rewind_buzz_aaabbb_meme.png)
 {: style="--image-width: 20rem"}
@@ -461,7 +461,7 @@ plot.width, plot.height = 7.0, 4.6
 ```
 {: title="Two panels of runs per ordering, on a log scale, under rewind check. With pthread_create alone, 8,508 runs are AAABBB and the rest spread over 14 more orderings, 1,371 of them losing an update. With a barrier, all 20 orderings appear, from 5,715 runs of AAABBB down to 1 of BABABA, and 2,997 runs lose an update."}
 
-We can observe that Rewind's perturbations reach more orderings than the host, and that it loses an update more often which helps us find the bug. The table below summarizes the results:
+We can observe that Rewind's perturbations reach more orderings than the host, and that it loses an update more often, which helps us find the bug. The table below summarizes the results:
 
 
 | Where        | Start   | Orderings seen | Runs that lost an update |
@@ -473,13 +473,13 @@ We can observe that Rewind's perturbations reach more orderings than the host, a
 | Rewind       | create  | 15 of 20       | 1,371 of 10,000          |
 | Rewind       | barrier | 20 of 20       | 2,997 of 10,000          |
 
-Interleavings though are not the only way to trigger bugs. Long pauses are orderings too, and they can be even rarer than interleavings.
+Interleavings, though, are not the only way to trigger bugs. Long pauses are orderings too, and they can be even rarer than interleavings.
 
-A long pause sits at the far edge of the lattice. Thread A stops, and everything else takes hundreds of steps before A takes its next one. A path like that runs along one edge of the grid for a long time. A short perturbation hands the other side a few steps, so it rarely walks that far.
+A long pause sits at the far edge of the grid. Thread A stops, and everything else takes hundreds of steps before A takes its next one. A path like that runs along one edge of the grid for a long time. A short perturbation hands the other side a few steps, so it rarely walks that far.
 
 Rewind has knobs to make long pauses more likely. The `--stall-max` knob raises the maximum stall time, and the `--stall-min` knob lowers the minimum stall time. These settings can help explore even more unlikely schedules to discover bugs that only appear under extreme conditions.
 
-It's kind of surprising that with all the hype of property based testing, fuzzing, and Jepsen, that a simple deterministic VM that shuffles the schedule finds so many bugs. 
+It's kind of surprising that with all the hype around property-based testing, fuzzing, and Jepsen, a simple deterministic VM that shuffles the schedule finds so many bugs.
 Our hardware is so fast that we've become accustomed to thinking that the order of events is always the same. Adding a little randomness to the schedule can expose bugs that have been hiding in plain sight.
 
 Bugs aren't rare, but the schedules that trigger them are.
