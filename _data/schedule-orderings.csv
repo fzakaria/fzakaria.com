@@ -1,0 +1,133 @@
+# race.c: two threads each load, add one to and store a shared counter, and
+# record the order the six steps ran in. 10,000 runs of each static (musl)
+# binary per row group. Start create launches the threads with pthread_create;
+# start barrier also makes both wait on a pthread barrier first.
+# host: AMD Ryzen 7 7840U, 16 threads, Linux 7.1.2, otherwise idle.
+# host-loaded: the same, with stress-ng --cpu 16 running.
+# rewind: rewind 0.10.0 (7556c9e95001), rewind check --epoch 1790985600
+#   --schedules 9999 --all --no-narrow: schedule 0 and 9,999 perturbed ones.
+# lost is 1 when the ordering ends with the counter at 1 instead of 2.
+# 3 host-loaded create runs recorded an order that disagrees with their final
+# counter (a thread preempted between a step's mark and its load or store);
+# they are counted under the order recorded.
+machine,start,ordering,runs,lost
+host,create,AAABBB,9985,0
+host,create,AABABB,0,1
+host,create,AABBAB,0,1
+host,create,AABBBA,0,1
+host,create,ABAABB,0,1
+host,create,ABABAB,0,1
+host,create,ABABBA,0,1
+host,create,ABBAAB,0,1
+host,create,ABBABA,0,1
+host,create,ABBBAA,0,1
+host,create,BAAABB,0,1
+host,create,BAABAB,0,1
+host,create,BAABBA,0,1
+host,create,BABAAB,0,1
+host,create,BABABA,0,1
+host,create,BABBAA,0,1
+host,create,BBAAAB,0,1
+host,create,BBAABA,0,1
+host,create,BBABAA,0,1
+host,create,BBBAAA,15,0
+host,barrier,AAABBB,39,0
+host,barrier,AABABB,0,1
+host,barrier,AABBAB,0,1
+host,barrier,AABBBA,0,1
+host,barrier,ABAABB,0,1
+host,barrier,ABABAB,0,1
+host,barrier,ABABBA,0,1
+host,barrier,ABBAAB,0,1
+host,barrier,ABBABA,0,1
+host,barrier,ABBBAA,0,1
+host,barrier,BAAABB,1,1
+host,barrier,BAABAB,1,1
+host,barrier,BAABBA,0,1
+host,barrier,BABAAB,0,1
+host,barrier,BABABA,0,1
+host,barrier,BABBAA,0,1
+host,barrier,BBAAAB,2,1
+host,barrier,BBAABA,0,1
+host,barrier,BBABAA,0,1
+host,barrier,BBBAAA,9957,0
+host-loaded,create,AAABBB,5119,0
+host-loaded,create,AABABB,0,1
+host-loaded,create,AABBAB,3,1
+host-loaded,create,AABBBA,2,1
+host-loaded,create,ABAABB,2,1
+host-loaded,create,ABABAB,0,1
+host-loaded,create,ABABBA,1,1
+host-loaded,create,ABBAAB,0,1
+host-loaded,create,ABBABA,0,1
+host-loaded,create,ABBBAA,2,1
+host-loaded,create,BAAABB,0,1
+host-loaded,create,BAABAB,2,1
+host-loaded,create,BAABBA,1,1
+host-loaded,create,BABAAB,0,1
+host-loaded,create,BABABA,0,1
+host-loaded,create,BABBAA,2,1
+host-loaded,create,BBAAAB,4,1
+host-loaded,create,BBAABA,9,1
+host-loaded,create,BBABAA,1,1
+host-loaded,create,BBBAAA,4852,0
+host-loaded,barrier,AAABBB,4678,0
+host-loaded,barrier,AABABB,4,1
+host-loaded,barrier,AABBAB,9,1
+host-loaded,barrier,AABBBA,14,1
+host-loaded,barrier,ABAABB,0,1
+host-loaded,barrier,ABABAB,0,1
+host-loaded,barrier,ABABBA,3,1
+host-loaded,barrier,ABBAAB,1,1
+host-loaded,barrier,ABBABA,1,1
+host-loaded,barrier,ABBBAA,4,1
+host-loaded,barrier,BAAABB,3,1
+host-loaded,barrier,BAABAB,1,1
+host-loaded,barrier,BAABBA,0,1
+host-loaded,barrier,BABAAB,1,1
+host-loaded,barrier,BABABA,2,1
+host-loaded,barrier,BABBAA,3,1
+host-loaded,barrier,BBAAAB,12,1
+host-loaded,barrier,BBAABA,8,1
+host-loaded,barrier,BBABAA,0,1
+host-loaded,barrier,BBBAAA,5256,0
+rewind,create,AAABBB,8508,0
+rewind,create,AABABB,243,1
+rewind,create,AABBAB,201,1
+rewind,create,AABBBA,635,1
+rewind,create,ABAABB,47,1
+rewind,create,ABABAB,1,1
+rewind,create,ABABBA,0,1
+rewind,create,ABBAAB,41,1
+rewind,create,ABBABA,0,1
+rewind,create,ABBBAA,176,1
+rewind,create,BAAABB,8,1
+rewind,create,BAABAB,0,1
+rewind,create,BAABBA,3,1
+rewind,create,BABAAB,0,1
+rewind,create,BABABA,0,1
+rewind,create,BABBAA,2,1
+rewind,create,BBAAAB,9,1
+rewind,create,BBAABA,3,1
+rewind,create,BBABAA,2,1
+rewind,create,BBBAAA,121,0
+rewind,barrier,AAABBB,5715,0
+rewind,barrier,AABABB,283,1
+rewind,barrier,AABBAB,267,1
+rewind,barrier,AABBBA,915,1
+rewind,barrier,ABAABB,159,1
+rewind,barrier,ABABAB,5,1
+rewind,barrier,ABABBA,17,1
+rewind,barrier,ABBAAB,153,1
+rewind,barrier,ABBABA,19,1
+rewind,barrier,ABBBAA,591,1
+rewind,barrier,BAAABB,164,1
+rewind,barrier,BAABAB,5,1
+rewind,barrier,BAABBA,32,1
+rewind,barrier,BABAAB,9,1
+rewind,barrier,BABABA,1,1
+rewind,barrier,BABBAA,22,1
+rewind,barrier,BBAAAB,319,1
+rewind,barrier,BBAABA,26,1
+rewind,barrier,BBABAA,10,1
+rewind,barrier,BBBAAA,1288,0
