@@ -18,4 +18,6 @@ group :development do
 	gem "rake"
   gem "webrick"
   gem "ruby-lsp"
+  # Runs the plugin tests under tests/plugins.
+  gem "minitest"
 end
