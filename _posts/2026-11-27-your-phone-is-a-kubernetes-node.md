@@ -2,6 +2,7 @@
 layout: post
 title: 'Your phone is a Kubernetes node'
 date: 2026-11-27 10:00 -0800
+excerpt_separator: <!--more-->
 ---
 
 > **tl;dr** [tabernetes](https://github.com/fzakaria/tabernetes) turns browser tabs into real Kubernetes nodes.
@@ -10,6 +11,8 @@ date: 2026-11-27 10:00 -0800
 Ever since I came across [@\_pi0\_](https://x.com/_pi0_)'s work on [unkernel.dev](https://unkernel.dev), it's been a chaotic brain-gasm of ideas about running Linux in unconventional places now that it's economical and practical enough to do even on a phone.[^trynix]
 
 [^trynix]: [trynix.dev](https://trynix.dev) is another project of mine exploring Linux in the browser, which inspired some of my thinking here.
+
+<!--more-->
 
 In my [last post]({% post_url 2026-11-25-browser-tabs-as-a-container-runtime %}) I introduced [tabc](https://github.com/fzakaria/tabc), a container runtime that runs each container in a browser tab. Feedback to the project and the post were a mix of curiosity and a surprising amount of skepticism about whether this could actually be useful.
 
