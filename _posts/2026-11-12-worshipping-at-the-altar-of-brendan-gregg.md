@@ -247,9 +247,11 @@ The flame graph below is the real flamegraph.pl output: click a frame to zoom in
 
 ## Kneeling at the altar
 
-Every idea here predates Rewind. Gregg has been drawing off-CPU and wakeup flame graphs for a decade, and build systems report critical path information for even longer. I have been inspired by his work since I first dabbled in [eBPF](https://ebpf.io/), back when [flame graphs](https://www.brendangregg.com/flamegraphs.html) were new.
+Every idea here predates Rewind. Gregg has been drawing off-CPU and wakeup flame graphs for over a decade, and build systems have reported critical path information potentially even longer.[^bazel] I have been inspired by his work since I first dabbled in [eBPF](https://ebpf.io/), back when [flame graphs](https://www.brendangregg.com/flamegraphs.html) were new. 🙇
 
-What Rewind adds is the data.
+[^bazel]: [Bazel's critical path analysis](https://bazel.build/advanced/performance/build-performance-metrics) is a great example of this, and it has been around for years.
+
+What Rewind adds is the data. _Lots of it._
 
 Rewind has that data because it can't replay without it. On a single CPU the only thing that changes from run to run is the scheduler, so every recording already logs every context switch. 
 
