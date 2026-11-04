@@ -284,7 +284,9 @@ $ nix log "$(sed -n 26p chain.txt)"
 Take one down, pass it around, 23 bottles of beer on the wall.
 ```
 
-I'm very excited for the future of dynamic derivations. [tomberek](https://github.com/tomberek) is [leading a working-group](https://discourse.nixos.org/t/dynamic-derivations-dynamic-build-graphs-next-steps/79409/) to finalize the feature and are currently meeting weekly. With dynamic derivations, Nix will be able to compete with other build systems in terms of speed and flexibility and _take over the world_. Nix the world.
+I'm very excited for the future of dynamic derivations. [tomberek](https://github.com/tomberek) is [leading a working-group](https://discourse.nixos.org/t/dynamic-derivations-dynamic-build-graphs-next-steps/79409/) to finalize the feature and are currently meeting weekly. With dynamic derivations, Nix will be able to compete with other build systems in terms of speed and flexibility and _take over the world_. 
+
+[Patch the world](https://ghuntley.com/patch/). Nix the world.
 
 [![Pinky and the Brain meme: Pinky asks "What are we doing tonight, Brain?" and the caption below reads "Taking over the world with dynamic derivations"](/assets/images/dyn_drv_pinky_brain_meme.png)](/assets/images/dyn_drv_pinky_brain_meme.png)
 {: style="--image-width: 20rem"}
