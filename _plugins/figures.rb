@@ -36,6 +36,15 @@ require "set"
 # theme tokens it uses, light and dark, read out of the compiled stylesheet,
 # and paints --paper behind itself so the ink has the background it was
 # chosen against.
+#
+# The feed gets the same copies by another route. feed.xml embeds each post's
+# HTML, and a feed reader's sanitiser throws away an inline <svg>, so a
+# subscriber would see nothing where the figure was -- or, for a fence, the
+# Python or DOT that drew it. In the feed every figure's <svg> is swapped for
+# an <img> of its standalone copy instead, which a reader fetches like any
+# other picture. The copy themes itself through prefers-color-scheme, and that
+# still works inside an <img>; the web fonts do not load there, so a label
+# falls back to the generic face at the end of its stack.
 module Figures
   # Under the built site; nothing lands in the source tree. Named by content,
   # so a figure used on two pages is one file and an edit is a new URL.
@@ -44,6 +53,15 @@ module Figures
   # Read for the theme tokens and the @font-face rules, the same file
   # images.rb reads its layout from.
   STYLESHEET_URL = "/assets/css/base.css"
+
+  # jekyll-feed's default path, and the one page that is not HTML but still
+  # carries figures. graphviz.rb and plotnine.rb render their fences in it too,
+  # so that this plugin finds a <figure><svg> there to replace.
+  FEED_URL = "/feed.xml"
+
+  # The text alternative when a figure has none of its own. Every figure ought
+  # to carry a title or an aria-label; this is for the ones that do not yet.
+  UNTITLED_ALT = "Figure"
 
   LINK_CLASS = "figure-full"
   LINK_TITLE = "Open this figure on its own"
@@ -82,8 +100,16 @@ module Figures
   # that is the whole window.
   ABSOLUTE_LENGTH = /\A\s*([\d.]+)(px|pt|pc|mm|cm|in)?\s*\z/.freeze
 
+  # A viewBox, for the <img> a feed figure becomes: its width and height are
+  # the figure's natural size, which a reader then scales to its column.
+  VIEWBOX = /\A[\d.\-]+[\s,]+[\d.\-]+[\s,]+([\d.]+)[\s,]+([\d.]+)\z/.freeze
+
   def self.process(site)
     Linker.new(site).process
+  end
+
+  def self.feed?(document)
+    document.url == FEED_URL
   end
 
   # A file with no file behind it, the same shape graphviz.rb and plotnine.rb
@@ -113,6 +139,7 @@ module Figures
       @site = site
       @published = Set.new
       @linked = 0
+      @pictured = 0
       @warnings = []
     end
 
@@ -130,7 +157,12 @@ module Figures
       documents.each do |document|
         next unless document.output.include?("<figure")
 
-        document.output = link_figures(document.output, document)
+        document.output = replace_figures(document.output, document) { |svg| link(svg, document) }
+      end
+
+      feed = @site.pages.find { |page| Figures.feed?(page) }
+      if feed&.output&.include?("<figure")
+        feed.output = replace_figures(feed.output, feed) { |svg, figure| picture(svg, figure, feed) }
       end
 
       report
@@ -138,18 +170,19 @@ module Figures
 
     private
 
-    # HTML only, for the reason graphviz.rb gives: feed.xml embeds the post,
-    # and a link around an <svg> a feed reader has already thrown away is a
-    # link around nothing.
+    # HTML only. The feed is handled apart, by picture: a link around an <svg>
+    # a feed reader has already thrown away would be a link around nothing.
     def documents
       (@site.pages + @site.documents).select do |document|
         document.output_ext == ".html" && document.output.respond_to?(:include?)
       end
     end
 
-    # --- The page: wrap each figure's <svg> in a link ------------------------
+    # --- Finding each figure's <svg> -----------------------------------------
 
-    def link_figures(html, document)
+    # Hand each figure's root <svg>, and the <figure> tag that opens it, to the
+    # block, and put whatever the block returns in the <svg>'s place.
+    def replace_figures(html, document)
       out = +""
       cursor = 0
 
@@ -161,7 +194,7 @@ module Figures
         # of it as it was rather than guess where the figure ends.
         break if finish.nil?
 
-        out << html[cursor...start] << link(html[start...finish], document)
+        out << html[cursor...start] << yield(html[start...finish], figure[0])
         cursor = finish
       end
 
@@ -183,6 +216,8 @@ module Figures
       nil
     end
 
+    # --- The page: wrap each figure's <svg> in a link ------------------------
+
     # draggable="false" is what lets the labels be selected: a drag that starts
     # inside a link is a link drag. See figure > a.figure-full in _sass.
     def link(svg, document)
@@ -199,6 +234,40 @@ module Figures
       @linked += 1
       %(<a href="#{publish(copy)}" class="#{LINK_CLASS}" draggable="false" ) +
         %(title="#{LINK_TITLE}">#{svg}</a>)
+    end
+
+    # --- The feed: replace each figure's <svg> with a picture of it ---------
+
+    # The src is absolute because a feed reader resolves a relative one
+    # against whatever it likes, and not every reader honours xml:base.
+    def picture(svg, figure, document)
+      copy = standalone(svg)
+
+      # The same rule as the page: a copy that is not XML would be a broken
+      # image, so the <svg> stays and the reader does what it does with it.
+      error = xml_error(copy)
+      unless error.nil?
+        @warnings << "#{document.relative_path}: figure left as <svg> in the feed, its SVG is not XML (#{error})"
+        return svg
+      end
+
+      @pictured += 1
+      src = @site.config["url"].to_s.chomp("/") + publish(copy)
+      %(<img src="#{src}" alt="#{alt(svg[ROOT_TAG].to_s, figure)}"#{natural_dimensions(svg[ROOT_TAG].to_s)}>)
+    end
+
+    # The figure's own words for itself: the title a fence's IAL puts on the
+    # <figure>, or the aria-label a hand-written <svg> carries. Both are
+    # attribute values already, escaped as such, so they go across as they are.
+    def alt(root, figure)
+      attribute(figure, "title") || attribute(root, "aria-label") || UNTITLED_ALT
+    end
+
+    def natural_dimensions(root)
+      width, height = attribute(root, "viewBox").to_s.strip.match(VIEWBOX)&.captures
+      return "" if width.nil?
+
+      %( width="#{width.to_f.round}" height="#{height.to_f.round}")
     end
 
     def publish(copy)
@@ -395,6 +464,9 @@ module Figures
     def report
       if @linked.positive?
         Jekyll.logger.info "Figures:", "#{@linked} figure(s) linked to #{@published.size} standalone SVG(s)"
+      end
+      if @pictured.positive?
+        Jekyll.logger.info "Figures:", "#{@pictured} figure(s) in the feed drawn as <img>"
       end
 
       @warnings.each { |warning| Jekyll.logger.warn "Figures:", warning }

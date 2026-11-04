@@ -347,6 +347,11 @@ instead of the column, and carries the theme's colours and fonts, so it reads
 the same in light and dark. A figure whose `<svg>` is already inside an `<a>`
 keeps the link it has.
 
+The feed gets the same copy as an `<img>` in place of the `<svg>`, because a
+feed reader strips inline SVG. Its alt text is the figure's `title` or
+`aria-label`, so every figure should carry one. Inside an `<img>` the web fonts
+do not load, and labels fall back to the generic face.
+
 A hand-written one, drawn in the theme's variables. Click it to open the copy:
 
 <figure>

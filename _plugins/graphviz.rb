@@ -160,13 +160,15 @@ module Graphviz
     # Posts, drafts and pages alike: a diagram is as useful on the styleguide
     # as it is in an article.
     #
-    # Pages that are not HTML are left with the code block, which matters for
-    # exactly one of them: feed.xml embeds the rendered post verbatim, and an
-    # inline <svg> is the first thing a feed reader's sanitiser throws away.
-    # A subscriber is better served by the DOT source, which at least says
-    # what the picture said.
+    # The feed too. feed.xml embeds each post's HTML, so its fences are
+    # rendered like the post's, and figures.rb then swaps each <svg> there for
+    # an <img> of its standalone copy, which a feed reader keeps where it would
+    # strip an inline <svg>. Any other page that is not HTML keeps its code
+    # block.
     def documents
-      (@site.pages + @site.documents).select { |document| document.output_ext == ".html" }
+      (@site.pages + @site.documents).select do |document|
+        document.output_ext == ".html" || Figures.feed?(document)
+      end
     end
 
     # Rouge marks up every token, so the code has to be reduced back to text

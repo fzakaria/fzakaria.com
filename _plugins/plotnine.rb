@@ -241,11 +241,13 @@ module Plotnine
       Jekyll.logger.info "Plotnine:", "#{total} chart(s); #{@rendered} rendered, #{@reused} cached"
     end
 
-    # Feed pages keep the source, exactly as with graphviz: an inline <svg> is
-    # the first thing a feed reader's sanitiser discards, and a subscriber is
-    # better served by the code that drew the chart.
+    # The feed too, exactly as with graphviz: the chart is drawn into feed.xml
+    # and figures.rb swaps it for an <img> of its standalone copy, since a feed
+    # reader's sanitiser would discard the inline <svg>.
     def documents
-      (@site.pages + @site.documents).select { |document| document.output_ext == ".html" }
+      (@site.pages + @site.documents).select do |document|
+        document.output_ext == ".html" || Figures.feed?(document)
+      end
     end
 
     # An IAL lands on the outermost tag kramdown writes for the fence: the
