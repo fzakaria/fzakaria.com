@@ -1,4 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="739pt" height="930pt" viewBox="0 0 739 930">
+<style><![CDATA[
+/* Theme values copied from _sass/style.scss: --paper, --ink and --accent,
+   light and dark. The post shows this file as an <img>, which the page's
+   stylesheet cannot reach, so the graph carries the palette itself; change
+   it here too if the palette changes. The hex colours below are the light
+   values, and the attribute selectors repaint them with the theme's. */
+:root { --paper: #f5f2ec; --ink: #1a1815; --accent: #9e3413;
+        color-scheme: light dark; background: var(--paper); }
+@media (prefers-color-scheme: dark) {
+  :root { --paper: #15171a; --ink: #ddd8cd; --accent: #e08a45; }
+}
+[fill="#1a1815"] { fill: var(--ink); }
+[stroke="#1a1815"] { stroke: var(--ink); }
+[fill="#9e3413"] { fill: var(--accent); }
+[stroke="#9e3413"] { stroke: var(--accent); }
+]]></style>
 <text x="18" y="38" fill="#1a1815" font-size="20" font-family="Helvetica,Arial,sans-serif">nixpkgs · openjdk 25.0.4 — 2 derivations exist only for Java</text>
 <g transform="translate(18,48)"><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 34.24)">
 <g id="edge1" class="edge">

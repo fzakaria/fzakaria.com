@@ -112,7 +112,7 @@ attributable = reachable(root) - reachable(root, without=java_nodes)
 
 This lines up with our intuition. Nixpkgs only needs **two** derivations to bootstrap the JDK, while GuixPkgs needs **876**.
 
-![Two pruned graphs, stacked, showing only the derivations that exist because of the JDK bootstrap. A hollow circle marks the openjdk package itself in each. The nixpkgs panel is that circle, one red dot for the prebuilt temurin binary and its tarball, on a single short line. The guixpkgs panel is a cloud of 876 grey dots with the Java packages picked out in red, clustered at two ends of a path that runs through it.](/assets/images/openjdk-java-only-subgraph.svg)
+[![Two pruned graphs, stacked, showing only the derivations that exist because of the JDK bootstrap. A hollow circle marks the openjdk package itself in each. The nixpkgs panel is that circle, one red dot for the prebuilt temurin binary and its tarball, on a single short line. The guixpkgs panel is a cloud of 876 grey dots with the Java packages picked out in red, clustered at two ends of a path that runs through it.](/assets/images/openjdk-java-only-subgraph.svg)](/assets/images/openjdk-java-only-subgraph.svg)
 
 > **Note**
 > Interestingly, the bootstrap build for JDK has `rustc` in its closure: IcedTea 8 wants GTK 2, which wants its own Mesa, which wants `rust-bindgen` 😱
