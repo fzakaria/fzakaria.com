@@ -165,7 +165,7 @@ error: path '…-beer.drv.drv.drv…' is not a valid store path:
   name 'beer.drv.drv.drv…' must be no longer than 211 characters
 ```
 
-The maximum length of a store path is [211 characters](https://github.com/NixOS/nix/blob/7d83031e0c3c4f7e6767ce94ae81ae93b6c04322/src/libstore/include/nix/store/path.hh#L48). A derivation's store path must include the `.drv` suffix, and every `.drv` in a chain adds four characters. The top derivation is named `beer` and if you add 51 `.drv`s we get 208 characters. No room for any more beer. 🍻
+The maximum length of a store path is [211 characters](https://github.com/NixOS/nix/blob/7f1ff3fec92f9d60327e4ca9e51acd565a91cc6c/src/libstore/include/nix/store/path.hh#L48). A derivation's store path must include the `.drv` suffix, and every `.drv` in a chain adds four characters. The top derivation is named `beer` and if you add 51 `.drv`s we get 208 characters. No room for any more beer. 🍻
 
 > **Aside**
 > $$
