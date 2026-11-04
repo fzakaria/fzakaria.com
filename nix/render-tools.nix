@@ -16,7 +16,8 @@
   # missing engine fails the build rather than shipping a post whose
   # diagram is a wall of DOT.
   pkgs.graphviz
-  # _plugins/plotnine.rb runs `python3` to render ```plotnine fences.
+  # _plugins/plotnine.rb runs `python3` to render ```plotnine fences, and
+  # _plugins/mathml.rb runs it to turn $$...$$ math into MathML.
   # Required for the same reason graphviz is: a missing interpreter
   # would ship a post whose chart is a wall of Python.
   pkgs.blog-python

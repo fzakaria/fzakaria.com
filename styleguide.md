@@ -371,6 +371,20 @@ A hand-written one, drawn in the theme's variables. Click it to open the copy:
 <figcaption>An &lt;svg&gt; written straight into the post, linked by the plugin.</figcaption>
 </figure>
 
+## Math
+
+`$$…$$` inside a paragraph is inline math, and `$$…$$` as a paragraph of its
+own is display math. `_plugins/mathml.rb` turns the TeX into MathML at build
+time, so the browser draws it and the page loads no script. There are
+$$\binom{6}{3} = 20$$ ways to place three of six steps, and the sum of the
+first $$n$$ integers is
+
+$$
+\sum_{i=1}^{n} i = \frac{n(n+1)}{2}
+$$
+
+A literal dollar sign next to another one is written `\$`.
+
 ## Horizontal rule
 
 ---

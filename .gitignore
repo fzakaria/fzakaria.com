@@ -8,6 +8,7 @@ result
 .image-cache
 .graphviz-cache
 .plotnine-cache
+.mathml-cache
 # Python tooling caches from tools/ and tests/.
 .mypy_cache/
 .pytest_cache/

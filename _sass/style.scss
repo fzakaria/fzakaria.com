@@ -79,6 +79,30 @@
   src: url("/assets/fonts/JetBrainsMono-Regular.woff2") format("woff2");
 }
 
+// The face <math> is drawn in; see _plugins/mathml.rb. A math font has to
+// carry an OpenType MATH table, which is what lets the browser enlarge a
+// display-style sum and stretch a bracket around a fraction. The generic
+// `math` family maps to whatever the system has, which on many Linux machines
+// is FreeSerif, with no MATH table: sums stay small and brackets stay flat.
+// The browser only fetches this on a page with math. Subsetted from STIX Two
+// Math 2.13 (nixpkgs#stix-two, OFL-1.1) with fontTools, down from 559KB:
+//
+//   pyftsubset STIXTwoMath-Regular.ttf --layout-features='*' --flavor=woff2 \
+//     --unicodes=U+0020-007E,U+00A0-00FF,U+0391-03C9,U+03D1,U+03D5,\
+//   U+03F0-03F1,U+03F5,U+2016,U+2032-2037,U+2061-2064,U+210E,U+2190-21FF,\
+//   U+2200-22FF,U+2308-230B,U+27E8-27EF,U+2A00-2A1C,U+1D400-1D467,\
+//   U+1D6E2-1D71B
+//
+// The last two ranges are the bold and italic Latin and the italic Greek
+// that MathML substitutes for a single-letter variable.
+@font-face {
+  font-family: "STIX Two Math";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/assets/fonts/STIXTwoMath-Regular.woff2") format("woff2");
+}
+
 // --- Tokens ----------------------------------------------------------------
 
 :root {
@@ -629,6 +653,12 @@ blockquote {
   > * + * {
     margin-top: 0.7rem;
   }
+}
+
+// --- Math ------------------------------------------------------------------
+
+math {
+  font-family: "STIX Two Math", math;
 }
 
 // --- Code ------------------------------------------------------------------
