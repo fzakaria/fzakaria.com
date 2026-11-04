@@ -90,7 +90,7 @@ That is a real `docker run`, on a real Docker daemon, starting a real Alpine ima
 
 In my [last post]({% post_url 2026-11-23-2035-came-early %}) I was inspired from Gary Bernhardt's [The Birth & Death of JavaScript](https://www.destroyallsoftware.com/talks/the-birth-and-death-of-javascript) and its discussion of the evolution of software isolation.
 
-In the talk's future a project called METAL moves the JavaScript VM into the kernel. Programs stop needing the hardware to keep them apart, because the VM already does. Process isolation becomes a software problem that was solved somewhere else, for another reason.
+In the talk, Bernhardt imagines a project called METAL that moves the JavaScript VM into the kernel. The VM already keeps programs apart, so the hardware no longer has to. Process isolation becomes the VM's job.
 
 We did not need to move the VM into the kernel. A browser tab is the VM Bernhardt imagined.
 
