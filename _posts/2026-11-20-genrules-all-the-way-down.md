@@ -40,7 +40,7 @@ What if I point [genrulify](https://github.com/fzakaria/genrulify) at Nixpkgs an
 
 Originally `genrulify` sandbox mounted the host's `/nix/store`, and Bazel never actually had to manage the dependencies of GCC or glibc. To support many packages in one workspace, each store path has to be a proper Bazel target.
 
-The recorded commands still use absolute paths though and this cannot change. The biaries have the `/nix/store` embedded in the `RUNPATH` and so forth, the binaries are [not yet relocatable]({% post_url 2026-06-21-nix-needs-relocatable-binaries %}). 
+The recorded commands still use absolute paths though and this cannot change. The binaries have the `/nix/store` embedded in the `RUNPATH` and so forth, the binaries are [not yet relocatable]({% post_url 2026-06-21-nix-needs-relocatable-binaries %}). 
 
 ```python
 cc_object(
@@ -113,8 +113,6 @@ We convert each package to one of the following types:
 <figcaption>Every store path is one target. Where its bytes come from is decided at link time.</figcaption>
 </figure>
 
-A side-effect of this process is that every store path ends up classified as either built, fetched, or checked in.
-
 Having a hermetic C++ toolchain as part of the build process is now trivial.
 
 ```python
@@ -134,6 +132,10 @@ nix_fetched(
 )
 ```
 
+The `http_file` hash is of the compressed download. The `nix_fetched` hash is of the NAR inside it.
+{: .aside}
+
+
 The above is how GCC is converted and linked into the workspace.
 The Bazel community has spent a decade trying to achieve hermetic C++ toolchains, and for Nixpkgs it is table stakes.
 
@@ -146,7 +148,9 @@ Why did I only convert a subset of the 74,957 top-level derivations in Nixpkgs?
 
 Because it is slow. I need more compute. 🤦
 
-[genrulify](https://github.com/fzakaria/genrulify) works by runing [Rewind](https://github.com/fzakaria/rewind) and inspecting the filesystem at many steps. Each fork takes 0.3 to 2 seconds depending on load. All of nixpkgs at that rate is at least 45 days on one machine. 
+[genrulify](https://github.com/fzakaria/genrulify) works by running the build in [Rewind](https://rewindvm.dev) and forking the VM at each command to inspect the process and its filesystem, nine forks per command. Each fork takes 0.3 to 2 seconds depending on load, so the run converts about 70 derivations an hour on my machine.
+
+All of nixpkgs at that rate is at least 45 days on one machine. 🙁
 
 [![Waiting skeleton meme. A skeleton sits on a park bench, captioned "Me waiting for all 74,957 derivations".](/assets/images/genrule_waiting_skeleton_meme.png)](/assets/images/genrule_waiting_skeleton_meme.png)
 {: style="--image-width: 16rem"}
