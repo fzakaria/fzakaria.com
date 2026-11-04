@@ -253,6 +253,12 @@ digraph beer {
 ```
 {: style="--graphviz-height: 6rem"}
 
+> **Aside**
+> Hey, didn't an [earlier post]({% post_url 2026-09-21-a-build-graph-that-rolls-dice %}) have dynamic derivation chains 500 deep?!
+>
+> Yes! The difference is whether a derivation *outputs* the next one or *depends* on it. A derivation whose output is another derivation gets one more `.drv` appended to the name. The dice chain linked each step to the next as a dependency, and a dependency keeps its own name, so no name ever had more than two `.drv`s in it.
+{: .alert .alert-note}
+
 Back to the original question: can we query the deriver of the output derivation to get the initial derivation? Yes, we can. 
 
 Let's put `nix-store --query --deriver` in a loop that walks from the result all the way back to the top.
