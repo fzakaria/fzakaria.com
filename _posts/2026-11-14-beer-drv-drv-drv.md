@@ -160,12 +160,20 @@ You might notice that we limit the number of beers to 50. Why 50 and not 99?
 
 Well, 50 is the most that fits in a store path.
 
-The maximum length of a store path is [211 characters](https://github.com/NixOS/nix/blob/7d83031e0c3c4f7e6767ce94ae81ae93b6c04322/src/libstore/include/nix/store/path.hh#L48). A derivation's store path must include the `.drv` suffix, and every `.drv` in a chain adds four characters. The top derivation is named `beer` and if you add 51 `.drv`s we get 208 characters. No room for any more beer. 🍻
-
 ```console
 error: path '…-beer.drv.drv.drv…' is not a valid store path:
   name 'beer.drv.drv.drv…' must be no longer than 211 characters
 ```
+
+The maximum length of a store path is [211 characters](https://github.com/NixOS/nix/blob/7d83031e0c3c4f7e6767ce94ae81ae93b6c04322/src/libstore/include/nix/store/path.hh#L48). A derivation's store path must include the `.drv` suffix, and every `.drv` in a chain adds four characters. The top derivation is named `beer` and if you add 51 `.drv`s we get 208 characters. No room for any more beer. 🍻
+
+> **Aside**
+> $$
+> b + 4n \le 211 \quad\Rightarrow\quad n = \left\lfloor \frac{211 - b}{4} \right\rfloor
+> $$
+>
+> Even with a name of length 1, $$b = 1$$, we get a theoretical limit of $$n = 52$$.
+{: .alert .alert-note}
 
 ```plotnine
 import pandas as pd
