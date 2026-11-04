@@ -14,6 +14,11 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 title: Farid Zakaria's Blog
+# jekyll-seo-tag reads this for <meta name="author"> and the JSON-LD author;
+# jekyll-feed reads it for each entry's <author>.
+author:
+  name: Farid Zakaria
+  url: https://fzakaria.com
 email: farid.m.zakaria@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
   I'm a software engineer, father and wishful amateur surfer.
