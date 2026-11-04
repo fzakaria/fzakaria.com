@@ -100,7 +100,7 @@ module Graphviz
   }mx
 
   PLAIN_FENCE = %r{
-    <pre[^>]*><code\s+(?<attrs>class="[^"]*\blanguage-#{LANGUAGE}(?:-(?<engine>\w+))?\b[^"]*")>
+    <pre(?<outer>[^>]*)><code\s+(?<attrs>class="[^"]*\blanguage-#{LANGUAGE}(?:-(?<engine>\w+))?\b[^"]*")>
     (?<code>.*?)
     </code></pre>
   }mx
@@ -133,7 +133,7 @@ module Graphviz
             match = Regexp.last_match
             render(plain_text(match[:code]),
                    match[:engine] || DEFAULT_ENGINE,
-                   match[:attrs],
+                   fence_attributes(match),
                    document)
           end
         end
@@ -172,6 +172,16 @@ module Graphviz
     # Rouge marks up every token, so the code has to be reduced back to text
     # before Graphviz sees it: tags out first, then entities, or an escaped
     # &lt;span&gt; in someone's label would turn into markup.
+    # An IAL lands on the outermost tag kramdown writes for the fence: the
+    # wrapper <div> when Rouge knows the language, which ROUGE_FENCE already
+    # captures as attrs, or the <pre> when it does not, which PLAIN_FENCE
+    # captures as outer. Rouge has no lexer for plotnine, so a chart's title
+    # is always on the <pre>.
+    def fence_attributes(match)
+      outer = match.names.include?("outer") ? match[:outer] : nil
+      [outer, match[:attrs]].compact.join(" ")
+    end
+
     def plain_text(html)
       unescape(html.gsub(/<[^>]*>/, ""))
     end

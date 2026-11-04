@@ -197,7 +197,7 @@ module Plotnine
   }mx
 
   PLAIN_FENCE = %r{
-    <pre[^>]*><code\s+(?<attrs>class="[^"]*\blanguage-#{LANGUAGE}\b[^"]*")>
+    <pre(?<outer>[^>]*)><code\s+(?<attrs>class="[^"]*\blanguage-#{LANGUAGE}\b[^"]*")>
     (?<code>.*?)
     </code></pre>
   }mx
@@ -224,7 +224,7 @@ module Plotnine
         FENCES.each do |fence|
           document.output = document.output.gsub(fence) do
             match = Regexp.last_match
-            render(plain_text(match[:code]), match[:attrs], document)
+            render(plain_text(match[:code]), fence_attributes(match), document)
           end
         end
       end
@@ -246,6 +246,16 @@ module Plotnine
     # better served by the code that drew the chart.
     def documents
       (@site.pages + @site.documents).select { |document| document.output_ext == ".html" }
+    end
+
+    # An IAL lands on the outermost tag kramdown writes for the fence: the
+    # wrapper <div> when Rouge knows the language, which ROUGE_FENCE already
+    # captures as attrs, or the <pre> when it does not, which PLAIN_FENCE
+    # captures as outer. Rouge has no lexer for plotnine, so a chart's title
+    # is always on the <pre>.
+    def fence_attributes(match)
+      outer = match.names.include?("outer") ? match[:outer] : nil
+      [outer, match[:attrs]].compact.join(" ")
     end
 
     def plain_text(html)
