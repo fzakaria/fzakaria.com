@@ -7,7 +7,7 @@ excerpt_separator: <!--more-->
 
 > **tl;dr** [tabc](https://github.com/fzakaria/tabc) is a container runtime, like runc, that runs each container in a Chromium tab.
 > `docker run --runtime tabc alpine` works and starts in under a second. 
-> On a Mac it needs <u>no VM at all</u>; Linux for everyone!
+> On a Mac it needs <u>no hypervisor and no Linux VM</u>; Linux for everyone!
 
 Despite my zealot love for [Nix](https://nixos.org), there is no denying the convenience and ubiquity of Docker.
 Containers have become the standard unit of software deployment, providing a consistent environment across different machines and simplifying the management of dependencies.[^containers]
@@ -86,7 +86,7 @@ It is now practical to run Linux containers directly in the browser, leveraging 
 [![A terminal. On Linux, docker run with the runtime set to tabc prints Linux aarch64 from an x86-64 host. On a Mac, tabc run alpine prints Linux aarch64, and a check for Docker, Colima, QEMU or Lima finds no VM running.](/assets/images/tabc-demo.webp)](/assets/images/tabc-demo.webp)
 {: style="--image-width: 25rem"}
 
-That is a real `docker run`, on a real Docker daemon, starting a real Alpine image. This works even on a Mac with no Docker installed and <u>no virtual machine running</u>. 🤯
+That is a real `docker run`, on a real Docker daemon, starting a real Alpine image. This works even on a Mac with no Docker installed and <u>no Linux virtual machine running</u>. 🤯
 
 In my [last post]({% post_url 2026-11-23-2035-came-early %}) I was inspired from Gary Bernhardt's [The Birth & Death of JavaScript](https://www.destroyallsoftware.com/talks/the-birth-and-death-of-javascript) and its discussion of the evolution of software isolation.
 
@@ -137,8 +137,10 @@ This is a complete rethinking of the container stack on macOS. Docker on a Mac i
 </svg>
 </figure>
 
+Isn't WebAssembly a virtual machine? Technically yes, in the same way the JVM is: it runs code for a made-up CPU.
+The difference is that it is all software. Nothing asks macOS for a hypervisor.
 
-On Linux, Docker pulls the image and hands it to tabc. A Mac with no VM has no Docker daemon to do that, so tabc run pulls the image itself.
+On Linux, Docker pulls the image and hands it to tabc. A Mac with no Linux VM has no Docker daemon to do that, so tabc run pulls the image itself.
 
 ```console
 $ tabc run -it alpine sh
@@ -289,7 +291,7 @@ An idle container costs ~540 MiB of host memory split between the tab that holds
 Nevertheless, this overhead is acceptable for many interactive use cases where the convenience of
 running containers in browser tabs outweighs the memory cost.
 
-Did you remember when I said you can run this on MacOS <u>without a VM</u> !?
+Did you remember when I said you can run this on MacOS <u>without a Linux VM</u> !?
 
 <p><a href="/assets/images/tabc-no-vm-reaction.mp4"><video autoplay loop muted playsinline width="640" height="360" style="--image-width: 28rem">
   <source src="/assets/images/tabc-no-vm-reaction.mp4" type="video/mp4">
