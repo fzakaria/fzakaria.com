@@ -7,7 +7,7 @@ date: 2026-11-14 12:00 -0800
 Have you heard about [dynamic derivations]({% post_url 2025-03-11-nix-dynamic-derivations-a-practical-application %})? 
 
 
-They are an experimental-feature in Nix that lets a derivation produce other derivations as its output. Why ? This lets you dynamically create your build graph, instead of having to know it all at evaluation time. It's Nix's answer to try and match the build speed of other build systems like [Bazel](https://https://bazel.build/) or [buck2](https://buck2.build/).
+They are an experimental-feature in Nix that lets a derivation produce other derivations as its output. Why ? This lets you dynamically create your build graph, instead of having to know it all at evaluation time. It's Nix's answer to try and match the build speed of other build systems like [Bazel](https://bazel.build/) or [buck2](https://buck2.build/).
 
 [![So hot right now meme: Mugatu from Zoolander under the caption "Dynamic derivations", above "So hot right now"](/assets/images/dyn_drv_so_hot_meme.png)](/assets/images/dyn_drv_so_hot_meme.png)
 {: style="--image-width: 20rem"}
