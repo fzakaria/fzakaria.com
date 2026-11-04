@@ -4,7 +4,7 @@ title: 'Making profile-guided optimization reproducible'
 date: 2026-11-07 10:00 -0800
 ---
 
-Profile-guided optimization (PGO) is an easy way to speed up a program, especially if the workload is somewhat stable. In [leaving performance on the table]({% post_url 2026-05-23-leaving-performance-on-the-table %}) I built a profile-guided sqlite3 variant for a 1.32x speedup for our select workloads.
+Profile-guided optimization (PGO) is an easy way to speed up a program, especially if the workload is somewhat stable. In [leaving performance on the table]({% post_url 2026-05-23-leaving-performance-on-the-table %}), I built a profile-guided sqlite3 variant for a 1.32x speedup for our `SELECT` workloads.
 
 Compilers and interpreters make excellent candidates for PGO, since the training workload looks like the real one: compiling code is compiling code. They also benefit the most from it, since they underpin so many other programs; a small speedup in the compiler or interpreter can have a large effect on the overall system performance.
 
