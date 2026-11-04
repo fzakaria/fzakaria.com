@@ -5,7 +5,9 @@ date: 2026-11-09 10:00 -0800
 excerpt_separator: <!--more-->
 ---
 
-The holy grail of build systems and package managers is bit-reproducible builds. This is such a desired trait that nearly every Linux distribution has a [reproducible builds project](https://reproducible-builds.org/who/projects/) to track the progress and validity of their builds.
+The holy grail of build systems and package managers is bit-reproducible[^bit] builds. This is such a desired trait that nearly every Linux distribution has a [reproducible builds project](https://reproducible-builds.org/who/projects/) to track the progress and validity of their builds.
+
+[^bit]: It's lame that I have to keep clarifying it as "bit" reproducible but the term is overloaded.
 
 Why is bit-reproducibility so important? Trust. You can trust that the software you are running has not been tampered with and is the same as what the developers intended if you can verify that when built from source, the output is identical.
 
@@ -314,6 +316,8 @@ The UUID still comes from the kernel's random pool and the time still comes from
 {: .aside}
 
 Nice! We just got a build that is bit-reproducible even if it's not content-addressed.
+
+You can find more details of the library and even making Rewind a Nix `external-builder` on [Rewind's Nix build reference](https://rewindvm.dev/nix-builds.html).
 
 What does that mean for the content-addressed model?
 
