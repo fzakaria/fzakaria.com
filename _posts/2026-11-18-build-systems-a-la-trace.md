@@ -21,7 +21,7 @@ What if I had a deterministic VM that could replay every system call and file ac
 
 Turns out, maybe a little obviously, that retroactively converting a monadic build into an applicative one is feasible if you have a complete trace of the build's execution.
 
-With the help of [Rewind](https://github.com/fzakaria/rewind), we can record a Nix build, follow it *à la trace*,[^trace] and generate a `BUILD.bazel` and a `BUCK` file for [Bazel](https://bazel.build/) and [buck2](https://buck2.build/) to build the bit-for-bit exact same thing out of nothing but `genrule`. 
+With the help of [Rewind](https://github.com/fzakaria/rewindvm), we can record a Nix build, follow it *à la trace*,[^trace] and generate a `BUILD.bazel` and a `BUCK` file for [Bazel](https://bazel.build/) and [buck2](https://buck2.build/) to build the bit-for-bit exact same thing out of nothing but `genrule`. 
 
 [^trace]: Turns out that _trace_ is French for following something by the trail it left. This makes me happy.
 
