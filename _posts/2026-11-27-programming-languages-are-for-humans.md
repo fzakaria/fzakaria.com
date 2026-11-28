@@ -13,7 +13,7 @@ excerpt_separator: <!--more-->
 Welcome AI disciples. This post is for you.
 
 We are just past the year mark when [Opus 4.5 was released](https://www.anthropic.com/news/claude-opus-4-5)
-on November 24, 2026, when the way in which we craft and generate code changed overnight.
+on November 24, 2025, when the way in which we craft and generate code changed overnight.
 We ushered in the era of _agentic coding_, where AI agents can autonomously generate,
 modify, and reason about code with minimal human intervention.
 
