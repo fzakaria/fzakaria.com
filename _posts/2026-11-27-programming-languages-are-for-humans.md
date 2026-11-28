@@ -1,7 +1,7 @@
 ---
 layout: post
 title: 'Programming languages are for humans'
-date: 2026-11-27 10:00 -0800
+date: 2026-11-27 21:00 -0800
 excerpt_separator: <!--more-->
 ---
 
